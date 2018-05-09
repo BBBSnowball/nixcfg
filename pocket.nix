@@ -2,7 +2,6 @@
 {
   imports = [
     ./hardware.nix
-    #./wifi.nix
     ./kernel.nix
     ./firmware
     ./xserver.nix
@@ -14,7 +13,7 @@
     vim
   ];
   nixpkgs.config.allowUnfree = true; # for firmware
-
+  networking.wireless.enable = false;
   # neet 4.14+ for proper hardware support (and modesetting)
   # especially for screen rotation on boot
   boot.kernelPackages = pkgs.linuxPackagesFor pkgs.linux_gpd_pocket;
