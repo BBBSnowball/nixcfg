@@ -1,34 +1,14 @@
 { pkgs, ... }:
 let
-  # 4.15-rc3 with patches from Hans de Goede
   rev = {
-    "4.15-rc3.hdg" = "cf59a9b05feb95999a1a2c095e52398267e55db6";
-    "4.15-rc4.hdg.1" = "104ec842fffc";
-    "4.15-rc5.hdg.1" = "ca0044fbcd48";
-    "4.15-rc6.hdg.1" = "a89c5913cc24ef352e8031810e9778d6182f8e0b";
-    "4.15-rc7.hdg.1" = "54bf2399b1f22a5a52db68fbe4bbdc3d0c6c7644";
-    "4.17-rc3.hdg.1" = "6da6c0db5316275015e8cc2959f12a17584aeb64";
+    "4.17-rc3.hdg.1" = "b8653b1e56ee1b5e8b3e11d7c17928dc7b9be3c8";
   };
   sha256 = {
-    "4.15-rc3.hdg" = "0ljqqxmr3jg658j7av5dh00s36in7dlsbwsz5ivlp2n6qkqw4486";
-    "4.15-rc4.hdg.1" = "02hzhr36jnrg1i5hhqr589c4xbayzs10nibl47s8qac11nfgwv52";
-    "4.15-rc5.hdg.1" = "0bmhhdj43a5z8162n796l4wb8k08nfbca7ci64j9zxv5ixa8lz5k";
-    "4.15-rc6.hdg.1" = "1x4bp6ikfmi6xrcdl0r8n3mf6hyhy1vk3x4wnbgval0g98s2dz8l";
-    "4.15-rc7.hdg.1" = "0sqqid6w818cvr59y4zwv6kc2bw29fkz08yscv68vniv8wj65182";
-    "4.17-rc3.hdg.1" = "1w687a16hkxi1ki8fzyyff2mp40ddk5kxbh9r32gkd6vc1k9qhyx";
+    "4.17-rc3.hdg.1" = "137wldp9szs2w1zv5qxnlbzijgwal7iq47bfi4vzzwai7w0f8inm";
 
   };
   version =  "4.17-rc3.hdg.1";
 
-  cleanSource = src: pkgs.runCommand "clean-src-${version}" {} ''
-    set -ex
-    cp -r ${src} $out
-    chmod u+rw -R $out
-    rm $out/.config
-    ${pkgs.gnumake}/bin/make -C $out mrproper
-    #echo 'EXPORT_SYMBOL_GPL(xhci_ext_cap_init);' >> $out/drivers/usb/host/xhci-ext-caps.c
-    cat $out/drivers/usb/host/xhci-ext-caps.c
-  '';
   pkg = { stdenv, buildPackages, gnumake, hostPlatform, fetchurl, fetchFromGitHub, perl, buildLinux, libelf, utillinux, ... } @ args:
     buildLinux (args // rec {
       inherit version;
@@ -38,12 +18,12 @@ let
       ];
       modDirVersion = "4.17.0-rc3";
       extrameta.branch = "4.17";
-      src = cleanSource (fetchFromGitHub {
+      src = fetchFromGitHub {
         owner = "jwrdegoede";
         repo = "linux-sunxi";
         rev = rev.${version};
         sha256 = sha256.${version};
-      });
+      };
       extraConfig = ''
        ACPI_CUSTOM_METHOD m
        B43_SDIO y
