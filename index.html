@@ -4,13 +4,17 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-		<title>reveal.js</title>
+		<title>FPGA Workshop</title>
 
 		<link rel="stylesheet" href="reveal.js-3.7.0/css/reveal.css">
 		<link rel="stylesheet" href="local-resources/night.css">
+		<link rel="stylesheet" href="local-resources/style.css">
 
 		<!-- Theme used for syntax highlighting of code -->
 		<link rel="stylesheet" href="reveal.js-3.7.0/lib/css/zenburn.css">
+
+		<meta name="description" content="Slides for FPGA workshop">
+		<meta name="author" content="snowball">
 
 		<!-- Printing and PDF exports -->
 		<script>
@@ -25,7 +29,33 @@
 		<div class="reveal">
 			<div class="slides">
 				<section>Slide 1</section>
-				<section>Slide 2</section>
+				<section data-background="#b5533c">Slide 2</section>
+				<section>
+					<h2>Pretty Code</h2>
+					<pre><code class="hljs vhdl" data-trim>
+                                            entity abc is
+                                              port (
+                                                clk : std_logic
+                                              );
+                                            end entity;
+					</code></pre>
+                                        <p>Language auto-detection doesn't work for this code snippet, but we can set the language:</p>
+					<pre><code class="hljs vhdl" data-trim>
+                                            a := 12 + 34;
+					</code></pre>
+					<pre><code class="hljs vhdl" data-trim contenteditable>
+                                            a := 12 + 34 + 56 + (others => '0') + x'13';
+					</code></pre>
+					<p>Code syntax highlighting courtesy of <a href="http://softwaremaniacs.org/soft/highlight/en/description/">highlight.js</a>.</p>
+				</section>
+				<section>
+					<h2>Test horizontal layout</h2>
+					<div class="columns">
+						<div class="col">abc</div>
+						<div class="col">def</div>
+						<div class="col">ghi</div>
+					</div>
+				</section>
 			</div>
 		</div>
 

@@ -1,0 +1,6 @@
+.columns {
+  display: flex;
+}
+.col {
+  flex: 1;
+}
