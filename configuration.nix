@@ -147,7 +147,7 @@ in {
           WorkingDirectory = "/home/strichliste/strichliste";
           KillMode = "process";
         };
-        #wantedBy = [ "multi-user.target" ];
+        wantedBy = [ "multi-user.target" ];
         after = [ "network.target" "fs.target" ];
       };
 
@@ -165,7 +165,7 @@ in {
           RestartSec = "10";
           Restart = "always";
         };
-        #wantedBy = [ "multi-user.target" ];
+        wantedBy = [ "multi-user.target" ];
         after = [ "network.target" "fs.target" ];
       };
 
