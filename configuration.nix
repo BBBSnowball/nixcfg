@@ -159,10 +159,9 @@ in {
 
       services.openssh.enable = true;
       services.openssh.startWhenNeeded = true;
-      #services.openssh.listenAddresses = [{addr="127.0.0.1"; port=2201;}];
-      # very hack-ish but it works
-      services.openssh.listenAddresses = [{addr="/sshd.sock\n#"; port=2201;}];
       services.openssh.openFirewall = false;
+      services.openssh.listenAddresses = [{addr="127.0.0.1"; port=2201;}];  # dummy
+      systemd.sockets.sshd.socketConfig.ListenStream = pkgs.lib.mkForce "/sshd.sock";
 
       environment.systemPackages = with pkgs; [
         node npm2nix cacert
