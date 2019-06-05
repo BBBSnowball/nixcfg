@@ -10,9 +10,17 @@ let
     (builtins.readFile ./private/ssh-laptop.pub)
     (builtins.readFile ./private/ssh-dom0.pub)
   ];
-  favorite_pkgs = with pkgs; [ wget htop tmux byobu git vim tig ];
 
-in {
+  favoritePkgs = with pkgs; [ wget htop tmux byobu git vim tig ];
+
+  withDefaultConfig = { config, pkgs, ... }: config2: ({
+    users.users.root.openssh.authorizedKeys.keys = ssh_keys;
+    programs.vim.defaultEditor = true;
+  } // config2 // {
+    environment.systemPackages = favoritePkgs ++ (config2.environment.systemPackages or {});
+  });
+
+in (withDefaultConfig { inherit config pkgs; } {
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
@@ -49,7 +57,7 @@ in {
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
-  ] ++ favorite_pkgs;
+  ];
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
@@ -100,7 +108,7 @@ in {
   #   isNormalUser = true;
   #   extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
   # };
-  users.users.root.openssh.authorizedKeys.keys = ssh_keys;
+  #users.users.root.openssh.authorizedKeys.keys = ssh_keys;
 
   #headless = true;
   sound.enable = false;
@@ -124,11 +132,11 @@ in {
   containers.mate = {
     config = { config, pkgs, ... }: let
       node = pkgs.nodejs-8_x;
-    in {
+    in (withDefaultConfig { inherit config pkgs; } {
       environment.systemPackages = with pkgs; [
         node npm2nix cacert
         #node2nix
-      ] ++ favorite_pkgs;
+      ];
 
       users.users.root.openssh.authorizedKeys.keys = ssh_keys;
 
@@ -186,7 +194,7 @@ in {
           ProxyPassReverse /recent-orders.txt  http://localhost:1237/recent-orders.txt
         '';
       };
-    };
+    });
   };
 
   # This value determines the NixOS release with which your system is to be
@@ -195,4 +203,4 @@ in {
   # should.
   system.stateVersion = "19.03"; # Did you read the comment?
 
-}
+})
