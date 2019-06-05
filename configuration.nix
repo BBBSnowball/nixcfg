@@ -78,6 +78,7 @@ in {
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
+    socat
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
@@ -155,6 +156,13 @@ in {
       node = pkgs.nodejs-8_x;
     in {
       imports = [ myDefaultConfig ];
+
+      services.openssh.enable = true;
+      services.openssh.startWhenNeeded = true;
+      #services.openssh.listenAddresses = [{addr="127.0.0.1"; port=2201;}];
+      # very hack-ish but it works
+      services.openssh.listenAddresses = [{addr="/sshd.sock\n#"; port=2201;}];
+      services.openssh.openFirewall = false;
 
       environment.systemPackages = with pkgs; [
         node npm2nix cacert
