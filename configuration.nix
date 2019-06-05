@@ -28,11 +28,7 @@ let
       vi-alias = self.buildEnv {
         name = "vi-alias";
         paths = [
-          #NOTE I should have used writeShellScript here: https://github.com/NixOS/nixpkgs/blob/master/pkgs/build-support/trivial-builders.nix
-          (self.pkgs.writeScriptBin "vi" ''
-            #!${self.runtimeShell}
-            exec ${pkgs.vim}/bin/vim "$@"
-          '')
+          (self.pkgs.writeShellScriptBin "vi" ''exec ${pkgs.vim}/bin/vim "$@"'')
         ];
       };
       # vimrc is an argument, not a package
