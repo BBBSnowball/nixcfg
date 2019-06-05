@@ -28,12 +28,19 @@ let
       vi-alias = self.buildEnv {
         name = "vi-alias";
         paths = [
+          #NOTE I should have used writeShellScript here: https://github.com/NixOS/nixpkgs/blob/master/pkgs/build-support/trivial-builders.nix
           (self.pkgs.writeScriptBin "vi" ''
             #!${self.runtimeShell}
             exec ${pkgs.vim}/bin/vim "$@"
           '')
         ];
       };
+      # vimrc is an argument, not a package
+      #vimrc = self.runCommand "my-vimrc" {origVimrc = super.vimrc;} ''cp $origVimrc $out ; echo "imap fd <Esc>" >> $out'';
+      # infinite recursion because vim in super tries to use the new vimrc
+      #vimrc = self.runCommand "my-vimrc" {origVim = super.vim;} ''cp $origVim/share/vim/vimrc $out ; echo "imap fd <Esc>" >> $out'';
+      # rebuilds vim
+      #vim = super.vim.override { vimrc = self.runCommand "my-vimrc" {origVim = super.vim;} ''cat $origVim/share/vim/vimrc >$out ; echo "imap fd <Esc>" >> $out''; };
     }) ];
   };
 
