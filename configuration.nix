@@ -14,9 +14,27 @@ let
   favoritePkgs = with pkgs; [ wget htop tmux byobu git vim tig ];
 
   myDefaultConfig = { config, pkgs, ...}: {
-    environment.systemPackages = favoritePkgs;
+    environment.systemPackages = favoritePkgs ++ [ pkgs.vi-alias ];
     users.users.root.openssh.authorizedKeys.keys = ssh_keys;
     programs.vim.defaultEditor = true;
+    nixpkgs.overlays = [ (self: super: {
+      vim = super.pkgs.vim_configurable.customize {
+        #NOTE This breaks the vi->vim alias.
+        name = "vim";
+        vimrcConfig.customRC = ''
+          imap fd <Esc>
+        '';
+      };
+      vi-alias = self.buildEnv {
+        name = "vi-alias";
+        paths = [
+          (self.pkgs.writeScriptBin "vi" ''
+            #!${self.runtimeShell}
+            exec ${pkgs.vim}/bin/vim "$@"
+          '')
+        ];
+      };
+    }) ];
   };
 
 in {
