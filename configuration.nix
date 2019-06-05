@@ -10,7 +10,7 @@ let
     (builtins.readFile ./private/ssh-laptop.pub)
     (builtins.readFile ./private/ssh-dom0.pub)
   ];
-  favorite_pkgs = with pkgs; [ wget htop tmux byobu git vim ];
+  favorite_pkgs = with pkgs; [ wget htop tmux byobu git vim tig ];
 
 in {
   imports =
