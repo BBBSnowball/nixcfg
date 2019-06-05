@@ -13,18 +13,18 @@ let
 
   favoritePkgs = with pkgs; [ wget htop tmux byobu git vim tig ];
 
-  withDefaultConfig = { config, pkgs, ... }: config2: ({
+  myDefaultConfig = { config, pkgs, ...}: {
+    environment.systemPackages = favoritePkgs;
     users.users.root.openssh.authorizedKeys.keys = ssh_keys;
     programs.vim.defaultEditor = true;
-  } // config2 // {
-    environment.systemPackages = favoritePkgs ++ (config2.environment.systemPackages or {});
-  });
+  };
 
-in (withDefaultConfig { inherit config pkgs; } {
+in {
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
       <nixpkgs/nixos/modules/profiles/qemu-guest.nix>
+      myDefaultConfig
     ];
 
   # Use the GRUB 2 boot loader.
@@ -132,13 +132,13 @@ in (withDefaultConfig { inherit config pkgs; } {
   containers.mate = {
     config = { config, pkgs, ... }: let
       node = pkgs.nodejs-8_x;
-    in (withDefaultConfig { inherit config pkgs; } {
+    in {
+      imports = [ myDefaultConfig ];
+
       environment.systemPackages = with pkgs; [
         node npm2nix cacert
         #node2nix
       ];
-
-      users.users.root.openssh.authorizedKeys.keys = ssh_keys;
 
       users.users.strichliste = {
         isNormalUser = true;
@@ -194,7 +194,7 @@ in (withDefaultConfig { inherit config pkgs; } {
           ProxyPassReverse /recent-orders.txt  http://localhost:1237/recent-orders.txt
         '';
       };
-    });
+    };
   };
 
   # This value determines the NixOS release with which your system is to be
@@ -203,4 +203,4 @@ in (withDefaultConfig { inherit config pkgs; } {
   # should.
   system.stateVersion = "19.03"; # Did you read the comment?
 
-})
+}
