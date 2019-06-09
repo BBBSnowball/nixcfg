@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
 let
   ssh_keys = [
@@ -100,7 +100,7 @@ in {
   services.openssh.enable = true;
 
   # Open ports in the firewall.
-  networking.firewall.allowedTCPPorts = [ 8081 8080 1237 ];
+  networking.firewall.allowedTCPPorts = [ 8081 8080 1237 3000 3001 ];
   # networking.firewall.allowedUDPPorts = [ ... ];
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
@@ -225,6 +225,109 @@ in {
           ProxyPassReverse /recent-orders.txt  http://localhost:1237/recent-orders.txt
         '';
       };
+    };
+  };
+
+  containers.feg = {
+    config = { config, pkgs, ... }: let
+      acmeDir = "/var/acme";
+      fqdns = [
+        "${builtins.readFile ./private/feg-svn-test-domain.txt}"
+        #"${builtins.readFile ./private/feg-svn-domain.txt}"
+      ];
+      mainSSLKey = "${acmeDir}/keys/${builtins.readFile ./private/feg-svn-test-domain.txt}";
+    in {
+      imports = [ myDefaultConfig opensshWithUnixDomainSocket ];
+
+      environment.systemPackages = with pkgs; [
+        #subversion lzop libapache2-mod-svn apache2-utils apache2 curl socat knot knot-dnsutils
+        subversion apacheHttpd
+      ];
+
+      nixpkgs.overlays = [ (self: super: {
+        subversion = super.subversion.override {
+           httpServer = true;
+        };
+      } )];
+
+      services.httpd = {
+        enable = true;
+        adminAddr = "postmaster@${builtins.readFile ./private/w-domain.txt}";
+        documentRoot = "/var/www/html";
+        listen = [{port = 3000;}];
+
+        enableSSL = true;
+        sslServerKey = "${mainSSLKey}/key.pem";
+        sslServerCert = "${mainSSLKey}/fullchain.pem";
+        extraConfig =
+          ''
+            Header always set Strict-Transport-Security "max-age=15552000"
+            SSLProtocol All -SSLv2 -SSLv3
+            SSLCipherSuite HIGH:!aNULL:!MD5:!EXP
+            SSLHonorCipherOrder on
+
+            #Alias "/.well-known/acme-challenge" "${acmeDir}/www/.well-known/acme-challenge"
+          '';
+        #extraConfig = ''''; #TODO
+
+        virtualHosts = [
+          # ACME challenges are forwarded to use by mailinabox, see /etc/nginx/conf.d/01_feg.conf
+          {
+            listen = [{ port = 3001;}];
+            enableSSL = false;
+            documentRoot = "${acmeDir}/www";
+          }
+        ];
+      };
+
+      users.users.acme = {
+        isSystemUser = true;
+        extraGroups = [ "wwwrun" ];
+        home = acmeDir;
+      };
+
+      #security.acme.production = false;  # for debugging
+      security.acme.directory = "${acmeDir}/keys";
+      security.acme.certs = (lib.attrsets.genAttrs fqdns (fqdn: {
+        email = builtins.readFile ./private/acme-email-feg.txt;
+        webroot = "${acmeDir}/www";
+        postRun = "systemctl reload httpd.service";
+        #allowKeysForGroup = true;
+        user = "acme";
+        group = "wwwrun";
+      }));
+
+      # acme.nix does this for nginx and lighttpd but not apache
+     systemd.services.httpd.after = [ "acme-selfsigned-certificates.target" ];
+     systemd.services.httpd.wants = [ "acme-selfsigned-certificates.target" "acme-certificates.target" ];
+
+      system.activationScripts.initAcme = ''
+        # create www root and directories for acme client
+        mkdir -m 0750 -p /var/www/html
+        chown root:wwwrun /var/www/html
+        #mkdir -m 0750 -p ${acmeDir}/keys ${acmeDir}/www
+        #chown -R acme:wwwrun ${acmeDir}
+        # more restrictive rights than the default for ACME directory
+        mkdir -m 0550 -p ${acmeDir}
+        chown -R acme:wwwrun ${acmeDir}
+
+        # create dummy keys
+        # see https://github.com/NixOS/nixos-org-configurations/blob/master/nixos-org/webserver.nix
+        #FIXME Is this necessary? Can we use security.acme.preliminarySelfsigned instead?
+        #for fqdn in ${lib.strings.concatStringsSep " " fqdns} ; do
+        #  dir=~acme/keys/$fqdn
+        #  if [ ! -e $dir/key.pem ] ; then
+        #    echo "Creating dummy keys for $fqdn..."
+        #    mkdir -m 0750 -p $dir
+        #    ${pkgs.openssl}/bin/openssl genrsa -passout pass:foo -des3 -out $dir/key-in.pem 1024
+        #    ${pkgs.openssl}/bin/openssl req -passin pass:foo -new -key $dir/key-in.pem -out $dir/key.csr \
+        #      -subj "/C=NL/ST=Denial/L=Springfield/O=Dis/CN=www.example.com"
+        #    ${pkgs.openssl}/bin/openssl rsa -passin pass:foo -in $dir/key-in.pem -out $dir/key.pem
+        #    ${pkgs.openssl}/bin/openssl x509 -req -days 365 -in $dir/key.csr -signkey $dir/key.pem -out $dir/fullchain.pem
+        #    chown -R acme:wwwrun $dir
+        #  fi
+        #done
+      '';
     };
   };
 
