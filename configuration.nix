@@ -265,8 +265,6 @@ in {
             SSLProtocol All -SSLv2 -SSLv3
             SSLCipherSuite HIGH:!aNULL:!MD5:!EXP
             SSLHonorCipherOrder on
-
-            #Alias "/.well-known/acme-challenge" "${acmeDir}/www/.well-known/acme-challenge"
           '';
         #extraConfig = ''''; #TODO
 
@@ -302,31 +300,12 @@ in {
      systemd.services.httpd.wants = [ "acme-selfsigned-certificates.target" "acme-certificates.target" ];
 
       system.activationScripts.initAcme = ''
-        # create www root and directories for acme client
+        # create www root
         mkdir -m 0750 -p /var/www/html
         chown root:wwwrun /var/www/html
-        #mkdir -m 0750 -p ${acmeDir}/keys ${acmeDir}/www
-        #chown -R acme:wwwrun ${acmeDir}
         # more restrictive rights than the default for ACME directory
         mkdir -m 0550 -p ${acmeDir}
         chown -R acme:wwwrun ${acmeDir}
-
-        # create dummy keys
-        # see https://github.com/NixOS/nixos-org-configurations/blob/master/nixos-org/webserver.nix
-        #FIXME Is this necessary? Can we use security.acme.preliminarySelfsigned instead?
-        #for fqdn in ${lib.strings.concatStringsSep " " fqdns} ; do
-        #  dir=~acme/keys/$fqdn
-        #  if [ ! -e $dir/key.pem ] ; then
-        #    echo "Creating dummy keys for $fqdn..."
-        #    mkdir -m 0750 -p $dir
-        #    ${pkgs.openssl}/bin/openssl genrsa -passout pass:foo -des3 -out $dir/key-in.pem 1024
-        #    ${pkgs.openssl}/bin/openssl req -passin pass:foo -new -key $dir/key-in.pem -out $dir/key.csr \
-        #      -subj "/C=NL/ST=Denial/L=Springfield/O=Dis/CN=www.example.com"
-        #    ${pkgs.openssl}/bin/openssl rsa -passin pass:foo -in $dir/key-in.pem -out $dir/key.pem
-        #    ${pkgs.openssl}/bin/openssl x509 -req -days 365 -in $dir/key.csr -signkey $dir/key.pem -out $dir/fullchain.pem
-        #    chown -R acme:wwwrun $dir
-        #  fi
-        #done
       '';
     };
   };
