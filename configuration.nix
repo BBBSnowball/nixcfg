@@ -269,10 +269,6 @@ in {
             SSLHonorCipherOrder on
 
 
-            <Location />
-              Require valid-user
-            </Location>
-
             <Location /svn>
               DAV svn
 
