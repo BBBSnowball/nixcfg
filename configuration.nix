@@ -159,6 +159,37 @@ in {
 
   services.fstrim.enable = true;
 
+  services.openvpn.servers = let
+    serverExternalIp = <redacted>;
+    makeVpn= name: { keyName ? null, subnet, port, useTcp ? false, ... }: {
+      config = ''
+        dev vpn_${name}
+        dev-type tun
+        ifconfig 192.168.${toString subnet}.1 192.168.${toString subnet}.2
+        # openvpn --genkey --secret static.key
+        secret /var/openvpn/${if keyName != null then keyName else name}.key
+        port ${toString port}
+        #local ${serverExternalIp}
+        local 192.168.84.133
+        comp-lzo
+        keepalive 300 600
+        ping-timer-rem      # only for davides and jolla
+        persist-tun         # not for tcp
+        persist-key         # not for tcp
+        cipher aes-256-cbc  # for android-udp
+        ${lib.optionalString useTcp "proto tcp-server"}
+
+        user  nobody
+        group nogroup
+      '';
+    };
+  in lib.attrsets.mapAttrs makeVpn {
+    android-udp = { subnet = 88; port = 444; keyName = "android"; };
+    android-tcp = { subnet = 89; port = 444; keyName = "android"; useTcp = true; };
+    #jolla      = { subnet = 90; port = 446; };  # not used anymore
+    davides     = { subnet = 87; port = 450; };
+  };
+
   containers.mate = {
     config = { config, pkgs, ... }: let
       node = pkgs.nodejs-8_x;
