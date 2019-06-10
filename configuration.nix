@@ -332,7 +332,7 @@ in {
         # create www root
         mkdir -m 0750 -p /var/www/html
         chown root:wwwrun /var/www/html
-        echo "nothing to see here" >>/var/www/html/index.html
+        echo "nothing to see here" >/var/www/html/index.html
 
         # more restrictive rights than the default for ACME directory
         mkdir -m 0550 -p ${acmeDir}
