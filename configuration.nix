@@ -232,10 +232,10 @@ in {
     config = { config, pkgs, ... }: let
       acmeDir = "/var/acme";
       fqdns = [
-        "${builtins.readFile ./private/feg-svn-test-domain.txt}"
-        #"${builtins.readFile ./private/feg-svn-domain.txt}"
+        #"${builtins.readFile ./private/feg-svn-test-domain.txt}"
+        "${builtins.readFile ./private/feg-svn-domain.txt}"
       ];
-      mainSSLKey = "${acmeDir}/keys/${builtins.readFile ./private/feg-svn-test-domain.txt}";
+      mainSSLKey = "${acmeDir}/keys/${builtins.readFile ./private/feg-svn-domain.txt}";
     in {
       imports = [ myDefaultConfig opensshWithUnixDomainSocket ];
 
