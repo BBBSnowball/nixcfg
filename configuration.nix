@@ -48,12 +48,70 @@ let
     systemd.sockets.sshd.socketConfig.ListenStream = pkgs.lib.mkForce "/sshd.sock";
   };
 
+  namedFirewallPorts = { config, pkgs, ... }: with lib; {
+    options = {
+      networking.firewall.allowedPortsInterface = mkOption {
+        type = types.string;
+        default = "";
+        example = "eth0";
+        description = "open ports in allowedPorts on specific interface; use \"\" for all interfaces";
+      };
+      networking.firewall.allowedPorts = let
+        portType = types.addCheck (types.submodule {
+          options = {
+            port = mkOption { type = types.nullOr types.port; default = null; };
+            from = mkOption { type = types.nullOr types.port; default = null; };
+            to   = mkOption { type = types.nullOr types.port; default = null; };
+            type = mkOption { type = types.enum [ "tcp" "udp" ]; };
+          };
+        }) (x: (x.port != null && x.from == null && x.to == null) || (x.port == null && x.from != null && x.to != null));
+        portTypeOrPort = types.coercedTo types.port (port: { inherit port; type = "tcp"; }) portType;
+      in mkOption {
+        type = types.attrsOf portTypeOrPort;
+        default = {};
+        example = { ssh = 22; dns = { port = 53; type = "udp"; }; };
+        description = "an attr-valued variant of allowedTcpPorts et. al. (so values can be set in different places more easily)";
+      };
+    };
+
+    config = let
+      filterType = type: attrs: filter (x: x.type == type) (attrValues attrs);
+      extractPorts  = portAttrs: map (x: x.port)                   (filter (x: x.port != null) portAttrs);
+      extractRanges = portAttrs: map (x: { inherit (x) from to; }) (filter (x: x.from != null) portAttrs);
+      firewallOptions = {
+        allowedTCPPorts      = extractPorts  (filterType "tcp" config.networking.firewall.allowedPorts);
+        allowedUDPPorts      = extractPorts  (filterType "udp" config.networking.firewall.allowedPorts);
+        allowedTCPPortRanges = extractRanges (filterType "tcp" config.networking.firewall.allowedPorts);
+        allowedUDPPortRanges = extractRanges (filterType "udp" config.networking.firewall.allowedPorts);
+      };
+      dbg = toString firewallOptions.allowedTCPPorts;
+      dbg2 = pkgs.writeText { name = "blub"; text = dbg; };
+      dbg3 = toString (config.networking.firewall.allowedPorts.openvpn-android-tcp.port);
+      iface = config.networking.firewall.allowedPortsInterface;
+    #in if config.networking.firewall.allowedPortsInterface == "" && false
+      #then { networking.firewall = firewallOptions; }
+      #then { networking.firewall = { inherit (firewallOptions) allowedTCPPorts allowedUDPPorts allowedTCPPortRanges allowedUDPPortRanges; }; }
+      #then { networking.firewall.allowedTCPPorts = firewallOptions.allowedTCPPorts; }
+      #else { networking.firewall.interfaces."${networking.firewall.allowedPortsInterface}" = firewallOptions; };
+    #in assert dbg3 == "abc"; { system.activationScripts.testMyFirewallStuff = ''cat ${dbg2}''; };
+    #in assert dbg3 == "abc"; { };
+    #in { system.activationScripts.testMyFirewallStuff = assert (abort (builtins.toXML firewallOptions)); ''echo blub''; };  #builtins.trace
+    in {
+      networking.firewall.allowedTCPPorts       = if iface == "" then firewallOptions.allowedTCPPorts      else {};
+      networking.firewall.allowedUDPPorts       = if iface == "" then firewallOptions.allowedUDPPorts      else {};
+      networking.firewall.allowedTCPPortRanges  = if iface == "" then firewallOptions.allowedTCPPortRanges else {};
+      networking.firewall.allowedUDPPortRanges  = if iface == "" then firewallOptions.allowedUDPPortRanges else {};
+      networking.firewall.interfaces."${iface}" = if iface != "" then firewallOptions                      else {};
+    };
+  };
+
 in {
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
       <nixpkgs/nixos/modules/profiles/qemu-guest.nix>
       myDefaultConfig
+      namedFirewallPorts
     ];
 
   # Use the GRUB 2 boot loader.
@@ -99,12 +157,6 @@ in {
   # Enable the OpenSSH daemon.
   services.openssh.enable = true;
 
-  # Open ports in the firewall.
-  networking.firewall.allowedTCPPorts = [ 8081 8080 1237 3000 3001 ];
-  # networking.firewall.allowedUDPPorts = [ ... ];
-  # Or disable the firewall altogether.
-  # networking.firewall.enable = false;
-
   networking.interfaces.ens3.ipv4.addresses = [ {
     address = "192.168.84.133";
     prefixLength = 24;
@@ -113,6 +165,16 @@ in {
 
   networking.defaultGateway = "192.168.84.128";
   networking.nameservers = [ "62.210.16.6" "62.210.16.7" ];
+
+  # Open ports in the firewall.
+  networking.firewall.allowedTCPPorts = [ 8081 8080 1237 3000 3001 ];
+  networking.firewall.allowedUDPPorts = [ ];
+  # Or disable the firewall altogether.
+  # networking.firewall.enable = false;
+
+  networking.firewall.allowedPorts.openvpn-android-tcp = 444;
+  networking.firewall.allowedPorts.openvpn-android-udp = { type = "udp"; port = 444; };
+  networking.firewall.allowedPorts.openvpn-davides     = { type = "udp"; port = 450; };
 
   # Enable CUPS to print documents.
   # services.printing.enable = true;
