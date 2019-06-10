@@ -84,19 +84,11 @@ let
         allowedTCPPortRanges = extractRanges (filterType "tcp" config.networking.firewall.allowedPorts);
         allowedUDPPortRanges = extractRanges (filterType "udp" config.networking.firewall.allowedPorts);
       };
-      dbg = toString firewallOptions.allowedTCPPorts;
-      dbg2 = pkgs.writeText { name = "blub"; text = dbg; };
-      dbg3 = toString (config.networking.firewall.allowedPorts.openvpn-android-tcp.port);
       iface = config.networking.firewall.allowedPortsInterface;
-    #in if config.networking.firewall.allowedPortsInterface == "" && false
-      #then { networking.firewall = firewallOptions; }
-      #then { networking.firewall = { inherit (firewallOptions) allowedTCPPorts allowedUDPPorts allowedTCPPortRanges allowedUDPPortRanges; }; }
-      #then { networking.firewall.allowedTCPPorts = firewallOptions.allowedTCPPorts; }
-      #else { networking.firewall.interfaces."${networking.firewall.allowedPortsInterface}" = firewallOptions; };
-    #in assert dbg3 == "abc"; { system.activationScripts.testMyFirewallStuff = ''cat ${dbg2}''; };
-    #in assert dbg3 == "abc"; { };
-    #in { system.activationScripts.testMyFirewallStuff = assert (abort (builtins.toXML firewallOptions)); ''echo blub''; };  #builtins.trace
+    #NOTE Useful functions for debugging: abort, builtins.toXML, builtins.trace
     in {
+      #NOTE We have to "tell" Nix which attributes we might be setting before we can use any config options.
+      #     Otherwise, we will end up with infinite recursion.
       networking.firewall.allowedTCPPorts       = if iface == "" then firewallOptions.allowedTCPPorts      else {};
       networking.firewall.allowedUDPPorts       = if iface == "" then firewallOptions.allowedUDPPorts      else {};
       networking.firewall.allowedTCPPortRanges  = if iface == "" then firewallOptions.allowedTCPPortRanges else {};
