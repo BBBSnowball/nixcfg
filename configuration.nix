@@ -256,6 +256,8 @@ in {
         documentRoot = "/var/www/html";
         listen = [{port = 3000;}];
 
+        extraModules = ["dav" { name = "dav_svn"; path = "${pkgs.subversion}/modules/mod_dav_svn.so"; }];
+
         enableSSL = true;
         sslServerKey = "${mainSSLKey}/key.pem";
         sslServerCert = "${mainSSLKey}/fullchain.pem";
@@ -265,8 +267,39 @@ in {
             SSLProtocol All -SSLv2 -SSLv3
             SSLCipherSuite HIGH:!aNULL:!MD5:!EXP
             SSLHonorCipherOrder on
+
+
+            <Location />
+              Require valid-user
+            </Location>
+
+            <Location /svn>
+              DAV svn
+
+              #SVNPath /var/lib/svn  # one repo
+              # multiple repos
+              SVNParentPath /var/svn
+
+              AuthType Basic
+              AuthName "Subversion Repository"
+              AuthUserFile /var/svn-auth/dav_svn.passwd
+
+              # authentication is required for reading and writing
+              Require valid-user
+
+              # To enable authorization via mod_authz_svn (enable that module separately):
+              #<IfModule mod_authz_svn.c>
+              #AuthzSVNAccessFile /etc/apache2/dav_svn.authz
+              #</IfModule>
+
+              # The following three lines allow anonymous read, but make
+              # committers authenticate themselves.  It requires the 'authz_user'
+              # module (enable it with 'a2enmod').
+              #<LimitExcept GET PROPFIND OPTIONS REPORT>
+                #Require valid-user
+              #</LimitExcept>
+            </Location>
           '';
-        #extraConfig = ''''; #TODO
 
         virtualHosts = [
           # ACME challenges are forwarded to use by mailinabox, see /etc/nginx/conf.d/01_feg.conf
@@ -299,13 +332,30 @@ in {
      systemd.services.httpd.after = [ "acme-selfsigned-certificates.target" ];
      systemd.services.httpd.wants = [ "acme-selfsigned-certificates.target" "acme-certificates.target" ];
 
-      system.activationScripts.initAcme = ''
+      system.activationScripts.initAcme = lib.stringAfter ["users" "groups"] ''
         # create www root
         mkdir -m 0750 -p /var/www/html
         chown root:wwwrun /var/www/html
+        echo "nothing to see here" >>/var/www/html/index.html
+
         # more restrictive rights than the default for ACME directory
         mkdir -m 0550 -p ${acmeDir}
         chown -R acme:wwwrun ${acmeDir}
+      '';
+
+      system.activationScripts.initSvn = lib.stringAfter ["users" "groups" "wrappers"] ''
+        mkdir -m 0770 -p /var/svn
+        chown wwwrun:wwwrun /var/svn
+        if ! ls -d /var/svn/*/ >/dev/null ; then
+          # create dummy SVN so Apache doesn't fail to start
+          ${pkgs.su}/bin/su wwwrun -s "${pkgs.bash}/bin/bash" -c "${pkgs.subversion}/bin/svnadmin create /var/svn/dummy"
+        fi
+
+        mkdir -m 0550 -p /var/svn-auth
+        chown root:wwwrun /var/svn-auth
+        if [ ! -e /var/svn-auth/dav_svn.passwd ] ; then
+          touch /var/svn-auth/dav_svn.passwd
+        fi
       '';
     };
   };
