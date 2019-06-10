@@ -244,7 +244,7 @@ in {
     davides     = { subnet = 87; port = 450; };
   };
 
-  containers.mate = {
+  containers.mate = let ports = config.networking.firewall.allowedPorts; in {
     config = { config, pkgs, ... }: let
       node = pkgs.nodejs-8_x;
     in {
@@ -299,7 +299,7 @@ in {
         documentRoot = "/var/www/html";
         enableSSL = false;
         #port = 8081;
-        listen = [{port = 8081;}];
+        listen = [{port = ports.strichliste-apache.port;}];
         extraConfig = ''
           #RewriteEngine on
 
@@ -312,6 +312,10 @@ in {
       };
     };
   };
+
+  networking.firewall.allowedPorts.strichliste-apache = 8081;
+  networking.firewall.allowedPorts.strichliste-node   = 8080;
+  networking.firewall.allowedPorts.pizzaimap          = 1237;
 
   containers.feg = {
     config = { config, pkgs, ... }: let
