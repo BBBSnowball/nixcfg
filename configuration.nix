@@ -356,6 +356,59 @@ in {
     };
   };
 
+  containers.notes = {
+    config = { config, pkgs, ... }: let
+    in {
+      imports = [ myDefaultConfig opensshWithUnixDomainSocket ];
+
+      environment.systemPackages = with pkgs; [
+        python27 virtualenv pip
+      ];
+
+      nixpkgs.overlays = [ (self: super: {
+        virtualenv = self.python27Packages.virtualenv;
+        pip        = self.python27Packages.pip;
+        magpie = self.fetchFromGitHub {
+          owner = "BBBSnowball";
+          repo  = "magpie";
+          rev   = "e9dec30f4db96f26f90a07a0b8e31410d194a273"; # branch no-external-servers
+          sha256 = "1kx4mq39kdfcm29p0bk5xg82gmgj0dl7kab6h77m4635bkdq6m81";
+        };
+        #initMagpieScript = self.pkgs.writeShellScript "initMagpie" ''  # writeShellScript is not available for some reason
+        initMagpieScript = self.pkgs.writeShellScriptBin "initMagpie" ''
+          #FIXME We could put those into Nix store without too much effort.
+          if [ ! -e ~/magpie-env ] ; then ${self.virtualenv}/bin/virtualenv -p python2.7 ~/magpie-env ; fi
+          #if [ ! -e ~/${self.pkgs.git} clone https://github.com/BBBSnowball/magpie ~/magpie -b no-external-servers --single-branch ; fi
+          source ~/magpie-env/bin/activate
+          ${self.pip}/bin/pip install -r ${self.magpie}/requirements.txt
+        '';
+      } )];
+
+      services.httpd = {
+        enable = true;
+        adminAddr = "postmaster@${builtins.readFile ./private/w-domain.txt}";
+        documentRoot = "/var/www/html";
+        listen = [{port = 8082;}];
+      };
+
+      users.users.magpie = {
+        isNormalUser = true;
+        extraGroups = [ ];
+      };
+
+      system.activationScripts.magpie = lib.stringAfter ["users" "groups"] ''
+        # create www root
+        mkdir -m 0750 -p /var/www/html
+        chown root:wwwrun /var/www/html
+        echo "nothing to see here" >/var/www/html/index.html
+
+        # make virtualenv for magpie
+        ${pkgs.su}/bin/su magpie -c "${pkgs.initMagpieScript}"
+      '';
+    };
+  };
+
+
   # This value determines the NixOS release with which your system is to be
   # compatible, in order to avoid breaking some software such as database
   # servers. You should change this only after NixOS release notes say you
