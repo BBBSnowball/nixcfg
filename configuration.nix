@@ -97,6 +97,7 @@ let
     };
   };
 
+  ports = config.networking.firewall.allowedPorts;
 in {
   imports =
     [ # Include the results of the hardware scan.
@@ -158,15 +159,8 @@ in {
   networking.defaultGateway = "192.168.84.128";
   networking.nameservers = [ "62.210.16.6" "62.210.16.7" ];
 
-  # Open ports in the firewall.
-  networking.firewall.allowedTCPPorts = [ 8081 8080 1237 3000 3001 ];
-  networking.firewall.allowedUDPPorts = [ ];
-  # Or disable the firewall altogether.
-  # networking.firewall.enable = false;
 
-  networking.firewall.allowedPorts.openvpn-android-tcp = 444;
-  networking.firewall.allowedPorts.openvpn-android-udp = { type = "udp"; port = 444; };
-  networking.firewall.allowedPorts.openvpn-davides     = { type = "udp"; port = 450; };
+  networking.firewall.enable = true;
 
   # Enable CUPS to print documents.
   # services.printing.enable = true;
@@ -238,13 +232,17 @@ in {
       '';
     };
   in lib.attrsets.mapAttrs makeVpn {
-    android-udp = { subnet = 88; port = 444; keyName = "android"; };
-    android-tcp = { subnet = 89; port = 444; keyName = "android"; useTcp = true; };
+    android-udp = { subnet = 88; port = ports.openvpn-android-tcp.port; keyName = "android"; };
+    android-tcp = { subnet = 89; port = ports.openvpn-android-udp.port; keyName = "android"; useTcp = true; };
     #jolla      = { subnet = 90; port = 446; };  # not used anymore
-    davides     = { subnet = 87; port = 450; };
+    davides     = { subnet = 87; port = ports.openvpn-davides.port; };
   };
 
-  containers.mate = let ports = config.networking.firewall.allowedPorts; in {
+  networking.firewall.allowedPorts.openvpn-android-tcp = 444;
+  networking.firewall.allowedPorts.openvpn-android-udp = { type = "udp"; port = 444; };
+  networking.firewall.allowedPorts.openvpn-davides     = { type = "udp"; port = 450; };
+
+  containers.mate = {
     config = { config, pkgs, ... }: let
       node = pkgs.nodejs-8_x;
     in {
@@ -303,19 +301,19 @@ in {
         extraConfig = ''
           #RewriteEngine on
 
-          ProxyPass        /strich-api  http://localhost:8080
-          ProxyPassReverse /strich-api  http://localhost:8080
+          ProxyPass        /strich-api  http://localhost:${toString ports.strichliste-node.port}
+          ProxyPassReverse /strich-api  http://localhost:${toString ports.strichliste-node.port}
 
-          ProxyPass        /recent-orders.txt  http://localhost:1237/recent-orders.txt
-          ProxyPassReverse /recent-orders.txt  http://localhost:1237/recent-orders.txt
+          ProxyPass        /recent-orders.txt  http://localhost:${toString ports.pizzaimap.port}/recent-orders.txt
+          ProxyPassReverse /recent-orders.txt  http://localhost:${toString ports.pizzaimap.port}/recent-orders.txt
         '';
       };
     };
   };
 
   networking.firewall.allowedPorts.strichliste-apache = 8081;
-  networking.firewall.allowedPorts.strichliste-node   = 8080;
-  networking.firewall.allowedPorts.pizzaimap          = 1237;
+  networking.firewall.allowedPorts.strichliste-node   = 8080;  # fixed in server config
+  networking.firewall.allowedPorts.pizzaimap          = 1237;  # fixed in source
 
   containers.feg = {
     config = { config, pkgs, ... }: let
@@ -343,7 +341,7 @@ in {
         enable = true;
         adminAddr = "postmaster@${builtins.readFile ./private/w-domain.txt}";
         documentRoot = "/var/www/html";
-        listen = [{port = 3000;}];
+        listen = [{port = ports.feg-svn-https.port;}];
 
         extraModules = ["dav" { name = "dav_svn"; path = "${pkgs.subversion}/modules/mod_dav_svn.so"; }];
 
@@ -389,7 +387,7 @@ in {
         virtualHosts = [
           # ACME challenges are forwarded to use by mailinabox, see /etc/nginx/conf.d/01_feg.conf
           {
-            listen = [{ port = 3001;}];
+            listen = [{ port = ports.feg-svn-acme.port;}];
             enableSSL = false;
             documentRoot = "${acmeDir}/www";
           }
@@ -444,6 +442,9 @@ in {
       '';
     };
   };
+
+  networking.firewall.allowedPorts.feg-svn-https = 3000;
+  networking.firewall.allowedPorts.feg-svn-acme  = 3001;
 
   containers.notes = {
     config = { config, pkgs, ... }: let
