@@ -177,6 +177,30 @@ in {
 
   networking.firewall.enable = true;
 
+  networking.firewall.rejectPackets = true;
+  networking.firewall.pingLimit = "--limit 100/minute --limit-burst 20";
+  #FIXME This is *UGLY*. I should change to a iptables-restore based flow asap.
+  #      NixOS has an issue for that but that has been open for years:
+  #      https://github.com/NixOS/nixpkgs/issues/4155
+  networking.firewall.extraCommands = ''
+    iptables -w -F FORWARD
+    iptables -w -F fw-reject || true
+    iptables -w -X fw-reject || true
+    iptables -w -N fw-reject
+    iptables -w -A fw-reject -m limit --limit 10/minute --limit-burst 5 -j LOG --log-prefix "refused forward: " --log-level 6
+    iptables -w -A fw-reject -j REJECT
+    iptables -w -A FORWARD -i vpn_+ -o ens3 -d 192.168.0.0/16,127.0.0.0/8 -j fw-reject
+    iptables -w -A FORWARD -i vpn_+ -o ens3 -j ACCEPT
+    iptables -w -A FORWARD -o vpn_+ -i ens3 -j ACCEPT
+    iptables -w -A FORWARD -j fw-reject
+    iptables -w -t nat -F POSTROUTING
+    iptables -w -t nat -A POSTROUTING -o ens3 -j MASQUERADE
+    ip6tables -w -F FORWARD
+    ip6tables -w -A FORWARD -j REJECT
+  '';
+
+  boot.kernel.sysctl."net.ipv4.ip_forward" = "1";
+
   # Enable CUPS to print documents.
   # services.printing.enable = true;
 
