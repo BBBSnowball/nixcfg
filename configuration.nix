@@ -48,7 +48,18 @@ let
     systemd.sockets.sshd.socketConfig.ListenStream = pkgs.lib.mkForce "/sshd.sock";
   };
 
-  namedFirewallPorts = { config, pkgs, ... }: with lib; {
+  namedFirewallPorts = { config, pkgs, ... }: with lib; let
+    portType = types.addCheck (types.submodule {
+      options = {
+        port = mkOption { type = types.nullOr types.port; default = null; };
+        from = mkOption { type = types.nullOr types.port; default = null; };
+        to   = mkOption { type = types.nullOr types.port; default = null; };
+        type = mkOption { type = types.enum [ "tcp" "udp" ]; };
+      };
+    }) (x: (x.port != null && x.from == null && x.to == null) || (x.port == null && x.from != null && x.to != null));
+    portTypeOrPort = types.coercedTo types.port (port: { inherit port; type = "tcp"; from = null; to = null; }) portType;
+    allowedPortsType = types.attrsOf portTypeOrPort;
+  in {
     options = {
       networking.firewall.allowedPortsInterface = mkOption {
         type = types.string;
@@ -56,18 +67,8 @@ let
         example = "eth0";
         description = "open ports in allowedPorts on specific interface; use \"\" for all interfaces";
       };
-      networking.firewall.allowedPorts = let
-        portType = types.addCheck (types.submodule {
-          options = {
-            port = mkOption { type = types.nullOr types.port; default = null; };
-            from = mkOption { type = types.nullOr types.port; default = null; };
-            to   = mkOption { type = types.nullOr types.port; default = null; };
-            type = mkOption { type = types.enum [ "tcp" "udp" ]; };
-          };
-        }) (x: (x.port != null && x.from == null && x.to == null) || (x.port == null && x.from != null && x.to != null));
-        portTypeOrPort = types.coercedTo types.port (port: { inherit port; type = "tcp"; }) portType;
-      in mkOption {
-        type = types.attrsOf portTypeOrPort;
+      networking.firewall.allowedPorts = mkOption {
+        type = allowedPortsType;
         default = {};
         example = { ssh = 22; dns = { port = 53; type = "udp"; }; };
         description = "an attr-valued variant of allowedTcpPorts et. al. (so values can be set in different places more easily)";
@@ -78,14 +79,40 @@ let
       filterType = type: attrs: filter (x: x.type == type) (attrValues attrs);
       extractPorts  = portAttrs: map (x: x.port)                   (filter (x: x.port != null) portAttrs);
       extractRanges = portAttrs: map (x: { inherit (x) from to; }) (filter (x: x.from != null) portAttrs);
-      firewallOptions = {
+      duplicatePorts = ports: let
+        normalizedPorts = lib.attrsets.mapAttrsToList (name: value: with value; {
+          inherit name type;
+          from = (if from != null then from else port);
+          to   = (if from != null then to   else port);
+        }) ports;
+        sorted = builtins.sort (a: b: (lib.lists.compareLists lib.trivial.compare [a.type a.from a.to] [b.type b.from b.to]) < 0) normalizedPorts;
+        #duplicates = lib.lists.foldl check { type = "dummy; } sorted;
+        check = a: b: optional (a.type == b.type && a.to >= b.from) { type = a.type; a = a.name; b = b.name; port = b.from; };
+        duplicates = builtins.concatLists (lib.lists.zipListsWith check sorted (lib.lists.drop 1 sorted));
+      in duplicates;
+      testDups = let
+        normalizePorts = ports: (lib.modules.evalOptionValue ["ports"] (mkOption { type = allowedPortsType; }) [{ file="-normalizePorts-"; value = ports; }]).value;
+        check = expected: ports: let ports2 = normalizePorts ports; actual = duplicatePorts ports2; in
+          lib.asserts.assertMsg (actual == expected) (builtins.toJSON { inherit expected actual ports ports2; });
+        in
+          assert check [] {};
+          assert check [{ type = "tcp"; a = "abc"; b = "def"; port = 1234; }] { abc = 1234; def = 1234; };
+          assert check [{ type = "udp"; a = "abc"; b = "def"; port = 1234; }] { abc = { type = "udp"; port = 1234; }; def = { type = "udp"; from = 1230; to = 1240; }; };
+          assert check [7] {x=7;};
+          true;
+      check = x:
+        assert testDups;
+        let dup = duplicatePorts config.networking.firewall.allowedPorts;
+          in assert lib.asserts.assertMsg (dup == []) ("duplicate ports: " + builtins.toJSON dup);
+        x;
+      firewallOptions = check {
         allowedTCPPorts      = extractPorts  (filterType "tcp" config.networking.firewall.allowedPorts);
         allowedUDPPorts      = extractPorts  (filterType "udp" config.networking.firewall.allowedPorts);
         allowedTCPPortRanges = extractRanges (filterType "tcp" config.networking.firewall.allowedPorts);
         allowedUDPPortRanges = extractRanges (filterType "udp" config.networking.firewall.allowedPorts);
       };
       iface = config.networking.firewall.allowedPortsInterface;
-    #NOTE Useful functions for debugging: abort, builtins.toXML, builtins.trace
+    #NOTE Useful functions for debugging: abort, builtins.toXML, builtins.toJSON, builtins.trace
     in {
       #NOTE We have to "tell" Nix which attributes we might be setting before we can use any config options.
       #     Otherwise, we will end up with infinite recursion.
