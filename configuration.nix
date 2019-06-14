@@ -57,7 +57,7 @@ let
         type = mkOption { type = types.enum [ "tcp" "udp" ]; };
       };
     }) (x: (x.port != null && x.from == null && x.to == null) || (x.port == null && x.from != null && x.to != null));
-    portTypeOrPort = types.coercedTo types.port (port: { inherit port; type = "tcp"; from = null; to = null; }) portType;
+    portTypeOrPort = types.coercedTo types.port (port: { inherit port; type = "tcp"; }) portType;
     allowedPortsType = types.attrsOf portTypeOrPort;
   in {
     options = {
@@ -86,22 +86,10 @@ let
           to   = (if from != null then to   else port);
         }) ports;
         sorted = builtins.sort (a: b: (lib.lists.compareLists lib.trivial.compare [a.type a.from a.to] [b.type b.from b.to]) < 0) normalizedPorts;
-        #duplicates = lib.lists.foldl check { type = "dummy; } sorted;
         check = a: b: optional (a.type == b.type && a.to >= b.from) { type = a.type; a = a.name; b = b.name; port = b.from; };
         duplicates = builtins.concatLists (lib.lists.zipListsWith check sorted (lib.lists.drop 1 sorted));
       in duplicates;
-      testDups = let
-        normalizePorts = ports: (lib.modules.evalOptionValue ["ports"] (mkOption { type = allowedPortsType; }) [{ file="-normalizePorts-"; value = ports; }]).value;
-        check = expected: ports: let ports2 = normalizePorts ports; actual = duplicatePorts ports2; in
-          lib.asserts.assertMsg (actual == expected) (builtins.toJSON { inherit expected actual ports ports2; });
-        in
-          assert check [] {};
-          assert check [{ type = "tcp"; a = "abc"; b = "def"; port = 1234; }] { abc = 1234; def = 1234; };
-          assert check [{ type = "udp"; a = "abc"; b = "def"; port = 1234; }] { abc = { type = "udp"; port = 1234; }; def = { type = "udp"; from = 1230; to = 1240; }; };
-          assert check [7] {x=7;};
-          true;
       check = x:
-        assert testDups;
         let dup = duplicatePorts config.networking.firewall.allowedPorts;
           in assert lib.asserts.assertMsg (dup == []) ("duplicate ports: " + builtins.toJSON dup);
         x;
