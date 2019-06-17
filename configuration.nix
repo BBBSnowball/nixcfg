@@ -491,7 +491,7 @@ in {
       imports = [ myDefaultConfig opensshWithUnixDomainSocket ];
 
       environment.systemPackages = with pkgs; [
-        magpie magpiePython gcc stdenv gnused git magpieEnv
+        magpie magpiePython gcc stdenv gnused git
       ];
 
       nixpkgs.overlays = [ (self: super: {
@@ -505,27 +505,20 @@ in {
           rev   = "e9dec30f4db96f26f90a07a0b8e31410d194a273"; # branch no-external-servers
           sha256 = "1kx4mq39kdfcm29p0bk5xg82gmgj0dl7kab6h77m4635bkdq6m81";
         };
-        buildMagpieEnv = self.writeShellScriptBin "buildMagpieEnv" ''
-          $magpiePython/bin/virtualenv -p $magpiePython/bin/python $out
+        buildMagpieEnv = with self; self.writeShellScriptBin "buildMagpieEnv" ''
+          out=~/magpie-env
+          if [ ! -d $out ] ; then ${magpiePython}/bin/virtualenv -p ${magpiePython}/bin/python $out ; fi
           source $out/bin/activate
           pip install -r $magpie/requirements.txt
-          $gnused/bin/sed -i 's#libname = ctypes.util.find_library.*#libname = \"'$file/lib/libmagic$sharedLibraryExtension'\"#' $out/lib/python2.7/site-packages/magic/api.py
+          ${gnused}/bin/sed -i 's#libname = ctypes.util.find_library.*#libname = \"${file}/lib/libmagic${stdenv.hostPlatform.extensions.sharedLibrary}\"#' $out/lib/python2.7/site-packages/magic/api.py
           # workaround: setuptools writes the egg file to the local directory
-          cp -r $magpie /tmp/magpie
+          cp -r ${magpie} /tmp/magpie
           chmod -R +w /tmp/magpie
           cd /tmp/magpie && python setup.py install
           # static dir is not installed, for some reason
           cp -r /tmp/magpie/magpie/static $out/lib/python2.7/site-packages/magpie-0.1.0-py2.7.egg/magpie/
           rm -rf /tmp/magpie
         '';
-        magpieEnv = with self; derivation {
-          name = "magpieEnv";
-          builder = "${bash}/bin/bash";
-          args = [ "${buildMagpieEnv}/bin/buildMagpieEnv" ];
-          inherit (self) magpiePython magpie stdenv gnused file;
-          sharedLibraryExtension = stdenv.hostPlatform.extensions.sharedLibrary;
-          system = builtins.currentSystem;
-        };
         magpieWebConfig = self.writeText "web.cfg" ''
           address='localhost'
           autosave=False
@@ -542,6 +535,8 @@ in {
         initMagpieScript = self.writeShellScriptBin "initMagpie" ''
           mkdir -p ~/.magpie
           cp ${self.magpieWebConfig} ~/.magpie/web.cfg
+          
+          ${self.buildMagpieEnv}/bin/buildMagpieEnv
 
           #NOTE We may have to create ~magpie/notes for a new setup but I'm going to
           #     copy the data from the old systemd.
@@ -554,7 +549,6 @@ in {
       };
 
       system.activationScripts.magpie = lib.stringAfter ["users" "groups"] ''
-        #FIXME I don't think that we need `su` anymore.
         # make virtualenv for magpie
         ${pkgs.su}/bin/su magpie -c "${pkgs.initMagpieScript}/bin/initMagpie"
       '';
@@ -564,7 +558,7 @@ in {
         serviceConfig = {
           User = "magpie";
           Group = "users";
-          ExecStart = "${pkgs.bash}/bin/bash -c '. ${pkgs.magpieEnv}/bin/activate && magpie'";
+          ExecStart = "${pkgs.bash}/bin/bash -c '. ~/magpie-env/bin/activate && magpie'";
           WorkingDirectory = "/home/magpie";
           KillMode = "process";
 
