@@ -520,6 +520,8 @@ in {
           cp -r ${self.magpie} /tmp/magpie
           chmod -R +w /tmp/magpie
           cd /tmp/magpie && python setup.py install
+          # static dir is not installed, for some reason
+          cp -r /tmp/magpie/magpie/static ~/magpie-env/lib/python2.7/site-packages/magpie-0.1.0-py2.7.egg/magpie/
           rm -rf /tmp/magpie
 
           mkdir -p ~/.magpie
