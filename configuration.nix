@@ -501,7 +501,6 @@ in {
         #TODO Install Python libraries to system, use overridePythonAttrs to adjust version (see esphome)
         magpiePython = self.python27.withPackages (ps: with ps; [
           setuptools pip virtualenv
-          (callPackage ./filemagic.nix {}).overridePythonAttrs (_: {checkPhase = "";})
         ]);
         magpie = self.fetchFromGitHub {
           owner = "BBBSnowball";
