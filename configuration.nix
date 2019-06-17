@@ -491,12 +491,18 @@ in {
       imports = [ myDefaultConfig opensshWithUnixDomainSocket ];
 
       environment.systemPackages = with pkgs; [
-        python27 virtualenv pip
+        #python27 virtualenv pip
+        magpie magpiePython gcc stdenv gnused git
       ];
 
       nixpkgs.overlays = [ (self: super: {
-        virtualenv = self.python27Packages.virtualenv;
-        pip        = self.python27Packages.pip;
+        #virtualenv = self.python27Packages.virtualenv;
+        #pip        = self.python27Packages.pip;
+        #TODO Install Python libraries to system, use overridePythonAttrs to adjust version (see esphome)
+        magpiePython = self.python27.withPackages (ps: with ps; [
+          setuptools pip virtualenv
+          (callPackage ./filemagic.nix {}).overridePythonAttrs (_: {checkPhase = "";})
+        ]);
         magpie = self.fetchFromGitHub {
           owner = "BBBSnowball";
           repo  = "magpie";
@@ -506,19 +512,40 @@ in {
         #initMagpieScript = self.pkgs.writeShellScript "initMagpie" ''  # writeShellScript is not available for some reason
         initMagpieScript = self.pkgs.writeShellScriptBin "initMagpie" ''
           #FIXME We could put those into Nix store without too much effort.
-          if [ ! -e ~/magpie-env ] ; then ${self.virtualenv}/bin/virtualenv -p python2.7 ~/magpie-env ; fi
+          if [ ! -e ~/magpie-env ] ; then ${self.magpiePython}/bin/virtualenv -p ${self.magpiePython}/bin/python ~/magpie-env ; fi
           #if [ ! -e ~/${self.pkgs.git} clone https://github.com/BBBSnowball/magpie ~/magpie -b no-external-servers --single-branch ; fi
           source ~/magpie-env/bin/activate
-          ${self.pip}/bin/pip install -r ${self.magpie}/requirements.txt
+          pip install -r ${self.magpie}/requirements.txt --cache-dir ~/pip-cache
+          ${pkgs.gnused}/bin/sed -i 's#libname = ctypes.util.find_library.*#libname = \"${pkgs.file}/lib/libmagic${pkgs.stdenv.hostPlatform.extensions.sharedLibrary}\"#' ~/magpie-env/lib/python2.7/site-packages/magic/api.py
+          # workaround: setuptools writes the egg file to the local directory
+          cp -r ${self.magpie} /tmp/magpie
+          chmod -R +w /tmp/magpie
+          cd /tmp/magpie && python setup.py install
+          rm -rf /tmp/magpie
+
+          mkdir -p ~/.magpie
+          cat >~/.magpie/web.cfg <<EOF
+          address='localhost'
+          autosave=False
+          autosave_interval=5
+          port=${toString ports.notes-magpie.port}
+          pwdhash=${"''"}
+          repo='/home/magpie/notes'
+          testing=False
+          theme='/magpie/static/css/bootstrap.min.css'
+          username=${"''"}
+          wysiwyg=False
+          prefix='/magpie/'
+          EOF
         '';
       } )];
 
-      services.httpd = {
-        enable = true;
-        adminAddr = "postmaster@${builtins.readFile ./private/w-domain.txt}";
-        documentRoot = "/var/www/html";
-        listen = [{port = 8082;}];
-      };
+      #services.httpd = {
+      #  enable = true;
+      #  adminAddr = "postmaster@${builtins.readFile ./private/w-domain.txt}";
+      #  documentRoot = "/var/www/html";
+      #  listen = [{port = 8082;}];
+      #};
 
       users.users.magpie = {
         isNormalUser = true;
@@ -527,16 +554,34 @@ in {
 
       system.activationScripts.magpie = lib.stringAfter ["users" "groups"] ''
         # create www root
-        mkdir -m 0750 -p /var/www/html
-        chown root:wwwrun /var/www/html
-        echo "nothing to see here" >/var/www/html/index.html
+        #mkdir -m 0750 -p /var/www/html
+        #chown root:wwwrun /var/www/html
+        #echo "nothing to see here" >/var/www/html/index.html
 
         # make virtualenv for magpie
-        ${pkgs.su}/bin/su magpie -c "${pkgs.initMagpieScript}"
+        ${pkgs.su}/bin/su magpie -c "${pkgs.initMagpieScript}/bin/initMagpie"
       '';
+
+      systemd.services.magpie = {
+        description = "Magpie (Notes)";
+        serviceConfig = {
+          User = "magpie";
+          Group = "users";
+          ExecStart = "${pkgs.bash}/bin/bash -c '. ~/magpie-env/bin/activate && magpie'";
+          WorkingDirectory = "/home/magpie";
+          KillMode = "process";
+
+          RestartSec = "10";
+          Restart = "always";
+        };
+        path = with pkgs; [ git magpiePython ];
+        wantedBy = [ "multi-user.target" ];
+        after = [ "network.target" "fs.target" ];
+      };
     };
   };
 
+  networking.firewall.allowedPorts.notes-magpie  = 8082;
 
   # This value determines the NixOS release with which your system is to be
   # compatible, in order to avoid breaking some software such as database
