@@ -574,6 +574,82 @@ in {
 
   networking.firewall.allowedPorts.notes-magpie  = 8082;
 
+  containers.rss = {
+    config = { config, pkgs, ... }: let
+      poolName = "my_selfoss_pool";
+      phpfpmSocketName = "/run/phpfpm/${poolName}.sock";
+    in {
+      imports = [ myDefaultConfig opensshWithUnixDomainSocket ];
+
+      environment.systemPackages = with pkgs; [
+      ];
+
+      services.nginx = {
+        enable = true;
+        virtualHosts.rss = {
+          listen = [ { addr = "0.0.0.0"; port = ports.rss.port; extraParameters = [ "default_server" ]; } ];
+
+          locations."/selfoss" = {
+            root = "/var/lib/selfoss";
+            index = "index.php";
+            extraConfig = ''
+              # similar to nixos/modules/services/mail/roundcube.nix
+              location ~* \.php$ {
+                fastcgi_split_path_info ^(.+\.php)(/.+)$;
+                fastcgi_pass unix:${phpfpmSocketName};
+                include ${pkgs.nginx}/conf/fastcgi_params;
+                include ${pkgs.nginx}/conf/fastcgi.conf;
+                fastcgi_index index.php;
+              }
+              # see https://github.com/SSilence/selfoss/wiki/nginx-configuration
+              location ~ ^/selfoss/((favicons|thumbnails)/.+)$ {
+                try_files /data/$1 =404;
+              }
+              location ~ ^/selfoss/$ {
+                index index.php;
+                try_files /index.php =404;
+              }
+              location ~ ^/selfoss/(.+)$ {
+                try_files /public/$1 /index.php$is_args$args;
+              }
+            '';
+          };
+        };
+      };
+
+      services.selfoss = {
+        enable = true;
+        database.type = "sqlite";
+        extraConfig = ''
+          salt=22lkjl1289asdf099s8f
+          items_perpage=50
+          rss_max_items=3000
+          homepage=unread
+        '';
+        pool = "${poolName}";
+      };
+
+      # custom pool because the default one has an excess of workers 
+      services.phpfpm.poolConfigs."${poolName}" = ''
+        listen = "${phpfpmSocketName}";
+        listen.owner = nginx
+        listen.group = nginx
+        listen.mode = 0600
+        user = nginx
+        pm = dynamic
+        pm.max_children = 30
+        pm.start_servers = 5
+        pm.min_spare_servers = 2
+        pm.max_spare_servers = 5
+        pm.max_requests = 500
+        catch_workers_output = 1
+      '';
+    };
+  };
+
+  networking.firewall.allowedPorts.rss  = 8084;
+
+
   # This value determines the NixOS release with which your system is to be
   # compatible, in order to avoid breaking some software such as database
   # servers. You should change this only after NixOS release notes say you
