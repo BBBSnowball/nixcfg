@@ -589,7 +589,7 @@ in {
         virtualHosts.rss = {
           listen = [ { addr = "0.0.0.0"; port = ports.rss.port; extraParameters = [ "default_server" ]; } ];
 
-          location."/favicon.ico" = {
+          locations."/favicon.ico" = {
             root = "/var/lib/selfoss/public";
           };
           locations."/selfoss" = {
