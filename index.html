@@ -223,7 +223,7 @@
 					<section>
 						<h3>Design Units</h3>
 						<ul>
-							<li>There are four types of design units in VHDL:</li>
+							<!-- <li>There are four types of design units in VHDL:</li> -->
 							<li>Entity: Describes external interface</li>
 							<li>Architecture: Implementation (or simulation model)</li>
 							<li>Package: A place to store custom types, functions and procedures</li>
@@ -265,31 +265,117 @@
 						<h3>Architecture: implementation</h3>
 						<ul>
 							<li>Belongs to an entity: generics, ports, libraries of entity are available</li>
-							<li>Entity can have several architectures - often not useful.</li>
+							<li>Entity can have several architectures - often not used for FPGA designs.</li>
 							<li>"RTL" in our example is the architecture name. Arbitrary name. Often "RTL" (register-transfer-level description) or "TB" (testbench)</li>
+						</ul>
+					</section>
+					<section>
+						<h3>Declarations</h3>
+						<pre><code class="hljs vhdl" data-trim>
+							architecture RTL of my_counter is
+								-- declarations
+								constant width : integer := 32;
+								signal my_signal, my_other_signal : std_logic;
+								signal my_counter : unsigned(width-1 downto 0);
+								subtype small_int is integer range 0 to 63;
+								signal my_int_counter : small_int;
+								-- custom enum type
+								type fsmSTATE is (fsmIDLE, fsmRUNNING, fsmWAITING);
+								signal state : fsmSTATE;
+							begin
+							  ...
+							end architecture;
+						</code></pre>
+					</section>
+					<section>
+						<h3>Types</h3>
+						<ul>
+							<li>integer: numbers, 0, -7, 42</li>
+							<li>std_logic: single bit, '0', '1', some special values</li>
+							<li>std_logic_vector(a to b / b downto a): bits, "100", x"7f"</li>
+							<li>signed, unsigned: like std_logic_vector, but with numeric operations</li>
+							<li>time: 100 ns, not for synthesis</li>
+						</ul>
+					</section>
+					<section>
+						<h3>Converting numeric types</h3>
+						<img data-src="img/numeric_conversions.svg" />
+						<a href="http://www.lothar-miller.de/s9y/categories/16-Numeric_Std">see Lothar-Miller.de</a>
+					</section>
+					<section>
+						<h3>Concurrent statements</h3>
+						<pre><code class="hljs vhdl" data-trim>
+							architecture RTL of my_counter is
+							begin
+								my_signal &lt;= '1' when cnt &lt; 7 else '0';
+								my_signal2 &lt;= (a and b) xor c;
+							end architecture;
+						</code></pre>
+					</section>
+					<section>
+						<h3>Process statements</h3>
+						<pre><code class="hljs vhdl" data-trim>
+							architecture RTL of my_counter is
+								signal cnt : unsigned(7 downto 0);
+							begin
+								my_process : process(clk, nreset)
+								begin
+									if nreset='0' then
+										cnt &lt;= (others =&gt; '0');
+									elsif rising_edge(clk) then
+										cnt &lt;= cnt + 1;
+									end if;
+								end process;
+							end architecture;
+						</code></pre>
+					</section>
+					<section>
+						<h3>State machines</h3>
+						<pre><code class="hljs vhdl" data-trim>
+							architecture RTL of my_counter is
+							  type tSTATE is (fsmA, fsmB, fsmC);
+								signal state : tSTATE;
+							begin
+								fsm : process(clk, nreset)
+								begin
+									if nreset='0' then
+										state &lt;= fsmA;
+									elsif rising_edge(clk) then
+										case state is
+											when fsmA =&gt;
+												if buttonA='1' then
+													state &lt;= fsmB;
+												end if;
+												ledA &lt;= '0';
+											when fsmB =&gt;
+												...
+										end case;
+									end if;
+								end process;
+							end architecture;
+						</code></pre>
+					</section>
+					<section>
+						<h3>I/O</h3>
+						<ul>
+							<li>ports of the top-level entity</li>
+							<li>values: <code class="hljs vhdl" style="display: inline-block;">'0', '1', 'Z'</code></li>
+							<li><code class="hljs vhdl" style="display: inline-block;">'Z'</code> is for high-Z, i.e. pin is not driven</li>
+							<li>pullup and drive strength can be configured in GUI, if supported</li>
+						</ul>
+					</section>
+					<section>
+						<h3>More...</h3>
+						<ul>
+							<li><a href="https://wiki.ntb.ch/infoportal/_media/software:vhdl:vhdlscript.pdf">Eine Einführung in die Schaltungsent-wicklung mit VHDL</a></li>
+							<li><a href="https://de.wikibooks.org/wiki/VHDL-Tutorium">VHDL-Tutorium in WikiBooks - eher eine Referenz</a></li>
+							<li>Use a search engine of your choice ;-)</li>
 						</ul>
 					</section>
 				</section>
 
+				<!--
 				<section data-background="#b5533c">Slide 2</section>
-				<section>
-					<h2>Pretty Code</h2>
-					<pre><code class="hljs vhdl" data-trim>
-                                            entity abc is
-                                              port (
-                                                clk : std_logic
-                                              );
-                                            end entity;
-					</code></pre>
-                                        <p>Language auto-detection doesn't work for this code snippet, but we can set the language:</p>
-					<pre><code class="hljs vhdl" data-trim>
-                                            a := 12 + 34;
-					</code></pre>
-					<pre><code class="hljs vhdl" data-trim contenteditable>
-                                            a := 12 + 34 + 56 + (others => '0') + x'13';
-					</code></pre>
-					<p>Code syntax highlighting courtesy of <a href="http://softwaremaniacs.org/soft/highlight/en/description/">highlight.js</a>.</p>
-				</section>
 				<section>
 					<h2>Test horizontal layout</h2>
 					<div class="columns">
@@ -298,6 +384,7 @@
 						<div class="col">ghi</div>
 					</div>
 				</section>
+				-->
 			</div>
 		</div>
 
