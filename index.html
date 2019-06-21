@@ -29,9 +29,31 @@
 		<div class="reveal">
 			<div class="slides">
 				<section><h1>A practical introduction to FPGAs</h1></section>
-				<section>
+				<section id="content">
+					<h3>TOC</h3>
+					<ul>
+						<li><a href="#/alternatives">FPGA vs. other logic or MCU</a></li>
+						<li><a href="#/fpga">How does an FPGA work?</a></li>
+						<li><a href="#/hdls">Hardware Description Languages</a></li>
+						<li><a href="#/vhdl">VHDL: Overview and Cheatsheet</a></li>
+					</ul>
+				</section>
+				<setion id="tasks">
+					<ol>
+						<li><a href="#/task1">Simple logic with schematic</a></li>
+						<li><a href="#/task2">Blinking LED in RTL view</a></li>
+						<li><a href="#/task3">Simple design with VHDL</a></li>
+						<li><a href="#/task4">TODO</a></li>
+					</ol>
+				</section>
+			</div>
+		</div>
+		<div style="display: none;">
+			<div>
+				<!--
+				<section id="alternatives">
 					<h2>Should I use an FPGA?</h2>
-					<!--
+					< !--
 					<table>
 						<tr><th>Option</th><th>Price</th><th>Advantage</th><th>Disadvantage</th><th>Remarks</th></tr>
 						<tr><th>Lots of logic ICs (74HC...)</th><td>cheap</td><td>good if you only need a few gates</td><td>not (easily) changable, only for small circuits</td><td></td></tr>
@@ -39,7 +61,7 @@
 						<tr><th>General-purpose microcontroller (MCU)</th><td>cheap (large-scale production)</td><td>can be reprogrammed, i.e. flexible</td><td>not good at parallel tasks</td></tr>
 						<tr><th>FPGA</th><td>relatively cheap</td><td>good at parallel tasks, logic, realtime</td><td>not as flexible as ASIC, not as cheap as MCU</td><td></td></tr>
 					</table>
-					-->
+					- ->
 					<section>
 					  As always: Depends on the task...
 					</section>
@@ -83,7 +105,18 @@
 						</ul>
 					</section>
 				</section>
-				<section>
+				-->
+				<!--
+				<section id="task1">
+					<h3>Task 1: Simple logic with schematic
+					<ul>
+						<li>AND, OR, XOR, NOR, ...</li>
+						<li>DIP switches to LEDs</li>
+						<li>mode: present &amp; repeat, then extend</li>
+						<li>learnt: usage of Synthesis, Pin Assignment, Netlist Viewer</li>
+					</ul>
+				</section>
+				<section id="fpga">
 					<section>
 						<h2>What is an FPGA anyway?</h3>
 						<ul>
@@ -180,7 +213,18 @@
 						</p>
 					</section>
 				</section>
-				<section>
+				<section id="task2">
+					<h3>Task 2: Blinking LED in RTL view</h3>
+					<ul>
+						<li>view synthesized design in RTL view and netlist view</li>
+						<li>project: TODO path</li>
+						<li>Why do we need a clock?</li>
+						<li>side note: constraints</li>
+						<li>mode: present &amp; repeat with existing project</li>
+						<li>learnt: Register-Transfer-Logic</li>
+					</ul>
+				</section>
+				<section id="hdls">
 					<section>
 						<h2>Hardware Description Languages</h2>
 						<ul style="font-size: 90%">
@@ -210,9 +254,9 @@
 						</ul>
 					</section>
 				</section>
-				<section>
+				<section id="vhdl">
 					<h2>Short intro to VHDL</h2>
-					<section>
+					<section id="vhdl-general">
 						<h3>General properties</h3>
 						<ul>
 							<li>case-insensitive</li>
@@ -220,7 +264,7 @@
 							<li>no multiline comments, unfortunately</li>
 						</ul>
 					</section>
-					<section>
+					<section id="vhdl-designunits">
 						<h3>Design Units</h3>
 						<ul>
 							<!-- <li>There are four types of design units in VHDL:</li> -->
@@ -231,7 +275,7 @@
 							<li>Simple designs only need entities and architectures.</li>
 						</ul>
 					</section>
-					<section>
+					<section id="vhdl-entity">
 						<h3>Entity: external interface</h3>
 						<pre><code class="hljs vhdl" data-trim>
 							-- We need some stuff from IEEE library.
@@ -251,7 +295,7 @@
 							end entity;
 						</code></pre>
 					</section>
-					<section>
+					<section id="vhdl-arch1">
 						<h3>Architecture: implementation</h3>
 						<pre><code class="hljs vhdl" data-trim>
 							architecture RTL of my_counter is
@@ -261,7 +305,7 @@
 							end architecture;
 						</code></pre>
 					</section>
-					<section>
+					<section id="vhdl-arch2">
 						<h3>Architecture: implementation</h3>
 						<ul>
 							<li>Belongs to an entity: generics, ports, libraries of entity are available</li>
@@ -269,7 +313,7 @@
 							<li>"RTL" in our example is the architecture name. Arbitrary name. Often "RTL" (register-transfer-level description) or "TB" (testbench)</li>
 						</ul>
 					</section>
-					<section>
+					<section id="vhdl-decls">
 						<h3>Declarations</h3>
 						<pre><code class="hljs vhdl" data-trim>
 							architecture RTL of my_counter is
@@ -287,7 +331,7 @@
 							end architecture;
 						</code></pre>
 					</section>
-					<section>
+					<section id="vhdl-types">
 						<h3>Types</h3>
 						<ul>
 							<li>integer: numbers, 0, -7, 42</li>
@@ -297,12 +341,12 @@
 							<li>time: 100 ns, not for synthesis</li>
 						</ul>
 					</section>
-					<section>
+					<section id="vhdl-numeric">
 						<h3>Converting numeric types</h3>
 						<img data-src="img/numeric_conversions.svg" />
 						<a href="http://www.lothar-miller.de/s9y/categories/16-Numeric_Std">see Lothar-Miller.de</a>
 					</section>
-					<section>
+					<section id="vhdl-concurrent">
 						<h3>Concurrent statements</h3>
 						<pre><code class="hljs vhdl" data-trim>
 							architecture RTL of my_counter is
@@ -312,8 +356,8 @@
 							end architecture;
 						</code></pre>
 					</section>
-					<section>
-						<h3>Process statements</h3>
+					<section id="vhdl-process-reg">
+						<h3>Process statements: Register</h3>
 						<pre><code class="hljs vhdl" data-trim>
 							architecture RTL of my_counter is
 								signal cnt : unsigned(7 downto 0);
@@ -329,7 +373,30 @@
 							end architecture;
 						</code></pre>
 					</section>
-					<section>
+					<section id="vhdl-process-reg">
+						<h3>Process statements: Combinatoric logic</h3>
+						<pre><code class="hljs vhdl" data-trim>
+							architecture RTL of my_counter is
+							begin
+								my_process : process(clk, nreset)
+								begin
+									-- important: assign all outputs in *all* cases
+									-- Otherwise, tool infers a latch.
+
+									x &lt;= '0';  -- default value
+									if a = '1' and b = '1' then
+										y &lt;= '1';
+									elsif a = '1' and b = '0' then
+										y &lt;= '0';
+										x &lt;= '1';  -- overrides previous assignment
+									else
+										y &lt;= '0';
+									end if;
+								end process;
+							end architecture;
+						</code></pre>
+					</section>
+					<section id="vhdl-fsm">
 						<h3>State machines</h3>
 						<pre><code class="hljs vhdl" data-trim>
 							architecture RTL of my_counter is
@@ -355,7 +422,7 @@
 							end architecture;
 						</code></pre>
 					</section>
-					<section>
+					<section id="vhdl-io">
 						<h3>I/O</h3>
 						<ul>
 							<li>ports of the top-level entity</li>
@@ -364,7 +431,7 @@
 							<li>pullup and drive strength can be configured in GUI, if supported</li>
 						</ul>
 					</section>
-					<section>
+					<section id="vhdl-more">
 						<h3>More...</h3>
 						<ul>
 							<li><a href="https://wiki.ntb.ch/infoportal/_media/software:vhdl:vhdlscript.pdf">Eine Einführung in die Schaltungsent-wicklung mit VHDL</a></li>
@@ -373,6 +440,95 @@
 						</ul>
 					</section>
 				</section>
+				<section id="task3">
+					<h3>Task 3: Simple VHDL design</h3>
+					<ul>
+						<li>simple logic (see task 1)</li>
+						<li>blinking LED (see task 2)</li>
+						<li>mode: do yourself, start with project of task 2</li>
+						<li>learnt: how to use VHDL</li>
+					</ul>
+				</section>
+				<section id="task4">
+					<h3>Task 4: Hierarchical design</h3>
+					<ul>
+						<li>use existing module for controlling 7seg displays</li>
+						<li>TODO: path</li>
+						<li>display: static, controlled by DIP switches, or animation</li>
+						<li>mode: try yourself -&gt; keep it simple until we learn debugging techniques</li>
+						<li>learnt: more complex VHDL device</li>
+					</ul>
+				</section>
+				<section id="task5">
+					<h3>Task 5: Debugging</h3>
+					<ul>
+						<li>take project of task 4</li>
+						<li>add logic analyzer (Signal Tap)</li>
+						<li>simulate in ModelSim</li>
+						<li>mode: present &amp; repeat, then extend</li>
+						<li>learnt: Signal-Tap (Logic Analyzer), ModelSim (simulation)</li>
+					</ul>
+				</section>
+				<section id="task6">
+					<section>
+						<h3>Task 6: Short introduction to timing</h3>
+						<ul>
+							<li>add constraint for clock</li>
+							<li>not handled: I/O timing</li>
+							<li>run TimeQuest</li>
+							<li>mode: present &amp; repeat</li>
+							<li>learnt: TimeQuest, internal timing</li>
+						</ul>
+					</section>
+					<section>
+						<h3>Internal timing</h3>
+						TODO: find a good image
+					</section>
+				</section>
+				<section id="task7">
+					<section>
+						<h3>Task 7: TODO name</h3>
+						<ul>
+							<li>TODO</li>
+							<li>mode: TODO</li>
+							<li>learnt: synchronizers</li>
+						</ul>
+					</section>
+					<section>
+						<h3>Metastability</h3>
+						TODO: image
+					</section>
+				</section>
+				<section id="task8">
+					<h3>Task 8: Soft processor</h3>
+					<ul>
+						<li>create system with NIOS soft core in Qsys / Platform Designer</li>
+						<li>periphery: PIO core connected to 7seg</li>
+						<li>mode: present &amp; repeat, then extend (animation)</li>
+						<li>learnt: Qsys / Platform Designer, NIOS (soft core)</li>
+					</ul>
+				</section>
+				<section id="outlook">
+					<section>
+						<h3>What now? (1)</h3>
+						<ul>
+							<li>More periphery for NIOS, use Avalon bus</li>
+							<li>More complex design, with state machines: e.g. WS2812 or RS232</li>
+							<li>Make your own project: e.g. LED matrix, 'tioan' displays</li>
+						</ul>
+					</section>
+					<section>
+						<h3>What now? (2)</h3>
+						<ul>
+							<li>Other FPGAs: MAX II, Spartan III, Artix 7, Zynq</li>
+							<li>Open-Source tools for synthesis: yosis / project IceStorm, but iCE40 is quite expensive</li>
+							<li>Open-Source tools for simulation: ghdl, iverilog, ...</li>
+							<li>Open-Source soft cores: ZPUino, AX8 (AVR8), PicoRV32, ...</li>
+							<li>Higher-level description languages: CλaSH (CLaSH), ...</li>
+						</ul>
+					</section>
+				</section>
+				-->
 
 				<!--
 				<section data-background="#b5533c">Slide 2</section>
