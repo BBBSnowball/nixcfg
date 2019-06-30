@@ -197,6 +197,14 @@ in {
     iptables -w -t nat -A POSTROUTING -o ens3 -j MASQUERADE
     ip6tables -w -F FORWARD
     ip6tables -w -A FORWARD -j REJECT
+
+    iptables -w -t nat -F PREROUTING
+    iptables -w -t nat -A PREROUTING -i vpn_android-+ -d 192.168.112.10/32 -p tcp --dport 80 -j DNAT --to-destination 192.168.84.133:${toString ports.rss.port}
+    iptables -w -t nat -A PREROUTING -i vpn_android-+ -d 192.168.118.10/32 -p tcp --dport 80 -j DNAT --to-destination 192.168.84.133:${toString ports.notes-magpie-ext.port}
+    #TODO We shoud properly filter incoming packets from VPN: deny from vpn_+ in INPUT, allow "--icmp-type destination-unreachable", whitelist appropriate ports
+    #TODO This should already be rejected in FORWARD but this is not logged and connection times out instead.
+    iptables -w -t nat -A PREROUTING -i vpn_+ -d 192.168.0.0/16 -p tcp -j DNAT --to-destination 127.0.0.2:1
+    iptables -w -t nat -A PREROUTING -i vpn_+ -d 192.168.0.0/16 -p udp -j DNAT --to-destination 127.0.0.2:1
   '';
 
   boot.kernel.sysctl."net.ipv4.ip_forward" = "1";
@@ -491,7 +499,7 @@ in {
       imports = [ myDefaultConfig opensshWithUnixDomainSocket ];
 
       environment.systemPackages = with pkgs; [
-        magpie magpiePython gcc stdenv gnused git
+        magpie magpiePython gcc stdenv gnused git socat
       ];
 
       nixpkgs.overlays = [ (self: super: {
@@ -569,10 +577,28 @@ in {
         wantedBy = [ "multi-user.target" ];
         after = [ "network.target" "fs.target" ];
       };
+
+      # I'm too lazy to change the Magpie service to listen not only on lo
+      # or how to successfully DNAT to localhost. Therefore, I'm using socat
+      # to bridge the gap.
+      #FIXME I should find a proper solution for this.
+      systemd.services.magpie-socat = {
+        description = "Forward to Magpie";
+        serviceConfig = {
+          User = "magpie";
+          Group = "users";
+          ExecStart = "${pkgs.socat}/bin/socat TCP-LISTEN:${toString ports.notes-magpie-ext.port},fork TCP-CONNECT:127.0.0.1:${toString ports.notes-magpie.port}";
+          RestartSec = "10";
+          Restart = "always";
+        };
+        wantedBy = [ "multi-user.target" ];
+        after = [ "magpie" ];
+      };
     };
   };
 
   networking.firewall.allowedPorts.notes-magpie  = 8082;
+  networking.firewall.allowedPorts.notes-magpie-ext = 8083;
 
   containers.rss = {
     config = { config, pkgs, ... }: let
