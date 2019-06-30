@@ -598,7 +598,6 @@ in {
               #FIXME pass /items/sync to php script - and probably others, as well
 
               # similar to nixos/modules/services/mail/roundcube.nix - well, not so similar anymore
-              #location ~ ^/selfoss/?([?].*)?$ {
               location ~ ^/selfoss/php/(.*)$ {
                 alias /var/lib/selfoss/index.php?$1;
                 fastcgi_pass unix:/run/phpfpm/my_selfoss_pool.sock;
@@ -643,10 +642,8 @@ in {
 
               location ~ ^/selfoss/public/(.*)     { alias /var/lib/selfoss/public/$1; }
 
-              #location ~ ^/selfoss/([^?].+)$ {
               location ~ ^/selfoss/(.*)$ {
-                #alias /var/lib/selfoss/public/$1;
-                try_files /selfoss/public/$1 /selfoss/php/$1;
+                try_files /public/$1 /selfoss/php/$1;
               }
             '';
           };
