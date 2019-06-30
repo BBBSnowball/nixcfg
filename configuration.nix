@@ -595,12 +595,15 @@ in {
           locations."/selfoss" = {
             root = "/var/lib/selfoss";
             extraConfig = ''
+              #FIXME pass /items/sync to php script - and probably others, as well
+
               # similar to nixos/modules/services/mail/roundcube.nix - well, not so similar anymore
-              location ~ ^/selfoss/?([?].*)?$ {
+              #location ~ ^/selfoss/?([?].*)?$ {
+              location ~ ^/selfoss/php/(.*)$ {
                 alias /var/lib/selfoss/index.php?$1;
                 fastcgi_pass unix:/run/phpfpm/my_selfoss_pool.sock;
             
-                # We could include ${nginx}/conf/fastcgi_params but we need a different
+                # We could include ${pkgs.nginx}/conf/fastcgi_params but we need a different
                 # SCRIPT_FILENAME, SCRIPT_NAME and REQUEST_URI.
 
                 fastcgi_param SCRIPT_FILENAME /var/lib/selfoss/index.php;                                                                                     
@@ -638,8 +641,12 @@ in {
               location ~ ^/selfoss/favicons/(.*)   { alias /var/lib/selfoss/data/favicons/$1; }                                                                     
               location ~ ^/selfoss/thumbnails/(.*) { alias /var/lib/selfoss/data/thumbnails/$1; }                                                                   
 
-              location ~ ^/selfoss/([^?].+)$ {
-                      alias /var/lib/selfoss/public/$1;
+              location ~ ^/selfoss/public/(.*)     { alias /var/lib/selfoss/public/$1; }
+
+              #location ~ ^/selfoss/([^?].+)$ {
+              location ~ ^/selfoss/(.*)$ {
+                #alias /var/lib/selfoss/public/$1;
+                try_files /selfoss/public/$1 /selfoss/php/$1;
               }
             '';
           };
