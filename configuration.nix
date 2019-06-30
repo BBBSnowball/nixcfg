@@ -595,8 +595,6 @@ in {
           locations."/selfoss" = {
             root = "/var/lib/selfoss";
             extraConfig = ''
-              #FIXME pass /items/sync to php script - and probably others, as well
-
               # similar to nixos/modules/services/mail/roundcube.nix - well, not so similar anymore
               location ~ ^/selfoss/php/(.*)$ {
                 alias /var/lib/selfoss/index.php?$1;
@@ -637,13 +635,13 @@ in {
               # see https://github.com/SSilence/selfoss/wiki/nginx-configuration
 
               # regex matches win so make this a regex match
-              location ~ ^/selfoss/favicons/(.*)   { alias /var/lib/selfoss/data/favicons/$1; }                                                                     
-              location ~ ^/selfoss/thumbnails/(.*) { alias /var/lib/selfoss/data/thumbnails/$1; }                                                                   
+              location ~ ^/selfoss/favicons/(.*)$   { alias /var/lib/selfoss/data/favicons/$1; }                                                                     
+              location ~ ^/selfoss/thumbnails/(.*)$ { alias /var/lib/selfoss/data/thumbnails/$1; }                                                                   
 
-              location ~ ^/selfoss/public/(.*)     { alias /var/lib/selfoss/public/$1; }
+              location ~ ^/selfoss/public/(.*)$     { alias /var/lib/selfoss/public/$1; }
 
               location ~ ^/selfoss/(.*)$ {
-                try_files /public/$1 /selfoss/php/$1;
+                try_files /public/$1 /selfoss/php/$1$is_args$args;
               }
             '';
           };
