@@ -683,6 +683,14 @@ in {
           rss_max_items=3000
           homepage=unread
           base_url=/selfoss/
+          # hide share buttons
+          share=
+          items_lifetime=100
+          # quick 'n' dirty fix for only marking some items read:
+          items_perpage=20
+          auto_stream_more=0
+          # php-fpm has catch_workers_output=1 and it logs to syslog
+          logger_destination=file:php://stderr
         '';
         pool = "${poolName}";
       };
