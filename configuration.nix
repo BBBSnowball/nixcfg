@@ -11,6 +11,10 @@ let
     (builtins.readFile ./private/ssh-dom0.pub)
   ];
 
+  serverExternalIp = <redacted>;
+  upstreamIP = (builtins.head config.networking.interfaces.ens3.ipv4.addresses).address;
+  tincIP     = (builtins.head config.networking.interfaces."tinc.bbbsnowbal".ipv4.addresses).address;
+
   favoritePkgs = with pkgs; [ wget htop tmux byobu git vim tig ];
 
   myDefaultConfig = { config, pkgs, ...}: {
@@ -167,12 +171,17 @@ in {
 
   networking.interfaces.ens3.ipv4.addresses = [ {
     address = "192.168.84.133";
-    prefixLength = 24;
+    prefixLength = 25;
   } ];
   networking.useDHCP = false;
 
-  networking.defaultGateway = "192.168.84.128";
+  networking.defaultGateway = "192.168.84.129";
   networking.nameservers = [ "62.210.16.6" "62.210.16.7" ];
+
+  networking.interfaces."tinc.bbbsnowbal".ipv4.addresses = [ {
+    address = "192.168.84.39";
+    prefixLength = 25;
+  } ];
 
 
   networking.firewall.enable = true;
@@ -199,8 +208,8 @@ in {
     ip6tables -w -A FORWARD -j REJECT
 
     iptables -w -t nat -F PREROUTING
-    iptables -w -t nat -A PREROUTING -i vpn_android-+ -d 192.168.112.10/32 -p tcp --dport 80 -j DNAT --to-destination 192.168.84.133:${toString ports.rss.port}
-    iptables -w -t nat -A PREROUTING -i vpn_android-+ -d 192.168.118.10/32 -p tcp --dport 80 -j DNAT --to-destination 192.168.84.133:${toString ports.notes-magpie-ext.port}
+    iptables -w -t nat -A PREROUTING -i vpn_android-+ -d 192.168.112.10/32 -p tcp --dport 80 -j DNAT --to-destination ${upstreamIP}:${toString ports.rss.port}
+    iptables -w -t nat -A PREROUTING -i vpn_android-+ -d 192.168.118.10/32 -p tcp --dport 80 -j DNAT --to-destination ${upstreamIP}:${toString ports.notes-magpie-ext.port}
     #TODO We shoud properly filter incoming packets from VPN: deny from vpn_+ in INPUT, allow "--icmp-type destination-unreachable", whitelist appropriate ports
     #TODO This should already be rejected in FORWARD but this is not logged and connection times out instead.
     iptables -w -t nat -A PREROUTING -i vpn_+ -d 192.168.0.0/16 -p tcp -j DNAT --to-destination 127.0.0.2:1
@@ -255,7 +264,6 @@ in {
   services.fstrim.enable = true;
 
   services.openvpn.servers = let
-    serverExternalIp = <redacted>;
     makeVpn= name: { keyName ? null, subnet, port, useTcp ? false, ... }: {
       config = ''
         dev vpn_${name}
@@ -265,7 +273,7 @@ in {
         secret /var/openvpn/${if keyName != null then keyName else name}.key
         port ${toString port}
         #local ${serverExternalIp}
-        local 192.168.84.133
+        local ${upstreamIP}
         comp-lzo
         keepalive 300 600
         ping-timer-rem      # only for davides and jolla
@@ -288,6 +296,23 @@ in {
   networking.firewall.allowedPorts.openvpn-android-tcp = 444;
   networking.firewall.allowedPorts.openvpn-android-udp = { type = "udp"; port = 444; };
   networking.firewall.allowedPorts.openvpn-davides     = { type = "udp"; port = 450; };
+
+  services.tinc.networks.bbbsnowball = {
+    name = "sonline";
+    hosts = {<redacted>};
+    listenAddress = upstreamIP;
+    package = pkgs.tinc;  # the other nodes use stable so no need to use the pre-release
+    interfaceType = "tap";  # must be consistent across the network
+    chroot = true; #TODO could be a problem for scripts
+    extraConfig = ''
+      AddressFamily=ipv4
+      Mode=switch
+      LocalDiscovery=no
+    '';
+  };
+
+  networking.firewall.allowedPorts.tinc-tcp = { port = 655; type = "tcp"; };  # default port
+  networking.firewall.allowedPorts.tinc-udp = { port = 655; type = "udp"; };  # default port
 
   containers.mate = {
     config = { config, pkgs, ... }: let
