@@ -198,6 +198,7 @@ in {
     iptables -w -N fw-reject
     iptables -w -A fw-reject -m limit --limit 10/minute --limit-burst 5 -j LOG --log-prefix "refused forward: " --log-level 6
     iptables -w -A fw-reject -j REJECT
+    iptables -w -A FORWARD -i vpn_android-+ -p tcp -d 192.168.84.36 --dport 443 -j ACCEPT  # calendar
     iptables -w -A FORWARD -i vpn_+ -o ens3 -d 192.168.0.0/16,127.0.0.0/8 -j fw-reject
     iptables -w -A FORWARD -i vpn_+ -o ens3 -j ACCEPT
     iptables -w -A FORWARD -o vpn_+ -i ens3 -j ACCEPT
@@ -208,8 +209,10 @@ in {
     ip6tables -w -A FORWARD -j REJECT
 
     iptables -w -t nat -F PREROUTING
-    iptables -w -t nat -A PREROUTING -i vpn_android-+ -d 192.168.112.10/32 -p tcp --dport 80 -j DNAT --to-destination ${upstreamIP}:${toString ports.rss.port}
+    iptables -w -t nat -A PREROUTING -i vpn_android-+ -d 194.168.112.10/32 -p tcp --dport 80 -j DNAT --to-destination ${upstreamIP}:${toString ports.rss.port}
     iptables -w -t nat -A PREROUTING -i vpn_android-+ -d 192.168.118.10/32 -p tcp --dport 80 -j DNAT --to-destination ${upstreamIP}:${toString ports.notes-magpie-ext.port}
+    # Dummy port, copied from old VPN on kim: 1743 on public IP of Kim is redirected to 443 on gallery for access to Davical/calendar
+    iptables -w -t nat -A PREROUTING -i vpn_android-+ -d 37.187.106.83 -p tcp --dport 1743 -j DNAT --to-destination 192.168.84.36:443
     #TODO We shoud properly filter incoming packets from VPN: deny from vpn_+ in INPUT, allow "--icmp-type destination-unreachable", whitelist appropriate ports
     #TODO This should already be rejected in FORWARD but this is not logged and connection times out instead.
     iptables -w -t nat -A PREROUTING -i vpn_+ -d 192.168.0.0/16 -p tcp -j DNAT --to-destination 127.0.0.2:1
