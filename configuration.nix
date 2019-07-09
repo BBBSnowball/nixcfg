@@ -210,7 +210,7 @@ in {
     ip6tables -w -A FORWARD -j REJECT
 
     iptables -w -t nat -F PREROUTING
-    iptables -w -t nat -A PREROUTING -i vpn_android-+ -d 194.168.112.10/32 -p tcp --dport 80 -j DNAT --to-destination ${upstreamIP}:${toString ports.rss.port}
+    iptables -w -t nat -A PREROUTING -i vpn_android-+ -d 192.168.112.10/32 -p tcp --dport 80 -j DNAT --to-destination ${upstreamIP}:${toString ports.rss.port}
     iptables -w -t nat -A PREROUTING -i vpn_android-+ -d 192.168.118.10/32 -p tcp --dport 80 -j DNAT --to-destination ${upstreamIP}:${toString ports.notes-magpie-ext.port}
     # Dummy port, copied from old VPN on kim: 1743 on public IP of Kim is redirected to 443 on gallery for access to Davical/calendar
     iptables -w -t nat -A PREROUTING -i vpn_android-+ -d 37.187.106.83/32 -p tcp --dport 1743 -j DNAT --to-destination 192.168.84.36:443
