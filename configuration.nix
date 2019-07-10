@@ -496,7 +496,9 @@ in {
         # create www root
         mkdir -m 0750 -p /var/www/html
         chown root:wwwrun /var/www/html
-        echo "nothing to see here" >/var/www/html/index.html
+        if [ ! -e /var/www/html/index.html ] ; then
+          echo "nothing to see here" >/var/www/html/index.html
+        fi
 
         # more restrictive rights than the default for ACME directory
         mkdir -m 0550 -p ${acmeDir}
@@ -644,6 +646,7 @@ in {
         enable = true;
         virtualHosts.rss = {
           listen = [ { addr = "0.0.0.0"; port = ports.rss.port; extraParameters = [ "default_server" ]; } ];
+          root = "/var/www/html";
 
           locations."/favicon.ico" = {
             root = "/var/lib/selfoss/public";
@@ -739,6 +742,21 @@ in {
         pm.max_spare_servers = 5
         pm.max_requests = 500
         catch_workers_output = 1
+      '';
+
+      system.activationScripts.wwwroot = lib.stringAfter ["users" "groups"] ''
+        # create www root
+        mkdir -m 0750 -p /var/www/html
+        chown root:nginx /var/www/html
+        if [ ! -e /var/www/html/index.html ] ; then
+          echo "nothing to see here" >/var/www/html/index.html
+        fi
+
+        # world-readable data directory is not a good idea!
+        #chmod o-rwx /var/lib/selfoss/data
+        # in fact, no reason for selfoss to be world-readable, as well
+        #FIXME This does *not* work!
+        chmod o-rwx /var/lib/selfoss
       '';
     };
   };
