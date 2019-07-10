@@ -762,11 +762,13 @@ in {
           echo "nothing to see here" >/var/www/html/index.html
         fi
 
+        #NOTE This does *not* work because selfoss-config makes it world-readable again :-(
         # world-readable data directory is not a good idea!
-        #chmod o-rwx /var/lib/selfoss/data
+        chmod o-rwx /var/lib/selfoss/data
         # in fact, no reason for selfoss to be world-readable, as well
-        #FIXME This does *not* work!
         chmod o-rwx /var/lib/selfoss
+        #echo "BLUB: $SYSTEM_CONFIG, $systemConfig"
+        #ls -ld /var/lib/selfoss
       '';
     };
   };
