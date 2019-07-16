@@ -434,6 +434,35 @@
 							end architecture;
 						</code></pre>
 					</section>
+					<section id="vhdl-instance">
+						<h3>Instances</h3>
+						<pre><code class="hljs vhdl" data-trim>
+							architecture RTL of my_counter is
+								signal abc : std_logic;
+							begin
+							  -- We are making an instance of the entity my_other_counter.
+								-- This means that the logic of that entity/architecture will
+								-- be copied into our design and we can connects its inputs
+								-- and outputs to some of our signals.
+							  instance_name : entity work.my_other_counter
+								--                          ^^ the entity we want to use
+								--                     ^^ "work" means look in the current library
+								--              ^^ we instantiate an entity (because using components
+								--                 is more work)
+								-- ^^ name of this instance, optional
+								  generic map (size =&gt; 8)
+									port map (
+									  -- We assume that my_other_counter has the inputs clk and up_and_down;
+										-- and one output cnt.
+									  clk =&gt; clk, -- input signal, using clk input of our entity
+										up_or_down =&gt; abc,  -- input signal, connect to local signal
+										cnt =&gt; cnt1
+									);
+
+								abc &lt;= '1' when ... else ...;
+							end architecture;
+						</code></pre>
+					</section>
 					<section id="vhdl-io">
 						<h3>I/O</h3>
 						<ul>
