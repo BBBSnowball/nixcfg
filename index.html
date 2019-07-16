@@ -387,7 +387,10 @@
 						<pre><code class="hljs vhdl" data-trim>
 							architecture RTL of my_counter is
 							begin
-								my_process : process(clk, nreset)
+								my_process : process(a, b)
+								-- sensitivity list	 ^^
+								-- For a combinatoric process, this must contain *every*
+								-- signal that is read by the process.
 								begin
 									-- important: assign all outputs in *all* cases
 									-- Otherwise, tool infers a latch.
