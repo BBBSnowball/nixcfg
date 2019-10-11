@@ -182,6 +182,10 @@ in {
     address = "192.168.84.39";
     prefixLength = 25;
   } ];
+  networking.interfaces."tinc.door".ipv4.addresses = [ {
+    address = "192.168.19.39";
+    prefixLength = 25;
+  } ];
 
 
   networking.firewall.enable = true;
@@ -326,8 +330,30 @@ in {
     '';
   };
 
+  services.tinc.networks.door = {
+    name = "sonline";
+    hosts = {
+      door = <redacted>;
+    };
+    listenAddress = upstreamIP;
+    package = pkgs.tinc;  # the other nodes use stable so no need to use the pre-release
+    interfaceType = "tap";  # must be consistent across the network
+    chroot = true; #TODO could be a problem for scripts
+    extraConfig = ''
+      AddressFamily=ipv4
+      Mode=switch
+      LocalDiscovery=no
+      Port=656
+
+      ClampMSS=yes
+      IndirectData=yes
+    '';
+  };
+
   networking.firewall.allowedPorts.tinc-tcp = { port = 655; type = "tcp"; };  # default port
   networking.firewall.allowedPorts.tinc-udp = { port = 655; type = "udp"; };  # default port
+  networking.firewall.allowedPorts.tinc-tcp-door = { port = 656; type = "tcp"; };
+  networking.firewall.allowedPorts.tinc-udp-door = { port = 656; type = "udp"; };
 
   containers.mate = {
     config = { config, pkgs, ... }: let
