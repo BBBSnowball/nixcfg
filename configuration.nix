@@ -157,6 +157,8 @@ in {
   # $ nix search wget
   environment.systemPackages = with pkgs; [
     socat
+    # not with programs.mosh.enable because we want to do firewall ourselves
+    mosh
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
@@ -236,6 +238,11 @@ in {
   '';
 
   boot.kernel.sysctl."net.ipv4.ip_forward" = "1";
+
+  networking.firewall.interfaces."tinc.bbbsnowbal".allowedUDPPortRanges = [
+    # mosh
+    { from = 60000; to = 61000; }
+  ];
 
   # Enable CUPS to print documents.
   # services.printing.enable = true;
