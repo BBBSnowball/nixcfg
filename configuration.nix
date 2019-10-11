@@ -290,6 +290,12 @@ in {
   services.fstrim.enable = true;
 
   services.openvpn.servers = let
+    #FIXME Priviledge dropping doesn't work so well for TCP because it cannot re-open its
+    #      priviledged port after the first connection is closed. systemd will restart it
+    #      but this isn't ideal.
+    #      -> can we use socket activation with inetd mode for OpenVPN?
+    # https://gionn.net/2010/02/28/openvpn-on-a-privileged-port-with-an-unprivileged-user/
+    #FIXME use an additional IP to make one of the "cool" VPNs, i.e. UDP on 53 and TCP on 443
     makeVpn= name: { keyName ? null, subnet, port, useTcp ? false, ... }: {
       config = ''
         dev vpn_${name}
