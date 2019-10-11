@@ -339,6 +339,7 @@ in {
       environment.systemPackages = with pkgs; [
         node npm2nix cacert
         #node2nix
+	sqlite
       ];
 
       users.users.strichliste = {
