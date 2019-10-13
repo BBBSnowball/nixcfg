@@ -798,12 +798,10 @@ in {
         settings."pm.min_spare_servers" = 2;
         settings."pm.max_spare_servers" = 5;
         settings."pm.max_requests" = 500;
-        extraConfig = ''
-          listen.owner = nginx
-          listen.group = nginx
-          listen.mode = 0600
-          catch_workers_output = 1
-        '';
+        settings."listen.owner" = "nginx";
+        settings."listen.group" = "nginx";
+        settings."listen.mode" = "0600";
+        settings."catch_workers_output" = 1;
       };
 
       system.activationScripts.wwwroot = lib.stringAfter ["users" "groups"] ''
