@@ -66,7 +66,7 @@ let
   in {
     options = {
       networking.firewall.allowedPortsInterface = mkOption {
-        type = types.string;
+        type = types.str;
         default = "";
         example = "eth0";
         description = "open ports in allowedPorts on specific interface; use \"\" for all interfaces";
@@ -379,14 +379,16 @@ in {
 
   containers.mate = {
     config = { config, pkgs, ... }: let
-      node = pkgs.nodejs-8_x;
+      #node = pkgs.nodejs-8_x;
+      node = pkgs.nodejs;
     in {
       imports = [ myDefaultConfig opensshWithUnixDomainSocket ];
 
 
       environment.systemPackages = with pkgs; [
-        node npm2nix cacert
-        #node2nix
+        node cacert
+        #NOTE npm2nix doesn't seem to exist in 19.09 but I didn't get this to work anyway.
+        #     Do an `npm update` in ~strichliste/strichliste after an update.
 	sqlite
       ];
 
@@ -694,7 +696,7 @@ in {
   containers.rss = {
     config = { config, pkgs, ... }: let
       poolName = "my_selfoss_pool";
-      phpfpmSocketName = "/run/phpfpm/${poolName}.sock";
+      phpfpmSocketName = config.services.phpfpm.pools.my_selfoss_pool.socket;
     in {
       imports = [ myDefaultConfig opensshWithUnixDomainSocket ];
 
@@ -788,20 +790,21 @@ in {
       };
 
       # custom pool because the default one has an excess of workers 
-      services.phpfpm.poolConfigs."${poolName}" = ''
-        listen = "${phpfpmSocketName}";
-        listen.owner = nginx
-        listen.group = nginx
-        listen.mode = 0600
-        user = nginx
-        pm = dynamic
-        pm.max_children = 30
-        pm.start_servers = 5
-        pm.min_spare_servers = 2
-        pm.max_spare_servers = 5
-        pm.max_requests = 500
-        catch_workers_output = 1
-      '';
+      services.phpfpm.pools."${poolName}" = {
+        user = "nginx";
+        settings.pm = "dynamic";
+        settings."pm.max_children" = 30;
+        settings."pm.start_servers" = 5;
+        settings."pm.min_spare_servers" = 2;
+        settings."pm.max_spare_servers" = 5;
+        settings."pm.max_requests" = 500;
+        extraConfig = ''
+          listen.owner = nginx
+          listen.group = nginx
+          listen.mode = 0600
+          catch_workers_output = 1
+        '';
+      };
 
       system.activationScripts.wwwroot = lib.stringAfter ["users" "groups"] ''
         # create www root
