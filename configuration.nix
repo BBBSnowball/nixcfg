@@ -223,6 +223,8 @@ in {
     # Dummy port, copied from old VPN on kim: 1743 on public IP of Kim is redirected to 443 on gallery for access to Davical/calendar
     iptables -w -t nat -A PREROUTING -i vpn_android-+ -s 192.168.88.0/23 -d 37.187.106.83/32 -p tcp --dport 1743 -j DNAT --to-destination 192.168.84.36:443
     iptables -w -t nat -I POSTROUTING -s 192.168.88.0/23 -d 192.168.84.36/32 -o tinc.bbbsnowbal -j MASQUERADE  # adjust source IP so tinc can handle the packets
+    iptables -w -t nat -A PREROUTING -i vpn_android-+ -s 192.168.91.0/23 -d 37.187.106.83/32 -p tcp --dport 1743 -j DNAT --to-destination 192.168.84.36:443
+    iptables -w -t nat -I POSTROUTING -s 192.168.91.0/23 -d 192.168.84.36/32 -o tinc.bbbsnowbal -j MASQUERADE  # adjust source IP so tinc can handle the packets
 
     #TODO The second rule is required for the first rule to work and we need a route on bbverl:
     # route add -host 192.168.88.2 gw 192.168.84.37
@@ -290,11 +292,6 @@ in {
   services.fstrim.enable = true;
 
   services.openvpn.servers = let
-    #FIXME Priviledge dropping doesn't work so well for TCP because it cannot re-open its
-    #      priviledged port after the first connection is closed. systemd will restart it
-    #      but this isn't ideal.
-    #      -> can we use socket activation with inetd mode for OpenVPN?
-    # https://gionn.net/2010/02/28/openvpn-on-a-privileged-port-with-an-unprivileged-user/
     #FIXME use an additional IP to make one of the "cool" VPNs, i.e. UDP on 53 and TCP on 443
     makeVpn= name: { keyName ? null, subnet, port, useTcp ? false, ... }: {
       config = ''
@@ -319,13 +316,15 @@ in {
       '';
     };
   in lib.attrsets.mapAttrs makeVpn {
-    android-udp = { subnet = 88; port = ports.openvpn-android-tcp.port; keyName = "android"; };
-    android-tcp = { subnet = 89; port = ports.openvpn-android-udp.port; keyName = "android"; useTcp = true; };
+    android-udp = { subnet = 88; port = ports.openvpn-android-udp.port; keyName = "android"; };
+    android-tcp = { subnet = 91; port = ports.openvpn-android-tcp.port; keyName = "android"; useTcp = true; };
     #jolla      = { subnet = 90; port = 446; };  # not used anymore
     davides     = { subnet = 87; port = ports.openvpn-davides.port; };
   };
 
-  networking.firewall.allowedPorts.openvpn-android-tcp = 444;
+  # must use unpriviledged port for TCP (but external port can be priviledged due to DNAT)
+  # see https://gionn.net/2010/02/28/openvpn-on-a-privileged-port-with-an-unprivileged-user/
+  networking.firewall.allowedPorts.openvpn-android-tcp = 4440;  # external port is 444 due to DNAT
   networking.firewall.allowedPorts.openvpn-android-udp = { type = "udp"; port = 444; };
   networking.firewall.allowedPorts.openvpn-davides     = { type = "udp"; port = 450; };
 
