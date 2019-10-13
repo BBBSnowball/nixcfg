@@ -455,12 +455,12 @@ in {
 
   containers.feg = {
     config = { config, pkgs, ... }: let
-      acmeDir = "/var/acme";
+      acmeDir = "/var/lib/acme";
       fqdns = [
         #"${builtins.readFile ./private/feg-svn-test-domain.txt}"
         "${builtins.readFile ./private/feg-svn-domain.txt}"
       ];
-      mainSSLKey = "${acmeDir}/keys/${builtins.readFile ./private/feg-svn-domain.txt}";
+      mainSSLKey = "${acmeDir}/${builtins.readFile ./private/feg-svn-domain.txt}";
     in {
       imports = [ myDefaultConfig opensshWithUnixDomainSocket ];
 
@@ -539,7 +539,6 @@ in {
       };
 
       #security.acme.production = false;  # for debugging
-      security.acme.directory = "${acmeDir}/keys";
       security.acme.certs = (lib.attrsets.genAttrs fqdns (fqdn: {
         email = builtins.readFile ./private/acme-email-feg.txt;
         webroot = "${acmeDir}/www";
@@ -562,6 +561,7 @@ in {
         fi
 
         # more restrictive rights than the default for ACME directory
+        #NOTE This is probably not true anymore for NixOS 19.09.
         mkdir -m 0550 -p ${acmeDir}
         chown -R acme:wwwrun ${acmeDir}
       '';
