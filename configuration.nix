@@ -295,36 +295,32 @@ in {
     #      but this isn't ideal.
     #      -> can we use socket activation with inetd mode for OpenVPN?
     # https://gionn.net/2010/02/28/openvpn-on-a-privileged-port-with-an-unprivileged-user/
-    # FIXME doesn't work -> change to unpriviledged port
     #FIXME use an additional IP to make one of the "cool" VPNs, i.e. UDP on 53 and TCP on 443
-    makeVpn= name: { keyName ? null, subnet, port, useTcp ? false, socketActivation ? false, extra ? {}, extraConfig ? "", ... }: {
+    makeVpn= name: { keyName ? null, subnet, port, useTcp ? false, ... }: {
       config = ''
         dev vpn_${name}
         dev-type tun
         ifconfig 192.168.${toString subnet}.1 192.168.${toString subnet}.2
         # openvpn --genkey --secret static.key
         secret /var/openvpn/${if keyName != null then keyName else name}.key
-        ${lib.optionalString (!socketActivation) "port ${toString port}"}
+        port ${toString port}
         #local ${serverExternalIp}
-        ${lib.optionalString (!socketActivation) "local ${upstreamIP}"}
+        local ${upstreamIP}
         comp-lzo
         keepalive 300 600
-        ping-timer-rem      # was present only for davides and jolla
-        cipher aes-256-cbc  # was present for android-udp
-        ${lib.optionalString (!useTcp || true) "persist-tun"}
-        ${lib.optionalString (!useTcp || true) "persist-key"}
+        ping-timer-rem      # only for davides and jolla
+        persist-tun         # not for tcp
+        persist-key         # not for tcp
+        cipher aes-256-cbc  # for android-udp
         ${lib.optionalString useTcp "proto tcp-server"}
-        ${lib.optionalString socketActivation "inetd nowait"}
 
         user  nobody
         group nogroup
-        ${extraConfig}
       '';
-      autoStart = !socketActivation;
-    } // extra;
+    };
   in lib.attrsets.mapAttrs makeVpn {
     android-udp = { subnet = 88; port = ports.openvpn-android-tcp.port; keyName = "android"; };
-    android-tcp = { subnet = 89; port = ports.openvpn-android-udp.port; keyName = "android"; useTcp = true; socketActivation = true; };
+    android-tcp = { subnet = 89; port = ports.openvpn-android-udp.port; keyName = "android"; useTcp = true; };
     #jolla      = { subnet = 90; port = 446; };  # not used anymore
     davides     = { subnet = 87; port = ports.openvpn-davides.port; };
   };
@@ -332,34 +328,6 @@ in {
   networking.firewall.allowedPorts.openvpn-android-tcp = 444;
   networking.firewall.allowedPorts.openvpn-android-udp = { type = "udp"; port = 444; };
   networking.firewall.allowedPorts.openvpn-davides     = { type = "udp"; port = 450; };
-
-  systemd.sockets.openvpn-android-tcp = {
-    description = "Socket for OpenVPN android-tcp";
-    wantedBy = ["sockets.target"];
-    listenStreams = [ (toString ports.openvpn-android-tcp.port) ];
-    socketConfig.Accept = true;
-    # we only have one tun device
-    #FIXME Would OpenVPN be more intelligent here, e.g. only access the tun device if client
-    #      has authenticated? Probably not because they should drop priviledges before auth.
-    socketConfig.MaxConnections = 1;
-  };
-  systemd.services.openvpn-android-tcp.enable = false;
-  #systemd.services.android-tcp.aliases = ["openvpn-android-tcp@"];
-  #systemd.services."openvpn-android-tcp@" = config.systemd.services.android-tcp // ...
-  systemd.services."openvpn-android-tcp@" = let
-    name = "android-tcp";
-    configFile = pkgs.writeText "openvpn-config-${name}" "errors-to-stderr\n${config.services.openvpn.servers.android-tcp.config}";
-  in {
-    description = "OpenVPN instance ‘${name}’";
-    #after = [ "network.target" ];
-
-    path = [ pkgs.iptables pkgs.iproute pkgs.nettools ];
-
-    serviceConfig.ExecStart = "@${pkgs.openvpn}/sbin/openvpn openvpn --suppress-timestamps --config ${configFile}";
-    serviceConfig.Type = "simple";
-    serviceConfig.StandardInput = "socket";
-    serviceConfig.StandardError = "journal";
-  };
 
   services.tinc.networks.bbbsnowball = {
     name = "sonline";
