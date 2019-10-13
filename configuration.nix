@@ -610,7 +610,7 @@ in {
           out=~/magpie-env
           if [ ! -d $out ] ; then ${magpiePython}/bin/virtualenv -p ${magpiePython}/bin/python $out ; fi
           source $out/bin/activate
-          pip install -r $magpie/requirements.txt
+          pip install -r ${magpie}/requirements.txt
           ${gnused}/bin/sed -i 's#libname = ctypes.util.find_library.*#libname = \"${file}/lib/libmagic${stdenv.hostPlatform.extensions.sharedLibrary}\"#' $out/lib/python2.7/site-packages/magic/api.py
           # workaround: setuptools writes the egg file to the local directory
           cp -r ${magpie} /tmp/magpie
