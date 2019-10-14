@@ -600,11 +600,21 @@ in {
         magpiePython = self.python27.withPackages (ps: with ps; [
           setuptools pip virtualenv
         ]);
-        magpie = self.fetchFromGitHub {
-          owner = "BBBSnowball";
-          repo  = "magpie";
+        # I thought that fetchSubmodules was ignored but I was looking in the wrong place.
+        # I should test this sometime and revert back to it if it works.
+        #magpie = self.fetchFromGitHub {
+        #  owner = "BBBSnowball";
+        #  repo  = "magpie";
+        #  rev   = "e9dec30f4db96f26f90a07a0b8e31410d194a273"; # branch no-external-servers
+        #  sha256 = "1kx4mq39kdfcm29p0bk5xg82gmgj0dl7kab6h77m4635bkdq6m81";
+        #  fetchSubmodules = true;
+        #};
+        magpie = self.fetchgit {
+          name = "magpie-src";
+          url = "https://github.com/BBBSnowball/magpie.git";
           rev   = "e9dec30f4db96f26f90a07a0b8e31410d194a273"; # branch no-external-servers
-          sha256 = "1kx4mq39kdfcm29p0bk5xg82gmgj0dl7kab6h77m4635bkdq6m81";
+          fetchSubmodules = true;
+          sha256 = "0046jnf3qp95pvadfx9nz63xw0p7qx3hn4zqf09gs0vf2wscgbj3";
         };
         buildMagpieEnv = with self; self.writeShellScriptBin "buildMagpieEnv" ''
           out=~/magpie-env
