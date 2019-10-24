@@ -378,6 +378,7 @@ in {
   '';
 
   containers.mate = {
+    autoStart = true;
     config = { config, pkgs, ... }: let
       #node = pkgs.nodejs-8_x;
       node = pkgs.nodejs;
@@ -454,6 +455,7 @@ in {
   networking.firewall.allowedPorts.pizzaimap          = 1237;  # fixed in source
 
   containers.feg = {
+    autoStart = true;
     config = { config, pkgs, ... }: let
       acmeDir = "/var/lib/acme";
       fqdns = [
@@ -587,6 +589,7 @@ in {
   networking.firewall.allowedPorts.feg-svn-acme  = 3001;
 
   containers.notes = {
+    autoStart = true;
     config = { config, pkgs, ... }: let
     in {
       imports = [ myDefaultConfig opensshWithUnixDomainSocket ];
@@ -704,6 +707,7 @@ in {
   networking.firewall.allowedPorts.notes-magpie-ext = 8083;
 
   containers.rss = {
+    autoStart = true;
     config = { config, pkgs, ... }: let
       poolName = "my_selfoss_pool";
       phpfpmSocketName = config.services.phpfpm.pools.my_selfoss_pool.socket;
