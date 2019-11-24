@@ -600,6 +600,7 @@ in {
 
       nixpkgs.overlays = [ (self: super: {
         #TODO Install Python libraries to system, use overridePythonAttrs to adjust version (see esphome)
+        #TODO upgrade to Python 3
         magpiePython = self.python27.withPackages (ps: with ps; [
           setuptools pip virtualenv
         ]);
