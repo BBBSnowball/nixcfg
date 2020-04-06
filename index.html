@@ -600,21 +600,41 @@
 
 		<script src="reveal.js-3.7.0/lib/js/head.min.js"></script>
 		<script src="reveal.js-3.7.0/js/reveal.js"></script>
+		<script src="multiplex-master-config.js"></script>
+		<script src="multiplex-config.js"></script>
 
 		<script>
 			// More info about config & dependencies:
 			// - https://github.com/hakimel/reveal.js#configuration
 			// - https://github.com/hakimel/reveal.js#dependencies
-			Reveal.initialize({
+			var config = {
 				hash: true,
 				history: true,
 				dependencies: [
 					{ src: 'reveal.js-3.7.0/plugin/markdown/marked.js' },
 					{ src: 'reveal.js-3.7.0/plugin/markdown/markdown.js' },
 					{ src: 'reveal.js-3.7.0/plugin/notes/notes.js', async: true },
-					{ src: 'reveal.js-3.7.0/plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } }
+					{ src: 'reveal.js-3.7.0/plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'reveal.js-3.7.0/plugin/notes/notes.js', async: true },
 				]
-			});
+			};
+			var params = new URLSearchParams(document.location.search.substring(1));
+			if (params.get("master") !== null && window.multiplex_master_config) {
+				//config.dependencies.push({ src: '//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js', async: true });
+				config.dependencies.push({ src: 'local-resources/socket.io-2.2.0.js', async: true });
+				config.dependencies.push({ src: 'reveal.js-3.7.0/plugin/multiplex/master.js', async: true });
+				config.multiplex = Object.assign({}, window.multiplex_config || {}, window.multiplex_master_config);
+				console.log("multiplex: using master mode");
+			} else if (params.get("client") !== null && window.multiplex_config) {
+				//config.dependencies.push({ src: '//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js', async: true });
+				config.dependencies.push({ src: 'local-resources/socket.io-2.2.0.js', async: true });
+				config.dependencies.push({ src: 'reveal.js-3.7.0/plugin/multiplex/client.js', async: true });
+				config.multiplex = window.multiplex_config;
+				console.log("multiplex: using client mode");
+				config.controls = false;
+				config.keyboard = false;
+			}
+			Reveal.initialize(config);
 		</script>
 	</body>
 </html>
