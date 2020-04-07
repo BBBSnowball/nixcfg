@@ -1,4 +1,5 @@
 window.multiplex_config = {
-	url: "https://reveal-js-multiplex-ccjbegmaii.now.sh",
-	id: "0f01eb35a1c09d41"
+	// generate new id and token here: https://talks.c3pb.de/token
+	url: "https://talks.c3pb.de",
+	id: "4b6a407d3e2a546a"
 };
