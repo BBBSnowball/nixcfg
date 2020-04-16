@@ -43,7 +43,19 @@ in {
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
-    wget vim htop byobu tmux git tig
+    wget vim byobu tmux git tig cifs-utils pv file killall
+    htop iotop iftop cpufrequtils inteltool powertop stress stress-ng sysprof nethogs nix-top unixtools.top usbtop
+    #FIXME throttled undervolt
+    # atop ctop dnstop gotop nettop latencytop netatop gtop powerstat rPackages.gtop vtop
+    # numatop nvtop pg_top radeontop
+    pciutils usbutils lm_sensors
+    smartmontools
+    multipath-tools  # kpartx
+    hdparm
+    iperf iperf3
+    utillinux parted
+
+    qemu_kvm
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
@@ -93,6 +105,30 @@ in {
     hashedPassword = hostSpecificValue /hashedPassword.nix;
     openssh.authorizedKeys.keyFiles = [ ./private/ssh-laptop.pub ];
   };
+  users.users.test = {
+    isNormalUser = true;
+    hashedPassword = hostSpecificValue /hashedPassword.nix;
+    openssh.authorizedKeys.keyFiles = [ ./private/ssh-laptop.pub ];
+    packages = with pkgs; [
+      anbox android-studio apktool
+      #androidenv.androidPkgs_9_0.platform-tools  # contains adb
+      androidenv.androidPkgs_9_0.androidsdk
+      adoptopenjdk-bin  # contains keytool and jarsigner
+    ];
+  };
+  nixpkgs.config.android_sdk.accept_license = true;
+
+  programs.vim.defaultEditor = true;
+  environment.etc."vimrc".text = ''
+    inoremap fd <Esc>
+  '';
+
+  programs.bash.interactiveShellInit = ''
+    shopt -s histappend
+  '';
+
+
+  boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
 
   # This value determines the NixOS release with which your system is to be
   # compatible, in order to avoid breaking some software such as database
