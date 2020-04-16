@@ -24,7 +24,29 @@ in {
   # Per-interface useDHCP will be mandatory in the future, so this generated config
   # replicates the default behaviour.
   networking.useDHCP = false;
-  networking.interfaces.enp4s0.useDHCP = true;
+  #networking.interfaces.enp4s0.useDHCP = true;
+  networking.interfaces.br0.useDHCP = true;
+  networking.interfaces.br0.macAddress = "c8:d3:ff:44:05:14";
+  networking.bridges.br0.interfaces = ["enp4s0" "enp2s0f0" "enp2s0f1" "enp2s0f2" "enp2s0f3" "wlp0s20f0u4"];
+
+  services.hostapd = {
+    enable = true;
+    interface = "wlp0s20f0u4";
+    ssid = "FRITZ!Box 7595";
+    wpa = false;  # don't put passphrase into nix store, please
+    extraConfig = ''
+      country_code=DE
+
+      wpa=2
+      #wpa_key_mgmt=SAE   # WPA 3
+      wpa_key_mgmt=WPA-PSK
+      #rsn_pairwise=CCMP CCMP-256 GCMP GCMP-256
+      # umask 077; echo -n 'mac ' >hostapd.wpa_psk; dd if=/dev/random bs=1 count=32|hexdump -e "32/1 \"%02x\"" >>hostapd.wpa_psk
+      #wpa_psk_file=/etc/nixos/secret/hostapd.wpa_psk
+      wpa_passphrase=abcabcabc
+      nas_identifier=ap.verl.bbbsnowball.de
+    '';
+  };
 
   # Configure network proxy if necessary
   # networking.proxy.default = "http://user:password@proxy:port/";
@@ -56,6 +78,7 @@ in {
     utillinux parted
 
     qemu_kvm
+    wirelesstools iw
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
