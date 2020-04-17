@@ -9,6 +9,7 @@ in {
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
+      ./radius/default.nix
     ];
 
   # Use the systemd-boot EFI boot loader.

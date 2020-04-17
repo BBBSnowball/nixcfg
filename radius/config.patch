@@ -1,0 +1,113 @@
+diff -Naur --no-dereference default-config/certs/ca.cnf config/certs/ca.cnf
+--- default-config/certs/ca.cnf	1970-01-01 01:00:01.000000000 +0100
++++ config/certs/ca.cnf	2020-04-17 02:11:02.906355413 +0200
+@@ -14,7 +14,7 @@
+ RANDFILE		= $dir/.rand
+ name_opt		= ca_default
+ cert_opt		= ca_default
+-default_days		= 60
++default_days		= 3650
+ default_crl_days	= 30
+ default_md		= sha256
+ preserve		= no
+diff -Naur --no-dereference default-config/certs/server.cnf config/certs/server.cnf
+--- default-config/certs/server.cnf	1970-01-01 01:00:01.000000000 +0100
++++ config/certs/server.cnf	2020-04-17 02:11:33.039289065 +0200
+@@ -14,7 +14,7 @@
+ RANDFILE		= $dir/.rand
+ name_opt		= ca_default
+ cert_opt		= ca_default
+-default_days		= 60
++default_days		= 3650
+ default_crl_days	= 30
+ default_md		= sha256
+ preserve		= no
+diff -Naur --no-dereference default-config/clients.conf config/clients.conf
+--- default-config/clients.conf	1970-01-01 01:00:01.000000000 +0100
++++ config/clients.conf	2020-04-17 02:09:52.029530218 +0200
+@@ -97,7 +97,7 @@
+ 	#  The default secret below is only for testing, and should
+ 	#  not be used in any real environment.
+ 	#
+-	secret = testing123
++	$INCLUDE /etc/nixos/radius/client-secret.conf
+ 
+ 	#
+ 	#  Old-style clients do not send a Message-Authenticator
+@@ -161,7 +161,7 @@
+ 	#  This is done by setting the "virtual_server" configuration
+ 	#  item, as in the example below.
+ 	#
+-#	virtual_server = home1
++	virtual_server = inner-tunnel
+ 
+ 	#
+ 	#  A pointer to the "home_server_pool" OR a "home_server"
+diff -Naur --no-dereference default-config/radiusd.conf config/radiusd.conf
+--- default-config/radiusd.conf	1970-01-01 01:00:01.000000000 +0100
++++ config/radiusd.conf	2020-04-17 01:13:46.608743832 +0200
+@@ -295,7 +295,7 @@
+ 	#  The command-line option "-X" over-rides this option, and forces
+ 	#  logging to go to stdout.
+ 	#
+-	destination = files
++	destination = stdout
+ 
+ 	#
+ 	#  Highlight important messages sent to stderr and stdout.
+@@ -335,7 +335,7 @@
+ 	#
+ 	#  allowed values: {no, yes}
+ 	#
+-	auth = no
++	auth = yes
+ 
+ 	#  Log Access-Accept results to the log file.
+ 	#
+@@ -508,7 +508,7 @@
+ 	#
+ 	#  See also raddb/sites-available/status
+ 	#
+-	status_server = yes
++	status_server = no
+ 
+ 	#
+ 	#  allow_vulnerable_openssl: Allow the server to start with
+@@ -537,7 +537,7 @@
+ #
+ #  allowed values: {no, yes}
+ #
+-proxy_requests  = yes
++proxy_requests  = no
+ $INCLUDE proxy.conf
+ 
+ 
+@@ -576,7 +576,7 @@
+ thread pool {
+ 	#  Number of servers to start initially --- should be a reasonable
+ 	#  ballpark figure.
+-	start_servers = 5
++	start_servers = 2
+ 
+ 	#  Limit on the total number of servers running.
+ 	#
+@@ -599,7 +599,7 @@
+ 	#
+ 	#  For more information, see 'max_request_time', above.
+ 	#
+-	max_servers = 32
++	max_servers = 3
+ 
+ 	#  Server-pool size regulation.  Rather than making you guess
+ 	#  how many servers you need, FreeRADIUS dynamically adapts to
+@@ -613,8 +613,8 @@
+ 	#  more than max_spare_servers, some of the spares die off.
+ 	#  The default values are probably OK for most sites.
+ 	#
+-	min_spare_servers = 3
+-	max_spare_servers = 10
++	min_spare_servers = 1
++	max_spare_servers = 2
+ 
+ 	#  When the server receives a packet, it places it onto an
+ 	#  internal queue, where the worker threads (configured above)
