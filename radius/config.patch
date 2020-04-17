@@ -10,6 +10,15 @@ diff -Naur --no-dereference default-config/certs/ca.cnf config/certs/ca.cnf
  default_crl_days	= 30
  default_md		= sha256
  preserve		= no
+diff -Naur --no-dereference default-config/certs/passwords.mk config/certs/passwords.mk
+--- default-config/certs/passwords.mk	1970-01-01 01:00:01.000000000 +0100
++++ config/certs/passwords.mk	2020-04-17 02:24:47.314560249 +0200
+@@ -3,4 +3,4 @@
+ PASSWORD_CA	= 'whatever'
+ PASSWORD_CLIENT	= 'whatever'
+ USER_NAME	= 'user@example.org'
+-CA_DEFAULT_DAYS  = '60'
++CA_DEFAULT_DAYS  = '3650'
 diff -Naur --no-dereference default-config/certs/server.cnf config/certs/server.cnf
 --- default-config/certs/server.cnf	1970-01-01 01:00:01.000000000 +0100
 +++ config/certs/server.cnf	2020-04-17 02:11:33.039289065 +0200
@@ -24,13 +33,13 @@ diff -Naur --no-dereference default-config/certs/server.cnf config/certs/server.
  preserve		= no
 diff -Naur --no-dereference default-config/clients.conf config/clients.conf
 --- default-config/clients.conf	1970-01-01 01:00:01.000000000 +0100
-+++ config/clients.conf	2020-04-17 02:09:52.029530218 +0200
++++ config/clients.conf	2020-04-17 02:33:40.151564142 +0200
 @@ -97,7 +97,7 @@
  	#  The default secret below is only for testing, and should
  	#  not be used in any real environment.
  	#
 -	secret = testing123
-+	$INCLUDE /etc/nixos/radius/client-secret.conf
++	$INCLUDE ./client-secret.conf
  
  	#
  	#  Old-style clients do not send a Message-Authenticator

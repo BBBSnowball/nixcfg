@@ -1,14 +1,15 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 let
   radius = pkgs.freeradius;
+  secretsDir = "/etc/nixos/radius";
   configDir = derivation {
     name = "radius-config";
     builder = ./mkconfig.sh;
     #system = builtins.currentSystem;
     system = pkgs.system;
 
-    coreutils = pkgs.coreutils;
-    patch = pkgs.patch;
+    inherit (pkgs) coreutils patch;
+    inherit secretsDir;
     src = "${radius}/etc/raddb";
     configPatch = ./config.patch;
   };

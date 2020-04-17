@@ -7,4 +7,7 @@ chmod -R u+w $out
 patch -p1 -d $out <$configPatch
 rm $out/sites-enabled/default
 rm $out/mods-config/files/authorize
-ln -s /etc/nixos/radius/users $out/mods-config/files/authorize
+ln -s $secretsDir/users $out/mods-config/files/authorize
+mv $out/certs $out/certs.example
+ln -s $secretsDir/certs $out/certs
+ln -s $secretsDir/client-secret.conf $out/
