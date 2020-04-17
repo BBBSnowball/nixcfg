@@ -40,12 +40,20 @@ in {
 
       wpa=2
       #wpa_key_mgmt=SAE   # WPA 3
-      wpa_key_mgmt=WPA-PSK
-      #rsn_pairwise=CCMP CCMP-256 GCMP GCMP-256
+      wpa_key_mgmt=WPA-EAP
+      rsn_pairwise=CCMP CCMP-256 GCMP GCMP-256
       # umask 077; echo -n 'mac ' >hostapd.wpa_psk; dd if=/dev/random bs=1 count=32|hexdump -e "32/1 \"%02x\"" >>hostapd.wpa_psk
       #wpa_psk_file=/etc/nixos/secret/hostapd.wpa_psk
-      wpa_passphrase=abcabcabc
+      #wpa_passphrase=abcabcabc
+
       nas_identifier=ap.verl.bbbsnowball.de
+      auth_server_addr=127.0.0.1
+      auth_server_port=18120
+      auth_server_shared_secret=testing123
+      own_ip_addr=127.0.0.1
+      #dynamic_vlan=0
+      ieee8021x=1 
+      auth_algs=1
     '';
   };
 
