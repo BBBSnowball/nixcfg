@@ -17,4 +17,6 @@ in {
   services.freeradius.enable = true;
   services.freeradius.configDir = configDir;
   # test: radtest -x username password 127.0.0.1:18120 10 testing123
+
+  systemd.services.freeradius.serviceConfig.StateDirectory = "freeradius";
 }

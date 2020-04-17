@@ -33,7 +33,7 @@ diff -Naur --no-dereference default-config/certs/server.cnf config/certs/server.
  preserve		= no
 diff -Naur --no-dereference default-config/clients.conf config/clients.conf
 --- default-config/clients.conf	1970-01-01 01:00:01.000000000 +0100
-+++ config/clients.conf	2020-04-17 02:33:40.151564142 +0200
++++ config/clients.conf	2020-04-17 03:59:52.220171206 +0200
 @@ -97,7 +97,7 @@
  	#  The default secret below is only for testing, and should
  	#  not be used in any real environment.
@@ -48,10 +48,33 @@ diff -Naur --no-dereference default-config/clients.conf config/clients.conf
  	#  item, as in the example below.
  	#
 -#	virtual_server = home1
-+	virtual_server = inner-tunnel
++#	virtual_server = inner-tunnel
  
  	#
  	#  A pointer to the "home_server_pool" OR a "home_server"
+diff -Naur --no-dereference default-config/mods-available/sql config/mods-available/sql
+--- default-config/mods-available/sql	1970-01-01 01:00:01.000000000 +0100
++++ config/mods-available/sql	2020-04-17 03:30:40.487163451 +0200
+@@ -49,8 +49,8 @@
+ 	#	rlm_sql_iodbc
+ 	#	rlm_sql_unixodbc
+ 	#
+-	driver = "rlm_sql_null"
+-#	driver = "rlm_sql_${dialect}"
++#	driver = "rlm_sql_null"
++	driver = "rlm_sql_${dialect}"
+ 
+ 	#
+ 	#  Driver-specific subsections.  They will only be loaded and
+@@ -61,7 +61,7 @@
+ 	#
+ 	sqlite {
+ 		# Path to the sqlite database
+-		filename = "/tmp/freeradius.db"
++		filename = "/var/lib/freeradius/freeradius.db"
+ 
+ 		# How long to wait for write locks on the database to be
+ 		# released (in ms) before giving up.
 diff -Naur --no-dereference default-config/radiusd.conf config/radiusd.conf
 --- default-config/radiusd.conf	1970-01-01 01:00:01.000000000 +0100
 +++ config/radiusd.conf	2020-04-17 01:13:46.608743832 +0200
@@ -120,3 +143,151 @@ diff -Naur --no-dereference default-config/radiusd.conf config/radiusd.conf
  
  	#  When the server receives a packet, it places it onto an
  	#  internal queue, where the worker threads (configured above)
+diff -Naur --no-dereference default-config/sites-available/default config/sites-available/default
+--- default-config/sites-available/default	1970-01-01 01:00:01.000000000 +0100
++++ config/sites-available/default	2020-04-17 04:01:08.485281275 +0200
+@@ -117,7 +117,7 @@
+ 	#
+ 	# ipv4addr = *
+ 	# ipv6addr = *
+-	ipaddr = *
++	ipaddr = 127.0.0.1
+ 
+ 	#  Port on which to listen.
+ 	#  Allowed values are:
+@@ -202,7 +202,7 @@
+ #  port, too.
+ #
+ listen {
+-	ipaddr = *
++	ipaddr = 127.0.0.1
+ #	ipv6addr = ::
+ 	port = 0
+ 	type = acct
+@@ -244,7 +244,7 @@
+ # IPv6 versions of the above - read their full config to understand options
+ listen {
+ 	type = auth
+-	ipv6addr = ::	# any.  ::1 == localhost
++	ipv6addr = ::1
+ 	port = 0
+ #	interface = eth0
+ #	clients = per_socket_clients
+@@ -256,7 +256,7 @@
+ }
+ 
+ listen {
+-	ipv6addr = ::
++	ipv6addr = ::1
+ 	port = 0
+ 	type = acct
+ #	interface = eth0
+@@ -583,9 +583,9 @@
+ 	#  The start time is: NOW - delay - session_length
+ 	#
+ 
+-#	update request {
+-#	  	&FreeRADIUS-Acct-Session-Start-Time = "%{expr: %l - %{%{Acct-Session-Time}:-0} - %{%{Acct-Delay-Time}:-0}}"
+-#	}
++	update request {
++	  	&FreeRADIUS-Acct-Session-Start-Time = "%{expr: %l - %{%{Acct-Session-Time}:-0} - %{%{Acct-Delay-Time}:-0}}"
++	}
+ 
+ 
+ 	#
+@@ -621,13 +621,13 @@
+ 	#  Create a 'detail'ed log of the packets.
+ 	#  Note that accounting requests which are proxied
+ 	#  are also logged in the detail file.
+-	detail
++#	detail
+ #	daily
+ 
+ 	#  Update the wtmp file
+ 	#
+ 	#  If you don't use "radlast", you can delete this line.
+-	unix
++	#unix
+ 
+ 	#
+ 	#  For Simultaneous-Use tracking.
+@@ -644,7 +644,7 @@
+ 	#  Log traffic to an SQL database.
+ 	#
+ 	#  See "Accounting queries" in mods-available/sql
+-	-sql
++	sql
+ 
+ 	#
+ 	#  If you receive stop packets with zero session length,
+@@ -664,7 +664,7 @@
+ #	pgsql-voip
+ 
+ 	# For Exec-Program and Exec-Program-Wait
+-	exec
++	#exec
+ 
+ 	#  Filter attributes from the accounting response.
+ 	attr_filter.accounting_response
+@@ -686,7 +686,7 @@
+ 
+ 	#
+ 	#  See "Simultaneous Use Checking Queries" in mods-available/sql
+-#	sql
++	sql
+ }
+ 
+ 
+@@ -741,7 +741,7 @@
+ 	#
+ 	#  The "sql_session_start" policy is defined in
+ 	#  raddb/policy.d/accounting.  See that file for more details.
+-#	sql_session_start
++	sql_session_start
+ 
+ 	#
+ 	#  If you want to have a log of authentication replies,
+@@ -753,7 +753,7 @@
+ 	#  After authenticating the user, do another SQL query.
+ 	#
+ 	#  See "Authentication Logging Queries" in mods-available/sql
+-	-sql
++	sql
+ 
+ 	#
+ 	#  Un-comment the following if you want to modify the user's object
+diff -Naur --no-dereference default-config/sites-available/inner-tunnel config/sites-available/inner-tunnel
+--- default-config/sites-available/inner-tunnel	1970-01-01 01:00:01.000000000 +0100
++++ config/sites-available/inner-tunnel	2020-04-17 03:49:30.410903826 +0200
+@@ -259,11 +259,11 @@
+ #  or rlm_sql module can handle this.
+ #  The rlm_sql module is *much* faster
+ session {
+-	radutmp
++#	radutmp
+ 
+ 	#
+ 	#  See "Simultaneous Use Checking Queries" in sql.conf
+-#	sql
++	sql
+ }
+ 
+ 
+@@ -304,7 +304,7 @@
+ 	#  After authenticating the user, do another SQL query.
+ 	#
+ 	#  See "Authentication Logging Queries" in sql.conf
+-	-sql
++	sql
+ 
+ 	#
+ 	#  Un-comment the following if you have set
+@@ -369,7 +369,7 @@
+ 	#
+ 	Post-Auth-Type REJECT {
+ 		# log failed authentications in SQL, too.
+-		-sql
++		sql
+ 		attr_filter.access_reject
+ 
+ 		#

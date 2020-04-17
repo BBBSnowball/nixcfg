@@ -54,6 +54,10 @@ in {
       #dynamic_vlan=0
       ieee8021x=1 
       auth_algs=1
+
+      acct_server_addr=127.0.0.1
+      acct_server_port=1813
+      acct_server_shared_secret=testing123
     '';
   };
 
