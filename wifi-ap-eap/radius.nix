@@ -1,7 +1,7 @@
 { config, pkgs, lib, ... }:
 let
   radius = pkgs.freeradius;
-  secretsDir = "/etc/nixos/radius";
+  secretsDir = "/etc/nixos/wifi-ap-eap";
   configDir = derivation {
     name = "radius-config";
     builder = ./mkconfig.sh;
