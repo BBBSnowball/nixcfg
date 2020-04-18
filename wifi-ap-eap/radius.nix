@@ -55,6 +55,7 @@ let
       cd ..
       mv certs.tmp certs
     fi
+    install -d -m 0700 -o radius /var/lib/radiusd/tlscache
   '';
 
   manageScript = pkgs.writeShellScriptBin "nixos-wifi-ap-eap" (''
@@ -81,11 +82,8 @@ in {
     systemd.services.freeradius.serviceConfig.ExecStart
       = lib.mkForce "${pkgs.freeradius}/bin/radiusd -f -d ${config.services.freeradius.configDir} -l stdout";
 
-    systemd.services.freeradius.serviceConfig.ExecStartPre
-      = "${pkgs.coreutils}/bin/install -d -m 0700 -o radius /var/lib/radiusd/tlscache";
-  
     systemd.services.freeradius.serviceConfig.StateDirectory = "radiusd";
-  
+
     systemd.services.freeradius-init = {
       description = "Generate keys and other secrets for radius server.";
       wantedBy = [ "freeradius.service" ];
