@@ -15,27 +15,6 @@
       '';
     };
 
-    wifiFourAddressMode = mkOption {
-      default = null;
-      example = true;
-      description = ''
-        Enable 4-address mode if true. This is often required when bridging packets.
-        This is equivalent to: iw dev <devname> set 4addr on
-        Valid values are true (turn on), false (turn off) or null (don't change).
-
-        The wifi frames usually contain the MAC addresses of the wifi interfaces
-        and one additional MAC in case the source or destination is not one of
-        the wifi interfaces. Therefore, you cannot send frames that have a
-        different source *and* destination MAC. Enable 4-address mode to avoid
-        this restriction.
-
-        This will often fail in client mode because many APs don't accept
-        4-address frames. As we are the AP, this shouldn't cause any problems.
-
-        see http://nullroute.eu.org/~grawity/journal-2011.html#post:20110826
-      '';
-    };
-
     # This should be in hostapd section but it will only be active if wifi-ap-eap is enabled
     # so we put it here to avoid confusion.
     countryCode = with lib; mkOption {

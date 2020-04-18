@@ -16,9 +16,23 @@
       -> yes, but ca file needs .crt extension
 - DONE accounting shouldn't use user name for client cert
   -> workaround: force user name to match certificate
-- add option for putting the users file in another place
+- WONTFIX add option for putting the users file in another place
   - radius group must have access and the user cannot do that before the group exists
   - We can copy the file to the statedir - on start and reload.
+  - We cannot easily add this for reload so let the user do it - that way, she knows
+    about the imperfections.
+- DONE How is the structure of the certificates?
+  - In particular: If client certificates are also signed by the CA - what stops them from impersonating
+    the server? Clients can check the common name but the default is to not do that.
+  - I think the type of the certificate is different.
+- WONTFIX fix 4addr mode
+  - I cannot set this while the interface is already active and we have to enable WDS mode
+    if we want to use it.
+  - http://lists.infradead.org/pipermail/hostap/2016-May/035670.html
+  - https://wireless.wiki.kernel.org/en/users/documentation/iw#setting_up_a_wds_peer
+  - Ok, this is complicated and I have no use for it right now.
+  - I will remove the option, for now.
+
 - missing network interfaces shouldn't delay boot
 - publish the config somewhere
 - maybe add something that creates graphs from accounting data
@@ -26,9 +40,6 @@
 - revocation
   - https://jamielinux.com/docs/openssl-certificate-authority/certificate-revocation-lists.html
   - https://wiki.alpinelinux.org/wiki/FreeRadius_EAP-TLS_configuration
-- How is the structure of the certificates?
-  - In particular: If client certificates are also signed by the CA - what stops them from impersonating
-    the server? Clients can check the common name but the default is to not do that.
 - don't split options, i.e. don't use services.hostapd?
   - option 1: copy services.wifi-ap-eap.hostapd to services.hostapd if enabled
   - option 2: don't enable services.hostapd; copy the relevant parts to our .nix files
