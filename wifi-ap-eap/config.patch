@@ -185,7 +185,7 @@ diff -Naur --no-dereference default-config/mods-available/eap config/mods-availa
  		#  As of version 2.1.10, client certificates can be
 diff -Naur --no-dereference default-config/mods-available/sql config/mods-available/sql
 --- default-config/mods-available/sql	1970-01-01 01:00:01.000000000 +0100
-+++ config/mods-available/sql	2020-04-17 03:30:40.487163451 +0200
++++ config/mods-available/sql	2020-04-18 22:58:26.108695188 +0200
 @@ -49,8 +49,8 @@
  	#	rlm_sql_iodbc
  	#	rlm_sql_unixodbc
@@ -202,23 +202,25 @@ diff -Naur --no-dereference default-config/mods-available/sql config/mods-availa
  	sqlite {
  		# Path to the sqlite database
 -		filename = "/tmp/freeradius.db"
-+		filename = "/var/lib/freeradius/freeradius.db"
++		filename = "/var/lib/radiusd/freeradius.db"
  
  		# How long to wait for write locks on the database to be
  		# released (in ms) before giving up.
 diff -Naur --no-dereference default-config/radiusd.conf config/radiusd.conf
 --- default-config/radiusd.conf	1970-01-01 01:00:01.000000000 +0100
-+++ config/radiusd.conf	2020-04-18 05:46:47.887954935 +0200
-@@ -101,7 +101,7 @@
++++ config/radiusd.conf	2020-04-18 23:02:54.047402250 +0200
+@@ -99,9 +99,7 @@
+ certdir = ${confdir}/certs
+ cadir   = ${confdir}/certs
  run_dir = ${localstatedir}/run/${name}
- 
- # Should likely be ${localstatedir}/lib/radiusd
+-
+-# Should likely be ${localstatedir}/lib/radiusd
 -db_dir = ${raddbdir}
-+db_dir = ${localstatedir}/lib/freeradius
++db_dir = ${localstatedir}/lib/${name}
  
  #
  # libdir: Where to find the rlm_* modules.
-@@ -295,7 +295,7 @@
+@@ -295,7 +293,7 @@
  	#  The command-line option "-X" over-rides this option, and forces
  	#  logging to go to stdout.
  	#
@@ -227,7 +229,7 @@ diff -Naur --no-dereference default-config/radiusd.conf config/radiusd.conf
  
  	#
  	#  Highlight important messages sent to stderr and stdout.
-@@ -335,7 +335,7 @@
+@@ -335,7 +333,7 @@
  	#
  	#  allowed values: {no, yes}
  	#
@@ -236,7 +238,7 @@ diff -Naur --no-dereference default-config/radiusd.conf config/radiusd.conf
  
  	#  Log Access-Accept results to the log file.
  	#
-@@ -508,7 +508,7 @@
+@@ -508,7 +506,7 @@
  	#
  	#  See also raddb/sites-available/status
  	#
@@ -245,7 +247,7 @@ diff -Naur --no-dereference default-config/radiusd.conf config/radiusd.conf
  
  	#
  	#  allow_vulnerable_openssl: Allow the server to start with
-@@ -537,7 +537,7 @@
+@@ -537,7 +535,7 @@
  #
  #  allowed values: {no, yes}
  #
@@ -254,7 +256,7 @@ diff -Naur --no-dereference default-config/radiusd.conf config/radiusd.conf
  $INCLUDE proxy.conf
  
  
-@@ -576,7 +576,7 @@
+@@ -576,7 +574,7 @@
  thread pool {
  	#  Number of servers to start initially --- should be a reasonable
  	#  ballpark figure.
@@ -263,7 +265,7 @@ diff -Naur --no-dereference default-config/radiusd.conf config/radiusd.conf
  
  	#  Limit on the total number of servers running.
  	#
-@@ -599,7 +599,7 @@
+@@ -599,7 +597,7 @@
  	#
  	#  For more information, see 'max_request_time', above.
  	#
@@ -272,7 +274,7 @@ diff -Naur --no-dereference default-config/radiusd.conf config/radiusd.conf
  
  	#  Server-pool size regulation.  Rather than making you guess
  	#  how many servers you need, FreeRADIUS dynamically adapts to
-@@ -613,8 +613,8 @@
+@@ -613,8 +611,8 @@
  	#  more than max_spare_servers, some of the spares die off.
  	#  The default values are probably OK for most sites.
  	#

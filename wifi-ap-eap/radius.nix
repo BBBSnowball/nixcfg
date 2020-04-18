@@ -80,6 +80,9 @@ in {
     # we have to overwrite the start command to disable it.
     systemd.services.freeradius.serviceConfig.ExecStart
       = lib.mkForce "${pkgs.freeradius}/bin/radiusd -f -d ${config.services.freeradius.configDir} -l stdout";
+
+    systemd.services.freeradius.serviceConfig.ExecStartPre
+      = "${pkgs.coreutils}/bin/install -d -m 0700 -o radius /var/lib/radiusd/tlscache";
   
     systemd.services.freeradius.serviceConfig.StateDirectory = "radiusd";
   
