@@ -51,8 +51,14 @@ let
       echo ""
       echo "# secret values"
       echo "auth_server_shared_secret=$secret"
-      echo "acct_server_shared_secret=$secret" ) >hostapd.conf
+      echo "acct_server_shared_secret=$secret" ) >${secretConfigFile}
   '';
+
+  setFourAddressMode =
+    if cfg2.wifiFourAddressMode == null
+      then []
+      else [("${pkgs.iw}/bin/iw dev ${cfg.interface} 4addr "
+        + (if cfg2.wifiFourAddressMode then "on" else "off"))];
 in {
   config = lib.mkIf cfg2.enable {
     assertions = [
@@ -70,8 +76,8 @@ in {
     # rules for wifi radiation -> required for country_code setting to be used
     services.udev.packages = [ pkgs.crda ];
 
-    systemd.services.hostap.serviceConfig.wants = [ "freeradius-init.service" ];
-    systemd.services.hostap.serviceConfig.ExecPreStart = createConfigWithSecret;
-    systemd.services.hostap.serviceConfig.ExecStart = lib.mkForce "${pkgs.hostapd}/bin/hostapd ${secretConfigFile}";
+    systemd.services.hostapd.serviceConfig.wants = [ "freeradius-init.service" ];
+    systemd.services.hostapd.serviceConfig.ExecPreStart = [createConfigWithSecret] ++ setFourAddressMode;
+    systemd.services.hostapd.serviceConfig.ExecStart = lib.mkForce "${pkgs.hostapd}/bin/hostapd ${secretConfigFile}";
   };
 }
