@@ -62,7 +62,8 @@ in {
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
-    wget vim byobu tmux git tig cifs-utils pv file killall
+    wget byobu tmux git tig cifs-utils pv file killall
+    #vim
     htop iotop iftop cpufrequtils inteltool powertop stress stress-ng sysprof nethogs nix-top unixtools.top usbtop
     #FIXME throttled undervolt
     # atop ctop dnstop gotop nettop latencytop netatop gtop powerstat rPackages.gtop vtop
@@ -76,6 +77,23 @@ in {
 
     qemu_kvm
     wirelesstools iw
+
+    #neovim page neovim-remote
+    (neovim.override {
+      vimAlias = true;
+      configure = {
+        packages.myPlugins = with pkgs.vimPlugins; {
+          start = [ vim-lastplace vim-nix ]; 
+          opt = [];
+        };
+        customRC = ''
+          " your custom vimrc
+          set nocompatible
+          set backspace=indent,eol,start
+          " ...
+        '';
+      };
+    })
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
@@ -138,7 +156,8 @@ in {
   };
   nixpkgs.config.android_sdk.accept_license = true;
 
-  programs.vim.defaultEditor = true;
+  #programs.vim.defaultEditor = true;
+  environment.variables = { EDITOR = "vim"; };
   environment.etc."vimrc".text = ''
     inoremap fd <Esc>
   '';
