@@ -1,0 +1,29 @@
+- change shared secret for hostapd/radius
+  - and store it in a secure location for hostapd
+  - we could auto-generate this
+  - hostapd doesn't seem to have any way to put the secret in a different file
+- auto-generate certificates
+  - add options for setting certificate options, e.g. name
+  - auto-generate certificates
+  - store them in /var/lib/freeradius ?
+    -> probably not; where are the SSH private keys?
+- add script to generate user cert
+  - similar to the script for task server
+  - also generate pfx file for android:
+    - openssl pkcs12 -export -in daniela@laptop.pem -out daniela@laptop.pfx -passin pass:x -passout pass:x
+    - Can we use the .p12 file?
+- accounting shouldn't use user name for client cert
+- missing network interfaces shouldn't delay boot
+- publish the config somewhere
+- maybe add something that creates graphs from accounting data
+  - bandwidth per day/hour; total and per device/user
+- revocation
+  - https://jamielinux.com/docs/openssl-certificate-authority/certificate-revocation-lists.html
+  - https://wiki.alpinelinux.org/wiki/FreeRadius_EAP-TLS_configuration
+
+find ${logdir}/tlscache -mtime +2 -exec rm -f {} \;
+
+ESP32:
+- https://github.com/espressif/esp-idf/issues/1297
+- SHA1, 2048 bit
+- probably fixed: https://github.com/espressif/esp-idf/commit/bc97b0f380210b97b7fd98c5f304af7e83c28b7f

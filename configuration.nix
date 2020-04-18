@@ -9,7 +9,7 @@ in {
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
-      ./radius/default.nix
+      ./wifi-ap-eap/default.nix
     ];
 
   # Use the systemd-boot EFI boot loader.
@@ -34,35 +34,16 @@ in {
     enable = true;
     interface = "wlp0s20f0u4";
     ssid = "FRITZ!Box 7595";
-    wpa = false;  # don't put passphrase into nix store, please
-    extraConfig = ''
-      country_code=DE
-
-      wpa=2
-      #wpa_key_mgmt=SAE   # WPA 3
-      wpa_key_mgmt=WPA-EAP
-      rsn_pairwise=CCMP CCMP-256 GCMP GCMP-256
-      # umask 077; echo -n 'mac ' >hostapd.wpa_psk; dd if=/dev/random bs=1 count=32|hexdump -e "32/1 \"%02x\"" >>hostapd.wpa_psk
-      #wpa_psk_file=/etc/nixos/secret/hostapd.wpa_psk
-      #wpa_passphrase=abcabcabc
-
-      nas_identifier=ap.verl.bbbsnowball.de
-      auth_server_addr=127.0.0.1
-      auth_server_port=18120
-      auth_server_shared_secret=testing123
-      own_ip_addr=127.0.0.1
-      #dynamic_vlan=0
-      ieee8021x=1 
-      auth_algs=1
-
-      acct_server_addr=127.0.0.1
-      acct_server_port=1813
-      acct_server_shared_secret=testing123
-    '';
+  };
+  services.wifi-ap-eap = {
+    enable = true;
+    countryCode = "DE";
+    serverName = "ap.verl.bbbsnowball.de";
+    wifiFourAddressMode = true;
+    serverCertValidDays = 3650;
+    clientCertValidDays = 3650;
   };
 
-  # rules for wifi radiation
-  services.udev.packages = [ pkgs.crda ];
 
   # Configure network proxy if necessary
   # networking.proxy.default = "http://user:password@proxy:port/";
