@@ -1,6 +1,8 @@
 { config, pkgs, lib, ... }:
 {
-  options.services.wifi-ap-eap = with lib; {
+  options.services.wifi-ap-eap = with lib; let
+     cfg = config.services.wifi-ap-eap;
+  in {
     enable = mkOption {
       default = false;
       description = ''
@@ -86,7 +88,7 @@
       description = "Used for certificate.";
     };
     emailAddress = mkOption {
-      default = "admin@" + cfg2.commonName;
+      default = "admin@" + cfg.commonNameInner;
       example = "admin@example.org";
       type = types.str;
       description = "Used for certificate.";
@@ -99,6 +101,12 @@
     };
     commonNameInner = mkOption {
       default = cfg.serverName;
+      example = "Example Server Certificate";
+      type = types.str;
+      description = "Used for certificate.";
+    };
+    commonNameCA = mkOption {
+      default = "ca." + cfg.serverName;
       example = "Example Server Certificate";
       type = types.str;
       description = "Used for certificate.";

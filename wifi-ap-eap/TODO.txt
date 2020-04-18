@@ -1,18 +1,19 @@
-- change shared secret for hostapd/radius
+- DONE change shared secret for hostapd/radius
   - and store it in a secure location for hostapd
   - we could auto-generate this
   - hostapd doesn't seem to have any way to put the secret in a different file
-- auto-generate certificates
+- DONE auto-generate certificates
   - add options for setting certificate options, e.g. name
   - auto-generate certificates
   - store them in /var/lib/freeradius ?
-    -> probably not; where are the SSH private keys?
+    -> probably not; where are the SSH private keys? -> /etc/ssh
 - add script to generate user cert
   - similar to the script for task server
   - also generate pfx file for android:
     - openssl pkcs12 -export -in daniela@laptop.pem -out daniela@laptop.pfx -passin pass:x -passout pass:x
     - Can we use the .p12 file?
-- accounting shouldn't use user name for client cert
+- DONE accounting shouldn't use user name for client cert
+  -> workaround: force user name to match certificate
 - missing network interfaces shouldn't delay boot
 - publish the config somewhere
 - maybe add something that creates graphs from accounting data
@@ -20,6 +21,9 @@
 - revocation
   - https://jamielinux.com/docs/openssl-certificate-authority/certificate-revocation-lists.html
   - https://wiki.alpinelinux.org/wiki/FreeRadius_EAP-TLS_configuration
+- How is the structure of the certificates?
+  - In particular: If client certificates are also signed by the CA - what stops them from impersonating
+    the server? Clients can check the common name but the default is to not do that.
 
 find ${logdir}/tlscache -mtime +2 -exec rm -f {} \;
 

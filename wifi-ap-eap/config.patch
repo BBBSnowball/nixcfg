@@ -1,7 +1,7 @@
 diff -Naur --no-dereference default-config/certs/ca.cnf config/certs/ca.cnf
 --- default-config/certs/ca.cnf	1970-01-01 01:00:01.000000000 +0100
-+++ config/certs/ca.cnf	2020-04-17 02:11:02.906355413 +0200
-@@ -14,7 +14,7 @@
++++ config/certs/ca.cnf	2020-04-18 05:22:29.380588812 +0200
+@@ -14,12 +14,12 @@
  RANDFILE		= $dir/.rand
  name_opt		= ca_default
  cert_opt		= ca_default
@@ -10,6 +10,78 @@ diff -Naur --no-dereference default-config/certs/ca.cnf config/certs/ca.cnf
  default_crl_days	= 30
  default_md		= sha256
  preserve		= no
+ policy			= policy_match
+-crlDistributionPoints	= URI:http://www.example.org/example_ca.crl
++#crlDistributionPoints	= URI:http://www.example.org/example_ca.crl
+ 
+ [ policy_match ]
+ countryName		= match
+@@ -46,17 +46,17 @@
+ output_password		= whatever
+ x509_extensions		= v3_ca
+ 
+-[certificate_authority]
+-countryName		= FR
+-stateOrProvinceName	= Radius
+-localityName		= Somewhere
+-organizationName	= Example Inc.
+-emailAddress		= admin@example.org
+-commonName		= "Example Certificate Authority"
+-
+ [v3_ca]
+ subjectKeyIdentifier	= hash
+ authorityKeyIdentifier	= keyid:always,issuer:always
+ basicConstraints	= critical,CA:true
+-crlDistributionPoints	= URI:http://www.example.org/example_ca.crl
++#crlDistributionPoints	= URI:http://www.example.org/example_ca.crl
++
++[certificate_authority]
++#countryName		= FR
++#stateOrProvinceName	= Radius
++#localityName		= Somewhere
++#organizationName	= Example Inc.
++#emailAddress		= admin@example.org
++#commonName		= "Example Certificate Authority"
+ 
+diff -Naur --no-dereference default-config/certs/client.cnf config/certs/client.cnf
+--- default-config/certs/client.cnf	1970-01-01 01:00:01.000000000 +0100
++++ config/certs/client.cnf	2020-04-18 05:08:38.426117692 +0200
+@@ -45,9 +45,9 @@
+ output_password		= whatever
+ 
+ [client]
+-countryName		= FR
+-stateOrProvinceName	= Radius
+-localityName		= Somewhere
+-organizationName	= Example Inc.
+-emailAddress		= user@example.org
+-commonName		= user@example.org
++#countryName		= FR
++#stateOrProvinceName	= Radius
++#localityName		= Somewhere
++#organizationName	= Example Inc.
++#emailAddress		= user@example.org
++#commonName		= user@example.org
+diff -Naur --no-dereference default-config/certs/inner-server.cnf config/certs/inner-server.cnf
+--- default-config/certs/inner-server.cnf	1970-01-01 01:00:01.000000000 +0100
++++ config/certs/inner-server.cnf	2020-04-18 05:07:09.802200367 +0200
+@@ -45,10 +45,10 @@
+ output_password		= whatever
+ 
+ [server]
+-countryName		= FR
+-stateOrProvinceName	= Radius
+-localityName		= Somewhere
+-organizationName	= Example Inc.
+-emailAddress		= admin@example.org
+-commonName		= "Example Inner Server Certificate"
++#countryName		= FR
++#stateOrProvinceName	= Radius
++#localityName		= Somewhere
++#organizationName	= Example Inc.
++#emailAddress		= admin@example.org
++#commonName		= "Example Inner Server Certificate"
+ 
 diff -Naur --no-dereference default-config/certs/passwords.mk config/certs/passwords.mk
 --- default-config/certs/passwords.mk	1970-01-01 01:00:01.000000000 +0100
 +++ config/certs/passwords.mk	2020-04-17 02:24:47.314560249 +0200
@@ -21,7 +93,7 @@ diff -Naur --no-dereference default-config/certs/passwords.mk config/certs/passw
 +CA_DEFAULT_DAYS  = '3650'
 diff -Naur --no-dereference default-config/certs/server.cnf config/certs/server.cnf
 --- default-config/certs/server.cnf	1970-01-01 01:00:01.000000000 +0100
-+++ config/certs/server.cnf	2020-04-17 02:11:33.039289065 +0200
++++ config/certs/server.cnf	2020-04-18 05:05:28.652305902 +0200
 @@ -14,7 +14,7 @@
  RANDFILE		= $dir/.rand
  name_opt		= ca_default
@@ -31,6 +103,23 @@ diff -Naur --no-dereference default-config/certs/server.cnf config/certs/server.
  default_crl_days	= 30
  default_md		= sha256
  preserve		= no
+@@ -45,10 +45,10 @@
+ output_password		= whatever
+ 
+ [server]
+-countryName		= FR
+-stateOrProvinceName	= Radius
+-localityName		= Somewhere
+-organizationName	= Example Inc.
+-emailAddress		= admin@example.org
+-commonName		= "Example Server Certificate"
++#countryName		= FR
++#stateOrProvinceName	= Radius
++#localityName		= Somewhere
++#organizationName	= Example Inc.
++#emailAddress		= admin@example.org
++#commonName		= "Example Server Certificate"
+ 
 diff -Naur --no-dereference default-config/clients.conf config/clients.conf
 --- default-config/clients.conf	1970-01-01 01:00:01.000000000 +0100
 +++ config/clients.conf	2020-04-17 03:59:52.220171206 +0200
@@ -52,6 +141,48 @@ diff -Naur --no-dereference default-config/clients.conf config/clients.conf
  
  	#
  	#  A pointer to the "home_server_pool" OR a "home_server"
+diff -Naur --no-dereference default-config/mods-available/eap config/mods-available/eap
+--- default-config/mods-available/eap	1970-01-01 01:00:01.000000000 +0100
++++ config/mods-available/eap	2020-04-18 05:19:31.383679277 +0200
+@@ -360,7 +360,10 @@
+ 		#  TLS-Client-Cert-Common-Name attribute.  This check
+ 		#  can be done via any mechanism you choose.
+ 		#
+-	#	check_cert_cn = %{User-Name}
++		#FIXME Accounting uses the user name so the user shouldn't
++		#      be able to choose this. However, I would rather use
++		#      the CN for accounting and permit any user name.
++		check_cert_cn = %{User-Name}
+ 
+ 		#  Set this option to specify the allowed
+ 		#  TLS cipher suites.  The format is listed
+@@ -459,7 +462,7 @@
+ 			#  If "enable = no" below, you CANNOT enable resumption for just one
+ 			#  user by setting the above attribute to "yes".
+ 			#
+-			enable = no
++			enable = yes
+ 
+ 			#  Lifetime of the cached entries, in hours. The sessions will be
+ 			#  deleted/invalidated after this time.
+@@ -474,7 +477,7 @@
+ 			#  set the "name" if you want to persist sessions (see
+ 			#  below).
+ 			#
+-		#	name = "EAP module"
++			name = "EAP module"
+ 
+ 			#  Simple directory-based storage of sessions.
+ 			#  Two files per session will be written, the SSL
+@@ -494,7 +497,7 @@
+ 			#
+ 			#  This feature REQUIRES "name" option be set above.
+ 			#
+-		#	persist_dir = "${logdir}/tlscache"
++			persist_dir = "${db_dir}/tlscache"
+ 		}
+ 
+ 		#  As of version 2.1.10, client certificates can be
 diff -Naur --no-dereference default-config/mods-available/sql config/mods-available/sql
 --- default-config/mods-available/sql	1970-01-01 01:00:01.000000000 +0100
 +++ config/mods-available/sql	2020-04-17 03:30:40.487163451 +0200
@@ -77,7 +208,16 @@ diff -Naur --no-dereference default-config/mods-available/sql config/mods-availa
  		# released (in ms) before giving up.
 diff -Naur --no-dereference default-config/radiusd.conf config/radiusd.conf
 --- default-config/radiusd.conf	1970-01-01 01:00:01.000000000 +0100
-+++ config/radiusd.conf	2020-04-17 01:13:46.608743832 +0200
++++ config/radiusd.conf	2020-04-18 05:46:47.887954935 +0200
+@@ -101,7 +101,7 @@
+ run_dir = ${localstatedir}/run/${name}
+ 
+ # Should likely be ${localstatedir}/lib/radiusd
+-db_dir = ${raddbdir}
++db_dir = ${localstatedir}/lib/freeradius
+ 
+ #
+ # libdir: Where to find the rlm_* modules.
 @@ -295,7 +295,7 @@
  	#  The command-line option "-X" over-rides this option, and forces
  	#  logging to go to stdout.
