@@ -1,0 +1,161 @@
+# This file will be combined with some config variables
+# to produce the nixos-wifi-ap-eap script.
+#
+# The following config values are required:
+# - SERVERNAME
+# - SECRETS_DIR
+# - CERTS_DIR
+# - SSID
+# - CLIENT_CERT_VALID_DAYS
+# - PATH with coreutils, sed, pwgen, openssl, zip
+
+set -e
+
+cmd_client_add() {
+  cn="$1"
+  email="${2:-$cn@$SERVERNAME}"
+  days="${3:-$CLIENT_CERT_VALID_DAYS}"
+  pwfile="$4"
+  if [ -z "$cn" ] ; then
+    echo "Usage: $0 client add username [email] [days] [passwordFile]" >&2
+    echo ""
+    echo "Default email is \"username@$SERVERNAME\"."
+    echo "Default valid days is set in NixOS config. It is $CLIENT_CERT_VALID_DAYS."
+    echo "If passwordFile is omitted, an interactive password"
+    echo "prompt will be used. Set it to \"-gen\" to generate"
+    echo "a new random password (will be displayed on stdout)."
+    exit 1
+  fi
+
+  if [ -n "$pwfile" -a "$pwfile" != "-gen" ] ; then
+    pwfile="$(realpath "$pwfile")"
+  fi
+  output="$(realpath "$cn".zip)"
+
+  #NOTE The FreeRadius makefile uses part of email as user name
+  #     but we are enforcing identity==cn for the client so we
+  #     use cn for the file names.
+  username="$cn"
+
+  cd $CERTS_DIR
+  umask 077
+  if [ -e "user-cert-$username" ] ; then
+    echo "Directory already exists. If this is left over from a previous failed attempt, you can delete it:" >&2
+    echo "  $(realpath "user-cert-$username")" >&2
+    exit 1
+  fi
+  mkdir "user-cert-$username"
+  cd "user-cert-$username"
+  cp ../client.cnf .
+  sed -i 's_^\(dir\s*=\s*\).*_\1../_ ; /^\(emailAddress\|commonName\) *=/ d' client.cnf
+  echo "emailAddress = $email" >>client.cnf
+  echo "commonName = $cn"      >>client.cnf
+  # We always update default_days because the file contains the default setting
+  # from the time it was created. The user may have changed the default.
+  sed -i "s/^\\(default_days\s*=\s*\\).*/\\1$days/" client.cnf
+
+  if [ -z "$pwfile" ] ; then
+    read -s -p "Password for new key: " pw1
+    echo
+    read -s -p "Again: " pw2
+    echo
+    if [ "$pw1" != "$pw2" ] ; then
+      echo "Passwords do not match!" >&2
+      cd ..
+      rm -rf "user-cert-$username"
+      exit 1
+    elif [ "${#pw1}" -lt 4 ] ; then
+      echo "Password too short. OpenSSL will only accept passwords with at least 4 characters." >&2
+      cd ..
+      rm -rf "user-cert-$username"
+      exit 1
+    fi
+    echo "$pw1" >pw1
+  elif [ "$pwfile" == "-gen" ] ; then
+    pwgen -AB0 8 1 >pw1
+    echo "Password for new certificate: $(cat pw)"
+  else
+    ln -s "$pwfile" pw1
+  fi
+
+  # Duplicate the password because OpenSSL will use the first line for passin and the second for passout.
+  (cat pw1; cat pw1) >>pw
+
+  sed -n '/output_password/ s/.*= //p' ../ca.cnf >pw_ca
+
+  set -x
+  # generate key and csr
+  openssl req -new -out client.csr -keyout client.key -config ./client.cnf -passout file:pw
+  # sign csr to generate certificate
+  openssl ca -batch -keyfile ../ca.key -cert ../ca.pem -in client.csr  -passin file:pw_ca -out client.crt -extensions xpclient_ext -extfile ../xpextensions -config ./client.cnf
+  # combine key and cert to generate binary pkcs12 file
+  openssl pkcs12 -export -in client.crt -inkey client.key -out "$username.p12"  -passin file:pw -passout file:pw
+  # generate ascii cert
+  openssl pkcs12 -in "$username.p12" -out "$username.pem" -passin file:pw -passout file:pw
+  # verify
+  #c_rehash .
+  openssl verify -CApath .. "$username.pem"
+  set +x
+
+  cp ../ca.pem "$SERVERNAME.pem"
+  cp ../ca.der "$SERVERNAME.der"
+
+  cat >README.txt <<EOF
+Use these settings:
+  SSID: $SSID
+  Security: WPA2 Enterprise (EAP)
+  Autentication / EAP method: TLS (not TTLS!)
+  CA certificate: $SERVERNAME.pem or $SERVERNAME.der
+  Domain: $SERVERNAME
+  User certificate and private key: $username.pem or $username.p12
+  Password: 
+
+You may have to import the certificates if the settings dialog doesn't
+let you choose a file. You can usually do that by opening the certificate
+file (e.g. double-click the file). On Android, make sure that you select
+"wifi" instead of "VPN" when importing the file.
+
+If the dialog asks for username and password instead of a user certificate,
+you have selected the wrong EAP method (see above). It will not work without
+the user certificate.
+EOF
+
+  zip $output README.txt "$SERVERNAME.pem" "$SERVERNAME.der" "$username.p12" "$username.pem"
+
+  cd ..
+  rm -rf "user-cert-$username"
+
+  echo "Certificate has been stored in $output"
+}
+
+cmd_client_list() {
+  echo TODO
+  exit 1
+}
+
+cmd_client_revoke() {
+  echo TODO
+  exit 1
+}
+
+help() {
+  echo "$0 client add ...    : generate certificate for client"
+  echo "$0 client list       : list existing certificates"
+  echo "$0 client revoke     : revoke client certificate"
+}
+
+case "$1 $2" in
+  "client add" | "client list" | "client revoke")
+    cmd=cmd_$1_$2
+    shift; shift
+    $cmd "$@"
+    ;;
+  " " | "help ")
+    help
+    ;;
+  *)
+    echo "invalid command" >&2
+    help
+    exit 1
+    ;;
+esac

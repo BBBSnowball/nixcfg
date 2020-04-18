@@ -46,11 +46,22 @@ let
       ${addCertOptions "server.cnf"       cfg.commonNameServer cfg.serverCertValidDays}
       ${addCertOptions "inner-server.cnf" cfg.commonNameInner  cfg.serverCertValidDays}
       ${addCertOptions "client.cnf"       "dummy"              cfg.clientCertValidDays}
-      make dh server ca inner-server
+      make destroycerts dh server ca inner-server
+      c_rehash .
       cd ..
       mv certs.tmp certs
     fi
   '';
+
+  manageScript = pkgs.writeShellScriptBin "nixos-wifi-ap-eap" (''
+    SERVERNAME=${lib.escapeShellArg cfg.commonNameInner}
+    SECRETS_DIR=${lib.escapeShellArg secretsDir}
+    CERTS_DIR=${lib.escapeShellArg secretsDir}/certs
+    SSID=${lib.escapeShellArg config.services.hostapd.ssid}
+    CLIENT_CERT_VALID_DAYS=${toString cfg.clientCertValidDays}
+    export PATH=${pkgs.coreutils}/bin:${pkgs.gnused}/bin:${pkgs.pwgen}/bin:${pkgs.openssl}/bin:${pkgs.zip}/bin
+
+  '' + (builtins.readFile ./nixos-wifi-ap-eap-tail));
 in {
   config = lib.mkIf cfg.enable {
     warnings = if cfg.serverCertValidDays == 60 && cfg.clientCertValidDays == 60
@@ -71,11 +82,14 @@ in {
     systemd.services.freeradius-init = {
       description = "Generate keys and other secrets for radius server.";
       wantedBy = [ "freeradius.service" ];
-      path = with pkgs; [ coreutils openssl gnumake gnused gnugrep ];
+      # Perl is required for OpenSSL's c_rehash script.
+      path = with pkgs; [ coreutils openssl gnumake gnused gnugrep perl ];
       serviceConfig = {
         Type = "oneshot";
         ExecStart = initScript;
       };
     };
+
+    environment.systemPackages = [manageScript];
   };
 }

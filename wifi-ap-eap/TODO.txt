@@ -8,7 +8,7 @@
   - store them in /var/lib/freeradius ?
     -> probably not; where are the SSH private keys? -> /etc/ssh
 - DONE automatically enable 4-address mode if requested
-- add script to generate user cert
+- DONE add script to generate user cert
   - similar to the script for task server
   - also generate pfx file for android:
     - openssl pkcs12 -export -in daniela@laptop.pem -out daniela@laptop.pfx -passin pass:x -passout pass:x
