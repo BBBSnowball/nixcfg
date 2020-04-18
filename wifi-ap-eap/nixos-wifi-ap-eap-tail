@@ -107,17 +107,18 @@ Use these settings:
   Autentication / EAP method: TLS (not TTLS!)
   CA certificate: $SERVERNAME.pem or $SERVERNAME.der
   Domain: $SERVERNAME
+  Identity: $cn
   User certificate and private key: $username.pem or $username.p12
-  Password: 
 
 You may have to import the certificates if the settings dialog doesn't
 let you choose a file. You can usually do that by opening the certificate
 file (e.g. double-click the file). On Android, make sure that you select
 "wifi" instead of "VPN" when importing the file.
 
-If the dialog asks for username and password instead of a user certificate,
+If the dialog only asks for username and password instead of a user certificate,
 you have selected the wrong EAP method (see above). It will not work without
-the user certificate.
+the user certificate. You still need the password for the certificate file.
+You should have received this password in addition to these files.
 EOF
 
   zip $output README.txt "$SERVERNAME.pem" "$SERVERNAME.der" "$username.p12" "$username.pem"

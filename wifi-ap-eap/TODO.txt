@@ -15,6 +15,9 @@
     - Can we use the .p12 file?
 - DONE accounting shouldn't use user name for client cert
   -> workaround: force user name to match certificate
+- add option for putting the users file in another place
+  - radius group must have access and the user cannot do that before the group exists
+  - We can copy the file to the statedir - on start and reload.
 - missing network interfaces shouldn't delay boot
 - publish the config somewhere
 - maybe add something that creates graphs from accounting data

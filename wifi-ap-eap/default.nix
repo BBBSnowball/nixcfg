@@ -20,7 +20,7 @@
       example = true;
       description = ''
         Enable 4-address mode if true. This is often required when bridging packets.
-        This is equivalent to: iw dev <devname> 4addr on
+        This is equivalent to: iw dev <devname> set 4addr on
         Valid values are true (turn on), false (turn off) or null (don't change).
 
         The wifi frames usually contain the MAC addresses of the wifi interfaces

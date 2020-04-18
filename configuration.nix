@@ -39,7 +39,7 @@ in {
     enable = true;
     countryCode = "DE";
     serverName = "ap.verl.bbbsnowball.de";
-    wifiFourAddressMode = true;
+    #wifiFourAddressMode = true;
     serverCertValidDays = 3650;
     clientCertValidDays = 3650;
   };

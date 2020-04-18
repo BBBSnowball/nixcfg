@@ -29,14 +29,17 @@ let
     set -e
     umask 077
     mkdir -p ${secretsDir}
+    chown radius ${secretsDir}
     cd ${secretsDir}
     if [ ! -f client-secret.conf ] ; then
       echo -n "secret = " >client-secret.conf.tmp
       openssl rand -hex 20 >>client-secret.conf.tmp
       mv client-secret.conf.tmp client-secret.conf
+      chown radius client-secret.conf
     fi
     if [ ! -f users ] ; then
       touch users
+      chown -R radius users
     fi
     if [ ! -e certs ] ; then
       rm -rf certs.tmp
@@ -48,6 +51,7 @@ let
       ${addCertOptions "client.cnf"       "dummy"              cfg.clientCertValidDays}
       make destroycerts dh server ca inner-server
       c_rehash .
+      chown -R radius .
       cd ..
       mv certs.tmp certs
     fi
