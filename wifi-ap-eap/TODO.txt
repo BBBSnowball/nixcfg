@@ -13,6 +13,7 @@
   - also generate pfx file for android:
     - openssl pkcs12 -export -in daniela@laptop.pem -out daniela@laptop.pfx -passin pass:x -passout pass:x
     - Can we use the .p12 file?
+      -> yes, but ca file needs .crt extension
 - DONE accounting shouldn't use user name for client cert
   -> workaround: force user name to match certificate
 - add option for putting the users file in another place

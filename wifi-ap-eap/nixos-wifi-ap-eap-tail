@@ -73,7 +73,7 @@ cmd_client_add() {
     echo "$pw1" >pw1
   elif [ "$pwfile" == "-gen" ] ; then
     pwgen -AB0 8 1 >pw1
-    echo "Password for new certificate: $(cat pw)"
+    echo "Password for new certificate: $(cat pw1)"
   else
     ln -s "$pwfile" pw1
   fi
@@ -97,15 +97,16 @@ cmd_client_add() {
   openssl verify -CApath .. "$username.pem"
   set +x
 
-  cp ../ca.pem "$SERVERNAME.pem"
-  cp ../ca.der "$SERVERNAME.der"
+  cp ../ca.pem "$SERVERNAME.pem"  # Linux
+  cp ../ca.pem "$SERVERNAME.crt"  # Android needs different extension
+  cp ../ca.der "$SERVERNAME.der"  # Windows
 
   cat >README.txt <<EOF
 Use these settings:
   SSID: $SSID
   Security: WPA2 Enterprise (EAP)
   Autentication / EAP method: TLS (not TTLS!)
-  CA certificate: $SERVERNAME.pem or $SERVERNAME.der
+  CA certificate: $SERVERNAME.pem or $SERVERNAME.der or $SERVERNAME.crt
   Domain: $SERVERNAME
   Identity: $cn
   User certificate and private key: $username.pem or $username.p12
@@ -121,7 +122,7 @@ the user certificate. You still need the password for the certificate file.
 You should have received this password in addition to these files.
 EOF
 
-  zip $output README.txt "$SERVERNAME.pem" "$SERVERNAME.der" "$username.p12" "$username.pem"
+  zip $output README.txt "$SERVERNAME.pem" "$SERVERNAME.der" "$SERVERNAME.crt" "$username.p12" "$username.pem"
 
   cd ..
   rm -rf "user-cert-$username"
