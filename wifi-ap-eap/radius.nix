@@ -29,6 +29,9 @@ let
     set -e
     umask 077
     mkdir -p ${secretsDir}
+    # root must be able to update hostapd.conf without CAP_DAC_OVERRIDE
+    chown radius:root ${secretsDir}
+    chmod 770 ${secretsDir}
     chown radius ${secretsDir}
     cd ${secretsDir}
     if [ ! -f client-secret.conf ] ; then

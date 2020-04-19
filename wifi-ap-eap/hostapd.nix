@@ -71,7 +71,20 @@ in {
     services.udev.packages = [ pkgs.crda ];
 
     systemd.services.hostapd.wants = [ "freeradius-init.service" ];
-    systemd.services.hostapd.serviceConfig.ExecStartPre = [createConfigWithSecret];
-    systemd.services.hostapd.serviceConfig.ExecStart = lib.mkForce "${pkgs.hostapd}/bin/hostapd ${secretConfigFile}";
+    systemd.services.hostapd.serviceConfig = {
+      ExecStartPre = ["+${createConfigWithSecret}"];
+      ExecStart = lib.mkForce "${pkgs.hostapd}/bin/hostapd ${secretConfigFile}";
+
+      NoNewPrivileges = true;
+      CapabilityBoundingSet = "~CAP_SYS_ADMIN CAP_DAC_OVERRIDE CAP_SYS_PTRACE";
+      PrivateMounts = true;
+      PrivateTmp = true;
+      ProtectHome = true;
+      ProtectSystem = true;
+      RestrictSUIDSGID = true;
+      SystemCallFilter = "~@obsolete";
+      LockPersonality = true;
+      ProtectHostname = true;
+    };
   };
 }
