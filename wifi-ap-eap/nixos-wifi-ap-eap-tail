@@ -213,8 +213,12 @@ cmd_client_revoke() {
   fi
 
   openssl ca -config ca.cnf -passin pass:whatever -revoke "$serial.pem"
+  cmd_client_updatecrl
+}
+
+cmd_client_updatecrl() {
+  cd $CERTS_DIR
   openssl ca -config ca.cnf -passin pass:whatever -gencrl >ca.crl
-  #c_rehash . >/dev/null
   hash="$(openssl x509 -subject_hash -noout -in ca.pem)"
   cp ca.crl ca_dir/
   oldfile="$(ls -1 ca_dir/"$hash".r* | tail -n1)"
@@ -240,10 +244,11 @@ help() {
   echo "$0 client list       : list existing certificates"
   echo "$0 client revoke     : revoke client certificate"
   echo "$0 client listcrl    : show certificate revocation list"
+  echo "$0 client updatecrl  : update certificate revocation list (e.g. after manual changes to index.txt)"
 }
 
 case "$1 $2" in
-  "client add" | "client list" | "client revoke" | "client listcrl")
+  "client add" | "client list" | "client revoke" | "client listcrl" | "client updatecrl")
     cmd=cmd_$1_$2
     shift; shift
     $cmd "$@"
