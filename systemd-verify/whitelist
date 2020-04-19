@@ -1,0 +1,10 @@
+$ mostly empty file if socket is disabled, should probably be missing alltogether
+systemd-journal-gatewayd.socket: Unit has no Listen setting (ListenStream=, ListenDatagram=, ListenFIFO=, ...). Refusing.
+Unit systemd-journal-gatewayd.socket has a bad unit file setting.
+$ syslog.socket is always generated but syslog.service can be disabled by services.rsyslogd.enable
+syslog.socket: Service syslog.service not loaded, syslog.socket cannot be started.
+$ We may have references to man pages that are not installed. We don't care.
+: Command 'man .*' failed with code 16
+$ Some commands don't exist but this won't cause errors if there error code is masked (prefix "-" in the Exec* line).
+$FIXME: I think this one actually might be a problem for an interactive system.
+systemd-logind.service: Command /sbin/modprobe is not executable: No such file or directory

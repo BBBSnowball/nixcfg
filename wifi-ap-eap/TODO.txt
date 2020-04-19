@@ -53,8 +53,32 @@
 - WONTFIX don't split options, i.e. don't use services.hostapd?
   - option 1: copy services.wifi-ap-eap.hostapd to services.hostapd if enabled
   - option 2: don't enable services.hostapd; copy the relevant parts to our .nix files
+- test systemd config
+  - Systemd has the very annoying feature that it ignores unknown keys in config files. I get why they
+    do this and this can often be useful for backward compatible unit files. However, it often masks
+    errors in the files. The infamous example is "User = 0day".
+  - I just learned that there is a command to check unit files. It can be applied to all of them like that:
+    find -L /etc/systemd/{system,user} -type f ! -name "*.conf" -exec systemd-analyze verify {} \+
+  - There are some false positives:
+    - emergency.service tries to start plymouth but errors are masked with "-".
+    - Lots of man pages don't exist. We probably don't care, i.e. having the reference in the unit file is
+      still useful even if we don't install that man page.
+  - Furthermore, we usually want to check a config before applying it and we need to do so in the right
+    context, e.g. don't complain that "foo" cannot be started if it is present in the new system but not
+    the old one.
+  - There remaining errors are:
+    systemd-journal-gatewayd.socket: Unit has no Listen setting (ListenStream=, ListenDatagram=, ListenFIFO=, ...). Refusing.
+    Unit systemd-journal-gatewayd.socket has a bad unit file setting.
+      -> mostly empty, should probably be missing alltogether
+    clean-mount-point@i.service: Failed to create clean-mount-point@i.service/start: Unit i.mount not found.
+      -> I don't think this is ever referenced with instance="i" but systemd mis-interprets the empty instance name
+         and checks "Before=i.mount" instead of "Before=%i.mount".
+    syslog.socket: Service syslog.service not loaded, syslog.socket cannot be started.
+      -> I think the socket shouldn't exist if the service is not active.
+      -> The service is gated by services.rsyslogd.enable. The socket is always part of upstreamSystemUnits in systemd.nix.
+  - find -L result/etc/systemd/{system,user} -type f ! -name "*.conf" ! -name "*@.*" -exec systemd-analyze verify {} \+ 2>&1|grep -v man
 
-- put clients in different VLANs
+- put clients into different VLANs
   - How do we add additional attributes when using certificates? Can we do that in the users file anyway?
   - What do we have to do to make VLANs work? Can we do something other than VLANs, e.g. bridge some users
     to ethernet and others to a private bridge for VMs?
@@ -67,3 +91,4 @@
   - SHA1, 2048 bit
   - probably fixed: https://github.com/espressif/esp-idf/commit/bc97b0f380210b97b7fd98c5f304af7e83c28b7f
   - We are using SHA256 and 2048 bit. This should work with the fix for SHA256.
+

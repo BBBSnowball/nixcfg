@@ -70,7 +70,7 @@ in {
     # rules for wifi radiation -> required for country_code setting to be used
     services.udev.packages = [ pkgs.crda ];
 
-    systemd.services.hostapd.serviceConfig.wants = [ "freeradius-init.service" ];
+    systemd.services.hostapd.wants = [ "freeradius-init.service" ];
     systemd.services.hostapd.serviceConfig.ExecStartPre = [createConfigWithSecret];
     systemd.services.hostapd.serviceConfig.ExecStart = lib.mkForce "${pkgs.hostapd}/bin/hostapd ${secretConfigFile}";
   };
