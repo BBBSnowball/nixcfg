@@ -7,7 +7,7 @@
 # - CERTS_DIR
 # - SSID
 # - CLIENT_CERT_VALID_DAYS
-# - PATH with coreutils, sed, pwgen, openssl, zip
+# - PATH with coreutils, sed, grep, pwgen, openssl, perl, zip
 
 set -e
 
@@ -94,7 +94,7 @@ cmd_client_add() {
   openssl pkcs12 -in "$username.p12" -out "$username.pem" -passin file:pw -passout file:pw
   # verify
   #c_rehash .
-  openssl verify -CApath .. "$username.pem"
+  openssl verify -CApath ../ca_dir "$username.pem"
   set +x
 
   cp ../ca.pem "$SERVERNAME.pem"  # Linux
@@ -131,23 +131,110 @@ EOF
 }
 
 cmd_client_list() {
-  echo TODO
-  exit 1
+  case "$1" in
+    --raw)
+      cd $CERTS_DIR
+      openssl ca -updatedb -config ca.cnf -passin pass:whatever
+      cat index.txt
+      echo
+      echo "V - valid, R - revoked, E - expired"
+      echo "see https://pki-tutorial.readthedocs.io/en/latest/cadb.html"
+      ;;
+    "")
+      cd $CERTS_DIR
+      openssl ca -updatedb -config ca.cnf -passin pass:whatever >/dev/null
+      printf "No.  Type    %-30s  %-50s  Status\n" "Username" "Email"
+      printf -- "---  ----    %-30s  %-50s  ------\n" "--------" "-----"
+      while read line ; do
+        status="$(echo "$line"|cut -f 1)"
+        valid_until="$(echo "$line"|cut -f 2)"
+        revocation_time="$(echo "$line"|cut -f 3)"
+        serial="$(echo "$line"|cut -f 4)"
+        filename="$(echo "$line"|cut -f 5)"
+        dn="$(echo "$line"|cut -f 6)"
+        #echo "$status,$valid_until,$revocation_time,$serial,$filename,$dn"
+        x="${dn#*/CN=}"
+        cn="${x%/emailAddress=*}"
+        email="${dn#*/emailAddress=}"
+        type="$(sed -n 's/^\s*TLS Web \(Server\|Client\) Authentication$/\1/p' "$serial.pem" 2>/dev/null)"
+        type="${type,,}"
+        printf "%2s:  %-6s  %-30s  %-50s  " "$serial" "${type:-???}" "$cn" "$email"
+        case "$status" in
+          V) printf "valid until %s\n" "$valid_until";;
+          R) printf "revoked at  %s\n" "$revocation_time";;
+          E) printf "expired at  %s\n" "$valid_until";;
+          *) printf "unknown\n";;
+        esac
+      done <index.txt
+      ;;
+    *)
+      echo "Usage: $0 client list [--raw]" >&2
+      exit 1
+      ;;
+  esac
 }
 
 cmd_client_revoke() {
-  echo TODO
-  exit 1
+  if [ -z "$1" ] ; then
+    echo "Usage: $0 client revoke regex [-y]" >&2
+    echo "  Use \"-y\" to auto-accept confirmation."
+    exit 1
+  fi
+
+  cd $CERTS_DIR
+  lines="$(egrep "$1" index.txt || true)"
+
+  if [ -z "$lines" ] ; then
+    echo "no match" >&2
+    exit 1
+  elif [ "$(echo "$lines" | wc -l)" != 1 ] ; then
+    echo "more than one match" >&2
+    echo "$lines" | head -n10
+    exit 1
+  fi
+
+  serial="$(echo "$lines" | cut -f 4)"
+
+  if [ ! -f "$serial.pem" ] || ! grep -q "TLS Web Client Authentication" "$serial.pem" 2>/dev/null ; then
+    echo "certificate file doesn't exist or is not a client certificate ($serial.pem)" >&2
+    exit 1
+  fi
+
+  if [ "$2" == "-y" ] ; then
+    echo "Revoking $serial.pem: $lines"
+  else
+    echo "Revoke $serial.pem?"
+    echo "  $lines"
+    read -p "Revoke? [y/n] " confirm
+    if [ "$confirm" != "y" ] ; then
+      echo "Aborting."
+      exit 1
+    fi
+  fi
+
+  openssl ca -config ca.cnf -passin pass:whatever -revoke "$serial.pem"
+  openssl ca -config ca.cnf -passin pass:whatever -gencrl >ca.crl
+  #c_rehash . >/dev/null
+  hash="$(openssl x509 -subject_hash -noout -in ca.pem)"
+  cp ca.crl ca_dir/
+  ln -sf ca.crl "ca_dir/$hash.r0"
+  echo "done."
+}
+
+cmd_client_listcrl() {
+  cd $CERTS_DIR
+  openssl crl -in ca.crl -noout -text
 }
 
 help() {
   echo "$0 client add ...    : generate certificate for client"
   echo "$0 client list       : list existing certificates"
   echo "$0 client revoke     : revoke client certificate"
+  echo "$0 client listcrl    : show certificate revocation list"
 }
 
 case "$1 $2" in
-  "client add" | "client list" | "client revoke")
+  "client add" | "client list" | "client revoke" | "client listcrl")
     cmd=cmd_$1_$2
     shift; shift
     $cmd "$@"

@@ -143,7 +143,27 @@ diff -Naur --no-dereference default-config/clients.conf config/clients.conf
  	#  A pointer to the "home_server_pool" OR a "home_server"
 diff -Naur --no-dereference default-config/mods-available/eap config/mods-available/eap
 --- default-config/mods-available/eap	1970-01-01 01:00:01.000000000 +0100
-+++ config/mods-available/eap	2020-04-18 05:19:31.383679277 +0200
++++ config/mods-available/eap	2020-04-19 05:21:01.883839504 +0200
+@@ -321,16 +321,16 @@
+ 		#     'c_rehash' is OpenSSL's command.
+ 		#  3) uncomment the lines below.
+ 		#  5) Restart radiusd
+-	#	check_crl = yes
++		check_crl = yes
+ 
+ 		# Check if intermediate CAs have been revoked.
+ 	#	check_all_crl = yes
+ 
+-		ca_path = ${cadir}
++		ca_path = ${cadir}/ca_dir
+ 
+ 		# Accept an expired Certificate Revocation List
+ 		#
+-	#	allow_expired_crl = no
++		allow_expired_crl = no
+ 
+ 		#  If check_cert_issuer is set, the value will
+ 		#  be checked against the DN of the issuer in
 @@ -360,7 +360,10 @@
  		#  TLS-Client-Cert-Common-Name attribute.  This check
  		#  can be done via any mechanism you choose.

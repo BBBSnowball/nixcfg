@@ -23,7 +23,7 @@ let
     echo ${lib.escapeShellArg "organizationName      = ${cfg.organizationName}"}    >>${file}
     echo ${lib.escapeShellArg "emailAddress          = ${cfg.emailAddress}"}        >>${file}
     echo ${lib.escapeShellArg "commonName            = ${cn}"}                      >>${file}
-    sed -i 's/^\(default_days *= *\).*/\1${toString days}/' ${file}
+    sed -i 's/^\(default_days\s*=\s*\).*/\1${toString days}/' ${file}
   '';
   initScript = pkgs.writeShellScript "freeradius-init.sh" ''
     set -e
@@ -50,7 +50,11 @@ let
       ${addCertOptions "inner-server.cnf" cfg.commonNameInner  cfg.serverCertValidDays}
       ${addCertOptions "client.cnf"       "dummy"              cfg.clientCertValidDays}
       make destroycerts dh server ca inner-server
-      c_rehash .
+      openssl ca -gencrl -config ca.cnf -passin pass:whatever >ca.crl
+      #c_rehash .
+      mkdir -p ca_dir
+      cp ca.pem ca.crl ca_dir
+      c_rehash ca_dir
       chown -R radius .
       cd ..
       mv certs.tmp certs
@@ -64,7 +68,7 @@ let
     CERTS_DIR=${lib.escapeShellArg secretsDir}/certs
     SSID=${lib.escapeShellArg config.services.hostapd.ssid}
     CLIENT_CERT_VALID_DAYS=${toString cfg.clientCertValidDays}
-    export PATH=${pkgs.coreutils}/bin:${pkgs.gnused}/bin:${pkgs.pwgen}/bin:${pkgs.openssl}/bin:${pkgs.zip}/bin
+    export PATH=${pkgs.coreutils}/bin:${pkgs.gnused}/bin:${pkgs.gnugrep}/bin:${pkgs.pwgen}/bin:${pkgs.openssl}/bin:${pkgs.perl}/bin:${pkgs.zip}/bin
 
   '' + (builtins.readFile ./nixos-wifi-ap-eap-tail));
 in {

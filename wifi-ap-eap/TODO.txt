@@ -24,7 +24,13 @@
 - DONE How is the structure of the certificates?
   - In particular: If client certificates are also signed by the CA - what stops them from impersonating
     the server? Clients can check the common name but the default is to not do that.
-  - I think the type of the certificate is different.
+  - I think the type of the certificate is different - the config file either has [client]
+    or [server].
+  - From the generated certificate files (02.pem vs. 05.pem):
+      X509v3 extensions:
+        X509v3 Extended Key Usage: 
+    -     TLS Web Server Authentication
+    +     TLS Web Client Authentication
 - WONTFIX fix 4addr mode
   - I cannot set this while the interface is already active and we have to enable WDS mode
     if we want to use it.
@@ -32,14 +38,18 @@
   - https://wireless.wiki.kernel.org/en/users/documentation/iw#setting_up_a_wds_peer
   - Ok, this is complicated and I have no use for it right now.
   - I will remove the option, for now.
+- TODO revocation
+  - https://jamielinux.com/docs/openssl-certificate-authority/certificate-revocation-lists.html
+  - https://wiki.alpinelinux.org/wiki/FreeRadius_EAP-TLS_configuration
+  - works as expected: revoked certificate cannot be used anymore
+  - We can only revoke a certificate if we still have the file; but OpenSSL is keeping them anyway.
+  - Well, ok, not quite - it doesn't work for my second test.
+  - What do we have to do for a revocation to become active?
 
 - missing network interfaces shouldn't delay boot
 - publish the config somewhere
 - maybe add something that creates graphs from accounting data
   - bandwidth per day/hour; total and per device/user
-- revocation
-  - https://jamielinux.com/docs/openssl-certificate-authority/certificate-revocation-lists.html
-  - https://wiki.alpinelinux.org/wiki/FreeRadius_EAP-TLS_configuration
 - don't split options, i.e. don't use services.hostapd?
   - option 1: copy services.wifi-ap-eap.hostapd to services.hostapd if enabled
   - option 2: don't enable services.hostapd; copy the relevant parts to our .nix files
