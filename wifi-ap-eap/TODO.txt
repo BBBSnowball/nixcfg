@@ -53,7 +53,7 @@
 - WONTFIX don't split options, i.e. don't use services.hostapd?
   - option 1: copy services.wifi-ap-eap.hostapd to services.hostapd if enabled
   - option 2: don't enable services.hostapd; copy the relevant parts to our .nix files
-- test systemd config
+- DONE test systemd config
   - Systemd has the very annoying feature that it ignores unknown keys in config files. I get why they
     do this and this can often be useful for backward compatible unit files. However, it often masks
     errors in the files. The infamous example is "User = 0day".
@@ -77,6 +77,10 @@
       -> I think the socket shouldn't exist if the service is not active.
       -> The service is gated by services.rsyslogd.enable. The socket is always part of upstreamSystemUnits in systemd.nix.
   - find -L result/etc/systemd/{system,user} -type f ! -name "*.conf" ! -name "*@.*" -exec systemd-analyze verify {} \+ 2>&1|grep -v man
+  - Point in case for using a chroot/mount namespace: I had tested my script with three result links. The first one had
+    a correct hostapd.service, the second one had the bug and the third one was an old one without hostapd. The script
+    was correct for the first two but it was reporting the error for the third one - presumably because it was also
+    looking at files of my current system.
 
 - put clients into different VLANs
   - How do we add additional attributes when using certificates? Can we do that in the users file anyway?
