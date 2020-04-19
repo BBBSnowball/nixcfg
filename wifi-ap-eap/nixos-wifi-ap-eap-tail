@@ -217,7 +217,16 @@ cmd_client_revoke() {
   #c_rehash . >/dev/null
   hash="$(openssl x509 -subject_hash -noout -in ca.pem)"
   cp ca.crl ca_dir/
-  ln -sf ca.crl "ca_dir/$hash.r0"
+  oldfile="$(ls -1 ca_dir/"$hash".r* | tail -n1)"
+  num="${oldfile#*.r}"
+  if [ -n "$num" -a "1${num}" -ge 10 ] ; then
+    ln -sf ca.crl "ca_dir/$hash.r$[$num+1]"
+    rm "$oldfile"
+  else
+    echo "CA directory is not as expected. Falling back to c_rehash and restarting FreeRadius."
+    c_rehash ca_dir
+    systemctl restart freeradius
+  fi
   echo "done."
 }
 

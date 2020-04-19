@@ -45,6 +45,8 @@
   - We can only revoke a certificate if we still have the file; but OpenSSL is keeping them anyway.
   - Well, ok, not quite - it doesn't work for my second test.
   - What do we have to do for a revocation to become active?
+  - https://community.openvpn.net/openvpn/ticket/623?__cf_chl_jschl_tk__=d2ab2ea022d2991016710bf0cc28a6547e099963-1587268160-0-ASGtk8kPjK3AQmHGs7B2azUY6sRsncqiEn39xwJnZ_p9zICeLTpTcgd8MUZluBOIWh1oc9OaPLNo04TGYt8-7ueWqKQ4FKyMBduBHfbx31Yp225pR82-7w_pufFbSyQP7d_OyFPF5FKSJwqtE2L8qJf0MIJihyFmIPW3Y22UE_oprWU3X7CLsQQwYodtNPcJSReYSe823udBoMmr9Nclh8EMdB9ET-i0c6LjNwxe0jA_xgNF7cy9jclfMhaepsYQwPLXgt5rpZyr_Ze0cWZp-6z2KmfYfIUjkvNJGSBi0pZR
+  - This confirms my suspicion: Revocation is active after a restart but reload doesn't help.
 
 - missing network interfaces shouldn't delay boot
 - publish the config somewhere
