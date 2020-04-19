@@ -88,6 +88,13 @@ in {
 
     systemd.services.freeradius.serviceConfig.StateDirectory = "radiusd";
 
+    systemd.services.freeradius.serviceConfig.UMask = "077";
+    #systemd.services.freeradius.serviceConfig.PrivateNetwork = true;
+    systemd.services.freeradius.serviceConfig.NoNewPrivileges = true;
+    systemd.services.freeradius.serviceConfig.PrivateDevices = true;
+    systemd.services.freeradius.serviceConfig.CapabilityBoundingSet = "";
+    systemd.services.freeradius.serviceConfig.RestrictAddressFamilies = "AF_INET AF_INET6 AF_UNIX";
+
     systemd.services.freeradius.serviceConfig.BindPaths="${secretsDir}/certs/ca_dir:${secretsDir}/certs/ca_dir";
     systemd.services.freeradius.preStart = ''
       cd "${secretsDir}/certs/ca_dir"
