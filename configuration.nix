@@ -164,6 +164,7 @@ in {
 
   programs.bash.interactiveShellInit = ''
     shopt -s histappend
+    alias vi=vim
   '';
 
 

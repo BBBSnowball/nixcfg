@@ -38,7 +38,7 @@
   - https://wireless.wiki.kernel.org/en/users/documentation/iw#setting_up_a_wds_peer
   - Ok, this is complicated and I have no use for it right now.
   - I will remove the option, for now.
-- TODO revocation
+- DONE revocation
   - https://jamielinux.com/docs/openssl-certificate-authority/certificate-revocation-lists.html
   - https://wiki.alpinelinux.org/wiki/FreeRadius_EAP-TLS_configuration
   - works as expected: revoked certificate cannot be used anymore
@@ -47,18 +47,23 @@
   - What do we have to do for a revocation to become active?
   - https://community.openvpn.net/openvpn/ticket/623?__cf_chl_jschl_tk__=d2ab2ea022d2991016710bf0cc28a6547e099963-1587268160-0-ASGtk8kPjK3AQmHGs7B2azUY6sRsncqiEn39xwJnZ_p9zICeLTpTcgd8MUZluBOIWh1oc9OaPLNo04TGYt8-7ueWqKQ4FKyMBduBHfbx31Yp225pR82-7w_pufFbSyQP7d_OyFPF5FKSJwqtE2L8qJf0MIJihyFmIPW3Y22UE_oprWU3X7CLsQQwYodtNPcJSReYSe823udBoMmr9Nclh8EMdB9ET-i0c6LjNwxe0jA_xgNF7cy9jclfMhaepsYQwPLXgt5rpZyr_Ze0cWZp-6z2KmfYfIUjkvNJGSBi0pZR
   - This confirms my suspicion: Revocation is active after a restart but reload doesn't help.
+  - It does work if we increment the index in the filename.
+- DONE cleanup old files in tlscache
+  - This command is suggested in the example config: find ${logdir}/tlscache -mtime +2 -exec rm -f {} \;
+- WONTFIX don't split options, i.e. don't use services.hostapd?
+  - option 1: copy services.wifi-ap-eap.hostapd to services.hostapd if enabled
+  - option 2: don't enable services.hostapd; copy the relevant parts to our .nix files
 
+- put clients in different VLANs
+  - How do we add additional attributes when using certificates? Can we do that in the users file anyway?
+  - What do we have to do to make VLANs work? Can we do something other than VLANs, e.g. bridge some users
+    to ethernet and others to a private bridge for VMs?
 - missing network interfaces shouldn't delay boot
 - publish the config somewhere
 - maybe add something that creates graphs from accounting data
   - bandwidth per day/hour; total and per device/user
-- don't split options, i.e. don't use services.hostapd?
-  - option 1: copy services.wifi-ap-eap.hostapd to services.hostapd if enabled
-  - option 2: don't enable services.hostapd; copy the relevant parts to our .nix files
-
-find ${logdir}/tlscache -mtime +2 -exec rm -f {} \;
-
-ESP32:
-- https://github.com/espressif/esp-idf/issues/1297
-- SHA1, 2048 bit
-- probably fixed: https://github.com/espressif/esp-idf/commit/bc97b0f380210b97b7fd98c5f304af7e83c28b7f
+- test with ESP32
+  - https://github.com/espressif/esp-idf/issues/1297
+  - SHA1, 2048 bit
+  - probably fixed: https://github.com/espressif/esp-idf/commit/bc97b0f380210b97b7fd98c5f304af7e83c28b7f
+  - We are using SHA256 and 2048 bit. This should work with the fix for SHA256.

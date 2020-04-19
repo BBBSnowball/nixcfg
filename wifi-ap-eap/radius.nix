@@ -100,5 +100,9 @@ in {
     };
 
     environment.systemPackages = [manageScript];
+
+    services.cron.systemCronJobs = [
+      "42 3 * * * radius  find /var/lib/radiusd/tlscache -mtime +2 -exec rm -f {} \;"
+    ];
   };
 }
