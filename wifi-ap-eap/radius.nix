@@ -88,6 +88,14 @@ in {
 
     systemd.services.freeradius.serviceConfig.StateDirectory = "radiusd";
 
+    systemd.services.freeradius.serviceConfig.BindPaths="${secretsDir}/certs/ca_dir:${secretsDir}/certs/ca_dir";
+    systemd.services.freeradius.preStart = ''
+      cd "${secretsDir}/certs/ca_dir"
+      hash="$(${pkgs.openssl}/bin/openssl x509 -subject_hash -noout -in ca.pem)"
+      rm "$hash.r"*
+      ln -sf ca.crl "$hash.r0"
+    '';
+
     systemd.services.freeradius-init = {
       description = "Generate keys and other secrets for radius server.";
       wantedBy = [ "freeradius.service" ];
@@ -102,7 +110,7 @@ in {
     environment.systemPackages = [manageScript];
 
     services.cron.systemCronJobs = [
-      "42 3 * * * radius  find /var/lib/radiusd/tlscache -mtime +2 -exec rm -f {} \;"
+      "42 3 * * * radius  find /var/lib/radiusd/tlscache -mtime +2 -exec rm -f {} \\+"
     ];
   };
 }

@@ -221,14 +221,16 @@ cmd_client_updatecrl() {
   openssl ca -config ca.cnf -passin pass:whatever -gencrl >ca.crl
   hash="$(openssl x509 -subject_hash -noout -in ca.pem)"
   cp ca.crl ca_dir/
-  oldfile="$(ls -1 ca_dir/"$hash".r* | tail -n1)"
+  oldfile="$(ls -1t ca_dir/"$hash".r* | head -n1)"
   num="${oldfile#*.r}"
   if [ -n "$num" -a "1${num}" -ge 10 ] ; then
     ln -sf ca.crl "ca_dir/$hash.r$[$num+1]"
-    rm "$oldfile"
+    find ca_dir -name "$hash.r*" -mtime +1 -exec rm -f {} \+
+    chown -R radius ca_dir
   else
     echo "CA directory is not as expected. Falling back to c_rehash and restarting FreeRadius."
     c_rehash ca_dir
+    chown -R radius ca_dir
     systemctl restart freeradius
   fi
   echo "done."
