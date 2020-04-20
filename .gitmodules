@@ -1,0 +1,3 @@
+[submodule "submodules/jens-dotfiles"]
+	path = submodules/jens-dotfiles
+	url = git@git.c3pb.de:jens/dotfiles.git

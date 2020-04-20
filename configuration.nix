@@ -78,21 +78,26 @@ in {
     qemu_kvm
     wirelesstools iw
 
-    #neovim page neovim-remote
-    (neovim.override {
-      vimAlias = true;
-      configure = {
-        packages.myPlugins = with pkgs.vimPlugins; {
-          start = [ vim-lastplace vim-nix ]; 
-          opt = [];
+    neovim neovim-remote fzf
+    # only in nixos unstable: page
+  ];
+  nixpkgs.overlays = [
+    (self: super: {
+      neovim = import ./submodules/jens-dotfiles/pkgs/neovim { pkgs = super; };
+    })
+    (self: super: {
+      neovim = super.neovim.override (old: {
+        viAlias = true;
+        vimAlias = true;
+        configure = old.configure // {
+          customRC = old.configure.customRC + ''
+            " set backspace=indent,eol,start
+            noremap <c-p> <Cmd>Files<CR>
+            "noremap <c-s-p> <Cmd>Commands<CR>
+            noremap <c-tab> <Cmd>bn<CR>
+          '';
         };
-        customRC = ''
-          " your custom vimrc
-          set nocompatible
-          set backspace=indent,eol,start
-          " ...
-        '';
-      };
+      });
     })
   ];
 
@@ -164,7 +169,6 @@ in {
 
   programs.bash.interactiveShellInit = ''
     shopt -s histappend
-    alias vi=vim
   '';
 
 
