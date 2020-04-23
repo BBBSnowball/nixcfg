@@ -91,8 +91,36 @@ in {
         viAlias = true;
         vimAlias = true;
         configure = old.configure // {
+          packages = old.configure.packages // {
+            myVimPackage2 = with pkgs.vimPlugins; {
+              start = [
+                #vim-buffergator
+                #(pkgs.vimUtils.buildVimPlugin {
+                #  name = "sidepanel.vim";
+                #  src = pkgs.fetchFromGitHub {
+                #    owner = "miyakogi";
+                #    repo = "sidepanel.vim";
+                #    rev = "0f8ff34a93cb15633fc0f79ae4ad8892ee772bf4";
+                #    sha256 = "0qhhi6mq1llkvpq8j89kvdlfgzrk3vgmhja29r0636g08x6cynkr";
+                #  };
+                #})
+                bufexplorer
+              ];
+              opt = [
+              ];
+            };
+          };
           customRC = old.configure.customRC + ''
             " set backspace=indent,eol,start
+
+            "FIXME doesn't work
+            "nnoremap <SPACE> <Nop>
+            "let mapleader = "<SPACE>"
+
+            noremap <SPACE>b <Cmd>Buffers<CR>
+            noremap <SPACE>c <Cmd>Commands<CR>
+            noremap <SPACE>f <Cmd>Files<CR>
+
             noremap <c-p> <Cmd>Files<CR>
             "noremap <c-s-p> <Cmd>Commands<CR>
             noremap <c-tab> <Cmd>bn<CR>
@@ -184,6 +212,14 @@ in {
 
   programs.bash.interactiveShellInit = ''
     shopt -s histappend
+
+    # https://www.reddit.com/r/neovim/comments/6npyjk/neovim_terminal_management_avoiding_nested_neovim/
+    if [ -n "$NVIM_LISTEN_ADDRESS" ]; then
+      export VISUAL="nvr -cc tabedit --remote-wait +'set bufhidden=wipe'"
+    else
+      export VISUAL="nvim"
+    fi
+    EDITOR="$VISUAL"
   '';
 
 
