@@ -105,6 +105,7 @@ in {
                 #  };
                 #})
                 bufexplorer
+                vim-orgmode
               ];
               opt = [
               ];
