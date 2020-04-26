@@ -81,12 +81,15 @@
     a correct hostapd.service, the second one had the bug and the third one was an old one without hostapd. The script
     was correct for the first two but it was reporting the error for the third one - presumably because it was also
     looking at files of my current system.
+- WONTFIX missing network interfaces shouldn't delay boot
+  - I have looked through lots of .nix files and I still don't know how to do that...
+  - Can we at least do this for the wifi? -> I don't know
 
 - put clients into different VLANs
   - How do we add additional attributes when using certificates? Can we do that in the users file anyway?
   - What do we have to do to make VLANs work? Can we do something other than VLANs, e.g. bridge some users
     to ethernet and others to a private bridge for VMs?
-- missing network interfaces shouldn't delay boot
+
 - publish the config somewhere
 - maybe add something that creates graphs from accounting data
   - bandwidth per day/hour; total and per device/user
