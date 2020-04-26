@@ -138,6 +138,23 @@ in {
             nnoremap <A-j> <C-w>j
             nnoremap <A-k> <C-w>k
             nnoremap <A-l> <C-w>l
+
+            "  " Set position (left or right) if neccesary (default: "left").
+            "  let g:sidepanel_pos = "left"
+            "  " Set width if neccesary (default: 32)
+            "  let g:sidepanel_width = 26
+            "  
+            "  " To use rabbit-ui.vim
+            "  "let g:sidepanel_use_rabbit_ui = 1
+            "  
+            "  " Activate plugins in SidePanel
+            "  let g:sidepanel_config = {}
+            "  let g:sidepanel_config['nerdtree'] = {}
+            "  "let g:sidepanel_config['tagbar'] = {}
+            "  "let g:sidepanel_config['gundo'] = {}
+            "  let g:sidepanel_config['buffergator'] = {}
+            "  "let g:sidepanel_config['vimfiler'] = {}
+            "  "let g:sidepanel_config['defx'] = {}
           '';
         };
       });
