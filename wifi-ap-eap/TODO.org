@@ -1,27 +1,27 @@
-- DONE change shared secret for hostapd/radius
+* DONE change shared secret for hostapd/radius
   - and store it in a secure location for hostapd
   - we could auto-generate this
   - hostapd doesn't seem to have any way to put the secret in a different file
-- DONE auto-generate certificates
+* DONE auto-generate certificates
   - add options for setting certificate options, e.g. name
   - auto-generate certificates
   - store them in /var/lib/freeradius ?
     -> probably not; where are the SSH private keys? -> /etc/ssh
-- DONE automatically enable 4-address mode if requested
-- DONE add script to generate user cert
+* DONE automatically enable 4-address mode if requested
+* DONE add script to generate user cert
   - similar to the script for task server
   - also generate pfx file for android:
     - openssl pkcs12 -export -in daniela@laptop.pem -out daniela@laptop.pfx -passin pass:x -passout pass:x
     - Can we use the .p12 file?
       -> yes, but ca file needs .crt extension
-- DONE accounting shouldn't use user name for client cert
+* DONE accounting shouldn't use user name for client cert
   -> workaround: force user name to match certificate
-- WONTFIX add option for putting the users file in another place
+* WONTFIX add option for putting the users file in another place
   - radius group must have access and the user cannot do that before the group exists
   - We can copy the file to the statedir - on start and reload.
   - We cannot easily add this for reload so let the user do it - that way, she knows
     about the imperfections.
-- DONE How is the structure of the certificates?
+* DONE How is the structure of the certificates?
   - In particular: If client certificates are also signed by the CA - what stops them from impersonating
     the server? Clients can check the common name but the default is to not do that.
   - I think the type of the certificate is different - the config file either has [client]
@@ -31,14 +31,14 @@
         X509v3 Extended Key Usage: 
     -     TLS Web Server Authentication
     +     TLS Web Client Authentication
-- WONTFIX fix 4addr mode
+* WONTFIX fix 4addr mode
   - I cannot set this while the interface is already active and we have to enable WDS mode
     if we want to use it.
   - http://lists.infradead.org/pipermail/hostap/2016-May/035670.html
   - https://wireless.wiki.kernel.org/en/users/documentation/iw#setting_up_a_wds_peer
   - Ok, this is complicated and I have no use for it right now.
   - I will remove the option, for now.
-- DONE revocation
+* DONE revocation
   - https://jamielinux.com/docs/openssl-certificate-authority/certificate-revocation-lists.html
   - https://wiki.alpinelinux.org/wiki/FreeRadius_EAP-TLS_configuration
   - works as expected: revoked certificate cannot be used anymore
@@ -48,12 +48,12 @@
   - https://community.openvpn.net/openvpn/ticket/623?__cf_chl_jschl_tk__=d2ab2ea022d2991016710bf0cc28a6547e099963-1587268160-0-ASGtk8kPjK3AQmHGs7B2azUY6sRsncqiEn39xwJnZ_p9zICeLTpTcgd8MUZluBOIWh1oc9OaPLNo04TGYt8-7ueWqKQ4FKyMBduBHfbx31Yp225pR82-7w_pufFbSyQP7d_OyFPF5FKSJwqtE2L8qJf0MIJihyFmIPW3Y22UE_oprWU3X7CLsQQwYodtNPcJSReYSe823udBoMmr9Nclh8EMdB9ET-i0c6LjNwxe0jA_xgNF7cy9jclfMhaepsYQwPLXgt5rpZyr_Ze0cWZp-6z2KmfYfIUjkvNJGSBi0pZR
   - This confirms my suspicion: Revocation is active after a restart but reload doesn't help.
   - It does work if we increment the index in the filename.
-- DONE cleanup old files in tlscache
+* DONE cleanup old files in tlscache
   - This command is suggested in the example config: find ${logdir}/tlscache -mtime +2 -exec rm -f {} \;
-- WONTFIX don't split options, i.e. don't use services.hostapd?
+* WONTFIX don't split options, i.e. don't use services.hostapd?
   - option 1: copy services.wifi-ap-eap.hostapd to services.hostapd if enabled
   - option 2: don't enable services.hostapd; copy the relevant parts to our .nix files
-- DONE test systemd config
+* DONE test systemd config
   - Systemd has the very annoying feature that it ignores unknown keys in config files. I get why they
     do this and this can often be useful for backward compatible unit files. However, it often masks
     errors in the files. The infamous example is "User = 0day".
@@ -81,19 +81,19 @@
     a correct hostapd.service, the second one had the bug and the third one was an old one without hostapd. The script
     was correct for the first two but it was reporting the error for the third one - presumably because it was also
     looking at files of my current system.
-- WONTFIX missing network interfaces shouldn't delay boot
+* WONTFIX missing network interfaces shouldn't delay boot
   - I have looked through lots of .nix files and I still don't know how to do that...
   - Can we at least do this for the wifi? -> I don't know
 
-- put clients into different VLANs
+* TODO put clients into different VLANs
   - How do we add additional attributes when using certificates? Can we do that in the users file anyway?
   - What do we have to do to make VLANs work? Can we do something other than VLANs, e.g. bridge some users
     to ethernet and others to a private bridge for VMs?
 
-- publish the config somewhere
-- maybe add something that creates graphs from accounting data
+* TODO publish the config somewhere
+* TODO maybe add something that creates graphs from accounting data
   - bandwidth per day/hour; total and per device/user
-- test with ESP32
+* TODO test with ESP32
   - https://github.com/espressif/esp-idf/issues/1297
   - SHA1, 2048 bit
   - probably fixed: https://github.com/espressif/esp-idf/commit/bc97b0f380210b97b7fd98c5f304af7e83c28b7f
