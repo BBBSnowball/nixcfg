@@ -30,6 +30,7 @@ in {
   networking.interfaces.br0.useDHCP = true;
   networking.interfaces.br0.macAddress = "c8:d3:ff:44:05:14";
   networking.bridges.br0.interfaces = ["enp4s0" "enp2s0f0" "enp2s0f1" "enp2s0f2" "enp2s0f3" "wlp0s20f0u4"];
+  networking.dhcpcd.persistent = true;
 
   services.hostapd = {
     enable = true;
