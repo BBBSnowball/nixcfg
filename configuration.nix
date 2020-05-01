@@ -52,11 +52,14 @@ in {
   # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
 
   # Select internationalisation properties.
-  i18n = {
-    consoleFont = "Lat2-Terminus16";
-    consoleKeyMap = "us";
-    defaultLocale = "en_US.UTF-8";
-  };
+  #i18n = {
+  #  consoleFont = "Lat2-Terminus16";
+  #  consoleKeyMap = "us";
+  #  defaultLocale = "en_US.UTF-8";
+  #};
+  console.font = "Lat2-Terminus16";
+  console.keyMap = "us";
+  i18n.defaultLocale = "en_US.UTF-8";
 
   # Set your time zone.
   time.timeZone = "Europe/Berlin";
@@ -215,13 +218,18 @@ in {
     hashedPassword = hostSpecificValue /hashedPassword.nix;
     openssh.authorizedKeys.keyFiles = [ ./private/ssh-laptop.pub ];
     packages = with pkgs; [
-      anbox android-studio apktool
+      anbox apktool
+      android-studio # unfree :-(
       #androidenv.androidPkgs_9_0.platform-tools  # contains adb
       androidenv.androidPkgs_9_0.androidsdk
       adoptopenjdk-bin  # contains keytool and jarsigner
     ];
   };
   nixpkgs.config.android_sdk.accept_license = true;
+  nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
+    "android-studio"
+    "android-studio-stable"
+  ];
 
   #programs.vim.defaultEditor = true;
   environment.variables = { EDITOR = "vim"; };
