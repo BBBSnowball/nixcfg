@@ -253,7 +253,7 @@ in {
   ];
 
   #programs.vim.defaultEditor = true;
-  environment.variables = { EDITOR = "vim"; };
+  #environment.variables = { EDITOR = "vim"; };
   environment.etc."vimrc".text = ''
     inoremap fd <Esc>
   '';
@@ -261,6 +261,7 @@ in {
   programs.bash.interactiveShellInit = ''
     shopt -s histappend
 
+    if false ; then
     # https://www.reddit.com/r/neovim/comments/6npyjk/neovim_terminal_management_avoiding_nested_neovim/
     if [ -n "$NVIM_LISTEN_ADDRESS" ]; then
       export VISUAL="nvr -cc tabedit --remote-wait +'set bufhidden=wipe'"
@@ -268,8 +269,10 @@ in {
       export VISUAL="nvim"
     fi
     EDITOR="$VISUAL"
+    fi
 
-    alias e="emacsclient --create-frame --tty"
+    alias e="emacsclient --create-frame --tty --alternate-editor=\"\""
+    export EDITOR="emacsclient -t"
   '';
 
   services.emacs.enable = true;
