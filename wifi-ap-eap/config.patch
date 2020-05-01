@@ -103,8 +103,8 @@ diff -Naur --no-dereference ...
  default_crl_days	= 30
  default_md		= sha256
  preserve		= no
-@@ -45,10 +45,10 @@
- output_password		= whatever
+@@ -46,12 +46,12 @@
+ req_extensions		= v3_req
  
  [server]
 -countryName		= FR
@@ -120,6 +120,8 @@ diff -Naur --no-dereference ...
 +#emailAddress		= admin@example.org
 +#commonName		= "Example Server Certificate"
  
+ [ v3_req ]
+ basicConstraints = CA:FALSE
 diff -Naur --no-dereference ...
 --- a/clients.conf
 +++ b/clients.conf
@@ -176,7 +178,7 @@ diff -Naur --no-dereference ...
  
  		#  Set this option to specify the allowed
  		#  TLS cipher suites.  The format is listed
-@@ -459,7 +462,7 @@
+@@ -482,7 +485,7 @@
  			#  If "enable = no" below, you CANNOT enable resumption for just one
  			#  user by setting the above attribute to "yes".
  			#
@@ -185,7 +187,7 @@ diff -Naur --no-dereference ...
  
  			#  Lifetime of the cached entries, in hours. The sessions will be
  			#  deleted/invalidated after this time.
-@@ -474,7 +477,7 @@
+@@ -497,7 +500,7 @@
  			#  set the "name" if you want to persist sessions (see
  			#  below).
  			#
@@ -194,21 +196,21 @@ diff -Naur --no-dereference ...
  
  			#  Simple directory-based storage of sessions.
  			#  Two files per session will be written, the SSL
-@@ -494,7 +497,7 @@
+@@ -517,7 +520,7 @@
  			#
  			#  This feature REQUIRES "name" option be set above.
  			#
 -		#	persist_dir = "${logdir}/tlscache"
-+			persist_dir = "${db_dir}/tlscache"
- 		}
++                	persist_dir = "${db_dir}/tlscache"
  
- 		#  As of version 2.1.10, client certificates can be
+ 			#
+ 			#  As of 3.0.20, it is possible to partially
 diff -Naur --no-dereference ...
 --- a/mods-available/sql
 +++ b/mods-available/sql
-@@ -49,8 +49,8 @@
- 	#	rlm_sql_iodbc
+@@ -58,8 +58,8 @@
  	#	rlm_sql_unixodbc
+ 	#	rlm_sql_mongo
  	#
 -	driver = "rlm_sql_null"
 -#	driver = "rlm_sql_${dialect}"
@@ -217,7 +219,7 @@ diff -Naur --no-dereference ...
  
  	#
  	#  Driver-specific subsections.  They will only be loaded and
-@@ -61,7 +61,7 @@
+@@ -70,7 +70,7 @@
  	#
  	sqlite {
  		# Path to the sqlite database
@@ -258,7 +260,7 @@ diff -Naur --no-dereference ...
  
  	#  Log Access-Accept results to the log file.
  	#
-@@ -508,7 +506,7 @@
+@@ -562,7 +560,7 @@
  	#
  	#  See also raddb/sites-available/status
  	#
@@ -267,7 +269,7 @@ diff -Naur --no-dereference ...
  
  	#
  	#  allow_vulnerable_openssl: Allow the server to start with
-@@ -537,7 +535,7 @@
+@@ -591,7 +589,7 @@
  #
  #  allowed values: {no, yes}
  #
@@ -276,7 +278,7 @@ diff -Naur --no-dereference ...
  $INCLUDE proxy.conf
  
  
-@@ -576,7 +574,7 @@
+@@ -630,7 +628,7 @@
  thread pool {
  	#  Number of servers to start initially --- should be a reasonable
  	#  ballpark figure.
@@ -285,7 +287,7 @@ diff -Naur --no-dereference ...
  
  	#  Limit on the total number of servers running.
  	#
-@@ -599,7 +597,7 @@
+@@ -653,7 +651,7 @@
  	#
  	#  For more information, see 'max_request_time', above.
  	#
@@ -294,7 +296,7 @@ diff -Naur --no-dereference ...
  
  	#  Server-pool size regulation.  Rather than making you guess
  	#  how many servers you need, FreeRADIUS dynamically adapts to
-@@ -613,8 +611,8 @@
+@@ -667,8 +665,8 @@
  	#  more than max_spare_servers, some of the spares die off.
  	#  The default values are probably OK for most sites.
  	#
@@ -429,7 +431,7 @@ diff -Naur --no-dereference ...
 +#	radutmp
  
  	#
- 	#  See "Simultaneous Use Checking Queries" in sql.conf
+ 	#  See "Simultaneous Use Checking Queries" in `mods-config/sql/main/$driver/queries.conf`
 -#	sql
 +	sql
  }
@@ -438,7 +440,7 @@ diff -Naur --no-dereference ...
 @@ -304,7 +304,7 @@
  	#  After authenticating the user, do another SQL query.
  	#
- 	#  See "Authentication Logging Queries" in sql.conf
+ 	#  See "Authentication Logging Queries" in `mods-config/sql/main/$driver/queries.conf`
 -	-sql
 +	sql
  
