@@ -18,6 +18,10 @@ in {
   boot.loader.efi.canTouchEfiVariables = true;
   boot.loader.efi.efiSysMountPoint = "/boot/efi";
 
+  # The bios sucks. It hangs in the POST screen after reboot. This might help:
+  # https://serverfault.com/questions/126571/system-hangs-while-rebooting-on-debian/392886#392886
+  boot.kernelParams = [ "reboot=hard,pci" ];
+
   networking.hostName = "routeromen";
   networking.hostId = hostSpecificValue /hostId.nix;
   networking.wireless.enable = false;
@@ -27,10 +31,21 @@ in {
   # replicates the default behaviour.
   networking.useDHCP = false;
   #networking.interfaces.enp4s0.useDHCP = true;
-  networking.interfaces.br0.useDHCP = true;
+
+  #networking.interfaces.br0.useDHCP = true;
+  #networking.dhcpcd.persistent = true;
   networking.interfaces.br0.macAddress = "c8:d3:ff:44:05:14";
   networking.bridges.br0.interfaces = ["enp4s0" "enp2s0f0" "enp2s0f1" "enp2s0f2" "enp2s0f3" "wlp0s20f0u4"];
-  networking.dhcpcd.persistent = true;
+  # The FritzBox is often sending NAK so DHCP doesn't work most of the time.
+  networking.interfaces.br0.ipv4 = {
+    addresses = [ { address = "192.168.178.59"; prefixLength = 24; } ];
+    routes = [ {
+      address = "0.0.0.0";
+      prefixLength = 0;
+      via = "192.168.178.1";
+    } ];
+  };
+  networking.nameservers = [ "192.168.178.1" ];
 
   services.hostapd = {
     enable = true;

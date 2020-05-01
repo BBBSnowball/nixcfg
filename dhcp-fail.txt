@@ -1,0 +1,22 @@
+May 01 05:44:31 routeromen systemd[1]: Starting DHCP Client...
+May 01 05:44:31 routeromen dhcpcd[1688]: dev: loaded udev
+May 01 05:44:31 routeromen dhcpcd[1688]: no valid interfaces found
+May 01 05:44:31 routeromen dhcpcd[1688]: no valid interfaces found
+May 01 05:44:32 routeromen dhcpcd[1688]: DUID 00:04:64:cc:35:ad:5e:c3:cc:23:65:0b:6b:c8:72:1b:6e:cf
+May 01 05:44:32 routeromen dhcpcd[1688]: br0: IAID 47:c4:3b:e8
+May 01 05:44:32 routeromen dhcpcd[1688]: br0: adding address fe80::20b1:47ff:fec4:3be8
+May 01 05:44:32 routeromen dhcpcd[1688]: br0: rebinding lease of 192.168.178.59
+May 01 05:44:33 routeromen dhcpcd[1688]: br0: soliciting an IPv6 router
+May 01 05:44:36 routeromen dhcpcd[1688]: br0: NAK: wrong address requested via 192.168.178.1
+May 01 05:44:36 routeromen dhcpcd[1688]: br0: message: wrong address requested
+May 01 05:44:36 routeromen dhcpcd[1688]: br0: soliciting a DHCP lease
+May 01 05:44:36 routeromen dhcpcd[1688]: br0: Router Advertisement from fe80::3a10:d5ff:fed8:4bd0
+May 01 05:44:36 routeromen dhcpcd[1688]: br0: adding address fd00::20b1:47ff:fec4:3be8/64
+May 01 05:44:36 routeromen dhcpcd[1688]: br0: adding route to fd00::/64
+May 01 05:44:36 routeromen dhcpcd[1688]: br0: requesting DHCPv6 information
+May 01 05:44:37 routeromen dhcpcd[1688]: forked to background, child pid 2157
+May 01 05:44:37 routeromen systemd[1]: Started DHCP Client.
+May 01 05:44:41 routeromen dhcpcd[2157]: br0: probing for an IPv4LL address
+May 01 05:44:45 routeromen dhcpcd[2157]: br0: using IPv4LL address 169.254.17.92
+May 01 05:44:45 routeromen dhcpcd[2157]: br0: adding route to 169.254.0.0/16
+May 01 05:44:45 routeromen dhcpcd[2157]: br0: adding default route
