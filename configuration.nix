@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 let
   hostSpecificValue = path: import (./private/by-host/. + ("/" + config.networking.hostName) + path);
 in {
@@ -83,8 +83,10 @@ in {
     qemu_kvm
     wirelesstools iw
 
-    neovim neovim-remote fzf
+    neovim neovim-remote fzf ctags
     # only in nixos unstable: page
+
+    emacs-nox
   ];
   nixpkgs.overlays = [
     (self: super: {
@@ -110,6 +112,8 @@ in {
                 #})
                 bufexplorer
                 vim-orgmode
+                #taglist
+                tagbar
               ];
               opt = [
               ];
@@ -160,6 +164,8 @@ in {
             "  let g:sidepanel_config['buffergator'] = {}
             "  "let g:sidepanel_config['vimfiler'] = {}
             "  "let g:sidepanel_config['defx'] = {}
+
+            let g:org_todo_keywords = [['TODO(t)', 'CURRENT(c)', 'DEFER(l)', '|', 'DONE(d)', 'WONTFIX(w)']]
           '';
         };
       });
@@ -247,7 +253,12 @@ in {
       export VISUAL="nvim"
     fi
     EDITOR="$VISUAL"
+
+    alias e="emacsclient --create-frame --tty"
   '';
+
+  services.emacs.enable = true;
+  services.emacs.package = pkgs.emacs-nox;
 
 
   boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
