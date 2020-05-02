@@ -35,7 +35,7 @@ in {
   #networking.interfaces.br0.useDHCP = true;
   #networking.dhcpcd.persistent = true;
   networking.interfaces.br0.macAddress = "c8:d3:ff:44:05:14";
-  networking.bridges.br0.interfaces = ["enp4s0" "enp2s0f0" "enp2s0f1" "enp2s0f2" "enp2s0f3" "wlp0s20f0u4"];
+  networking.bridges.br0.interfaces = ["enp4s0" "enp2s0f0" "enp2s0f1" "enp2s0f2" "enp2s0f3" "wlp0s20f0u5"];
   # The FritzBox is often sending NAK so DHCP doesn't work most of the time.
   networking.interfaces.br0.ipv4 = {
     addresses = [ { address = "192.168.178.59"; prefixLength = 24; } ];
@@ -49,7 +49,7 @@ in {
 
   services.hostapd = {
     enable = true;
-    interface = "wlp0s20f0u4";
+    interface = "wlp0s20f0u5";
     ssid = "FRITZ!Box 7595";
     channel = 7;
     extraConfig = ''
