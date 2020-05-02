@@ -126,9 +126,13 @@ CLOSED: [2020-05-02 Sat 22:47]
 - That difference means that emacsclient won't work in nix-shell because it tries to
   connect to the wrong socket.
 * TODO put clients into different VLANs
-  - How do we add additional attributes when using certificates? Can we do that in the users file anyway?
-  - What do we have to do to make VLANs work? Can we do something other than VLANs, e.g. bridge some users
-    to ethernet and others to a private bridge for VMs?
+- How do we add additional attributes when using certificates? Can we do that in the users file anyway?
+- What do we have to do to make VLANs work? Can we do something other than VLANs, e.g. bridge some users
+  to ethernet and others to a private bridge for VMs?
+- This is how to apply additional attributes with SQL:
+  https://wiki.freeradius.org/modules/Rlm_sql
+  https://linuskarlsson.se/blog/radius-authentication-and-dynamic-vlan-assignment-for-wpa2-enterprise-using-sqlite-in-freeradius/
+- We should be able to do this in /etc/wifi-ap-eap/users, though.
 
 * TODO publish the config somewhere
 * TODO maybe add something that creates graphs from accounting data

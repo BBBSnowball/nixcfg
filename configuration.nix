@@ -59,6 +59,11 @@ in {
       ht_capab=[HT20-]
       #wme_enabled=1
       wmm_enabled=1
+
+      # let radius server assign vlan
+      dynamic_vlan=1
+      vlan_bridge=br0
+      vlan_file=/etc/nixos/wifi-ap-eap/all-vlans-on-br0.cfg
     '';
   };
   services.wifi-ap-eap = {
@@ -69,6 +74,7 @@ in {
     serverCertValidDays = 3650;
     clientCertValidDays = 3650;
   };
+  #services.freeradius.debug = true;
 
 
   # Configure network proxy if necessary

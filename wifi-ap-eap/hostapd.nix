@@ -74,6 +74,7 @@ in {
     systemd.services.hostapd.serviceConfig = {
       ExecStartPre = ["+${createConfigWithSecret}"];
       ExecStart = lib.mkForce "${pkgs.hostapd}/bin/hostapd ${secretConfigFile}";
+      ExecReload = "${pkgs.coreutils}/bin/kill -HUP $MAINPID";
 
       NoNewPrivileges = true;
       CapabilityBoundingSet = "~CAP_SYS_ADMIN CAP_DAC_OVERRIDE CAP_SYS_PTRACE";

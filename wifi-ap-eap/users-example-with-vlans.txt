@@ -1,0 +1,11 @@
+# copy this to /etc/wifi-ap-eap/users
+
+user1
+                        Tunnel-Type := 13,
+                        Tunnel-Medium-Type := 6,
+                        Tunnel-Private-Group-ID := "2"
+
+user2
+                        Tunnel-Type := 13,
+                        Tunnel-Medium-Type := 6,
+                        Tunnel-Private-Group-ID := "20"
