@@ -126,7 +126,7 @@ CLOSED: [2020-05-02 Sat 22:47]
 - That difference means that emacsclient won't work in nix-shell because it tries to
   connect to the wrong socket.
 * DONE put clients into different VLANs
-CLOSED: [2020-05-03 Sun 00:25]
+CLOSED: [2020-05-03 Sun 01:43]
 - How do we add additional attributes when using certificates? Can we do that in the users file anyway?
 - What do we have to do to make VLANs work? Can we do something other than VLANs, e.g. bridge some users
   to ethernet and others to a private bridge for VMs?
@@ -134,6 +134,24 @@ CLOSED: [2020-05-03 Sun 00:25]
   https://wiki.freeradius.org/modules/Rlm_sql
   https://linuskarlsson.se/blog/radius-authentication-and-dynamic-vlan-assignment-for-wpa2-enterprise-using-sqlite-in-freeradius/
 - We should be able to do this in /etc/wifi-ap-eap/users, though.
+- Test it: Make a service that is only accessible from a certain VLAN/interface.
+  - socat TCP-LISTEN:1235,fork EXEC:"echo blub"
+  - #iptables -I INPUT -i wifiap.2 -p tcp --dport 1235 -j ACCEPT  --> will not work because packets come from br0
+  - ebtables -I INPUT --in-if wifiap.2 -j mark --set-mark 2 --mark-target CONTINUE
+  - iptables -I INPUT -i br0 -p tcp --dport 1235 -m mark --mark 2/2 -j ACCEPT
+  - nc 192.168.1.23 1235
+- I could also try using the sqlite database for that. This might come in handy if I ever make a tool to
+  interface with the database, e.g. the admin can assign groups and VLANs in a web UI.
+  - insert into radusergroup('username', 'groupname') values ('test1', 'testgroup');
+  - insert into radgroupreply('groupname', 'attribute', 'op', 'value') values
+      ('testgroup', 'Tunnel-Type', ':=', '13'), ('testgroup', 'Tunnel-Medium-Type', ':=', '6'), ('testgroup', 'Tunnel-Private-Group-ID', ':=', '"42"');
+  - nixos-wifi-ap-eap client test test1.zip
+  - That is looking good. SQL seems to win over the users file.
+  - tcpdump -i wifiap.42 icmp
+  - on the wifi station: ping example.com
+- One might want explicit entries for some of the VLANs in the vlan_file: Otherwise, hostapd will remove
+  the interfaces if no client is using it anymore and that may be annoying, e.g. an active tcpdump on that
+  interface will be aborted.
 * DONE publish the config somewhere
 CLOSED: [2020-05-03 Sun 00:26]
 - https://git.c3pb.de/snowball/nixos-config-for-routeromen/-/tree/master/wifi-ap-eap
