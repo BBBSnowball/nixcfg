@@ -190,7 +190,7 @@ cmd_client_test() {
     }
 EOF
 
-  EAPOL_TEST_SECRET="$RADIUS_SECRET" eapol_test -c config -p 18120
+  EAPOL_TEST_SECRET="$RADIUS_SECRET" eapol_test -c config
 
   cd ..
   rm -r "$tmp"

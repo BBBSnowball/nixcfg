@@ -85,6 +85,14 @@
   - I have looked through lots of .nix files and I still don't know how to do that...
   - Can we at least do this for the wifi? -> I don't know
 
+* DONE don't use inner-tunnel directly?
+CLOSED: [2020-05-02 Sat 20:16]
+- https://wiki.freeradius.org/guide/eduroam
+- This says that hostapd should send requests to the default virtual host, which forwards to the eap module,
+  which in turn forwards to inner-tunnel if necessary (e.g. for TTLS).
+- I should try that.
+- The default site is already enabled so I only have to change the port.
+- I think that should also get rid of the error message that was logged for rejected auth.
 * TODO put clients into different VLANs
   - How do we add additional attributes when using certificates? Can we do that in the users file anyway?
   - What do we have to do to make VLANs work? Can we do something other than VLANs, e.g. bridge some users

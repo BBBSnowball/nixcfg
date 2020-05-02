@@ -34,7 +34,7 @@ let
     nas_identifier=${cfg2.serverName}
 
     auth_server_addr=127.0.0.1
-    auth_server_port=18120
+    auth_server_port=1812
     own_ip_addr=127.0.0.1
     #dynamic_vlan=0
 
