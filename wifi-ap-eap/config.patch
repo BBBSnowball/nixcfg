@@ -446,7 +446,7 @@ diff -Naur --no-dereference ...
  
  	#
  	#  Un-comment the following if you have set
-@@ -369,7 +369,7 @@
+@@ -369,15 +369,15 @@
  	#
  	Post-Auth-Type REJECT {
  		# log failed authentications in SQL, too.
@@ -455,3 +455,14 @@ diff -Naur --no-dereference ...
  		attr_filter.access_reject
  
  		#
+ 		#  Let the outer session know which module failed, and why.
+ 		#
+-		update outer.session-state {
+-			&Module-Failure-Message := &request:Module-Failure-Message
+-		}
++		#update outer.session-state {
++		#	&Module-Failure-Message := &request:Module-Failure-Message
++		#}
+ 	}
+ }
+ 
