@@ -93,6 +93,38 @@ CLOSED: [2020-05-02 Sat 20:16]
 - I should try that.
 - The default site is already enabled so I only have to change the port.
 - I think that should also get rid of the error message that was logged for rejected auth.
+* DONE Am I using modern, fast wifi?
+CLOSED: [2020-05-02 Sat 22:09]
+- https://wireless.wiki.kernel.org/en/users/documentation/hostapd
+- https://w1.fi/cgit/hostap/plain/hostapd/hostapd.conf
+- hw_mode only enables b/g/a. We need ieee80211n and probably ht_capab.
+- My card doesn't support much of ht_capab according to `iw list`.
+- The example has `wme_enabled=1` which should be "Wireless Multimedia Extensions".
+  The example hostapd.conf has `wmm_enabled=1` which is probably the same thing.
+  `wme_enabled=1` seems to work - at least it doesn't cause any error.
+- "20/40 MHz operation not permitted on channel pri=7 sec=11 based on overlapping BSSes"
+- Fixed by `ht_capab=[HT40-]` because the other SSIDs are on higher channels.
+- That makes it *much* slower: 0-4 Mbit instead of 70/30 Mbit for
+  https://beta.speedtest.net/
+- iperf 2, median of 3 measurements, 1-2m distance:
+  | settings            | laptop -> ap | ap -> laptop |
+  |---------------------+--------------+--------------|
+  | g, no n             |           24 |         25.5 |
+  | ieee80211n=1        |  69 Mbit, 84 |  62 Mbit, 85 |
+  | ht40-               |  2, 0.07, 16 |   10, 0.8, 2 |
+  | ht20-               |           91 |           86 |
+  | ht20+               |           92 |           87 |
+  | ht20-, wme=1        |           91 |           87 |
+  | ht20-, wmm=1        |           91 |           87 |
+  | ch=1, ht40+, wmm    |         10.5 |            3 |
+  | ht20-, w/ usb cable |            9 |           10 |
+  | w/o cable again     |           52 |           28 |
+* DONE off-topic: weird setting of TMPDIR/TEMPDIR
+CLOSED: [2020-05-02 Sat 22:47]
+- `nix-shell -p openssl` has all of TEMPDIR, TEMP, TMPDIR, TMP set to /run/user/0.
+- A normal shell doesn't have that. `mktemp` creates files in /tmp.
+- That difference means that emacsclient won't work in nix-shell because it tries to
+  connect to the wrong socket.
 * TODO put clients into different VLANs
   - How do we add additional attributes when using certificates? Can we do that in the users file anyway?
   - What do we have to do to make VLANs work? Can we do something other than VLANs, e.g. bridge some users
