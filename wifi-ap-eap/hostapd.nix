@@ -11,11 +11,12 @@ let
     ssid=${cfg.ssid}
     hw_mode=${cfg.hwMode}
     channel=${toString cfg.channel}
-    # logging (debug level)
-    logger_syslog=-1
-    logger_syslog_level=2
+    # logging (info level)
     logger_stdout=-1
     logger_stdout_level=2
+    # disable logging to syslog so we don't get each line twice
+    logger_syslog=0
+    logger_syslog_level=5
     ctrl_interface=/run/hostapd
     ctrl_interface_group=${cfg.group}
     ${optionalString cfg.noScan "noscan=1"}

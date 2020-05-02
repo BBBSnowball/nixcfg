@@ -64,6 +64,9 @@ in {
       dynamic_vlan=1
       vlan_bridge=br0
       vlan_file=/etc/nixos/wifi-ap-eap/all-vlans-on-br0.cfg
+
+      # verbose logging
+      #logger_stdout_level=0
     '';
   };
   services.wifi-ap-eap = {
