@@ -86,5 +86,15 @@ in {
       LockPersonality = true;
       ProtectHostname = true;
     };
+
+    nixpkgs.overlays = [
+      (self: super: {
+        eapol_test = import ./eapol_test.nix { pkgs = super; };
+      })
+    ];
+
+    environment.systemPackages = with pkgs; [
+      eapol_test
+    ];
   };
 }
