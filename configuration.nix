@@ -51,6 +51,14 @@ in {
     enable = true;
     interface = "wlp0s20f0u4";
     ssid = "FRITZ!Box 7595";
+    channel = 7;
+    extraConfig = ''
+      # use fast wifi, please (802.11n)
+      ieee80211n=1
+      ht_capab=[HT20-]
+      #wme_enabled=1
+      wmm_enabled=1
+    '';
   };
   services.wifi-ap-eap = {
     enable = true;
