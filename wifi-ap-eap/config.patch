@@ -162,7 +162,7 @@ diff -Naur --no-dereference ...
  		# Accept an expired Certificate Revocation List
  		#
 -	#	allow_expired_crl = no
-+		allow_expired_crl = no
++		allow_expired_crl = yes
  
  		#  If check_cert_issuer is set, the value will
  		#  be checked against the DN of the issuer in
@@ -224,7 +224,7 @@ diff -Naur --no-dereference ...
  	sqlite {
  		# Path to the sqlite database
 -		filename = "/tmp/freeradius.db"
-+		filename = "/var/lib/radiusd/freeradius.db"
++		filename = "${db_dir}/freeradius.db"
  
  		# How long to wait for write locks on the database to be
  		# released (in ms) before giving up.
