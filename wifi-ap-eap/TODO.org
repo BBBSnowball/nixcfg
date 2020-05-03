@@ -157,6 +157,8 @@ CLOSED: [2020-05-03 Sun 00:26]
 - https://git.c3pb.de/snowball/nixos-config-for-routeromen/-/tree/master/wifi-ap-eap
 * TODO maybe add something that creates graphs from accounting data
 - bandwidth per day/hour; total and per device/user
+- Access control: Listen on Unix socket and use SSH forward?
+- XDG_RUNTIME_DIR=/run/user/$UID nix-shell -E 'let p = import <nixpkgs> {}; in p.stdenv.mkDerivation {name="a"; buildInputs=[(p.python3.withPackages (p: [p.cherrypy]))];}'
 * TODO test with ESP32
 - https://github.com/espressif/esp-idf/issues/1297
 - SHA1, 2048 bit
