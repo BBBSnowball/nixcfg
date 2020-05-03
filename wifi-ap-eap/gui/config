@@ -9,3 +9,9 @@ server.socket_file: "/tmp/test"
 [/static]
 tools.staticdir.on: True
 tools.staticdir.dir: "static"
+
+[tables]
+radusergroup: ""
+radgroupreply: ""
+radpostauth: " WHERE strftime('%%s', authdate)-0 >= strftime('%%s', 'now', 'localtime') - 3600*24*7 ORDER BY authdate DESC LIMIT 1000"
+radacct: " WHERE acctstarttime >= strftime('%%s','now') - 3600*24*7 or acctstoptime >= strftime('%%s','now') - 3600*24*7 ORDER BY acctstarttime DESC LIMIT 1000"

@@ -19,8 +19,8 @@ class Root(object):
             conn.row_factory = sqlite3.Row
             c = conn.cursor()
             data = {}
-            for table in "radusergroup,radgroupreply,radpostauth,radacct".split(","):
-                c.execute("SELECT * FROM " + table)
+            for table, filter in cherrypy.request.app.config['tables'].items():
+                c.execute("SELECT * FROM " + table + filter)
                 data[table] = [dict(row) for row in c]
             return data
 
