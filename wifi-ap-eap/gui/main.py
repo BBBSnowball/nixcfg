@@ -24,22 +24,13 @@ class Root(object):
                 data[table] = [dict(row) for row in c]
             return data
 
-#NOTE You can connect to this socket by one of the following ways:
-#  - curl --unix-socket /tmp/test http://abc/
-#  - ssh host -L 1234:/tmp/test; firefox http://localhost:1234/
-config = {
-    'server.socket_file': '/tmp/test'
-}
-cherrypy.config.update(config)
-cherrypy.tree.mount(Root(), "/", {
+cherrypy.config.update("config")
+app = cherrypy.tree.mount(Root(), "/", {
     "/": {
         "tools.staticdir.root": os.path.dirname(os.path.realpath(__file__))
-    },
-    "/static": {
-        "tools.staticdir.on": True,
-        "tools.staticdir.dir": "static"
     }
 })
+app.merge("config")
 cherrypy.engine.signals.subscribe()
 cherrypy.engine.start()
 cherrypy.engine.block()
