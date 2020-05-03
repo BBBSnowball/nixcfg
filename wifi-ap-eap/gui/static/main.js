@@ -40,9 +40,14 @@ function showData(data) {
       groups[x.groupname] = { users: [], vlan: null, attrs: [] };
     groups[x.groupname].attrs.push(x.attribute + " " + x.op + " " + x.value);
   }
+  for (var i=0; i<data.radpostauth.length; i++) {
+    var x = data.radpostauth[i];
+    if (!users[x.username] && x.reply == "Access-Accept")
+      users[x.username] = { groups: [] };
+  }
 
   var groupsDiv = document.getElementById("groups");
-  groupsDiv.innerHtml = "";
+  groupsDiv.innerHTML = "";
   var y = document.createElement("DIV");
   y.innerText = "Groups:";
   y.classList.add("header");
@@ -71,7 +76,7 @@ function showData(data) {
   }
 
   var usersDiv = document.getElementById("users");
-  usersDiv.innerHtml = "";
+  usersDiv.innerHTML = "";
   var y = document.createElement("DIV");
   y.innerText = "Users:";
   y.classList.add("header");
@@ -91,6 +96,26 @@ function showData(data) {
     y.addEventListener("mouseleave", highlight, false);
     usersDiv.appendChild(y);
   }
+
+  var authDiv = document.getElementById("auth");
+  authDiv.innerHTML = "";
+  var table = document.createElement("table");
+  table.innerHTML = "<tr><th>Time</th><th>User</th><th>Reply</th></tr>";
+  for (var i=0; i<data.radpostauth.length; i++) {
+    var x = data.radpostauth[i];
+    var y = document.createElement("TR");
+    y.innerHTML = "<td>x</td><td>y</td><td>z</td>";
+    y.children[0].innerText = x.authdate;
+    y.children[1].innerText = x.username;
+    y.children[2].innerText = x.reply;
+    table.appendChild(y);
+    y.children[1].classList.add("hl_user_" + x.username);
+    if (x.reply == "Access-Accept")
+      y.children[2].classList.add("auth_accept");
+    else if (x.reply == "Access-Reject")
+      y.children[2].classList.add("auth_reject");
+  }
+  authDiv.appendChild(table);
 }
 
 function highlight(e) {
