@@ -100,7 +100,8 @@ function showData(data) {
   var authDiv = document.getElementById("auth");
   authDiv.innerHTML = "";
   var table = document.createElement("table");
-  table.innerHTML = "<tr><th>Time</th><th>User</th><th>Reply</th></tr>";
+  table.innerHTML = "<thead><tr><th>Time</th><th>User</th><th>Reply</th></tr></thead>";
+  var tbody = document.createElement("tbody");
   for (var i=0; i<data.radpostauth.length; i++) {
     var x = data.radpostauth[i];
     var y = document.createElement("TR");
@@ -108,13 +109,14 @@ function showData(data) {
     y.children[0].innerText = x.authdate;
     y.children[1].innerText = x.username;
     y.children[2].innerText = x.reply;
-    table.appendChild(y);
     y.children[1].classList.add("hl_user_" + x.username);
     if (x.reply == "Access-Accept")
       y.children[2].classList.add("auth_accept");
     else if (x.reply == "Access-Reject")
       y.children[2].classList.add("auth_reject");
+    tbody.appendChild(y);
   }
+  table.appendChild(tbody);
   authDiv.appendChild(table);
 }
 
