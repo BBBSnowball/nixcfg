@@ -105,14 +105,3 @@ body {
     margin-left: 0.5em;
     color: #d00;
 }
-
-/* doesn't work: https://medium.com/p/d23182ae0fbc/responses/show */
-tbody{
-    display:block;
-    overflow:auto;
-    height:500px;
-    width:100%;
-}
-thead tr{
-    display:block;
-}
