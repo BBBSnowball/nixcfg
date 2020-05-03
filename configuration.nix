@@ -120,6 +120,7 @@ in {
     # only in nixos unstable: page
 
     emacs-nox
+    sqlite-interactive
   ];
   nixpkgs.overlays = [
     (self: super: {
