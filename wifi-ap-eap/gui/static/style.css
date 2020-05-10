@@ -42,7 +42,7 @@ body {
     border-radius: 0.5em;
 }
 
-.group.highlight, .user.highlight, #auth td.highlight {
+.group.highlight, .user.highlight, #auth td.highlight, #acct td.highlight {
     background: #f0c04d;
 }
 
@@ -76,8 +76,8 @@ body {
 
 
 #auth {
-    margin: 1em;
-    height: calc(100vh - 2em);
+    margin-top: 1em;
+    height: calc(100vh - 3em);
     overflow-y: scroll;
     display: inline-block;
 }
@@ -104,4 +104,25 @@ body {
     content: "\2716"; /* or \274c */
     margin-left: 0.5em;
     color: #d00;
+}
+
+
+#acct {
+    margin-top: 1em;
+    height: calc(100vh - 3em);
+    overflow-y: scroll;
+    display: inline-block;
+}
+#acct > table {
+    border-collapse: collapse;
+}
+#acct > table tr:nth-child(even) {
+    background-color: #f0f8ff;
+}
+#acct > table th {
+    border-bottom: solid #30597e 2px;
+    padding-bottom: 0.4em;
+}
+#acct > table td {
+    padding: 0.3em 0.8em;
 }

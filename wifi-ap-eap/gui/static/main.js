@@ -118,6 +118,62 @@ function showData(data) {
   }
   table.appendChild(tbody);
   authDiv.appendChild(table);
+
+  var acctDiv = document.getElementById("acct");
+  acctDiv.innerHTML = "";
+  var table = document.createElement("table");
+  table.innerHTML = "<thead><tr><th>Start-Time</th><th>Update-Time</th><th>Stop-Time</th><th>Sessiontime</th><th>User</th><th>in</th><th>out</th></tr></thead>";
+  var tbody = document.createElement("tbody");
+  for (var i=0; i<data.radacct.length; i++) {
+    var x = data.radacct[i];
+    var y = document.createElement("TR");
+    y.innerHTML = "<td>x</td><td>y</td><td>z</td><td>z</td><td>z</td><td>z</td><td>z</td>";
+    y.children[0].innerText = convTimestamp(x.acctstarttime);
+    y.children[1].innerText = convTimeOrDiff(x.acctstarttime, x.acctupdatetime);
+    y.children[2].innerText = convTimeOrDiff(x.acctstarttime, x.acctstoptime);
+    y.children[3].innerText = convTimediff(x.acctsessiontime);
+    y.children[4].innerText = x.username;
+    y.children[5].innerText = formatDataSize(x.acctinputoctets);
+    y.children[6].innerText = formatDataSize(x.acctoutputoctets);
+    y.children[4].classList.add("hl_user_" + x.username);
+    tbody.appendChild(y);
+  }
+  table.appendChild(tbody);
+  acctDiv.appendChild(table);
+}
+
+function convTimestamp(x) {
+  if (!x)
+    return "";
+  var d = new Date(1000*x);
+  return d.toLocaleString();
+}
+
+function pad2(x) {
+  x = ""+x;
+  if (x.length < 2)
+    x = "0" + x;
+  return x;
+}
+
+function convTimediff(x) {
+  return pad2(Math.floor(x/3600)) + ":" + pad2(Math.floor(x/60%60)) + ":" + pad2(x%60);
+}
+
+function convTimeOrDiff(start, x) {
+  if (!x)
+    return "";
+  if (start && start <= x)
+    return "+ " + convTimediff(x-start);
+  else
+    return convTimestamp(x);
+}
+
+function formatDataSize(x) {
+  if (x == 0)
+    return "0";
+  else
+    return (x/1024.0/1024).toFixed(1) + " MB";
 }
 
 function highlight(e) {
