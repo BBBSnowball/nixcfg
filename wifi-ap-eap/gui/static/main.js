@@ -177,12 +177,13 @@ function showData(data) {
         //backgroundColor: color(window.chartColors.red).alpha(0.5).rgbString(),
         //borderColor: window.chartColors.red,
         fill: false,
+        cubicInterpolationMode: 'monotone',
         data: []
       };
   
       for (var j=0; j<times.length; j++) {
-        var v = (rates[times[j]] && rates[times[j]][user] ? rates[times[j]][user][inout] : 10);
-        x.data.push({x: new Date(times[j]), y: v});
+        var v = (rates[times[j]] && rates[times[j]][user] ? rates[times[j]][user][inout] : 0);
+        x.data.push({x: new Date(times[j]*1000), y: v/1024.0/1024});
       }
 
       datasets.push(x);
@@ -202,6 +203,9 @@ function showData(data) {
           type: 'time',
           time: {
           }
+        }],
+        yAxes: [{
+          //type: 'logarithmic'
         }]
       }
     }
