@@ -20,7 +20,7 @@ function loadData() {
 var groups = {};
 var users = {};
 
-function showData(data) {
+async function showData(data) {
   users = {};
   groups = {};
   for (var i=0; i<data.radusergroup.length; i++) {
@@ -235,11 +235,17 @@ function showData(data) {
   xs.unshift("total");
   for (var i=0; i<xs.length; i++) {
     var user = xs[i];
+
+    var hash = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(user + "color"));
+    hash = new Uint32Array(hash);
+    var hue = hash[0] % 360;
+
     for (var inout in {in: 0, out: 0}) {
+      var hsl = (inout == "in" ? "" + hue + ", 80%, 60%" : "" + hue + ", 90%, 40%");
       var x = {
         label: user + "-" + inout,
-        //backgroundColor: color(window.chartColors.red).alpha(0.5).rgbString(),
-        //borderColor: window.chartColors.red,
+        backgroundColor: "hsla(" + hsl + ", 50%)",
+        borderColor:     "hsla(" + hsl + ", 90%)",
         fill: false,
         cubicInterpolationMode: 'monotone',
         data: []
