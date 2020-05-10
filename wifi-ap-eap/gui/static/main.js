@@ -168,7 +168,7 @@ function showData(data) {
         rates[times[j]][x.username].out += rateOut;
       }
     }
-  } else {
+  } else if (0) {
     // track downloaded data per hour instead of per the actual time intervals
     var toHour = function (x) { return Math.round(x/3600)*3600; };
     var times = new Set();
@@ -178,6 +178,38 @@ function showData(data) {
       times.add(toHour(x.acctstarttime + x.acctsessiontime));
     }
     times = Array.from(times).sort();
+    var rates = {};
+    for (var i=0; i<data.radacct.length; i++) {
+      var x = data.radacct[i];
+      var rateIn  = x.acctinputoctets  / Math.max(3600, x.acctsessiontime);
+      var rateOut = x.acctoutputoctets / Math.max(3600, x.acctsessiontime);
+      var start = x.acctstarttime;
+      var stop  = x.acctstarttime + x.acctsessiontime;
+      for (var j = times.indexOf(toHour(start)); j>=0 && j<times.length && times[j] < toHour(stop); j++) {
+        if (!(times[j] in rates))
+          rates[times[j]] = {"total": {"in": 0, "out": 0}};
+        if (!(x.username in rates[times[j]]))
+          rates[times[j]][x.username] = {"in": 0, "out": 0};
+        rates[times[j]]["total"]   .in  += rateIn;
+        rates[times[j]]["total"]   .out += rateOut;
+        rates[times[j]][x.username].in  += rateIn;
+        rates[times[j]][x.username].out += rateOut;
+      }
+    }
+  } else {
+    // track downloaded data per hour instead of per the actual time intervals,
+    // add data point for every hour (even those without any events)
+    var toHour = function (x) { return Math.round(x/3600)*3600; };
+    var minTime = Date.now(), maxTime = 0;
+    for (var i=0; i<data.radacct.length; i++) {
+      var x = data.radacct[i];
+      minTime = Math.min(minTime, toHour(x.acctstarttime));
+      maxTime = Math.max(maxTime, toHour(x.acctstarttime + x.acctsessiontime));
+    }
+    var times = [];
+    for (var t=minTime; t<=maxTime; t+=3600) {
+      times.push(toHour(t));
+    }
     var rates = {};
     for (var i=0; i<data.radacct.length; i++) {
       var x = data.radacct[i];
