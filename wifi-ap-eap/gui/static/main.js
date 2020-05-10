@@ -1,8 +1,6 @@
 function loadData() {
   var x = new XMLHttpRequest();
   x.addEventListener("load", function (e) {
-    console.log(e);
-    //showData(JSON.parse(e.response));
     showData(x.response);
   });
   x.addEventListener("error", function (e) {
@@ -82,7 +80,9 @@ function showData(data) {
   y.classList.add("header");
   usersDiv.appendChild(y);
 
+  var usernames = [];
   for (var name in users) {
+    usernames.push(name);
     var x = users[name];
     var y = document.createElement("DIV");
     y.innerText = name;
@@ -140,6 +140,76 @@ function showData(data) {
   }
   table.appendChild(tbody);
   acctDiv.appendChild(table);
+
+  var times = new Set();
+  for (var i=0; i<data.radacct.length; i++) {
+    var x = data.radacct[i];
+    times.add(x.acctstarttime);
+    times.add(x.acctstarttime + x.acctsessiontime);
+  }
+  times = Array.from(times).sort();
+  var rates = {};
+  for (var i=0; i<data.radacct.length; i++) {
+    var x = data.radacct[i];
+    var rateIn  = x.acctinputoctets  / Math.max(1, x.acctsessiontime);
+    var rateOut = x.acctoutputoctets / Math.max(1, x.acctsessiontime);
+    var start = x.acctstarttime;
+    var stop  = x.acctstarttime + x.acctsessiontime;
+    for (var j = times.indexOf(start); j>=0 && j<times.length && times[j] < stop; j++) {
+      if (!(times[j] in rates))
+        rates[times[j]] = {"total": {"in": 0, "out": 0}};
+      if (!(x.username in rates[times[j]]))
+        rates[times[j]][x.username] = {"in": 0, "out": 0};
+      rates[times[j]]["total"]   .in  += rateIn;
+      rates[times[j]]["total"]   .out += rateOut;
+      rates[times[j]][x.username].in  += rateIn;
+      rates[times[j]][x.username].out += rateOut;
+    }
+  }
+  var datasets = [];
+  var xs = Array.from(usernames);
+  xs.unshift("total");
+  for (var i=0; i<xs.length; i++) {
+    var user = xs[i];
+    for (var inout in {in: 0, out: 0}) {
+      var x = {
+        label: user + "-" + inout,
+        //backgroundColor: color(window.chartColors.red).alpha(0.5).rgbString(),
+        //borderColor: window.chartColors.red,
+        fill: false,
+        data: []
+      };
+  
+      for (var j=0; j<times.length; j++) {
+        var v = (rates[times[j]] && rates[times[j]][user] ? rates[times[j]][user][inout] : 10);
+        x.data.push({x: new Date(times[j]), y: v});
+      }
+
+      datasets.push(x);
+    }
+  }
+
+  var canvas = document.getElementById("acctChartCanvas");
+  var chart = new Chart(canvas.getContext('2d'), {
+    type: 'line',
+    data: {
+      datasets: datasets
+    },
+    options: {
+      responsive: true,
+      scales: {
+        xAxes: [{
+          type: 'time',
+          time: {
+          }
+        }]
+      }
+    }
+  });
+  chart.update();
+  window.times = times;
+  window.rates = rates;
+  window.chart = chart;
 }
 
 function convTimestamp(x) {
@@ -177,15 +247,12 @@ function formatDataSize(x) {
 }
 
 function highlight(e) {
-  console.log(e);
-
   var hl = null;
   if (e.type == "mouseenter") {
     hl = true;
   } else if (e.type == "mouseleave") {
     hl = false;
   }
-  console.log(hl);
 
   if (hl !== null) {
     var cls = e.target.getAttribute("data_highlight_class");
