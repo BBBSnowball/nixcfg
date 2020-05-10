@@ -243,7 +243,7 @@ async function showData(data) {
     for (var inout in {in: 0, out: 0}) {
       var hsl = (inout == "in" ? "" + hue + ", 80%, 60%" : "" + hue + ", 90%, 40%");
       var x = {
-        label: user + "-" + inout,
+        label: user + " (" + inout + ")",
         backgroundColor: "hsla(" + hsl + ", 50%)",
         borderColor:     "hsla(" + hsl + ", 90%)",
         fill: false,
