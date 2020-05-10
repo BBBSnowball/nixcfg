@@ -1,0 +1,11 @@
+pages:
+  stage: deploy
+  script:
+    - cp -r presentation public
+  artifacts:
+    paths:
+    - public
+  only:
+  - master
+  tags:
+  - cluster

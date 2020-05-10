@@ -1,0 +1,641 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>FPGA Workshop</title>
+
+		<link rel="stylesheet" href="reveal.js-3.7.0/css/reveal.css">
+		<link rel="stylesheet" href="local-resources/night.css">
+		<link rel="stylesheet" href="local-resources/style.css">
+
+		<!-- Theme used for syntax highlighting of code -->
+		<link rel="stylesheet" href="reveal.js-3.7.0/lib/css/zenburn.css">
+
+		<meta name="description" content="Slides for FPGA workshop">
+		<meta name="author" content="snowball">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'reveal.js-3.7.0/css/print/pdf.css' : 'reveal.js-3.7.0/css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+				<section><h1>A practical introduction to FPGAs</h1></section>
+				<section id="content">
+					<h3>TOC</h3>
+					<ul>
+						<li><a href="#/alternatives">FPGA vs. other logic or MCU</a></li>
+						<li><a href="#/fpga">How does an FPGA work?</a></li>
+						<li><a href="#/hdls">Hardware Description Languages</a></li>
+						<li><a href="#/vhdl">VHDL: Overview and Cheatsheet</a></li>
+					</ul>
+				</section>
+				<section id="tasks">
+					<h3>Tasks</h3>
+					<ol>
+						<li><a href="#/task1">Simple logic with schematic</a></li>
+						<li><a href="#/task2">Blinking LED in RTL view</a></li>
+						<li><a href="#/task3">Simple design with VHDL</a></li>
+						<li><a href="#/task4">Hierarchical design</a></li>
+						<li><a href="#/task5">Debugging</a></li>
+						<li><a href="#/task6">Short introduction to timing</a></li>
+						<li><a href="#/task7">Ring</a></li>
+						<li><a href="#/task8">Soft processor</a></li>
+					</ol>
+				</section>
+				<section id="alternatives">
+					<h2>Should I use an FPGA?</h2>
+					<!--
+					<table>
+						<tr><th>Option</th><th>Price</th><th>Advantage</th><th>Disadvantage</th><th>Remarks</th></tr>
+						<tr><th>Lots of logic ICs (74HC...)</th><td>cheap</td><td>good if you only need a few gates</td><td>not (easily) changable, only for small circuits</td><td></td></tr>
+						<tr><th>Application-specific circuit (ASIC)</th><td>extremely expensive for one chip, cheap for many</td><td>can do *everything*</td><td>high one-time costs, get it right the first time</td><td>(skipping all the flexibility vs. price tradeoffs for ASICs)</td></tr>
+						<tr><th>General-purpose microcontroller (MCU)</th><td>cheap (large-scale production)</td><td>can be reprogrammed, i.e. flexible</td><td>not good at parallel tasks</td></tr>
+						<tr><th>FPGA</th><td>relatively cheap</td><td>good at parallel tasks, logic, realtime</td><td>not as flexible as ASIC, not as cheap as MCU</td><td></td></tr>
+					</table>
+					-->
+					<section>
+					  As always: Depends on the task...
+					</section>
+					<section>
+						<h3>Alternative: Lots of logic ICs (74HC...)</h3>
+						<ul>
+							<li>Price: cheap</li>
+							<li>good if you only need a few gates</li>
+							<li>not (easily) changable, only for small circuits</li>
+							<li>-&gt; I'm usually too lazy to route and solder more than a few chips.</li>
+						</ul>
+					</section>
+					<section>
+						<h3>Application-specific circuit (ASIC)</h3>
+						<ul>
+							<!-- <li>Price: extremely expensive for one chip, cheap for many</li> -->
+							<li>can do *everything*: analog, digital, arbitrary circuits</li>
+							<li>high one-time costs -&gt; get it right the first time</li>
+							<li>(skipping all the flexibility vs. price tradeoffs for ASICs)</li>
+							<!-- <li>best chance: many designs on one wafer, cost is still 500-10k€</li> -->
+							<li>-&gt; not useful for DIY usage (unfortunately)</li>
+						</ul>
+					</section>
+					<section>
+						<h3>General-purpose microcontroller (MCU)</h3>
+						<ul>
+							<li>Price: cheap (large-scale production)</li>
+							<li>can be reprogrammed, i.e. flexible</li>
+							<li>not good at parallel tasks</li>
+							<li>-&gt; usually the best option</li>
+						</ul>
+					</section>
+					<section style="width: 960px">
+						<h3>Field-programmable gate array (FPGA)</h3>
+						<ul>
+							<li>Price: relatively cheap</li>
+							<li>good at parallel tasks, logic, realtime</li>
+							<li>not as flexible as ASIC, not as cheap as MCU</li>
+							<li>-&gt; good if cheap MCU is not fast enough</li>
+							<li>... or not parallel enough: MCU can bit-bang many protocols, but FPGA can drive lots of them in parallel</li>
+						</ul>
+					</section>
+				</section>
+				<section id="task1">
+					<h3>Task 1: Simple logic with schematic</h3>
+					<ul>
+						<li>AND, OR, XOR, NOR, ...</li>
+						<li>DIP switches to LEDs</li>
+						<li>mode: present &amp; repeat, then extend</li>
+						<li>learnt: usage of Synthesis, Pin Assignment, Netlist Viewer</li>
+						<li>solution: 15_SimpleSchematic_SPOILER_SOLUTION (also for task 3)</li>
+					</ul>
+				</section>
+				<section id="fpga">
+					<section>
+						<h2>What is an FPGA anyway?</h3>
+						<ul>
+							<li>Many small pieces of logic ("LUTs")</li>
+							<li>Registers for storing single bits of data</li>
+							<li>Programmable connections between them ("interconnect")</li>
+							<li>Some special blocks: DSP (multiplier), BRAM (block RAM)</li>
+						</ul>
+					</section>
+					<section data-state="wide">
+					  <h2>Logic</h2>
+						<div class="columns">
+							<div class="col">
+								<h4>VHDL</h4>
+								<pre><code class="hljs vhdl" data-trim>
+									if enable = '1' then
+										cnt &lt;= cnt + 1;
+									end if;
+								</code></pre>
+							</div>
+							<div class="col">
+								<h4>Truth table</h4>
+								<table style="font-size: 70%" class="truthtable1">
+									<thead>
+										<tr><th colspan="3">Input</th><th colspan="2">Output</th></tr>
+										<tr><th>enable</th><th>cnt[1]</th><th>cnt[0]</th><th>cnt[1]'</th><th>cnt[0]'</th></tr>
+									</thead>
+									<tbody>
+									  <tr><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+										<tr><td colspan="5">...</td></tr>
+									  <tr><td>1</td><td>0</td><td>0</td><td>0</td><td>1</td></tr>
+									  <tr><td>1</td><td>0</td><td>1</td><td>1</td><td>0</td></tr>
+									  <tr><td>1</td><td>1</td><td>0</td><td>1</td><td>1</td></tr>
+									  <tr><td>1</td><td>1</td><td>1</td><td>0</td><td>0</td></tr>
+									</tbody>
+								</table>
+							</div>
+							<div class="col">
+								<h4>LUTs</h4>
+								<img data-src="img/luts.svg" style="border: none; background: none;" />
+							</div>
+						</div>
+				  </section>
+					<section>
+						<h2>Add storage</h2>
+						<img data-src="img/luts_and_regs.svg" style="border: none; background: none;" />
+					</section>
+					<section>
+						<h2>In the FPGA: one logic element</h2>
+						<img data-src="img/ep4_logic_element.svg" />
+						<p>For Cyclone IV: One LE (logic element) contains one LUT with four inputs (left) and one register (right).</p>
+					</section>
+					<section>
+						<h2>Interconnect / routing</h2>
+						<ul>
+							<li>We have to connect all the LUTs and registers!</li>
+							<li>Interconnect: Lots of connections that can be turned on or off.</li>
+							<li>LEs are grouped into LABs (Logic Array Blocks)</li>
+							<li>Local routing connects LUTs/registers within one LAB.</li>
+							<li>Global routing connects LUTs/registers with other LABs.</li>
+						</ul>
+					</section>
+					<section>
+						<h2>In the FPGA: routing</h2>
+						<img data-src="img/chip_planner.svg" style="height: 500px" />
+					</section>
+					<section>
+						<h2>What else?</h2>
+						<ul>
+							<li>I/O cells: connect to external pins</li>
+							<li>special cells: not needed here</li>
+							<li>configuration: USB JTAG adapter, stored in flash memory</li>
+							<li>-&gt; That's all. We can built arbitrary digital circuits with this.</li>
+						</ul>
+					</section>
+					<section>
+						<h2>How many of these do we have?</h2>
+						<table style="font-size: 50%">
+							<thead><tr><th>Device</th><th>LE</th><th>BRAM [kB]</th><th>Multipliers</th><th>Price (Ali)</th></tr></thead>
+							<tbody>
+								<tr><td>EP4CE6</td>  <td>  6272</td><td> 33</td><td> 15</td><td>$4, pcb: $17, our board: $26</td></tr>
+								<tr><td>EP4CE10</td> <td> 10320</td><td> 51</td><td> 23</td><td>$8 (x10), pcb: $20, our board: $32</td></tr>
+								<tr><td>EP4CE15</td> <td> 15408</td><td> 63</td><td> 56</td><td>$10, pcb: $27</td></tr>
+								<tr><td>EP4CE22</td> <td> 22320</td><td> 74</td><td> 66</td><td>$16, pcb: $36</td></tr>
+								<tr><td>EP4CE30</td> <td> 28848</td><td> 74</td><td> 66</td><td>$24 (x5)</td></tr>
+								<tr><td>EP4CE40</td> <td> 39600</td><td>141</td><td>116</td><td>$32</td></tr>
+								<tr><td>EP4CE55</td> <td> 55856</td><td>292</td><td>154</td><td>$42</td></tr>
+								<tr><td>EP4CE75</td> <td> 75408</td><td>343</td><td>200</td><td>n/a</td></tr>
+								<tr><td>EP4CE115</td><td>114480</td><td>486</td><td>266</td><td>n/a, pcb: $80</td></tr>
+							</tbody>
+						</table>
+						<p style="font-size: 50%">
+							see <a href="https://www.intel.com/content/dam/www/programmable/us/en/pdfs/literature/hb/cyclone-iv/cyiv-51001.pdf#G1463070">Cyclone IV FPGA Device Family Overview, Device Resources</a>
+						</p>
+					</section>
+				</section>
+				<section id="task2"><!-- blink -->
+					<section>
+						<h3>Task 2: Blinking LED</h3>
+						<ul>
+							<li>view synthesized design in RTL view and netlist view</li>
+							<li>project: 10_BlinkingLED</li>
+							<li>Why do we need a clock?</li>
+							<li>side note: constraints</li>
+							<li>mode: present &amp; repeat with existing project</li>
+							<li>learnt: Register-Transfer-Logic</li>
+						</ul>
+					</section>
+					<section>
+						<h3>RTL View</h3>
+						<img src="img/BlinkingLED-rtl.svg" width="100%" style="background: white;" />
+					</section>
+					<section>
+						<h3>Technology Map Viewer</h3>
+						<img src="img/BlinkingLED-netlist.svg" width="100%" style="background: white;" />
+					</section>
+				</section>
+				<section id="hdls">
+					<section>
+						<h2>Hardware Description Languages</h2>
+						<ul style="font-size: 90%">
+							<li>VHDL: used in Europe, e.g. Uni Paderborn
+								<ul>
+									<li>high-level abstractions, e.g. custom types</li>
+									<li>less pitfalls, easier simulation model</li>
+									<li>case-insensitive, syntax similar to ADA or Pascal</li>
+								</ul>
+							</li>
+							<li>Verilog: used in US
+								<ul>
+									<li>short syntax for some special cases</li>
+									<li>more open-source tools available</li>
+									<li>case-sensitive, syntax similar to C</li>
+								</ul>
+							</li>
+							<li>FPGA tools support both</li>
+						</ul>
+					</section>
+					<section>
+						<h2>Hardware Description Languages</h2>
+						<ul>
+							<li>Never forget: It looks like a programming language, but we are describing hardware!</li>
+							<li>Some features are for testbench only, e.g. <code class="hljs" style="display: inline">wait for 10 ns;</code>. Hardware doesn't know about time - only clocks.</li>
+							<li>Only write VHDL, that can be mapped to hardware.</li>
+						</ul>
+					</section>
+				</section>
+				<section id="vhdl">
+					<h2>Short intro to VHDL</h2>
+					<section id="vhdl-general">
+						<h3>General properties</h3>
+						<ul>
+							<li>case-insensitive</li>
+							<li><pre><code class="hljs vhdl">-- comments with double-hyphen</code></pre></li>
+							<li>no multiline comments, unfortunately</li>
+						</ul>
+					</section>
+					<section id="vhdl-designunits">
+						<h3>Design Units</h3>
+						<ul>
+							<!-- <li>There are four types of design units in VHDL:</li> -->
+							<li>Entity: Describes external interface</li>
+							<li>Architecture: Implementation (or simulation model)</li>
+							<li>Package: A place to store custom types, functions and procedures</li>
+							<li>Configuration: Choose which architectures are used</li>
+							<li>Simple designs only need entities and architectures.</li>
+						</ul>
+					</section>
+					<section id="vhdl-entity">
+						<h3>Entity: external interface</h3>
+						<pre><code class="hljs vhdl" data-trim>
+							-- We need some stuff from IEEE library.
+							library ieee;
+							use ieee.std_logic_1164.all; -- bit types
+							use ieee.numeric_std.all;    -- arithmetic types
+
+							entity my_counter is
+								generic (  -- optional
+									unused_constant : integer := 42
+								);
+								port (
+									clk    : in  std_logic;
+									enable : in  std_logic;
+									cnt1   : out std_logic
+								);
+							end entity;
+						</code></pre>
+					</section>
+					<section id="vhdl-arch1">
+						<h3>Architecture: implementation</h3>
+						<pre><code class="hljs vhdl" data-trim>
+							architecture RTL of my_counter is
+								-- declarations
+							begin
+								-- concurrent statements, e.g. process
+							end architecture;
+						</code></pre>
+					</section>
+					<section id="vhdl-arch2">
+						<h3>Architecture: implementation</h3>
+						<ul>
+							<li>Belongs to an entity: generics, ports, libraries of entity are available</li>
+							<li>Entity can have several architectures - often not used for FPGA designs.</li>
+							<li>"RTL" in our example is the architecture name. Arbitrary name. Often "RTL" (register-transfer-level description) or "TB" (testbench)</li>
+						</ul>
+					</section>
+					<section id="vhdl-decls">
+						<h3>Declarations</h3>
+						<pre><code class="hljs vhdl" data-trim>
+							architecture RTL of my_counter is
+								-- declarations
+								constant width : integer := 32;
+								signal my_signal, my_other_signal : std_logic;
+								signal my_counter : unsigned(width-1 downto 0);
+								subtype small_int is integer range 0 to 63;
+								signal my_int_counter : small_int;
+								-- custom enum type
+								type fsmSTATE is (fsmIDLE, fsmRUNNING, fsmWAITING);
+								signal state : fsmSTATE;
+							begin
+							  ...
+							end architecture;
+						</code></pre>
+					</section>
+					<section id="vhdl-types">
+						<h3>Types</h3>
+						<ul>
+							<li>integer: numbers, 0, -7, 42</li>
+							<li>std_logic: single bit, '0', '1', some special values</li>
+							<li>std_logic_vector(a to b / b downto a): bits, "100", x"7f"</li>
+							<li>signed, unsigned: like std_logic_vector, but with numeric operations</li>
+							<li>time: 100 ns, not for synthesis</li>
+						</ul>
+					</section>
+					<section id="vhdl-numeric">
+						<h3>Converting numeric types</h3>
+						<img data-src="img/numeric_conversions.svg" />
+						<a href="http://www.lothar-miller.de/s9y/categories/16-Numeric_Std">see Lothar-Miller.de</a>
+					</section>
+					<section id="vhdl-concurrent">
+						<h3>Concurrent statements</h3>
+						<pre><code class="hljs vhdl" data-trim>
+							architecture RTL of my_counter is
+							begin
+								my_signal &lt;= '1' when cnt &lt; 7 else '0';
+								my_signal2 &lt;= (a and b) xor c;
+							end architecture;
+						</code></pre>
+					</section>
+					<section id="vhdl-process-reg">
+						<h3>Process statements: Register</h3>
+						<pre><code class="hljs vhdl" data-trim>
+							architecture RTL of my_counter is
+								signal cnt : unsigned(7 downto 0);
+							begin
+								my_process : process(clk, nreset)
+								begin
+									if nreset='0' then
+										cnt &lt;= (others =&gt; '0');
+									elsif rising_edge(clk) then
+										cnt &lt;= cnt + 1;
+									end if;
+								end process;
+							end architecture;
+						</code></pre>
+					</section>
+					<section id="vhdl-process-reg">
+						<h3>Process statements: Combinatoric logic</h3>
+						<pre><code class="hljs vhdl" data-trim>
+							architecture RTL of my_counter is
+							begin
+								my_process : process(a, b)
+								-- sensitivity list	 ^^
+								-- For a combinatoric process, this must contain *every*
+								-- signal that is read by the process.
+								begin
+									-- important: assign all outputs in *all* cases
+									-- Otherwise, tool infers a latch.
+
+									x &lt;= '0';  -- default value
+									if a = '1' and b = '1' then
+										y &lt;= '1';
+									elsif a = '1' and b = '0' then
+										y &lt;= '0';
+										x &lt;= '1';  -- overrides previous assignment
+									else
+										y &lt;= '0';
+									end if;
+								end process;
+							end architecture;
+						</code></pre>
+					</section>
+					<section id="vhdl-fsm">
+						<h3>State machines</h3>
+						<pre><code class="hljs vhdl" data-trim>
+							architecture RTL of my_counter is
+							  type tSTATE is (fsmA, fsmB, fsmC);
+								signal state : tSTATE;
+							begin
+								fsm : process(clk, nreset)
+								begin
+									if nreset='0' then
+										state &lt;= fsmA;
+									elsif rising_edge(clk) then
+										case state is
+											when fsmA =&gt;
+												if buttonA='1' then
+													state &lt;= fsmB;
+												end if;
+												ledA &lt;= '0';
+											when fsmB =&gt;
+												...
+										end case;
+									end if;
+								end process;
+							end architecture;
+						</code></pre>
+					</section>
+					<section id="vhdl-instance">
+						<h3>Instances</h3>
+						<pre><code class="hljs vhdl" data-trim>
+							architecture RTL of my_counter is
+								signal abc : std_logic;
+							begin
+							  -- We are making an instance of the entity my_other_counter.
+								-- This means that the logic of that entity/architecture will
+								-- be copied into our design and we can connects its inputs
+								-- and outputs to some of our signals.
+							  instance_name : entity work.my_other_counter
+								--                          ^^ the entity we want to use
+								--                     ^^ "work" means look in the current library
+								--              ^^ we instantiate an entity (because using components
+								--                 is more work)
+								-- ^^ name of this instance, optional
+								  generic map (size =&gt; 8)
+									port map (
+									  -- We assume that my_other_counter has the inputs clk and up_and_down;
+										-- and one output cnt.
+									  clk =&gt; clk, -- input signal, using clk input of our entity
+										up_or_down =&gt; abc,  -- input signal, connect to local signal
+										cnt =&gt; cnt1
+									);
+
+								abc &lt;= '1' when ... else ...;
+							end architecture;
+						</code></pre>
+					</section>
+					<section id="vhdl-io">
+						<h3>I/O</h3>
+						<ul>
+							<li>ports of the top-level entity</li>
+							<li>values: <code class="hljs vhdl" style="display: inline-block;">'0', '1', 'Z'</code></li>
+							<li><code class="hljs vhdl" style="display: inline-block;">'Z'</code> is for high-Z, i.e. pin is not driven</li>
+							<li>pullup and drive strength can be configured in GUI, if supported</li>
+						</ul>
+					</section>
+					<section id="vhdl-more">
+						<h3>More...</h3>
+						<ul>
+							<li><a href="https://wiki.ntb.ch/infoportal/_media/software:vhdl:vhdlscript.pdf">Eine Einführung in die Schaltungsent-wicklung mit VHDL</a></li>
+							<li><a href="https://de.wikibooks.org/wiki/VHDL-Tutorium">VHDL-Tutorium in WikiBooks - eher eine Referenz</a></li>
+							<li>Use a search engine of your choice ;-)</li>
+						</ul>
+					</section>
+				</section>
+				<section id="task3">
+					<h3>Task 3: Simple VHDL design</h3>
+					<ul>
+						<li>simple logic (see task 1)</li>
+						<li>blinking LED (see task 2)</li>
+						<li>mode: do yourself, start with project of task 2</li>
+						<li>learnt: how to use VHDL</li>
+						<li>solution: 15_SimpleSchematic_SPOILER_SOLUTION</li>
+					</ul>
+				</section>
+				<section id="task4">
+					<h3>Task 4: Hierarchical design</h3>
+					<ul>
+						<li>use existing module for controlling 7seg displays</li>
+						<li>module: 20_HierarchicalDesign/sevenseg.vhd</li>
+						<li>display: static, controlled by DIP switches, or animation</li>
+						<li>mode: try yourself -&gt; keep it simple until we learn debugging techniques</li>
+						<li>learnt: more complex VHDL device</li>
+						<li>solution: 60_SevenSeg_SPOILER_SOLUTION (for task 4, 5 and 6), part of 00_SPOILER__DO_NOT_LOOK__Simple_Testdesign</li>
+					</ul>
+				</section>
+				<section id="task5">
+					<h3>Task 5: Debugging</h3>
+					<ul>
+						<li>take project of task 4</li>
+						<li>add logic analyzer (Signal Tap)</li>
+						<li>simulate in ModelSim</li>
+						<li>mode: present &amp; repeat, then extend</li>
+						<li>learnt: Signal-Tap (Logic Analyzer), ModelSim (simulation)</li>
+						<li>solution: 60_SevenSeg_SPOILER_SOLUTION (for task 4, 5 and 6)</li>
+					</ul>
+				</section>
+				<section id="task6"><!-- timing -->
+					<section>
+						<h3>Task 6: Short introduction to timing</h3>
+						<ul>
+							<li>start with project of task 4 / 5</li>
+							<li>add constraint for clock</li>
+							<li>not handled: I/O timing</li>
+							<li>run TimeQuest</li>
+							<li>mode: present &amp; repeat</li>
+							<li>learnt: TimeQuest, internal timing</li>
+							<li>solution: 60_SevenSeg_SPOILER_SOLUTION (for task 4, 5 and 6)</li>
+						</ul>
+					</section>
+					<section>
+						<h3>Internal timing</h3>
+						<img src="img/fpga_0406.png" />
+						<a href="https://www.oreilly.com/library/view/learning-fpgas/9781491965481/ch04.html">O'Reilly, Learning FPGAs</a>
+					</section>
+					<section>
+						<img src="img/fpga_0405_small.png" />
+						<a href="https://www.oreilly.com/library/view/learning-fpgas/9781491965481/ch04.html">O'Reilly, Learning FPGAs</a>
+					</section>
+				</section>
+				<section id="task7"><!-- metastability -->
+					<section>
+						<h3>Task 7: Ring</h3>
+						<ul>
+							<li>Project: 70_RingOsc</li>
+							<li>What do you think will happen?</li>
+							<li>Does it? Always?</li>
+							<li>mode: use existing design</li>
+							<li>learnt: synchronizers</li>
+						</ul>
+					</section>
+					<section>
+						<h3>Metastability</h3>
+						<img src="img/meta_pic_1_small.jpg" />
+						<a href="http://www.fpga-faq.com/FAQ_Pages/0017_Tell_me_about_metastables.htm">fpga-faq.com</a>
+					</section>
+				</section>
+				<section id="task8">
+					<h3>Task 8: Soft processor</h3>
+					<ul>
+						<li>create system with NIOS soft core in Qsys / Platform Designer</li>
+						<li>periphery: PIO core connected to 7seg</li>
+						<li>mode: present &amp; repeat, then extend (animation)</li>
+						<li>learnt: Qsys / Platform Designer, NIOS (soft core)</li>
+						<li>solution: 80_SoftCore_SPOILER_SOLUTION</li>
+					</ul>
+				</section>
+				<section id="outlook">
+					<section>
+						<h3>What now? (1)</h3>
+						<ul>
+							<li>More periphery for NIOS, use Avalon bus</li>
+							<li>More complex design, with state machines: e.g. WS2812 or RS232</li>
+							<li>Make your own project: e.g. LED matrix, 'tioan' displays</li>
+						</ul>
+					</section>
+					<section>
+						<h3>What now? (2)</h3>
+						<ul>
+							<li>Other FPGAs: MAX II, Spartan III, Artix 7, Zynq</li>
+							<li>Open-Source tools for synthesis: yosis / project IceStorm, but iCE40 is quite expensive</li>
+							<li>Open-Source tools for simulation: ghdl, iverilog, ...</li>
+							<li>Open-Source soft cores: ZPUino, AX8 (AVR8), PicoRV32, <a href="https://www.mikrocontroller.net/articles/FPGA_Soft_Core">many more</a>...</li>
+							<li>Higher-level description languages: CλaSH (CLaSH), ...</li>
+						</ul>
+					</section>
+				</section>
+
+				<!--
+				<section data-background="#b5533c">Slide 2</section>
+				<section>
+					<h2>Test horizontal layout</h2>
+					<div class="columns">
+						<div class="col">abc</div>
+						<div class="col">def</div>
+						<div class="col">ghi</div>
+					</div>
+				</section>
+				-->
+			</div>
+		</div>
+
+		<script src="reveal.js-3.7.0/lib/js/head.min.js"></script>
+		<script src="reveal.js-3.7.0/js/reveal.js"></script>
+		<script src="multiplex-master-config.js"></script>
+		<script src="multiplex-config.js"></script>
+
+		<script>
+			// More info about config & dependencies:
+			// - https://github.com/hakimel/reveal.js#configuration
+			// - https://github.com/hakimel/reveal.js#dependencies
+			var config = {
+				hash: true,
+				history: true,
+				dependencies: [
+					{ src: 'reveal.js-3.7.0/plugin/markdown/marked.js' },
+					{ src: 'reveal.js-3.7.0/plugin/markdown/markdown.js' },
+					{ src: 'reveal.js-3.7.0/plugin/notes/notes.js', async: true },
+					{ src: 'reveal.js-3.7.0/plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'reveal.js-3.7.0/plugin/notes/notes.js', async: true },
+				]
+			};
+			var params = new URLSearchParams(document.location.search.substring(1));
+			if (params.get("master") !== null && window.multiplex_master_config) {
+				//config.dependencies.push({ src: '//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js', async: true });
+				config.dependencies.push({ src: 'local-resources/socket.io-2.2.0.js', async: true });
+				config.dependencies.push({ src: 'reveal.js-3.7.0/plugin/multiplex/master.js', async: true });
+				config.multiplex = Object.assign({}, window.multiplex_config || {}, window.multiplex_master_config);
+				console.log("multiplex: using master mode");
+			} else if (params.get("client") !== null && window.multiplex_config) {
+				//config.dependencies.push({ src: '//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js', async: true });
+				config.dependencies.push({ src: 'local-resources/socket.io-2.2.0.js', async: true });
+				config.dependencies.push({ src: 'reveal.js-3.7.0/plugin/multiplex/client.js', async: true });
+				config.multiplex = window.multiplex_config;
+				console.log("multiplex: using client mode");
+				config.controls = false;
+				config.keyboard = false;
+			}
+			Reveal.initialize(config);
+		</script>
+	</body>
+</html>
+<!-- vim: set noexpandtab:ts=2:sw=2:ai -->

@@ -1,0 +1,15 @@
+.columns {
+  display: flex;
+}
+.col {
+  flex: 1;
+}
+html.wide div.slides {
+  width: 90% !important;
+}
+.truthtable1 tr td:nth-child(4) {
+  color: #1d60d0;
+}
+.truthtable1 tr td:nth-child(5) {
+  color: #d08a1d;
+}
