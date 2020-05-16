@@ -56,8 +56,8 @@
 			if (params.get("master") !== null) {
 				config.dependencies.push({ src: 'local-resources/socket.io-2.2.0.js', async: true });
 				config.dependencies.push({ src: 'reveal.js-3.7.0/plugin/multiplex/master.js', async: true });
-				config.multiplex = Object.assign({}, window.multiplex_config || {}, window.multiplex_master_config);
-				if (params.get("master").length > 0)
+				config.multiplex = Object.assign({}, window.multiplex_config || {}, window.multiplex_master_config || {});
+				if (params.get("master").length > 4)
 					config.multiplex.secret = params.get("master");
 				console.log("multiplex: using master mode");
 			} else if (params.get("client") !== null && window.multiplex_config) {
