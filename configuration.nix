@@ -119,7 +119,8 @@ in {
     neovim neovim-remote fzf ctags
     # only in nixos unstable: page
 
-    emacs-nox
+    #emacs-nox
+    config.services.emacs.package
     sqlite-interactive
   ];
   nixpkgs.overlays = [
@@ -306,7 +307,10 @@ in {
   '';
 
   services.emacs.enable = true;
-  services.emacs.package = pkgs.emacs-nox;
+  #services.emacs.package = pkgs.emacs-nox;
+  services.emacs.package = ((pkgs.emacsPackagesNgGen pkgs.emacs-nox).emacsWithPackages (epkgs: [
+    epkgs.emacs-libvterm
+  ]));
 
   boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
 
