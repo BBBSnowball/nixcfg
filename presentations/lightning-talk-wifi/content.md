@@ -339,7 +339,7 @@ pkgs.wpa_supplicant.overrideAttrs (old: rec {
 - FreeRadius gibt VLAN ID vor.
 - Konfiguration in `users` Datei oder Datenbank.
 - hostap erstellt ein eigenes Interface dafür.
-- Das kann man auch kreativ nutzen, z.B. iptables/ebtables statt VLAN.
+- Das kann man auch kreativ nutzen, z.B. mehrere Bridges oder iptables/ebtables statt VLAN.
 - Funktioniert auch mit OpenWRT etc - dann aber nur VLANs.
 
 ---
@@ -381,10 +381,4 @@ benny-laptop-xps-vlan1
 
 ---
 
-<!-- .slide: id="results" -->
-
-
-
-```nix
-xyz
-```
+### Viel Spaß beim Ausprobieren :-)
