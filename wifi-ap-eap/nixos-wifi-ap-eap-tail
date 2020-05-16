@@ -7,7 +7,7 @@
 # - CERTS_DIR
 # - SSID
 # - CLIENT_CERT_VALID_DAYS
-# - PATH with coreutils, sed, grep, pwgen, openssl, perl, zip, unzip, eapol_test
+# - PATH with coreutils, sed, grep, pwgen, openssl, perl, zip, unzip, eapol_test, findutils
 
 set -e
 

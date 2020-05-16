@@ -71,7 +71,7 @@ let
     CERTS_DIR=${lib.escapeShellArg secretsDir}/certs
     SSID=${lib.escapeShellArg config.services.hostapd.ssid}
     CLIENT_CERT_VALID_DAYS=${toString cfg.clientCertValidDays}
-    export PATH=${pkgs.coreutils}/bin:${pkgs.gnused}/bin:${pkgs.gnugrep}/bin:${pkgs.pwgen}/bin:${pkgs.openssl}/bin:${pkgs.perl}/bin:${pkgs.zip}/bin:${pkgs.unzip}/bin:${pkgs.eapol_test}/bin
+    export PATH=${pkgs.coreutils}/bin:${pkgs.gnused}/bin:${pkgs.gnugrep}/bin:${pkgs.pwgen}/bin:${pkgs.openssl}/bin:${pkgs.perl}/bin:${pkgs.zip}/bin:${pkgs.unzip}/bin:${pkgs.eapol_test}/bin:${pkgs.findutils}/bin
 
   '' + (builtins.readFile ./nixos-wifi-ap-eap-tail));
 in {
