@@ -3,6 +3,7 @@ pages:
   script:
     - mkdir public
     - cp -r presentations public/
+    - find public -name index.html | while read x ; do echo "Pages URL: $CI_PAGES_URL/${x:7}" ; done
   artifacts:
     paths:
     - public
