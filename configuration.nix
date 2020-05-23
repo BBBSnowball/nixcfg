@@ -122,6 +122,9 @@ in {
     #emacs-nox
     config.services.emacs.package
     sqlite-interactive
+    #iptables-nftables-compat
+
+    direnv
   ];
   nixpkgs.overlays = [
     (self: super: {
@@ -313,6 +316,8 @@ in {
   ]));
 
   boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
+
+  services.lorri.enable = true;
 
   # This value determines the NixOS release with which your system is to be
   # compatible, in order to avoid breaking some software such as database
