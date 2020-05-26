@@ -155,10 +155,88 @@ CLOSED: [2020-05-03 Sun 01:43]
 * DONE publish the config somewhere
 CLOSED: [2020-05-03 Sun 00:26]
 - https://git.c3pb.de/snowball/nixos-config-for-routeromen/-/tree/master/wifi-ap-eap
-* TODO maybe add something that creates graphs from accounting data
 - bandwidth per day/hour; total and per device/user
 - Access control: Listen on Unix socket and use SSH forward?
 - XDG_RUNTIME_DIR=/run/user/$UID nix-shell -E 'let p = import <nixpkgs> {}; in p.stdenv.mkDerivation {name="a"; buildInputs=[(p.python3.withPackages (p: [p.cherrypy]))];}'
+* DONE add my TPM experiments to this git
+CLOSED: [2020-05-23 Sat 22:16]
+* TODO try lorri
+- add lorri config to TPM dir with packages: tpm2-tools python3
+- lorri doesn't seem to support anything akin to `direnv allow` for its shell.nix.
+  - This cannot be true, can it?
+  - I don't see anything in the README nor any issues about this.
+
+- This thread is interesting:
+  - https://discourse.nixos.org/t/introducing-lorri-your-projects-nix-env/2560
+  - Potential alternative to lorri:
+    https://github.com/direnv/direnv/wiki/Nix#persistent-cached-shell-direnv--2182
+  - Use nixpkgs of current system rather than <nixpkgs>:
+    https://discourse.nixos.org/t/introducing-lorri-your-projects-nix-env/2560/7
+
+- There is already `use nix -p ...` in normal direnv but I guess this doesn't do async build
+  in the background and it doesn't add gcroots.
+
+- Other problems with lorri:
+  - The user service doesn't start as root.
+    - Error: `ERRO Bind error: Io(Os { code: 30, kind: Other, message: "Read-only file system" })`
+    - This may be due to `ProtectHome=read-only` in the service file but it does work for other users.
+  - The default `.direnv` file should print a useful message if lorri is not available, e.g. a link to
+    the repository.
+
+- legy recommends: Make a default.nix that builds the .envrc and run it like this: `nix build -f . --out-link .envrc`
+  - Unfortunately, he doesn't have any code available in a public repo.
+  - That way, nix-build will add the gcroot and the usual `direnv allow` mechanism will work.
+  - //However, this also means that we won't be able to notify the user about updates. --> see below
+  - I probably want to use mkShell but that won't work out-of-the-box. The source is here:
+    /nix/var/nix/profiles/per-user/root/channels/nixos/pkgs/build-support/mkshell/default.nix
+  - I think, I can make a shell.nix that modifies the build phase of mkShell to generate the envrc.
+- So, let's try this:
+  - Make a shell.nix with pkgs.mkShell but modify the build phase to generate an envrc.
+  - We can probably generate the envrc by `direnv export` if this does the right thing for PATH.
+  - Add options for setting additional variables.
+  - Add some code to the envrc that adds a watch on shell.nix and prints a message if the file is newer
+    than what was used to build that envrc - if we can do that.
+
+- How does lorri track dependencies?
+  - https://github.com/target/lorri/blob/master/src/builder.rs#L49
+  - https://github.com/target/lorri/blob/master/src/logged-evaluation.nix#L10
+  - scopedImport: https://github.com/NixOS/nix/commit/c273c15cb13bb86420dda1e5341a4e19517532b5
+  - How the paths are reduced: https://github.com/target/lorri, "Evaluator + watch design"
+  - Simpler: nix-build shell.nix -o test -vv 2>&1|sed -En "s/^(copied source|evaluating file) '(.*)'($| -> .*)/\2/p"|grep -v '^/nix/store/'
+  - However, this doesn't see the reference to the channel at all.
+  - Lorri does seem to watch the right paths.
+  - "nix-instantiate" "-vv" "--add-root" "/run/user/1001/.tmpfG7VVa/result" "--indirect" "--argstr" "runTimeClosure" "/nix/store/3ly3k012pnba0nh7bpwvk3rdw92yaf6w-runtime-closure.nix" "--argstr" "src" "/home/test/lorritest/x/shell.nix" "--" "/home/test/.cache/lorri/cas/3a83fbad2f114b4f4f431db2014c985c"
+  - The scopedImport is enough to make it work - all the other stuff doesn't seem to be required.
+  - direnv seems to use lstat and stat (preferring the one with newer mtime) so we can use it with
+    the channel symlink without recursively watching the directory. This is good.
+    https://github.com/direnv/direnv/blob/219d9f7674fa40699eacaafc21c67d1fc3ba9b70/file_times.go#L120
+    https://github.com/direnv/direnv/blob/219d9f7674fa40699eacaafc21c67d1fc3ba9b70/file_times.go#L167
+* TODO port my accounting display to different functional languages/frameworks
+** TODO Is there a TodoMVC example app for all of them?
+- This seems to be implemented for lots of frameworks. If we have this for all of them, this may be
+  useful as a more complete example.
+** TODO Elm
+- https://package.elm-lang.org/packages/blissfully/elm-chartjs-webcomponent/latest/
+** TODO Haskell: miso
+** TODO Haskell: redux-frp
+** TODO Rust Frameworks
+- Ich hatte die percy und dodrio angeschaut, weil die sahen am besten aus, von denen,
+  über die ich bei Youtube gestolpert war.
+- Dieser Vergleich sieht so aus, als wären die vielleicht nicht die beste Wahl:
+  https://awesomeopensource.com/project/flosse/rust-web-framework-comparison#frontend-frameworks
+- Zumindest draco und yew sollte ich mir wohl mal ansehen.
+- Wenn ich was brauche statt chart.js:
+  https://lib.rs/visualization
+  https://lib.rs/crates/plotters
+  https://lib.rs/crates/plotchart
+** TODO Rust: percy
+** TODO Rust: dodrio
+** TODO Scala-js: Binding.scala
+- https://github.com/ThoughtWorksInc/Binding.scala
+- https://github.com/ThoughtWorksInc/todo/blob/master/js/src/main/scala/com/thoughtworks/todo/Main.scala
+- https://www.scala-js.org/doc/tutorial/basic/index.html
+** TODO Scala-js: laminar?
+- https://index.scala-lang.org/raquo/laminar/laminar/0.9.1?target=_sjs1.x_2.13
 * TODO test with ESP32
 - https://github.com/espressif/esp-idf/issues/1297
 - SHA1, 2048 bit
