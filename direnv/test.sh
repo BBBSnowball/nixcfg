@@ -2,7 +2,6 @@
 save_path() {
   real="`realpath "$1"`"
   if [ "${1:0:11}" != "/nix/store/" ] && [ "${real:0:11}" == "/nix/store/" ]; then
-    echo blub
     # symlink to Nix store --> find symlink that is not in Nix store
     x="$1"
     while true; do
@@ -11,7 +10,6 @@ save_path() {
       if [ "$x" == "$parent" ] ; then
         break
       elif [ "${realparent:0:11}" != "/nix/store/" ] ; then
-        echo "blub4: $1 -> $x"
         echo "$x" >>.tmp_paths
         break
       fi
@@ -34,4 +32,4 @@ handle_output() {
 }
 rm .tmp_paths
 nix-build blub2.nix 2>&1|handle_output >&2
-cat .tmp_paths
+sort -u .tmp_paths
