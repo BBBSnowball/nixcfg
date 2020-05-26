@@ -20,6 +20,7 @@ let
 
   #FIXME We should install this file to Nix store and hardcode the paths.
   pkgs = import <nixpkgs> {};
+  lib = pkgs.lib;
   exportEnv = d: d.overrideAttrs (_: {
     # We use the same trick as pkgs.mkShell and thereby undo its "do not build" trick.
     # see https://github.com/NixOS/nixpkgs/blob/master/pkgs/build-support/mkshell/default.nix
@@ -35,11 +36,33 @@ let
       ( unset PATH out; export ) >$out
     '';
   });
-  makeEnvrc = d: pkgs.writeShellScript "envrc-${d.name or "shell"}" ''
+  makeEnvrcStdenvSetup = d: pkgs.writeShellScript "envrc-${d.name or "shell"}" ''
     . ${exportEnv d}
     export IN_NIX_SHELL=impure
     export noDumpEnvVars=1
     [ -n "$stdenv" -a -f $stdenv/setup ] && . $stdenv/setup
   '';
+  makeEnvrcPathOnly = d: let
+    inputAttrs = ["buildInputs" "nativeBuildInputs" "propagatedBuildInputs" "propagatedNativeBuildInputs"];
+    getDefault = attr: default: if builtins.hasAttr attr d then builtins.getAttr attr d else default;
+    getInputs = x: (lib.concatLists (builtins.map (attr: getDefault attr []) inputAttrs)) ++ (lib.concatLists (builtins.map getInputs (x.inputsFrom or [])));
+    paths = getInputs d;
+    #otherVars = builtins.removeAttrs d (inputAttrs ++ ["name" "phases" "inputsFrom"]);
+    otherVars = builtins.removeAttrs d ["name" "phases" "inputsFrom"];
+    tryToString = x: with builtins;
+      if isBool x || isString x || isInt x || isPath x || x ? __toString then toString x
+      else if isList x then toString (map tryToString x)
+      else null;
+    otherVarsStr = lib.filterAttrs (n: v: v != null && n >= "A" && n < "[") (lib.mapAttrs (n: v: tryToString v) otherVars);
+  in pkgs.writeShellScript "envrc-${d.name or "shell"}" ''
+    #FIXME only for dirs that exist
+    PATH=${lib.escapeShellArg (lib.concatStringsSep ":" (map (x: "${x}/bin") paths))}:"$PATH"
+    ${lib.concatStringsSep "\n" (lib.mapAttrsToList (name: value: "export ${lib.escapeShellArg name}=${lib.escapeShellArg value}") otherVarsStr)}
+    # ${toString (lib.mapAttrsToList (n: v: "${n} (${builtins.typeOf v})") d)}
+  '';
+  makeEnvrc = d: let mode = d.mode or "stdenv-setup"; in
+    if mode == "stdenv-setup" then makeEnvrcStdenvSetup d
+    else if mode == "path-only" then makeEnvrcPathOnly d
+    else builtins.abort "invalid mode";
 in makeEnvrc (callIfFunction (importScopedWithWatch {} ./shell.nix))
 

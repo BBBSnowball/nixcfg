@@ -30,6 +30,7 @@ handle_output() {
     fi
   done
 }
-rm .tmp_paths
+set -eu -o pipefail
+rm -f .tmp_paths
 nix-build blub2.nix 2>&1|handle_output >&2
 sort -u .tmp_paths

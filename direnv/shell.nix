@@ -8,4 +8,8 @@ pkgs.mkShell {
   buildInputs = with pkgs; [
     tpm2-tools python3
   ] ++ (if a c || a b then [pkgs.zsh] else []);
+
+  TEST = 123;
+  BLUB = "a''b";
+  mode = "path-only";
 }
