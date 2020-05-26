@@ -10,9 +10,9 @@ let
         readFile = withWatchTrace builtins.readFile;
         readDir  = withWatchTrace builtins.readDir;
       };
-      import = builtins.scopedImport scope;
-      #scopedImport = x: importScopedWithWatch (parentScope // x);
-      scopedImport = x: importScopedWithWatch (x // scope);
+      import = withWatchTrace (builtins.scopedImport scope);
+      #scopedImport = x: withWatchTrace (importScopedWithWatch (parentScope // x));
+      scopedImport = x: withWatchTrace (importScopedWithWatch (x // scope));
     };
   in scope.import;
 
