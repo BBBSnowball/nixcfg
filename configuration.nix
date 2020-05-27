@@ -136,6 +136,10 @@ in {
   # boot.loader.grub.device = "/dev/sda"; # or "nodev" for efi only
   boot.loader.grub.device = "/dev/vda";
 
+  # https://github.com/NixOS/nixpkgs/issues/79109
+  nix.gc.automatic = true;
+  nix.gc.options = "--delete-older-than 60d";
+
   networking.hostName = "nixos"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
@@ -320,6 +324,9 @@ in {
     android-tcp = { subnet = 91; port = ports.openvpn-android-tcp.port; keyName = "android"; useTcp = true; };
     #jolla      = { subnet = 90; port = 446; };  # not used anymore
     davides     = { subnet = 87; port = ports.openvpn-davides.port; };
+
+    carsten-udp = { subnet = 51; port = ports.openvpn-carsten-udp.port; keyName = "carsten"; };
+    carsten-tcp = { subnet = 52; port = ports.openvpn-carsten-tcp.port; keyName = "carsten"; useTcp = true; };
   };
 
   # must use unpriviledged port for TCP (but external port can be priviledged due to DNAT)
@@ -327,6 +334,8 @@ in {
   networking.firewall.allowedPorts.openvpn-android-tcp = 4440;  # external port is 444 due to DNAT
   networking.firewall.allowedPorts.openvpn-android-udp = { type = "udp"; port = 444; };
   networking.firewall.allowedPorts.openvpn-davides     = { type = "udp"; port = 450; };
+  networking.firewall.allowedPorts.openvpn-carsten-udp = { type = "udp"; port = 451; };
+  networking.firewall.allowedPorts.openvpn-carsten-tcp = { type = "tcp"; port = 4510; };
 
   services.tinc.networks.bbbsnowball = {
     name = "sonline";
