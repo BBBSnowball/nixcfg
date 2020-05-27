@@ -339,7 +339,7 @@ in {
 
   services.tinc.networks.bbbsnowball = {
     name = "sonline";
-    hosts = {<redacted>, +thinknat};
+    hosts = {<redacted>};
     listenAddress = upstreamIP;
     package = pkgs.tinc;  # the other nodes use stable so no need to use the pre-release
     interfaceType = "tap";  # must be consistent across the network
