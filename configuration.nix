@@ -2,12 +2,52 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
+let
+  ssh_keys = builtins.map lib.fileContents [
+    #./private/ssh-admin-dom0.pub
+    ./private/ssh-laptop.pub
+    ./private/ssh-root-dom0-old.pub
+  ];
 
-{
+  serverExternalIp = lib.fileContents ./private/serverExternalIp.txt;
+  upstreamIP = (builtins.head config.networking.interfaces.ens3.ipv4.addresses).address;
+
+  favoritePkgs = with pkgs; [ wget htop tmux byobu git vim tig ];
+
+  myDefaultConfig = { config, pkgs, ...}: {
+    environment.systemPackages = favoritePkgs ++ [ pkgs.vi-alias ];
+    users.users.root.openssh.authorizedKeys.keys = ssh_keys;
+    programs.vim.defaultEditor = true;
+    nixpkgs.overlays = [ (self: super: {
+      vim = super.pkgs.vim_configurable.customize {
+        #NOTE This breaks the vi->vim alias.
+        name = "vim";
+        vimrcConfig.customRC = ''
+          imap fd <Esc>
+        '';
+      };
+      vi-alias = self.buildEnv {
+        name = "vi-alias";
+        paths = [
+          (self.pkgs.writeShellScriptBin "vi" ''exec ${pkgs.vim}/bin/vim "$@"'')
+        ];
+      };
+      # vimrc is an argument, not a package
+      #vimrc = self.runCommand "my-vimrc" {origVimrc = super.vimrc;} ''cp $origVimrc $out ; echo "imap fd <Esc>" >> $out'';
+      # infinite recursion because vim in super tries to use the new vimrc
+      #vimrc = self.runCommand "my-vimrc" {origVim = super.vim;} ''cp $origVim/share/vim/vimrc $out ; echo "imap fd <Esc>" >> $out'';
+      # rebuilds vim
+      #vim = super.vim.override { vimrc = self.runCommand "my-vimrc" {origVim = super.vim;} ''cat $origVim/share/vim/vimrc >$out ; echo "imap fd <Esc>" >> $out''; };
+    }) ];
+  };
+
+in {
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
+      <nixpkgs/nixos/modules/profiles/qemu-guest.nix>
+      myDefaultConfig
     ];
 
   # Use the GRUB 2 boot loader.
@@ -19,6 +59,10 @@
   # Define on which hard drive you want to install Grub.
   boot.loader.grub.device = "/dev/vda"; # or "nodev" for efi only
 
+  # https://github.com/NixOS/nixpkgs/issues/79109
+  nix.gc.automatic = true;
+  nix.gc.options = "--delete-older-than 60d";
+
   networking.hostName = "c3pb"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
@@ -28,7 +72,7 @@
 
   # Select internationalisation properties.
   i18n = {
-    consoleFont = "Lat2-Terminus16";
+  #  consoleFont = "Lat2-Terminus16";
     consoleKeyMap = "us";
     defaultLocale = "en_US.UTF-8";
   };
@@ -39,17 +83,20 @@
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
-    wget vim htop byobu tmux
+    socat
+    # not with programs.mosh.enable because we want to do firewall ourselves
+    mosh
   ];
 
   # Enable the OpenSSH daemon.
   services.openssh.enable = true;
- 
+
   networking.interfaces.ens3.ipv4.addresses = [ {
     address = "192.168.84.135";
     prefixLength = 25;
-  }];
+  } ];
   networking.useDHCP = false;
+
   networking.defaultGateway = "192.168.84.129";
   networking.nameservers = [ "62.210.16.6" "62.210.16.7" ];
 
@@ -61,6 +108,20 @@
   users.users.root.openssh.authorizedKeys.keys = [
     FIXME:private/ssh-laptop.pub
   ];
+
+  #headless = true;
+  sound.enable = false;
+  boot.vesa = false;
+  boot.loader.grub.splashImage = null;
+
+  systemd.services."serial-getty@ttyS0".enable = true;
+  boot.kernelParams = [ "console=ttyS0" ];
+
+  security.rngd.enable = false;
+
+  system.autoUpgrade.enable = true;
+
+  services.fstrim.enable = true;
 
   # This value determines the NixOS release with which your system is to be
   # compatible, in order to avoid breaking some software such as database
