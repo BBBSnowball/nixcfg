@@ -49,7 +49,7 @@ in {
       ./hardware-configuration.nix
       <nixpkgs/nixos/modules/profiles/qemu-guest.nix>
       myDefaultConfig
-      ./c3pb-services.nix
+      ./c3pb
     ];
 
   # Use the GRUB 2 boot loader.
