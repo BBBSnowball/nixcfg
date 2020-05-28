@@ -105,9 +105,6 @@ in {
     isNormalUser = true;
     #extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
   };
-  users.users.root.openssh.authorizedKeys.keys = [
-    FIXME:private/ssh-laptop.pub
-  ];
 
   #headless = true;
   sound.enable = false;
