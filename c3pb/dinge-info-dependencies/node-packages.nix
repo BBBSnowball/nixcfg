@@ -139,15 +139,6 @@ let
         sha512 = "Hrgsx+orqoygnmhFbKaHE6c296J+HTAQXoxEF6gNupROmmGJRoyzfG3ccAveqCBrwr/2yxQ5BVd/GTl5agOwSg==";
       };
     };
-    "send-0.17.1" = {
-      name = "send";
-      packageName = "send";
-      version = "0.17.1";
-      src = fetchurl {
-        url = "https://registry.npmjs.org/send/-/send-0.17.1.tgz";
-        sha512 = "BsVKsiGcQMFwT8UxypobUKyv7irCNRHk1T0G680vk88yf6LBByGcZJOTJCrTP2xVN6yI+XjPJcNuE3V4fT9sAg==";
-      };
-    };
     "setprototypeof-1.1.1" = {
       name = "setprototypeof";
       packageName = "setprototypeof";
@@ -176,11 +167,16 @@ let
       };
     };
   };
-  args = {
-    name = "dinge-info";
-    packageName = "dinge-info";
-    version = "0.0.1";
-    src = ./.;
+in
+{
+  send = nodeEnv.buildNodePackage {
+    name = "send";
+    packageName = "send";
+    version = "0.17.1";
+    src = fetchurl {
+      url = "https://registry.npmjs.org/send/-/send-0.17.1.tgz";
+      sha512 = "BsVKsiGcQMFwT8UxypobUKyv7irCNRHk1T0G680vk88yf6LBByGcZJOTJCrTP2xVN6yI+XjPJcNuE3V4fT9sAg==";
+    };
     dependencies = [
       (sources."debug-2.6.9" // {
         dependencies = [
@@ -200,23 +196,18 @@ let
       sources."ms-2.1.1"
       sources."on-finished-2.3.0"
       sources."range-parser-1.2.1"
-      sources."send-0.17.1"
       sources."setprototypeof-1.1.1"
       sources."statuses-1.5.0"
       sources."toidentifier-1.0.0"
     ];
     buildInputs = globalBuildInputs;
     meta = {
+      description = "Better streaming static file server with Range and conditional-GET support";
+      homepage = "https://github.com/pillarjs/send#readme";
+      license = "MIT";
     };
     production = true;
     bypassCache = true;
     reconstructLock = true;
   };
-in
-{
-  args = args;
-  sources = sources;
-  tarball = nodeEnv.buildNodeSourceDist args;
-  package = nodeEnv.buildNodePackage args;
-  shell = nodeEnv.buildNodeShell args;
 }

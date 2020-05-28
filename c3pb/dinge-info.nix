@@ -5,15 +5,11 @@ let
     rev = "de947d0837a5c309d875918cf1a31720e33b2105";
     sha256 = "01lw25q9cfrjr289jqinx2x79abi25ssxa9hgw2g9fd0p8hjkgax";
   };
-  # The dependencies have been generated with node2nix with a fake package.json.
-  # We should probably use `node2nix --input <( echo "[\"$1\"]")` but I don't
-  # know how to use the result (except with nix-env - which is certainly not
-  # what I want).
-  nodeShell = import ./dinge-info-dependencies {
+  nodeDeps = (import ./dinge-info-dependencies {
     inherit pkgs;
     inherit (pkgs) nodejs;
     inherit (config) system;
-  };
+  }).send;
 in {
   users.users.dinge = {
     isNormalUser = false;
@@ -24,10 +20,10 @@ in {
     after = ["network.target"];
     description = "Forwarding service for dinge.info";
     environment.CONFIG = "/etc/nixos/secret-dinge-info.js";
+    environment.NODE_PATH = "${nodeDeps}/lib/node_modules";
     serviceConfig = {
       Type = "simple";
-      #ExecStart = "${pkgs.nodejs}/bin/node dinge.js";
-      ExecStart = "${nodeShell.shell}/bin/shell -c '${pkgs.nodejs}/bin/node dinge.js'";
+      ExecStart = "${pkgs.nodejs}/bin/node dinge.js";
       WorkingDirectory = "${dingeSrc}";
       User = "dinge";
       Restart = "always";
