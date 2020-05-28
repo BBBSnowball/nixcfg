@@ -4,5 +4,6 @@
     ./autossh.nix
     ./mumbleweb.nix
     ./dinge-info.nix
+    ./matrix-synapse.nix
   ];
 }
