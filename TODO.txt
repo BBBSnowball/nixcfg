@@ -1,0 +1,8 @@
+- DONE autossh
+- DONE mumble-web
+- DONE dinge.info
+- DONE matrix-synapse
+- TODO mautrix-telegram
+  - I think this has some local changes, e.g. not forwarding messages with some special marker.
+  - Update to 0.7.2.
+- TODO matrix_edi.py
