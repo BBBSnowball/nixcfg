@@ -9,7 +9,7 @@ in {
     enable_registration = false;
     url_preview_enabled = true;
 
-    dataDir = "/var/lib/matrix-synapse";
+    dataDir = "/var/data/matrix-synapse";
     database_type = "sqlite3";
 
     server_name = domain;

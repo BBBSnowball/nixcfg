@@ -9,6 +9,7 @@
     ];
 
   boot.initrd.availableKernelModules = [ "ata_piix" "virtio_pci" "floppy" "sr_mod" "virtio_blk" ];
+  boot.initrd.kernelModules = [ ];
   boot.kernelModules = [ ];
   boot.extraModulePackages = [ ];
 
@@ -19,6 +20,11 @@
 
   fileSystems."/nix" =
     { device = "/dev/disk/by-uuid/88340a2a-260b-405f-b0e3-0ee9de33c400";
+      fsType = "ext4";
+    };
+
+  fileSystems."/var/data" =
+    { device = "/dev/disk/by-uuid/d32eb66d-696d-4c01-bea0-b355427e26ea";
       fsType = "ext4";
     };
 
