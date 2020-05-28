@@ -73,9 +73,9 @@ in {
   # Select internationalisation properties.
   i18n = {
   #  consoleFont = "Lat2-Terminus16";
-    consoleKeyMap = "us";
     defaultLocale = "en_US.UTF-8";
   };
+  console.keyMap = "us";
 
   # Set your time zone.
   time.timeZone = "Europe/Berlin";
