@@ -30,4 +30,6 @@ in {
       RestartSec = 10;
     };
   };
+
+  networking.firewall.allowedTCPPorts = [4245];
 }

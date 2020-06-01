@@ -6,6 +6,8 @@ in {
     (import ./matrix-synapse-update.nix)
   ];
 
+  networking.firewall.allowedTCPPorts = [8448];
+
   services.matrix-synapse = {
     enable = true;
 
