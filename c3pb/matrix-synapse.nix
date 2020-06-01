@@ -2,6 +2,10 @@
 let
   domain = lib.fileContents ../private/trueDomain.txt;
 in {
+  nixpkgs.overlays = [
+    (import ./matrix-synapse-update.nix)
+  ];
+
   services.matrix-synapse = {
     enable = true;
 
@@ -54,7 +58,10 @@ in {
         enabled: false
       signing_key_path: "/etc/nixos/secret-matrix-synapse/homeserver.signing.key"
     '';
-    extraConfigFiles = [ "/etc/nixos/secret-matrix-synapse/homeserver-secret.yaml" ];
+    extraConfigFiles = [
+      "/etc/nixos/secret-matrix-synapse/homeserver-secret.yaml"
+      "/etc/nixos/secret-matrix-synapse/oidc-config.yaml"
+    ];
     app_service_config_files = [
       #"/etc/matrix-synapse/matrix_irc_hackint.yaml"
       "/etc/nixos/secret-matrix-synapse/mautrix-telegram.yaml"
