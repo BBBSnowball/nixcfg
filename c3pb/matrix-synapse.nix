@@ -16,8 +16,8 @@ in {
     dataDir = "/var/data/matrix-synapse";
     database_type = "sqlite3";
 
-    server_name = domain;
-    public_baseurl = "https://${domain}/";
+    server_name = "test." + domain;
+    public_baseurl = "https://test.${domain}/";
     listeners = let
       default = addr: port: {
         bind_address = addr;
