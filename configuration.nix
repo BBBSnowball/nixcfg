@@ -31,7 +31,7 @@ let
       vi-alias = self.buildEnv {
         name = "vi-alias";
         paths = [
-          (self.pkgs.writeShellScriptBin "vi" ''exec ${pkgs.vim}/bin/vim "$@"'')
+          (self.pkgs.writeShellScriptBin "vi" ''exec ${self.vim}/bin/vim "$@"'')
         ];
       };
       # vimrc is an argument, not a package
