@@ -42,7 +42,7 @@ in {
       #local = ["::1" "127.0.0.1"];  # not supported by NixOS module
       local = "127.0.0.1";
     in [
-      ((default ""    8448) // { tls = true;  x_forwarded = false; })
+      ((default ""    8448) // { tls = true;  x_forwarded = true;  })
       ((default local 8008) // { tls = false; x_forwarded = true;  })
       { bind_address = local; port = 9000; type = "manhole"; resources = []; }
     ];
