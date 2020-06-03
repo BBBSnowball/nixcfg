@@ -20,7 +20,10 @@ self: super: let
       sha256 = "09drdqcjvpk9s3hq5rx9yxsxq0wak5fg5gfaiqfnbnxav2c2v7kq";
     };
     propagatedBuildInputs = old.propagatedBuildInputs ++ [newAuthLib];
-    patches = [ ./matrix-synapse-patch-for-gitlab.patch ] ++ (old.patches or []);
+    patches = [
+      ./matrix-synapse-patch-for-gitlab.patch
+      ./matrix-synapse-patch-for-existing-users.patch
+    ] ++ (old.patches or []);
     doCheck = false;
     doInstallCheck = false;
   });
