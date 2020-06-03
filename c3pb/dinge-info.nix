@@ -2,8 +2,8 @@
 let
   dingeSrc = pkgs.fetchgit {
     url = https://git.c3pb.de/c3pb/inventory;
-    rev = "de947d0837a5c309d875918cf1a31720e33b2105";
-    sha256 = "01lw25q9cfrjr289jqinx2x79abi25ssxa9hgw2g9fd0p8hjkgax";
+    rev = "f230b875d70eafe8318f249059dda87f348884f6";
+    sha256 = "0higbr624n2hshgp7h33dgm51w6ml556jfna4m0rq0hm7zlscqd1";
   };
   nodeDeps = (import ./dinge-info-dependencies {
     inherit pkgs;
