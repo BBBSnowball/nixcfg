@@ -1,0 +1,58 @@
+From e8d43bc9f98ae23f4c531fb81899298334667434 Mon Sep 17 00:00:00 2001
+From: Benjamin Koch <bbbsnowball@gmail.com>
+Date: Thu, 4 Jun 2020 00:57:23 +0200
+Subject: [PATCH] add config option for always using userinfo endpoint
+
+---
+ synapse/config/oidc_config.py    | 6 ++++++
+ synapse/handlers/oidc_handler.py | 4 ++--
+ 2 files changed, 8 insertions(+), 2 deletions(-)
+
+diff --git a/synapse/config/oidc_config.py b/synapse/config/oidc_config.py
+index 586038078..f3ef1cf8b 100644
+--- a/synapse/config/oidc_config.py
++++ b/synapse/config/oidc_config.py
+@@ -51,6 +51,7 @@ class OIDCConfig(Config):
+             "client_auth_method", "client_secret_basic"
+         )
+         self.oidc_scopes = oidc_config.get("scopes", ["openid"])
++        self.oidc_uses_userinfo = oidc_config.get("uses_userinfo", False)
+         self.oidc_authorization_endpoint = oidc_config.get("authorization_endpoint")
+         self.oidc_token_endpoint = oidc_config.get("token_endpoint")
+         self.oidc_userinfo_endpoint = oidc_config.get("userinfo_endpoint")
+@@ -118,6 +119,11 @@ class OIDCConfig(Config):
+             #
+             #scopes: ["openid"]
+ 
++            # always use userinfo endpoint. This is required for providers that don't include user
++            # information in the token response, e.g. Gitlab.
++            #
++            #uses_userinfo: false
++
+             # the oauth2 authorization endpoint. Required if provider discovery is disabled.
+             #
+             #authorization_endpoint: "https://accounts.example.com/oauth2/auth"
+diff --git a/synapse/handlers/oidc_handler.py b/synapse/handlers/oidc_handler.py
+index 4ba8c7fda..6bc336fd2 100644
+--- a/synapse/handlers/oidc_handler.py
++++ b/synapse/handlers/oidc_handler.py
+@@ -93,6 +93,7 @@ class OidcHandler:
+     def __init__(self, hs: HomeServer):
+         self._callback_url = hs.config.oidc_callback_url  # type: str
+         self._scopes = hs.config.oidc_scopes  # type: List[str]
++        self._uses_userinfo_config = hs.config.oidc_uses_userinfo  # type: bool
+         self._client_auth = ClientAuth(
+             hs.config.oidc_client_id,
+             hs.config.oidc_client_secret,
+@@ -224,8 +225,7 @@ class OidcHandler:
+         ``access_token`` with the ``userinfo_endpoint``.
+         """
+ 
+-        # Maybe that should be user-configurable and not inferred?
+-        return "openid" not in self._scopes
++        return self._uses_userinfo_config or "openid" not in self._scopes
+ 
+     async def load_metadata(self) -> OpenIDProviderMetadata:
+         """Load and validate the provider metadata.
+-- 
+2.21.1

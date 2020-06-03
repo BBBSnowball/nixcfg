@@ -2,6 +2,8 @@
 - DONE mumble-web
 - DONE dinge.info
 - DONE matrix-synapse
+- TODO OpenID Connect
+  - Synapse 1.14 has been released on May 28th.
 - TODO mautrix-telegram
   - I think this has some local changes, e.g. not forwarding messages with some special marker.
   - Update to 0.7.2.
