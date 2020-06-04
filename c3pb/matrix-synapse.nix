@@ -15,7 +15,7 @@ in {
     enable_registration = false;
     url_preview_enabled = true;
 
-    dataDir = "/var/data/matrix-synapse";
+    dataDir = "/var/data/matrix-synapse-test";
     database_type = "sqlite3";
 
     server_name = "test.${domain}";
