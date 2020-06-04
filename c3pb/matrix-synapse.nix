@@ -62,7 +62,6 @@ in {
     '';
     extraConfigFiles = [
       "/etc/nixos/secret/matrix-synapse/homeserver-secret.yaml"
-      "/etc/nixos/c3pb/matrix-synapse-oidc.yaml"
       "/etc/nixos/secret/matrix-synapse/oidc-config.yaml"
     ];
     app_service_config_files = [
