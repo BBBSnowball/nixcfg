@@ -1,0 +1,16 @@
+oidc_config:
+  enabled:  true
+  discover: true
+  issuer:   "https://git.c3pb.de"
+  #client_id: ...
+  #client_secret: ...
+  #scopes: ["openid"]
+  uses_userinfo: true
+  merge_with_existing_users: true
+  user_mapping_provider:
+    config:
+      #localpart_template: "debug-{{user.keys() | join(',')}}"
+      localpart_template: "{{ user.nickname }}{% if user.nickname == \"admin\" %}-via-gitlab{% endif %}"
+      display_name_template: "{{ user.name }}"
+password_config:
+  enabled: false
