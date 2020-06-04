@@ -69,4 +69,6 @@ in {
       "/etc/nixos/secret/matrix-synapse/mautrix-telegram.yaml"
     ];
   };
+
+  systemd.services.matrix-synapse.restartTriggers = config.services.matrix-synapse.extraConfigFiles;
 }
