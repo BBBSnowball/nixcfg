@@ -5,5 +5,6 @@
     ./mumbleweb.nix
     ./dinge-info.nix
     ./matrix-synapse.nix
+    ./mautrix-telegram
   ];
 }
