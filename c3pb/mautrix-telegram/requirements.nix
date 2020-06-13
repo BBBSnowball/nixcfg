@@ -2,7 +2,7 @@
 # See more at: https://github.com/nix-community/pypi2nix
 #
 # COMMAND:
-#   pypi2nix -r requirements.txt
+#   pypi2nix -r requirements.txt -E zlib
 #
 
 { pkgs ? import <nixpkgs> {},
@@ -21,7 +21,7 @@ let
     python = pkgs.python3;
   };
 
-  commonBuildInputs = [];
+  commonBuildInputs = with pkgs; [ zlib ];
   commonDoCheck = false;
 
   withPackages = pkgs':
@@ -434,38 +434,19 @@ let
     };
 
     "ruamel-yaml" = python.mkDerivation {
-      name = "ruamel-yaml-0.16.10";
+      name = "ruamel-yaml-0.15.100";
       src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/16/8b/54a26c1031595e5edd0e616028b922d78d8ffba8bc775f0a4faeada846cc/ruamel.yaml-0.16.10.tar.gz";
-        sha256 = "099c644a778bf72ffa00524f78dd0b6476bca94a1da344130f4bf3381ce5b954";
-};
-      doCheck = commonDoCheck;
-      format = "setuptools";
-      buildInputs = commonBuildInputs ++ [ ];
-      propagatedBuildInputs = [
-        self."ruamel-yaml-clib"
-      ];
-      meta = with pkgs.stdenv.lib; {
-        homepage = "https://sourceforge.net/p/ruamel-yaml/code/ci/default/tree";
-        license = licenses.mit;
-        description = "ruamel.yaml is a YAML parser/emitter that supports roundtrip preservation of comments, seq/map flow style, and map key order";
-      };
-    };
-
-    "ruamel-yaml-clib" = python.mkDerivation {
-      name = "ruamel-yaml-clib-0.2.0";
-      src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/92/28/612085de3fae9f82d62d80255d9f4cf05b1b341db1e180adcf28c1bf748d/ruamel.yaml.clib-0.2.0.tar.gz";
-        sha256 = "b66832ea8077d9b3f6e311c4a53d06273db5dc2db6e8a908550f3c14d67e718c";
+        url = "https://files.pythonhosted.org/packages/9a/ee/55cd64bbff971c181e2d9e1c13aba9a27fd4cd2bee545dbe90c44427c757/ruamel.yaml-0.15.100.tar.gz";
+        sha256 = "8e42f3067a59e819935a2926e247170ed93c8f0b2ab64526f888e026854db2e4";
 };
       doCheck = commonDoCheck;
       format = "setuptools";
       buildInputs = commonBuildInputs ++ [ ];
       propagatedBuildInputs = [ ];
       meta = with pkgs.stdenv.lib; {
-        homepage = "https://bitbucket.org/ruamel/yaml.clib";
+        homepage = "https://bitbucket.org/ruamel/yaml";
         license = licenses.mit;
-        description = "C version of reader, parser and emitter for ruamel.yaml derived from libyaml";
+        description = "ruamel.yaml is a YAML parser/emitter that supports roundtrip preservation of comments, seq/map flow style, and map key order";
       };
     };
 
@@ -543,10 +524,10 @@ let
     };
 
     "telethon" = python.mkDerivation {
-      name = "telethon-1.14.0";
+      name = "telethon-1.9.0";
       src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/84/96/1af41e773e0e2e6f123fc71bd0a2080048f4f34fc1dbd080b517ff8955a5/Telethon-1.14.0.tar.gz";
-        sha256 = "d8bb37f80c4a8befa92d0525f00a578a74064645e48d7aa0cc4731f3d813e1b9";
+        url = "https://files.pythonhosted.org/packages/6c/9b/8668c74decf4c5e8cec3d73794f89947842a39b9e127bf7e7dfeddd8ca5b/Telethon-1.9.0.tar.gz";
+        sha256 = "a8797ad5bfee2b350cfc9b73cbb30fc19c8f73c0db42471e0df1371b1a269edc";
 };
       doCheck = commonDoCheck;
       format = "setuptools";
