@@ -415,10 +415,10 @@ let
     };
 
     "rsa" = python.mkDerivation {
-      name = "rsa-4.0";
+      name = "rsa-4.6";
       src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/cb/d0/8f99b91432a60ca4b1cd478fd0bdf28c1901c58e3a9f14f4ba3dba86b57f/rsa-4.0.tar.gz";
-        sha256 = "1a836406405730121ae9823e19c6e806c62bbad73f890574fff50efa4122c487";
+        url = "https://files.pythonhosted.org/packages/a2/d5/04b8a9719149583fec76efdff2e7a81c6e3cc34909ee818d3fbf115edc2e/rsa-4.6.tar.gz";
+        sha256 = "109ea5a66744dd859bf16fe904b8d8b627adafb9408753161e766a92e7d681fa";
 };
       doCheck = commonDoCheck;
       format = "setuptools";

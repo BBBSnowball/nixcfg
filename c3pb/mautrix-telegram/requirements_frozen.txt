@@ -15,7 +15,7 @@ pyasn1==0.4.8
 python-dateutil==2.8.1
 python-editor==1.0.4
 python-magic==0.4.18
-rsa==4.0
+rsa==4.6
 ruamel.yaml==0.16.10
 ruamel.yaml.clib==0.2.0
 setuptools-scm==4.1.2
