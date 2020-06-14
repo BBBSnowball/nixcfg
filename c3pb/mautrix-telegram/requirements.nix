@@ -2,7 +2,7 @@
 # See more at: https://github.com/nix-community/pypi2nix
 #
 # COMMAND:
-#   pypi2nix -r requirements.txt -E zlib -e cryptg
+#   pypi2nix -r requirements.txt -E zlib -E libffi -e cryptg -e pytest-runner -e pytest -e pytest-asyncio -e pytest-mock
 #
 
 { pkgs ? import <nixpkgs> {},
@@ -265,6 +265,29 @@ let
       };
     };
 
+    "importlib-metadata" = python.mkDerivation {
+      name = "importlib-metadata-1.6.1";
+      src = pkgs.fetchurl {
+        url = "https://files.pythonhosted.org/packages/aa/9a/8483b77e2decd95963d7e34bc9bc91a26e71fd89b57d8cf978ca24747c7f/importlib_metadata-1.6.1.tar.gz";
+        sha256 = "0505dd08068cfec00f53a74a0ad927676d7757da81b7436a6eefe4c7cf75c545";
+};
+      doCheck = commonDoCheck;
+      format = "pyproject";
+      buildInputs = commonBuildInputs ++ [
+        self."setuptools"
+        self."setuptools-scm"
+        self."wheel"
+      ];
+      propagatedBuildInputs = [
+        self."zipp"
+      ];
+      meta = with pkgs.stdenv.lib; {
+        homepage = "http://importlib-metadata.readthedocs.io/";
+        license = licenses.asl20;
+        description = "Read metadata from Python packages";
+      };
+    };
+
     "mako" = python.mkDerivation {
       name = "mako-1.1.3";
       src = pkgs.fetchurl {
@@ -321,6 +344,23 @@ let
       };
     };
 
+    "more-itertools" = python.mkDerivation {
+      name = "more-itertools-8.4.0";
+      src = pkgs.fetchurl {
+        url = "https://files.pythonhosted.org/packages/67/4a/16cb3acf64709eb0164e49ba463a42dc45366995848c4f0cf770f57b8120/more-itertools-8.4.0.tar.gz";
+        sha256 = "68c70cc7167bdf5c7c9d8f6954a7837089c6a36bf565383919bb595efb8a17e5";
+};
+      doCheck = commonDoCheck;
+      format = "pyproject";
+      buildInputs = commonBuildInputs ++ [ ];
+      propagatedBuildInputs = [ ];
+      meta = with pkgs.stdenv.lib; {
+        homepage = "https://github.com/more-itertools/more-itertools";
+        license = licenses.mit;
+        description = "More routines for operating on iterables, beyond itertools";
+      };
+    };
+
     "multidict" = python.mkDerivation {
       name = "multidict-4.7.6";
       src = pkgs.fetchurl {
@@ -342,6 +382,26 @@ let
       };
     };
 
+    "packaging" = python.mkDerivation {
+      name = "packaging-20.4";
+      src = pkgs.fetchurl {
+        url = "https://files.pythonhosted.org/packages/55/fd/fc1aca9cf51ed2f2c11748fa797370027babd82f87829c7a8e6dbe720145/packaging-20.4.tar.gz";
+        sha256 = "4357f74f47b9c12db93624a82154e9b120fa8293699949152b22065d556079f8";
+};
+      doCheck = commonDoCheck;
+      format = "setuptools";
+      buildInputs = commonBuildInputs ++ [ ];
+      propagatedBuildInputs = [
+        self."pyparsing"
+        self."six"
+      ];
+      meta = with pkgs.stdenv.lib; {
+        homepage = "https://github.com/pypa/packaging";
+        license = licenses.asl20;
+        description = "Core utilities for Python packages";
+      };
+    };
+
     "pip" = python.mkDerivation {
       name = "pip-20.1.1";
       src = pkgs.fetchurl {
@@ -359,6 +419,46 @@ let
         homepage = "https://pip.pypa.io/";
         license = licenses.mit;
         description = "The PyPA recommended tool for installing Python packages.";
+      };
+    };
+
+    "pluggy" = python.mkDerivation {
+      name = "pluggy-0.13.1";
+      src = pkgs.fetchurl {
+        url = "https://files.pythonhosted.org/packages/f8/04/7a8542bed4b16a65c2714bf76cf5a0b026157da7f75e87cc88774aa10b14/pluggy-0.13.1.tar.gz";
+        sha256 = "15b2acde666561e1298d71b523007ed7364de07029219b604cf808bfa1c765b0";
+};
+      doCheck = commonDoCheck;
+      format = "pyproject";
+      buildInputs = commonBuildInputs ++ [
+        self."setuptools"
+        self."setuptools-scm"
+        self."wheel"
+      ];
+      propagatedBuildInputs = [
+        self."importlib-metadata"
+      ];
+      meta = with pkgs.stdenv.lib; {
+        homepage = "https://github.com/pytest-dev/pluggy";
+        license = licenses.mit;
+        description = "plugin and hook calling mechanisms for python";
+      };
+    };
+
+    "py" = python.mkDerivation {
+      name = "py-1.8.1";
+      src = pkgs.fetchurl {
+        url = "https://files.pythonhosted.org/packages/bd/8f/169d08dcac7d6e311333c96b63cbe92e7947778475e1a619b674989ba1ed/py-1.8.1.tar.gz";
+        sha256 = "5e27081401262157467ad6e7f851b7aa402c5852dbcb3dae06768434de5752aa";
+};
+      doCheck = commonDoCheck;
+      format = "setuptools";
+      buildInputs = commonBuildInputs ++ [ ];
+      propagatedBuildInputs = [ ];
+      meta = with pkgs.stdenv.lib; {
+        homepage = "http://py.readthedocs.io/";
+        license = licenses.mit;
+        description = "library with cross-python path, ini-parsing, io, code, log facilities";
       };
     };
 
@@ -410,6 +510,111 @@ let
         homepage = "https://github.com/eliben/pycparser";
         license = licenses.bsdOriginal;
         description = "C parser in Python";
+      };
+    };
+
+    "pyparsing" = python.mkDerivation {
+      name = "pyparsing-2.4.7";
+      src = pkgs.fetchurl {
+        url = "https://files.pythonhosted.org/packages/c1/47/dfc9c342c9842bbe0036c7f763d2d6686bcf5eb1808ba3e170afdb282210/pyparsing-2.4.7.tar.gz";
+        sha256 = "c203ec8783bf771a155b207279b9bccb8dea02d8f0c9e5f8ead507bc3246ecc1";
+};
+      doCheck = commonDoCheck;
+      format = "setuptools";
+      buildInputs = commonBuildInputs ++ [ ];
+      propagatedBuildInputs = [ ];
+      meta = with pkgs.stdenv.lib; {
+        homepage = "https://github.com/pyparsing/pyparsing/";
+        license = licenses.mit;
+        description = "Python parsing module";
+      };
+    };
+
+    "pytest" = python.mkDerivation {
+      name = "pytest-5.4.3";
+      src = pkgs.fetchurl {
+        url = "https://files.pythonhosted.org/packages/8f/c4/e4a645f8a3d6c6993cb3934ee593e705947dfafad4ca5148b9a0fde7359c/pytest-5.4.3.tar.gz";
+        sha256 = "7979331bfcba207414f5e1263b5a0f8f521d0f457318836a7355531ed1a4c7d8";
+};
+      doCheck = commonDoCheck;
+      format = "pyproject";
+      buildInputs = commonBuildInputs ++ [
+        self."setuptools"
+        self."setuptools-scm"
+        self."wheel"
+      ];
+      propagatedBuildInputs = [
+        self."attrs"
+        self."importlib-metadata"
+        self."more-itertools"
+        self."packaging"
+        self."pluggy"
+        self."py"
+        self."wcwidth"
+      ];
+      meta = with pkgs.stdenv.lib; {
+        homepage = "https://docs.pytest.org/en/latest/";
+        license = licenses.mit;
+        description = "pytest: simple powerful testing with Python";
+      };
+    };
+
+    "pytest-asyncio" = python.mkDerivation {
+      name = "pytest-asyncio-0.12.0";
+      src = pkgs.fetchurl {
+        url = "https://files.pythonhosted.org/packages/74/83/cb798453b2567ba0b8b35db05df3dda6ec0412f250b47a0cf19f37752a84/pytest-asyncio-0.12.0.tar.gz";
+        sha256 = "475bd2f3dc0bc11d2463656b3cbaafdbec5a47b47508ea0b329ee693040eebd2";
+};
+      doCheck = commonDoCheck;
+      format = "setuptools";
+      buildInputs = commonBuildInputs ++ [ ];
+      propagatedBuildInputs = [
+        self."pytest"
+      ];
+      meta = with pkgs.stdenv.lib; {
+        homepage = "https://github.com/pytest-dev/pytest-asyncio";
+        license = licenses.asl20;
+        description = "Pytest support for asyncio.";
+      };
+    };
+
+    "pytest-mock" = python.mkDerivation {
+      name = "pytest-mock-3.1.1";
+      src = pkgs.fetchurl {
+        url = "https://files.pythonhosted.org/packages/c0/83/3707111e1bfd006231f1379d9eef5d46c393e39d5142ee5113fa3a8e29a8/pytest-mock-3.1.1.tar.gz";
+        sha256 = "636e792f7dd9e2c80657e174c04bf7aa92672350090736d82e97e92ce8f68737";
+};
+      doCheck = commonDoCheck;
+      format = "setuptools";
+      buildInputs = commonBuildInputs ++ [ ];
+      propagatedBuildInputs = [
+        self."pytest"
+      ];
+      meta = with pkgs.stdenv.lib; {
+        homepage = "https://github.com/pytest-dev/pytest-mock/";
+        license = licenses.mit;
+        description = "Thin-wrapper around the mock package for easier use with pytest";
+      };
+    };
+
+    "pytest-runner" = python.mkDerivation {
+      name = "pytest-runner-5.2";
+      src = pkgs.fetchurl {
+        url = "https://files.pythonhosted.org/packages/5b/82/1462f86e6c3600f2471d5f552fcc31e39f17717023df4bab712b4a9db1b3/pytest-runner-5.2.tar.gz";
+        sha256 = "96c7e73ead7b93e388c5d614770d2bae6526efd997757d3543fe17b557a0942b";
+};
+      doCheck = commonDoCheck;
+      format = "pyproject";
+      buildInputs = commonBuildInputs ++ [
+        self."setuptools"
+        self."setuptools-scm"
+        self."wheel"
+      ];
+      propagatedBuildInputs = [ ];
+      meta = with pkgs.stdenv.lib; {
+        homepage = "https://github.com/pytest-dev/pytest-runner/";
+        license = licenses.mit;
+        description = "Invoke py.test as distutils command with dependency resolution";
       };
     };
 
@@ -618,6 +823,40 @@ let
       };
     };
 
+    "toml" = python.mkDerivation {
+      name = "toml-0.10.1";
+      src = pkgs.fetchurl {
+        url = "https://files.pythonhosted.org/packages/da/24/84d5c108e818ca294efe7c1ce237b42118643ce58a14d2462b3b2e3800d5/toml-0.10.1.tar.gz";
+        sha256 = "926b612be1e5ce0634a2ca03470f95169cf16f939018233a670519cb4ac58b0f";
+};
+      doCheck = commonDoCheck;
+      format = "setuptools";
+      buildInputs = commonBuildInputs ++ [ ];
+      propagatedBuildInputs = [ ];
+      meta = with pkgs.stdenv.lib; {
+        homepage = "https://github.com/uiri/toml";
+        license = licenses.mit;
+        description = "Python Library for Tom's Obvious, Minimal Language";
+      };
+    };
+
+    "wcwidth" = python.mkDerivation {
+      name = "wcwidth-0.2.4";
+      src = pkgs.fetchurl {
+        url = "https://files.pythonhosted.org/packages/2e/30/268d9d3ed18439b6983a8e630cd52d81fd7460a152d6e801d1b8394e51a1/wcwidth-0.2.4.tar.gz";
+        sha256 = "8c6b5b6ee1360b842645f336d9e5d68c55817c26d3050f46b235ef2bc650e48f";
+};
+      doCheck = commonDoCheck;
+      format = "setuptools";
+      buildInputs = commonBuildInputs ++ [ ];
+      propagatedBuildInputs = [ ];
+      meta = with pkgs.stdenv.lib; {
+        homepage = "https://github.com/jquast/wcwidth";
+        license = licenses.mit;
+        description = "Measures the displayed width of unicode strings in a terminal";
+      };
+    };
+
     "wheel" = python.mkDerivation {
       name = "wheel-0.34.2";
       src = pkgs.fetchurl {
@@ -654,6 +893,27 @@ let
         homepage = "https://github.com/aio-libs/yarl/";
         license = licenses.asl20;
         description = "Yet another URL library";
+      };
+    };
+
+    "zipp" = python.mkDerivation {
+      name = "zipp-3.1.0";
+      src = pkgs.fetchurl {
+        url = "https://files.pythonhosted.org/packages/ce/8c/2c5f7dc1b418f659d36c04dec9446612fc7b45c8095cc7369dd772513055/zipp-3.1.0.tar.gz";
+        sha256 = "c599e4d75c98f6798c509911d08a22e6c021d074469042177c8c86fb92eefd96";
+};
+      doCheck = commonDoCheck;
+      format = "pyproject";
+      buildInputs = commonBuildInputs ++ [
+        self."setuptools"
+        self."setuptools-scm"
+        self."wheel"
+      ];
+      propagatedBuildInputs = [ ];
+      meta = with pkgs.stdenv.lib; {
+        homepage = "https://github.com/jaraco/zipp";
+        license = licenses.mit;
+        description = "Backport of pathlib-compatible object wrapper for zip files";
       };
     };
   };
