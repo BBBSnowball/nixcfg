@@ -1,5 +1,5 @@
 { lib, stdenv, python3, pythonWithPkgs, fetchFromGitHub }:
-buildPythonApplication rec {
+python3.pkgs.buildPythonApplication rec {
   pname = "mautrix-telegram";
   version = "0.6.0";
 
@@ -12,5 +12,5 @@ buildPythonApplication rec {
 
   #NOTE pillow is not added via pypi2nix because it breaks pypi2nix.
   propagatedBuildInputs = builtins.attrValues pythonWithPkgs.packages;
-  checkInputs = with pythonWithPkgs.packages; [pytestrunner pytest-mock pytest-asyncio pytest];
+  checkInputs = with pythonWithPkgs.packages; [pytest-runner pytest-mock pytest-asyncio pytest];
 }
