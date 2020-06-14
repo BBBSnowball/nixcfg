@@ -2,7 +2,7 @@
 # See more at: https://github.com/nix-community/pypi2nix
 #
 # COMMAND:
-#   pypi2nix -r requirements.txt -E zlib
+#   pypi2nix -r requirements.txt -E zlib -e cryptg
 #
 
 { pkgs ? import <nixpkgs> {},
@@ -158,6 +158,25 @@ let
       };
     };
 
+    "cffi" = python.mkDerivation {
+      name = "cffi-1.14.0";
+      src = pkgs.fetchurl {
+        url = "https://files.pythonhosted.org/packages/05/54/3324b0c46340c31b909fcec598696aaec7ddc8c18a63f2db352562d3354c/cffi-1.14.0.tar.gz";
+        sha256 = "2d384f4a127a15ba701207f7639d94106693b6cd64173d6c8988e2c25f3ac2b6";
+};
+      doCheck = commonDoCheck;
+      format = "setuptools";
+      buildInputs = commonBuildInputs ++ [ ];
+      propagatedBuildInputs = [
+        self."pycparser"
+      ];
+      meta = with pkgs.stdenv.lib; {
+        homepage = "http://cffi.readthedocs.org";
+        license = licenses.mit;
+        description = "Foreign Function Interface for Python calling C code.";
+      };
+    };
+
     "chardet" = python.mkDerivation {
       name = "chardet-3.0.4";
       src = pkgs.fetchurl {
@@ -189,6 +208,26 @@ let
         homepage = "https://github.com/rtfd/commonmark.py";
         license = licenses.bsdOriginal;
         description = "Python parser for the CommonMark Markdown spec";
+      };
+    };
+
+    "cryptg" = python.mkDerivation {
+      name = "cryptg-0.2.post0";
+      src = pkgs.fetchurl {
+        url = "https://files.pythonhosted.org/packages/23/1c/13173e8eae468abc02d716bd539df664d946f27b9818ac83614acf28621f/cryptg-0.2.post0.tar.gz";
+        sha256 = "2e82c082f61f692c417f84351a3462fcbc83ed5a52768221ad1c55b6ced9e01b";
+};
+      doCheck = commonDoCheck;
+      format = "setuptools";
+      buildInputs = commonBuildInputs ++ [ ];
+      propagatedBuildInputs = [
+        self."cffi"
+        self."pycparser"
+      ];
+      meta = with pkgs.stdenv.lib; {
+        homepage = "https://github.com/cher-nov/cryptg";
+        license = "License :: CC0 1.0 Universal (CC0 1.0) Public Domain Dedication";
+        description = "Cryptographic utilities for Telegram.";
       };
     };
 
@@ -354,6 +393,23 @@ let
         homepage = "https://github.com/etingof/pyasn1";
         license = licenses.bsdOriginal;
         description = "ASN.1 types and codecs";
+      };
+    };
+
+    "pycparser" = python.mkDerivation {
+      name = "pycparser-2.20";
+      src = pkgs.fetchurl {
+        url = "https://files.pythonhosted.org/packages/0f/86/e19659527668d70be91d0369aeaa055b4eb396b0f387a4f92293a20035bd/pycparser-2.20.tar.gz";
+        sha256 = "2d475327684562c3a96cc71adf7dc8c4f0565175cf86b6d7a404ff4c771f15f0";
+};
+      doCheck = commonDoCheck;
+      format = "setuptools";
+      buildInputs = commonBuildInputs ++ [ ];
+      propagatedBuildInputs = [ ];
+      meta = with pkgs.stdenv.lib; {
+        homepage = "https://github.com/eliben/pycparser";
+        license = licenses.bsdOriginal;
+        description = "C parser in Python";
       };
     };
 
