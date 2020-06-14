@@ -21,7 +21,7 @@ let
     python = pkgs.python3;
   };
 
-  commonBuildInputs = with pkgs; [ zlib ];
+  commonBuildInputs = with pkgs; [ zlib libffi ];
   commonDoCheck = false;
 
   withPackages = pkgs':

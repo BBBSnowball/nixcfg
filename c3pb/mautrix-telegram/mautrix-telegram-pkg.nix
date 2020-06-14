@@ -11,6 +11,7 @@ buildPythonApplication rec {
     sha256 = "03597nx3nn368mls07zpb40324krwhd7mji86ak6hv5jmp9f9c2g";
   };
 
-  propagatedBuildInputs = builtins.attrValues pythonWithPkgs.packages;
-  checkInputs = with python3.pkgs; [pytestrunner pyyaml];
+  #NOTE pillow is not added via pypi2nix because it breaks pypi2nix.
+  propagatedBuildInputs = (builtins.attrValues pythonWithPkgs.packages) ++ [pillow];
+  checkInputs = with python3.pkgs; [pytestrunner pyyaml pytest-mock pytest-asyncio pytest];
 }
