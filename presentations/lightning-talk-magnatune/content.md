@@ -10,8 +10,9 @@
 - Eigentlich wollte ich nur Spotify...
 - Original-Client: inoffiziell, braucht "local package factory", bei mir kaputt
 - Premium geht auch mit 3rd-party Clients, aber...
-  - unfixbare Bugs
-  - DRM blob
+  - [unfixbare Bugs](https://github.com/fennifith/Pasta-for-Spotify#limitations)
+  - [DRM blob](https://github.com/mopidy/mopidy-spotify/issues/110)
+  - nicht offline
 
 ---
 
@@ -38,7 +39,7 @@
 - Früher: Alben kaufen oder monatlich bezahlen
 - Jetzt: einmalig zahlen ($ 299)
 - Weitergabe an drei Freunde
-- Nutzung in nicht-kommerziellen Podcasts (CC by-nc-sa)
+- Nutzung in nicht-kommerziellen Podcasts <br>(Lizenz CC by-nc-sa)
 
 ---
 
@@ -46,8 +47,9 @@
 
 - kein DRM
 - OGG, FLAC
-- Integration in diverse Player (Clementine, Amarok, 
-- REST-API, SQlite
+- Integration in diverse Player (Clementine, Amarok, Rhythmbox)
+- REST-API, SQLite
+- kein HTTPS?!
 
 ---
 
