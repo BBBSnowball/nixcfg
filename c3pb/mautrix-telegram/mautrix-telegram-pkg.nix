@@ -1,5 +1,4 @@
 { lib, stdenv, python3, pythonWithPkgs, fetchFromGitHub }:
-#with pythonWithPkgs.pkgs;
 with python3.pkgs;
 buildPythonApplication rec {
   pname = "mautrix-telegram";
