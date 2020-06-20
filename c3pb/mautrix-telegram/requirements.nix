@@ -2,7 +2,7 @@
 # See more at: https://github.com/nix-community/pypi2nix
 #
 # COMMAND:
-#   pypi2nix -r requirements.txt -E zlib -E libffi -e cryptg -e pytest-runner -e pytest -e pytest-asyncio -e pytest-mock
+#   pypi2nix -r requirements.txt -E zlib -E libffi -e cryptg -e pytest-runner -e pytest -e pytest-asyncio -e pytest-mock -e olefile -e setuptools_scm
 #
 
 { pkgs ? import <nixpkgs> {},
@@ -379,6 +379,23 @@ let
         homepage = "https://github.com/aio-libs/multidict";
         license = licenses.asl20;
         description = "multidict implementation";
+      };
+    };
+
+    "olefile" = python.mkDerivation {
+      name = "olefile-0.46";
+      src = pkgs.fetchurl {
+        url = "https://files.pythonhosted.org/packages/34/81/e1ac43c6b45b4c5f8d9352396a14144bba52c8fec72a80f425f6a4d653ad/olefile-0.46.zip";
+        sha256 = "133b031eaf8fd2c9399b78b8bc5b8fcbe4c31e85295749bb17a87cba8f3c3964";
+};
+      doCheck = commonDoCheck;
+      format = "setuptools";
+      buildInputs = commonBuildInputs ++ [ ];
+      propagatedBuildInputs = [ ];
+      meta = with pkgs.stdenv.lib; {
+        homepage = "https://www.decalage.info/python/olefileio";
+        license = licenses.bsdOriginal;
+        description = "Python package to parse, read and write Microsoft OLE2 files (Structured Storage or Compound Document, Microsoft Office)";
       };
     };
 
