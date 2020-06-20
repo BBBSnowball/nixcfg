@@ -88,6 +88,7 @@ in {
     socat
     # not with programs.mosh.enable because we want to do firewall ourselves
     mosh
+    sqlite-interactive
   ];
 
   #documentation.dev.enable = true;
