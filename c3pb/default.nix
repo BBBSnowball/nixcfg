@@ -6,5 +6,6 @@
     ./dinge-info.nix
     ./matrix-synapse.nix
     ./mautrix-telegram
+    ./matrix-edi.nix
   ];
 }
