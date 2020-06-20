@@ -66,9 +66,10 @@ in {
     ];
     app_service_config_files = [
       #"/etc/matrix-synapse/matrix_irc_hackint.yaml"
-      "/etc/nixos/secret/matrix-synapse/mautrix-telegram.yaml"
+      #"/etc/nixos/secret/matrix-synapse/mautrix-telegram.yaml"
+      "/etc/nixos/secret/matrix-synapse/mautrix-telegram-test.yaml"
     ];
   };
 
-  systemd.services.matrix-synapse.restartTriggers = config.services.matrix-synapse.extraConfigFiles;
+  systemd.services.matrix-synapse.restartTriggers = with config.services.matrix-synapse; extraConfigFiles ++ app_service_config_files;
 }
