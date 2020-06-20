@@ -9,7 +9,7 @@ let
   python = pythonWithPkgs.interpreterWithPackages (_: [ mautrixTelegram pythonWithPkgs.packages.alembic ]);
   configPatches = [
     /etc/nixos/c3pb/mautrix-telegram/config-public.patch
-    /etc/nixos/secret/mautrix-telegram/config-private.patch
+    /etc/nixos/secret/mautrix-telegram/config-secret.patch
   ] ++ (if test then [
     /etc/nixos/secret/mautrix-telegram/config-test.patch
   ] else []);
@@ -31,9 +31,6 @@ let
     ${python}/bin/alembic upgrade head
   '';
 in {
-  #FIXME remove
-  environment.etc.blub.text = "${mautrixTelegram}";
-
   users.users."${name}" = {
     isNormalUser = false;
     home = "/var/lib/${name}";
@@ -55,5 +52,6 @@ in {
       Restart = "on-failure";
       RestartSec = 10;
     };
+    restartTriggers = configPatches ++ [ initScript ];
   };
 }
