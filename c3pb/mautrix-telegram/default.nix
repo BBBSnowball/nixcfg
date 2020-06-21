@@ -14,6 +14,7 @@ let
     /etc/nixos/secret/mautrix-telegram/config-test.patch
   ] else []);
   makeConfig = pkgs.writeShellScript "mautrix-telegram-config" ''
+    set -e
     umask 077
     chmod 700 .
     cp ${mautrixTelegram}/example-config.yaml config.yaml
@@ -23,6 +24,7 @@ let
     chown mautrix-telegram-test config.yaml
   '';
   initScript = pkgs.writeShellScript "mautrix-telegram-init" ''
+    set -e
     umask 077
     if ! [ -e registration.yaml ] ; then
       cp config.yaml config-registration.yaml
