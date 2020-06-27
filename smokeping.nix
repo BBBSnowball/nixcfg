@@ -26,6 +26,9 @@
       + DNS
       binary = ${pkgs.dnsutils}/bin/dig
       offset = 40%
+      + SSH
+      binary = ${pkgs.openssh}/bin/ssh-keyscan
+      offset = 60%
     '';
     targetConfig = ''
       probe = FPingNormal
@@ -79,20 +82,29 @@
       menu = Services
       ++ DNS1
       probe = DNS
+      title = dig bkoch.eu
       host = bkoch.eu
       ++ DNS1b
       probe = DNS
-      title = bkoch.eu @bkoch.eu
+      title = dig bkoch.eu @bkoch.eu
       host = bkoch.eu
       lookup = bkoch.eu
       ++ DNS2
       probe = DNS
+      title = dig c3pb.de
       host = c3pb.de
       ++ DNS3
       probe = DNS
+      title = dig hackerspace.servers.c3pb.de
       host = hackerspace.servers.c3pb.de
       ++ DNS4
+      title = dig google.de
       host = google.de
+      ++ SSH1
+      probe = SSH
+      title = ssh-keyscan bkoch.eu
+      host = bkoch.eu
+      port = 22761
     '';
   };
 }
