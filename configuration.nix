@@ -113,6 +113,7 @@ in {
     hdparm
     iperf iperf3
     utillinux parted
+    bmon
 
     qemu_kvm
     wirelesstools iw
