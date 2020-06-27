@@ -1,0 +1,22 @@
+diff -Naur --no-dereference a/lib/Smokeping/probes/SSH.pm b/lib/Smokeping/probes/SSH.pm
+see https://github.com/oetiker/SmokePing/commit/62ac9fda04b994bbf4f97d3dd1cf8b92cf279e71
+--- a/lib/Smokeping/probes/SSH.pm	2020-06-27 14:54:05.705088092 +0200
++++ b/lib/Smokeping/probes/SSH.pm	2020-06-27 14:54:48.653105297 +0200
+@@ -55,7 +55,7 @@
+     # no need for this if we run as a cgi
+     unless ( $ENV{SERVER_SOFTWARE} ) {
+         
+-        my $call = "$self->{properties}{binary} -t dsa,rsa,rsa1 127.0.0.1";
++        my $call = "$self->{properties}{binary} -t dsa,rsa,ecdsa 127.0.0.1";
+         my $return = `$call 2>&1`;
+         if ($return =~ m/$ssh_re/s){
+             print "### parsing ssh-keyscan output...OK\n";
+@@ -130,7 +130,7 @@
+         return $class->_makevars($class->SUPER::targetvars, {
+            keytype => {
+                _doc => "Type of key, used in ssh-keyscan -t I<keytype>",
+-	       _re => "[dr]sa1*",
++	       _re => "[ecdr]sa*",
+                _example => 'dsa',
+                _default => 'rsa',
+            },

@@ -1,5 +1,13 @@
 { config, pkgs, lib, ... }:
 {
+  nixpkgs.overlays = [
+    (self: super: {
+      smokeping = super.smokeping.overrideAttrs (old: {
+        patches = (old.patches or []) ++ [./smokeping-drop-rsa1.patch];
+      });
+    })
+  ];
+
   services.smokeping = {
     enable = true;
     imgUrl = "/cache";
