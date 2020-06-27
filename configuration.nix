@@ -11,6 +11,7 @@ in {
       ./hardware-configuration.nix
       ./wifi-ap-eap/default.nix
       ./zsh.nix
+      ./smokeping.nix
     ];
 
   # Use the systemd-boot EFI boot loader.
@@ -126,6 +127,7 @@ in {
 
     direnv
     posix_man_pages
+    dnsutils
   ];
   nixpkgs.overlays = [
     (self: super: {
