@@ -1,0 +1,75 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>WPA Enterprise - für zu Hause</title>
+
+		<link rel="stylesheet" href="reveal.js-3.7.0/css/reveal.css">
+		<link rel="stylesheet" href="local-resources/night.css">
+		<link rel="stylesheet" href="local-resources/style.css">
+
+		<!-- Theme used for syntax highlighting of code -->
+		<link rel="stylesheet" href="reveal.js-3.7.0/lib/css/zenburn.css">
+
+		<meta name="description" content="Slides for FPGA workshop">
+		<meta name="author" content="snowball">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'reveal.js-3.7.0/css/print/pdf.css' : 'reveal.js-3.7.0/css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+        <section data-markdown="content.md" data-charset=utf-8"></section>
+			</div>
+		</div>
+
+		<script src="reveal.js-3.7.0/lib/js/head.min.js"></script>
+		<script src="reveal.js-3.7.0/js/reveal.js"></script>
+		<script src="multiplex-master-config.js"></script>
+		<script src="multiplex-config.js"></script>
+
+		<script>
+			// More info about config & dependencies:
+			// - https://github.com/hakimel/reveal.js#configuration
+			// - https://github.com/hakimel/reveal.js#dependencies
+			var config = {
+				hash: true,
+				history: true,
+				dependencies: [
+					{ src: 'reveal.js-3.7.0/plugin/markdown/marked.js' },
+					{ src: 'reveal.js-3.7.0/plugin/markdown/markdown.js' },
+					{ src: 'reveal.js-3.7.0/plugin/notes/notes.js', async: true },
+					{ src: 'reveal.js-3.7.0/plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'reveal.js-3.7.0/plugin/notes/notes.js', async: true },
+				]
+			};
+			var params = new URLSearchParams(document.location.search.substring(1));
+			if (params.get("master") !== null) {
+				config.dependencies.push({ src: 'local-resources/socket.io-2.2.0.js', async: true });
+				config.dependencies.push({ src: 'reveal.js-3.7.0/plugin/multiplex/master.js', async: true });
+				config.multiplex = Object.assign({}, window.multiplex_config || {}, window.multiplex_master_config || {});
+				if (params.get("master").length > 4)
+					config.multiplex.secret = params.get("master");
+				console.log("multiplex: using master mode");
+			} else if (params.get("client") !== null && window.multiplex_config) {
+				config.dependencies.push({ src: 'local-resources/socket.io-2.2.0.js', async: true });
+				config.dependencies.push({ src: 'reveal.js-3.7.0/plugin/multiplex/client.js', async: true });
+				config.multiplex = window.multiplex_config;
+				console.log("multiplex: using client mode");
+				config.controls = false;
+				config.keyboard = false;
+			}
+			Reveal.initialize(config);
+		</script>
+	</body>
+</html>
+<!-- vim: set noexpandtab:ts=2:sw=2:ai -->
