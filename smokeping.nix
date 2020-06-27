@@ -28,14 +28,14 @@
       offset = 40%
     '';
     targetConfig = ''
-			probe = FPingNormal
-			menu = Top
-			title = Network Latency Grapher
-			+ Hosts
-			menu = Hosts
-			title = Local Network and Internet
-			++ LocalMachine
-			host = localhost
+      probe = FPingNormal
+      menu = Top
+      title = Network Latency Grapher
+      + Hosts
+      menu = Hosts
+      title = Local Network and Internet
+      ++ LocalMachine
+      host = localhost
       ++ FritzBox
       title = FritzBox (192.168.178.1)
       host = 192.168.178.1
