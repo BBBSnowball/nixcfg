@@ -49,6 +49,13 @@
       ++ Printer
       title = Printer (192.168.178.21)
       host = 192.168.178.21
+      ++ work
+      title = work (192.168.178.56)
+      host = 192.168.178.56
+      ++ work_1k
+      probe = FPing1k
+      title = work (192.168.178.56), 1k packets
+      host = 192.168.178.56
       ++ Google
       host = google.de
       ++ DNS1
