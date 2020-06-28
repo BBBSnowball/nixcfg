@@ -16,4 +16,8 @@
   - This is using password login which we have to disable due to bugs in Riot.
   - Can we use an access token, instead?
     -> yes
+- TODO Move test server into container
+  - I think, I want to keep the test server. However, NixOS only supports one instance and I will probably want
+    to test different versions anyway.
+  - Can we use declarative containers with a different channel for the container?
 - TODO Update mautrix-telegram
