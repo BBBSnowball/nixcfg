@@ -2,21 +2,26 @@
 let
   test = true;
   name = "matrix-edi";
-  domain = lib.fileContents ../private/trueDomain.txt;
 
   python = pkgs.python3.withPackages (p: with p; [matrix-client amqplib]);
   src = pkgs.fetchgit {
     url = "https://git.c3pb.de/edi/edi-bot-matrix";
-    rev = "12346b47115300d6593ed3464385cbd13e8553a4";
-    sha256 = "0rk3g9rh2d9vrrj45abgnnbib6m968wng6r92kp2an2rlz2dhhak";
+    rev = "cf7c4d800026cd10e15854ef8fb1c05224480f51";
+    sha256 = "1ylwk8ipqikjzxspdgqf9cpswwgvq5xhb8si9828smpq0h3l5lg5";
   };
+  #src = "/tmp/matrix-edi";
 
+  matrixConfig = config.services.matrix-synapse;
+  matrixServerName = matrixConfig.server_name;
+  matrixServerDatabase = "${matrixConfig.dataDir}/homeserver.db";
+  botName = "edibot";
+  botUserId = "@${botName}:${matrixServerName}";
   botConfig = pkgs.writeText"matrix-edi-config" ''
     import os
 
     config = {
         "matrixurl" : "http://localhost:8008",
-        "username": "edibot",
+        "username": "${botName}",
         "passwd" : "",
         "broadcastActionChannels": [
             ${(import ../private/matrix-channel-ids.nix).spielwiese},
@@ -33,20 +38,20 @@ let
 
     with open("/var/lib/${name}/authtoken", "r") as f:
       config["token"] = f.read().strip()
+      config["user_id"] = "${botUserId}";
   '';
 
-  matrixHomeserverDatabase = "${config.services.matrix-synapse.dataDir}/homeserver.db";
   initScript = pkgs.writeShellScript "${name}-init" ''
     set -e
     chmod 700 .
     if ! [ -e authtoken ] ; then
       umask 077
-      ${pkgs.sqlite}/bin/sqlite3 ${matrixHomeserverDatabase} "select token from access_tokens where user_id='@edibot:test.${domain}'" >authtoken.tmp
+      ${pkgs.sqlite}/bin/sqlite3 ${matrixServerDatabase} "select token from access_tokens where user_id='${botUserId}'" >authtoken.tmp
       if [ -z "$(cat authtoken.tmp)" ] ; then
         pw=$(${pkgs.pwgen}/bin/pwgen -s1 42)
-        echo -e "$pw\n$pw" | ${pkgs.matrix-synapse}/bin/register_new_matrix_user -u edibot --no-admin -c /etc/nixos/secret/matrix-synapse/homeserver-secret.yaml
+        echo -e "$pw\n$pw" | ${pkgs.matrix-synapse}/bin/register_new_matrix_user -u ${botName} --no-admin -c /etc/nixos/secret/matrix-synapse/homeserver-secret.yaml
       fi
-      ${pkgs.sqlite}/bin/sqlite3 ${matrixHomeserverDatabase} "select token from access_tokens where user_id='@edibot:test.${domain}'" >authtoken.tmp
+      ${pkgs.sqlite}/bin/sqlite3 ${matrixServerDatabase} "select token from access_tokens where user_id='${botUserId}'" >authtoken.tmp
       if [ -n "$(cat authtoken.tmp)" ] ; then
         mv authtoken.tmp authtoken
         chmod 400 authtoken

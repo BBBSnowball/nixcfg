@@ -7,6 +7,13 @@
 - DONE mautrix-telegram
   - I think this has some local changes, e.g. not forwarding messages with some special marker.
   - Update to 0.7.2.
-- TODO matrix_edi.py
+- DONE HTTPS on federation port
+  - Versions before 1.0 were accepting keys by trust on first sight.
+  - They have changed that: https://github.com/matrix-org/synapse/blob/master/docs/MSC1711_certificates_FAQ.md
+  - It seems that I have already fixed it though: Port 8448 is redirected to port 443 on mailinabox, which does
+    HTTPS offloading.
+- DONE matrix_edi.py
   - This is using password login which we have to disable due to bugs in Riot.
+  - Can we use an access token, instead?
+    -> yes
 - TODO Update mautrix-telegram
