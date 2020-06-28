@@ -50,6 +50,7 @@ in {
       <nixpkgs/nixos/modules/profiles/qemu-guest.nix>
       myDefaultConfig
       ./c3pb
+      ./extra-container.nix
     ];
 
   # Use the GRUB 2 boot loader.

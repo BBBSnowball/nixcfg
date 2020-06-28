@@ -20,4 +20,14 @@
   - I think, I want to keep the test server. However, NixOS only supports one instance and I will probably want
     to test different versions anyway.
   - Can we use declarative containers with a different channel for the container?
+    - We cannot even do this for imperative containers, it seems.
+    - At least, we can update an imperative container without switching the host config. This can be used as a poor
+      man's workaround, i.e. update the channel and only rebuild the container.
+  - There doesn't seem to be any declarative way to forward ports into imperative containers. There is a `--port`
+    switch for `nixos-container create` but I cannot find any config for it.
+    - I think `--port` specifies the value of HOST_PORT in the config file and this is also set by forwardsPorts:
+      https://github.com/NixOS/nixpkgs/blob/31bbaa4a114440fe0087bf85c65ffe39e6e31cbf/nixos/modules/virtualisation/nixos-containers.nix#L795
+    - That means I should try something like this: `--port tcp:8009:8008`
+  - I could also try extra-container:
+    https://github.com/erikarvstedt/extra-container
 - TODO Update mautrix-telegram
