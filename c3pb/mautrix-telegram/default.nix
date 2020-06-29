@@ -21,7 +21,7 @@ let
     for p in ${toString configPatches} ; do
       ${pkgs.patch}/bin/patch -p0 <$p
     done
-    chown mautrix-telegram-test config.yaml
+    chown ${name} config.yaml
   '';
   initScript = pkgs.writeShellScript "mautrix-telegram-init" ''
     set -e
