@@ -1,9 +1,7 @@
 { pkgs, config, lib, ... }:
 let
-  dingeSrc = pkgs.fetchFromGitLab {
-    domain = "${(import ../private/deploy-tokens.nix).inventory}@git.c3pb.de";
-    owner = "c3pb";
-    repo = "inventory";
+  dingeSrc = pkgs.fetchgit {
+    url = https://${(import ../private/deploy-tokens.nix).inventory}@git.c3pb.de/c3pb/inventory;
     rev = "f230b875d70eafe8318f249059dda87f348884f6";
     sha256 = "0higbr624n2hshgp7h33dgm51w6ml556jfna4m0rq0hm7zlscqd1";
   };
