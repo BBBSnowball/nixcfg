@@ -6,6 +6,10 @@ with lib;
 {
   containers.matrix-test = {
     privateNetwork = false;
+    bindMounts.nixos-secret = {
+      hostPath   = "/etc/nixos/secret";
+      mountPoint = "/etc/nixos/secret";
+    };
     config = {
       boot.isContainer = true;
       networking.hostName = mkDefault "matrix-test";
