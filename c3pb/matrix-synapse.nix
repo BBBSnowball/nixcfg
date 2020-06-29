@@ -6,9 +6,15 @@ let
   domain = lib.fileContents ../private/trueDomain.txt;
 in {
   options = with lib; {
-    services.matrix-synapse.isTestInstance = mkOption {
-      type = types.bool;
-      description = "use config for test server if true, i.e. other port and domain";
+    services.matrix-synapse = {
+      isTestInstance = mkOption {
+        type = types.bool;
+        description = "use config for test server if true, i.e. other port and domain";
+      };
+      localPort = mkOption {
+        type = types.int;
+        description = "port for local connections";
+      };
     };
   };
 
@@ -31,6 +37,7 @@ in {
 
       server_name = "${domainTestPrefix}${domain}";
       public_baseurl = "https://${config.services.matrix-synapse.server_name}/";
+      localPort = 8008+portOffset;
       listeners = [
         {
           bind_address = "";

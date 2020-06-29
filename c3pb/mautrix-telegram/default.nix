@@ -1,6 +1,6 @@
 { config, pkgs, lib, ... }:
 let
-  test = true;
+  test = config.services.matrix-synapse.isTestInstance;
   testSuffix = if test then "-test" else "";
   name = "mautrix-telegram${testSuffix}";
 

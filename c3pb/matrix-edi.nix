@@ -1,6 +1,6 @@
 { config, pkgs, lib, ... }:
 let
-  test = true;
+  test = config.services.matrix-synapse.isTestInstance;
   name = "matrix-edi";
 
   python = pkgs.python3.withPackages (p: with p; [matrix-client amqplib]);
@@ -20,7 +20,7 @@ let
     import os
 
     config = {
-        "matrixurl" : "http://localhost:8008",
+        "matrixurl" : "http://localhost:${toString config.services.matrix-synapse.localPort}",
         "username": "${botName}",
         "passwd" : "",
         "broadcastActionChannels": [
