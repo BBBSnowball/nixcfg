@@ -51,7 +51,7 @@ let
         pw=$(${pkgs.pwgen}/bin/pwgen -s1 42)
         echo -e "$pw\n$pw" | ${pkgs.matrix-synapse}/bin/register_new_matrix_user -u ${botName} --no-admin -c /etc/nixos/secret/matrix-synapse/homeserver-secret.yaml
       fi
-      ${pkgs.sqlite}/bin/sqlite3 ${matrixServerDatabase} "select token from access_tokens where user_id='${botUserId}'" >authtoken.tmp
+      ${pkgs.sqlite}/bin/sqlite3 ${matrixServerDatabase} "select token from access_tokens where user_id='${botUserId}' order by id desc limit 1" >authtoken.tmp
       if [ -n "$(cat authtoken.tmp)" ] ; then
         mv authtoken.tmp authtoken
         chmod 400 authtoken
