@@ -7,8 +7,8 @@ with lib;
   containers.matrix-test = {
     privateNetwork = false;
     bindMounts.nixos-secret = {
-      hostPath   = "/etc/nixos/secret";
-      mountPoint = "/etc/nixos/secret";
+      hostPath   = "/etc/nixos";
+      mountPoint = "/etc/nixos";
     };
     config = {
       boot.isContainer = true;
