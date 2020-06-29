@@ -76,8 +76,8 @@ in {
       app_service_config_files = [
         #"/etc/matrix-synapse/matrix_irc_hackint.yaml"
         (if isTestInstance
-          then "/etc/nixos/secret/matrix-synapse/mautrix-telegram.yaml"
-          else "/etc/nixos/secret/matrix-synapse/mautrix-telegram-test.yaml")
+          then "/etc/nixos/secret/matrix-synapse/mautrix-telegram-test.yaml"
+          else "/etc/nixos/secret/matrix-synapse/mautrix-telegram.yaml")
       ];
     };
 
