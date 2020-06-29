@@ -13,7 +13,7 @@ with lib;
       system.stateVersion = "19.03";
 
       imports = [
-        ./autossh.nix
+        #./autossh.nix
         ./matrix-synapse.nix
         ./mautrix-telegram
         ./matrix-edi.nix
