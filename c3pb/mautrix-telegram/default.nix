@@ -36,6 +36,9 @@ let
     ${python}/bin/alembic upgrade head
   '';
 in {
+  # add both ports because firewall will not be applied in the container
+  networking.firewall.allowedTCPPorts = [ 8080 8081 ];
+
   users.users."${name}" = {
     isNormalUser = false;
     home = "/var/lib/${name}";

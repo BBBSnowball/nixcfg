@@ -23,7 +23,8 @@ in {
       (import ./matrix-synapse-update.nix)
     ];
 
-    networking.firewall.allowedTCPPorts = [(8008+portOffset)];
+    # add both ports because firewall will not be applied in the container
+    networking.firewall.allowedTCPPorts = [ 8008 8009 ];
 
     services.matrix-synapse = {
       enable = true;
