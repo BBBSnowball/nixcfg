@@ -1,8 +1,7 @@
 { config, pkgs, lib, ... }:
 let
   test = config.services.matrix-synapse.isTestInstance;
-  testSuffix = if test then "-test" else "";
-  name = "mautrix-telegram${testSuffix}";
+  name = "mautrix-telegram";
 
   pythonWithPkgs = import ./requirements.nix { inherit pkgs; };
   mautrixTelegram = pkgs.callPackage ./mautrix-telegram-pkg.nix { inherit pythonWithPkgs; };
