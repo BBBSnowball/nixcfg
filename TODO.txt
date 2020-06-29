@@ -16,7 +16,7 @@
   - This is using password login which we have to disable due to bugs in Riot.
   - Can we use an access token, instead?
     -> yes
-- TODO Move test server into container
+- DONE Move test server into container
   - I think, I want to keep the test server. However, NixOS only supports one instance and I will probably want
     to test different versions anyway.
   - Can we use declarative containers with a different channel for the container?
@@ -30,4 +30,12 @@
     - That means I should try something like this: `--port tcp:8009:8008`
   - I could also try extra-container:
     https://github.com/erikarvstedt/extra-container
+- DONE Use builtin webclient?
+  - I hosting the webclient with Nginx on host mailinabox. This is certainly more efficient
+    but I have to manually upgrade it.
+  - If Synapse includes a recent Riot client, I should consider using that to avoid the need for manual updates.
+  - I'm disabling some of the features in my config. Can I apply this to the builtin webclient?
+  - This is only meant to be a redirect to the real client:
+    https://github.com/matrix-org/synapse/blob/66a564c859c035c273c8feb25c624473055f1d78/synapse/config/server.py#L621
+  - That's not useful, then.
 - TODO Update mautrix-telegram

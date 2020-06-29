@@ -48,7 +48,6 @@ in {
           resources = [
             {
               compress = true;
-              #names = [ "client" "webclient" ];
               names = [ "client" ];
             }
             {
