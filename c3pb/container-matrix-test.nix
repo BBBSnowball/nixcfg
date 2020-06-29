@@ -1,19 +1,25 @@
-# nixos-container update matrix-test --config-file container-matrix-test.nix
+# extra-container create container-matrix-test.nix --update-changed
 { config, lib, pkgs, ... }:
 
 with lib;
 
-{ boot.isContainer = true;
-  networking.hostName = mkDefault "matrix-test";
-  networking.useDHCP = false;
-  system.stateVersion = "19.03";
+{
+  containers.matrix-test = {
+    privateNetwork = false;
+    config = {
+      boot.isContainer = true;
+      networking.hostName = mkDefault "matrix-test";
+      networking.useDHCP = false;
+      system.stateVersion = "19.03";
 
-  imports = [
-    ./autossh.nix
-    ./matrix-synapse.nix
-    ./mautrix-telegram
-    ./matrix-edi.nix
-  ];
+      imports = [
+        ./autossh.nix
+        ./matrix-synapse.nix
+        ./mautrix-telegram
+        ./matrix-edi.nix
+      ];
 
-  services.matrix-synapse.server_name = "test." + (lib.fileContents ../private/trueDomain.txt);
+      services.matrix-synapse.server_name = "test." + (lib.fileContents ../private/trueDomain.txt);
+    };
+  };
 }
