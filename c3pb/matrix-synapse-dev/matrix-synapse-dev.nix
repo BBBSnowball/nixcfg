@@ -28,7 +28,7 @@ in {
       database_type = "sqlite3";
 
       server_name = "matrix-dev";
-      public_baseurl = "http://${config.services.matrix-synapse.server_name}/";
+      public_baseurl = "http://${config.services.matrix-synapse.server_name}:${port}/";
       listeners = [
         {
           bind_address = "";
