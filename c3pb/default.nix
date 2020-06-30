@@ -11,4 +11,8 @@
   ];
 
   services.matrix-synapse.isTestInstance = false;
+
+  networking.extraHosts = ''
+    127.0.0.1 matrix-dev
+  '';
 }
