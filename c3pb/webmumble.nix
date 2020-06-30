@@ -24,7 +24,7 @@ in {
   systemd.services.webmumble = {
     description = "Service to forward websocket connections to TCP connections for webmumble";
     serviceConfig.ExecStart = ''
-      ${pkgs.pythonPackages.websockify}/bin/websockify --ssl-target \
+      ${pkgs.python3Packages.websockify}/bin/websockify --ssl-target \
         --web=${webmumbleDist} \
         0.0.0.0:${toString port} ${lib.fileContents ../private/mumble-domain-c3pb.txt}:64738
     '';
