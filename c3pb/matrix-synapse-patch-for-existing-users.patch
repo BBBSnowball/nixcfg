@@ -21,17 +21,6 @@ index f3ef1cf8b..f1a3f9d1d 100644
  
          ump_config = oidc_config.get("user_mapping_provider", {})
          ump_config.setdefault("module", DEFAULT_USER_MAPPING_PROVIDER)
-@@ -146,6 +147,10 @@ class OIDCConfig(Config):
-             #
-             #skip_verification: false
- 
-+            # if user already exists, add oidc token to that account instead of failing. Defaults to false.
-+            #
-+            #merge_with_existing_users: false
-+
- 
-             # An external module can be provided here as a custom solution to mapping
-             # attributes returned from a OIDC provider onto a matrix user.
 diff --git a/synapse/handlers/oidc_handler.py b/synapse/handlers/oidc_handler.py
 index 6bc336fd2..6ff1741f0 100644
 --- a/synapse/handlers/oidc_handler.py

@@ -20,18 +20,6 @@ index 586038078..f3ef1cf8b 100644
          self.oidc_authorization_endpoint = oidc_config.get("authorization_endpoint")
          self.oidc_token_endpoint = oidc_config.get("token_endpoint")
          self.oidc_userinfo_endpoint = oidc_config.get("userinfo_endpoint")
-@@ -118,6 +119,11 @@ class OIDCConfig(Config):
-             #
-             #scopes: ["openid"]
- 
-+            # always use userinfo endpoint. This is required for providers that don't include user
-+            # information in the token response, e.g. Gitlab.
-+            #
-+            #uses_userinfo: false
-+
-             # the oauth2 authorization endpoint. Required if provider discovery is disabled.
-             #
-             #authorization_endpoint: "https://accounts.example.com/oauth2/auth"
 diff --git a/synapse/handlers/oidc_handler.py b/synapse/handlers/oidc_handler.py
 index 4ba8c7fda..6bc336fd2 100644
 --- a/synapse/handlers/oidc_handler.py
