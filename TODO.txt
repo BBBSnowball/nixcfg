@@ -38,4 +38,11 @@
   - This is only meant to be a redirect to the real client:
     https://github.com/matrix-org/synapse/blob/66a564c859c035c273c8feb25c624473055f1d78/synapse/config/server.py#L621
   - That's not useful, then.
+- DONE Move production server to NixOS
+- DONE Update Wiki
+- DONE Announce update
+  - Existing users should login soon-ish to add OIDC info to their account (while the local patch is still applied).
+- TODO Kill access to LDAP
+  - SSH key and user.
+- TODO Move mumble-web?
 - TODO Update mautrix-telegram
