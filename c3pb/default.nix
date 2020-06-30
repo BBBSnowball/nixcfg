@@ -7,6 +7,7 @@
     ./matrix-synapse.nix
     ./mautrix-telegram
     ./matrix-edi.nix
+    ./webmumble.nix
   ];
 
   services.matrix-synapse.isTestInstance = false;

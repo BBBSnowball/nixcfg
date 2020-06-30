@@ -42,7 +42,7 @@
 - DONE Update Wiki
 - DONE Announce update
   - Existing users should login soon-ish to add OIDC info to their account (while the local patch is still applied).
-- TODO Kill access to LDAP
+- DONE Kill access to LDAP
   - SSH key and user.
 - TODO Move mumble-web?
 - TODO Update mautrix-telegram
