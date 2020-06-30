@@ -26,11 +26,12 @@ with lib;
 
       environment.systemPackages = with pkgs; [
         wget htop tmux byobu git vim tig
-        (python3.withPackages (p: matrix-synapse.propagatedBuildInputs ++ (with p; [ mock parameterized openssl ])))
+        openssl
+        (python3.withPackages (p: matrix-synapse.propagatedBuildInputs ++ (with p; [ mock parameterized ])))
       ];
 
       # don't start Synapse on boot
-      systemd.services.matrix-synapse.wantedBy = lib.mkForce [];
+      systemd.services.matrix-synapse.unitConfig.ConditionPathExists = "/nope";
 
       users.users.test = {
         isNormalUser = true;
