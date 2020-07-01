@@ -9,8 +9,11 @@ in {
   #hardware.bluetooth.enable = true;
 
   #NOTE user must be in audio group
+  users.users.root.extraGroups = [ "audio" ];
+  users.users.test.extraGroups = [ "audio" ];
+  users.users.mpd.extraGroups  = [ "audio" ];
 
-  # doesn't work, use `machinectl shell test@` instead of `su - test`
+# doesn't work, use `machinectl shell test@` instead of `su - test`
   #security.pam.services.su.startSession = true;
 
   environment.systemPackages = with pkgs; [
@@ -41,7 +44,6 @@ in {
     #defaults.pcm.dmix.rate 44100 # Force 44.1 KHz
     #defaults.pcm.dmix.format S16_LE # Force 16 bits
   '';
-  users.users.mpd.extraGroups = [ "audio" ];
   environment.variables.MPD_HOST = "abc@localhost";
 
   services.ympd = {
@@ -52,8 +54,11 @@ in {
   sound.mediaKeys.enable = true;
   services.actkbd = {
     enable = true;
-    #bindings = [
-    #  #TODO
-    #];
+    bindings = [
+      { keys = [ 165 ]; events = [ "key" ];       command = "${pkgs.mpc_cli}/bin/mpc prev"; }
+      { keys = [ 164 ]; events = [ "key" ];       command = "${pkgs.mpc_cli}/bin/mpc toggle"; }
+      { keys = [ 163 ]; events = [ "key" ];       command = "${pkgs.mpc_cli}/bin/mpc next"; }
+    ];
   };
+  systemd.services."actkbd@".environment.MPD_HOST = "abc@localhost";
 }
