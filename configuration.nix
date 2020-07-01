@@ -11,6 +11,7 @@ in {
       ./hardware-configuration.nix
       ./wifi-ap-eap/default.nix
       ./zsh.nix
+      ./sound.nix
       ./smokeping.nix
     ];
 
@@ -114,6 +115,7 @@ in {
     iperf iperf3
     utillinux parted
     bmon
+    progress
 
     qemu_kvm
     wirelesstools iw
@@ -271,6 +273,9 @@ in {
       #androidenv.androidPkgs_9_0.platform-tools  # contains adb
       androidenv.androidPkgs_9_0.androidsdk
       adoptopenjdk-bin  # contains keytool and jarsigner
+    ];
+    extraGroups = [
+      "audio"
     ];
   };
   nixpkgs.config.android_sdk.accept_license = true;
