@@ -116,6 +116,8 @@ in {
     utillinux parted
     bmon
     progress
+    nix-index
+    inetutils
 
     qemu_kvm
     wirelesstools iw
