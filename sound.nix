@@ -61,4 +61,24 @@ in {
     ];
   };
   systemd.services."actkbd@".environment.MPD_HOST = "abc@localhost";
+
+  # remote has a power button - we don't want it to shutdown this host
+  services.logind.extraConfig = ''
+    HandlePowerKey=ignore
+    HandleSuspendKey=ignore
+    HandleHibernateKey=ignore
+  '';
+  # events:
+  # button on remote: "button/power PBTN 00000080 00000000 K"
+  # real power button: "button/power PBTN 00000080 00000000" and "button/power LNXPWRBN:00 00000080 00000002"
+  #  (The last number increases for each event.)
+  services.acpid = {
+    enable = true;
+    #logEvents = true;
+    powerEventCommands = ''
+      if [ "$1" == "button/power PBTN 00000080 00000000" ] ; then
+        poweroff
+      fi
+    '';
+  };
 }
