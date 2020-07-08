@@ -92,6 +92,30 @@
       probe = FPing1k
       title = verl.bbbsnowball.de, 1k packets
       host = verl.bbbsnowball.de
+      ++ gpdpocket
+      host = 192.168.178.68
+      ++ gpdpocket_1k
+      probe = FPing1k
+      title = gpd pocket 192.168.178.68, 1k packets
+      host = 192.168.178.68
+      ++ laptop_lan
+      host = 192.168.178.59
+      ++ laptop_lan_1k
+      probe = FPing1k
+      title = laptop lan 192.168.178.59, 1k packets
+      host = 192.168.178.59
+      ++ laptop_wifi
+      host = 192.168.178.67
+      ++ laptop_wifi_1k
+      probe = FPing1k
+      title = laptop wifi 192.168.178.67, 1k packets
+      host = 192.168.178.67
+      ++ sslvpn4_beckhoff_com
+      host = sslvpn4.beckhoff.com
+      ++ sslvpn4_beckhoff_com_1k
+      probe = FPing1k
+      title = sslvpn4.beckhoff.com, 1k packets
+      host = sslvpn4.beckhoff.com
 
       + Services
       menu = Services
