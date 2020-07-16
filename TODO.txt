@@ -44,5 +44,16 @@
   - Existing users should login soon-ish to add OIDC info to their account (while the local patch is still applied).
 - DONE Kill access to LDAP
   - SSH key and user.
-- TODO Move mumble-web?
+- DONE Move mumble-web?
+- TODO Finish PR for OIDC with Gitlab
+  - The devs want more complex changes so I need a proper dev environment.
+  - Let's make a container for that. Enter like this:
+    nixos-container root-login matrix-dev
+    su - test
+    cd ~/synapse
+    # python -m twisted.trial tests
+    # python -m twisted.trial tests.handlers.test_oidc
+    # PYTHONPATH=. ./scripts/register_new_matrix_user -u admin -p abcabc -a -c oidc-config.yaml http://localhost:8030
+    # PYTHONPATH=. python synapse/app/homeserver.py $(systemctl cat matrix-synapse|sed -nE 's#^.*( --config-path /nix/store/[a-z0-9]+-homeserver[.]yaml) .*#\1#p') -c oidc-config.yaml
+- TODO Move strichliste (from my NixOS VM) ?
 - TODO Update mautrix-telegram
