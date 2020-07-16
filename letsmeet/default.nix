@@ -1,5 +1,5 @@
 { config, pkgs, lib, ... }:
 {
   nixpkgs.overlays = [ (import ./overlay.nix) ];
-  environment.etc.abc.source = pkgs.edumeet-app;
+  environment.etc.abc.source = pkgs.edumeet-server;
 }
