@@ -275,6 +275,7 @@ in {
       #androidenv.androidPkgs_9_0.platform-tools  # contains adb
       androidenv.androidPkgs_9_0.androidsdk
       adoptopenjdk-bin  # contains keytool and jarsigner
+      nodePackages.node2nix
     ];
     extraGroups = [
       "audio"
@@ -331,6 +332,28 @@ in {
   services.lorri.enable = true;
 
   documentation.dev.enable = true;
+
+  services.samba = {
+    enable = true;
+    extraConfig = ''
+      log level = 1 auth:5 winbind:5
+    '';
+    shares = {
+      public = {
+        browsable = "yes";
+        #"guest ok" = "yes";
+        path = "/tmp/samba-printer";
+        "read only" = "no";
+        writable = "yes";
+        "valid users" = "samba-printer";
+      };
+    };
+  };
+  networking.firewall.allowedTCPPorts = [ 139 445 ];
+  users.users.samba-printer = {
+    isNormalUser = true;
+    hashedPassword = "x";
+  };
 
   # This value determines the NixOS release with which your system is to be
   # compatible, in order to avoid breaking some software such as database
