@@ -1,0 +1,22 @@
+linking will fail with "Argument list too long" unless with use a shorter path
+--- a/worker/scripts/configure.py	2020-07-16 22:50:07.669998222 +0200
++++ b/worker/scripts/configure.py	2020-07-16 22:50:35.677395547 +0200
+@@ -13,7 +13,8 @@
+ CC = os.environ.get('CC', 'cc')
+ script_dir = os.path.dirname(__file__)
+ root = os.path.normpath(os.path.join(script_dir, '..'))
+-output_dir = os.path.join(os.path.abspath(root), 'out')
++output_dir = 'out'
++output_dir_abs = os.path.join(os.path.abspath(root), output_dir)
+ 
+ sys.path.insert(0, os.path.join(root, 'deps', 'gyp', 'pylib'))
+ try:
+@@ -79,7 +80,7 @@
+             args.extend('-f make'.split())
+         if 'ninja' not in args:
+             args.extend(['-Goutput_dir=' + output_dir])
+-            args.extend(['--generator-output', output_dir])
++            args.extend(['--generator-output', output_dir_abs])
+         (major, minor), is_clang = compiler_version()
+         args.append('-Dgcc_version=%d' % (10 * major + minor))
+         args.append('-Dclang=%d' % int(is_clang))
