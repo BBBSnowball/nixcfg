@@ -44,11 +44,14 @@ in {
 
     buildInputs = [ nodejs package ];
 
-    buildPhase = ''
-      mkdir $out $out/bin $out/lib/edumeet-server
+    buildPhase = "";
+
+    installPhase = ''
+      mkdir -p $out/{bin,lib/edumeet-server}
 
       cd $out/lib/edumeet-server
       cp -r $src/server/* .
+      chmod +w config
       rm config/config.example.js
       ln -s $config config/config.js
       ln -sfd $app public
@@ -57,7 +60,7 @@ in {
       echo "#!$bash/bin/bash -e" >$script
       echo "export NODE_PATH=$package/lib/node_modules/multiparty-meeting/node_modules" >>$script
       echo 'cd "$(dirname "$0")"/../lib/edumeet-server' >>$script
-      echo "exec $(which node) server.js \"\$@\"" >>$script
+      echo "exec $nodejs/bin/node server.js \"\$@\"" >>$script
       chmod +x $script
     '';
   };
