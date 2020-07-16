@@ -8,14 +8,17 @@ let
     inherit nodejs;
     libtool = if pkgs.stdenv.isDarwin then pkgs.darwin.cctools else null;
   };
+  version = "3.3";
   edumeetSrc = pkgs.fetchFromGitHub {
     owner = "edumeet";
     repo  = "edumeet";
-    rev = "3.3";
+    rev = version;
     sha256 = "098cs9z90ff8cgp88rqi2x79ma1s1a7w02mzzrix80z61ndinpnf";
   };
 in
 {
+  src = edumeetSrc;
+  inherit version;
   app = import ./node-packages-app.nix {
     inherit (pkgs) fetchurl fetchgit;
     inherit nodeEnv;
