@@ -56,7 +56,7 @@ let
       ) dependencies);
 
   # Recursively composes the dependencies of a package
-  composePackage = { name, packageName, src, dependencies ? [], ... }@args:
+  composePackage = { name, packageName, src, dependencies ? [], patches ? [], ... }@args:
     builtins.addErrorContext "while evaluating node package '${packageName}'" ''
       DIR=$(pwd)
       cd $TMPDIR
@@ -98,6 +98,10 @@ let
 
       # Include the dependencies of the package
       cd "$DIR/${packageName}"
+      for patch in ${toString patches} ; do
+        echo "applying patch $patch"
+        patch -p1 <$patch
+      done
       ${includeDependencies { inherit dependencies; }}
       cd ..
       ${stdenv.lib.optionalString (builtins.substring 0 1 packageName == "@") "cd .."}
