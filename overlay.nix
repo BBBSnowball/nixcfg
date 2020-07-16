@@ -55,13 +55,10 @@ in {
       rm config/config.example.js
       ln -s $config config/config.js
       ln -sfd $app public
+      ln -sfd $package/lib/node_modules/multiparty-meeting/node_modules node_modules
 
-      script=$out/bin/edumeet-server
-      echo "#!$bash/bin/bash -e" >$script
-      echo "export NODE_PATH=$package/lib/node_modules/multiparty-meeting/node_modules" >>$script
-      echo 'cd "$(dirname "$0")"/../lib/edumeet-server' >>$script
-      echo "exec $nodejs/bin/node server.js \"\$@\"" >>$script
-      chmod +x $script
+      ln -s ../lib/edumeet-server/server.js $out/bin/edumeet-server
+      ln -s ../lib/edumeet-server/connect.js $out/bin/edumeet-connect
     '';
   };
 }
