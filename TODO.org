@@ -211,6 +211,14 @@ CLOSED: [2020-05-23 Sat 22:16]
     the channel symlink without recursively watching the directory. This is good.
     https://github.com/direnv/direnv/blob/219d9f7674fa40699eacaafc21c67d1fc3ba9b70/file_times.go#L120
     https://github.com/direnv/direnv/blob/219d9f7674fa40699eacaafc21c67d1fc3ba9b70/file_times.go#L167
+
+- FIXME: My current method of running $stdenv/setup in the .envrc does *not* work.
+  - I think, I should probably use lorri's helper files.
+  - Also rename "path-only" to "simple" and use `old` value passend to `override` to get additional variables.
+
+- FIXME: Actually do something with the watched files.
+  - Put them in Nix store or next to the .envrc.
+  - The .envrc should add them to direnv watch and notify the user if they have changed.
 * TODO port my accounting display to different functional languages/frameworks
 ** TODO Is there a TodoMVC example app for all of them?
 - This seems to be implemented for lots of frameworks. If we have this for all of them, this may be
@@ -243,3 +251,6 @@ CLOSED: [2020-05-23 Sat 22:16]
 - probably fixed: https://github.com/espressif/esp-idf/commit/bc97b0f380210b97b7fd98c5f304af7e83c28b7f
 - We are using SHA256 and 2048 bit. This should work with the fix for SHA256.
 
+* TODO persistent names for network devices
+- services.udev.extraRules = ''KERNEL=="eth*", ATTR{address}=="xx:yy:..", NAME="ethX"'';
+- alternative that didn't work for queezle: systemd.network.links.eth.{matchConfig,linkConfig}
