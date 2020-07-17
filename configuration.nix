@@ -13,6 +13,7 @@ in {
       ./zsh.nix
       ./sound.nix
       ./smokeping.nix
+      ./ntopng.nix
     ];
 
   # Use the systemd-boot EFI boot loader.
