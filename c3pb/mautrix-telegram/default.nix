@@ -61,5 +61,6 @@ in {
       RestartSec = 10;
     };
     restartTriggers = configPatches ++ [ initScript ];
+    wantedBy = [ "multi-user.target" ];
   };
 }

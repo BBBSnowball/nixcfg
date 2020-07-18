@@ -29,5 +29,6 @@ in {
       Restart = "always";
       RestartSec = 10;
     };
+    wantedBy = [ "multi-user.target" ];
   };
 }

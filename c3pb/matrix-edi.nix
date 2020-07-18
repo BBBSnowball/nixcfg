@@ -84,5 +84,6 @@ in {
       RestartSec = 10;
     };
     restartTriggers = [src python];
+    wantedBy = [ "multi-user.target" ];
   };
 }
