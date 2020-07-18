@@ -6,7 +6,7 @@ let
   configServer = ./config.server.js;
 in {
   edumeet-app = self.stdenv.mkDerivation rec {
-    name = "edumeet-app";
+    name = "edumeet-app-web";
     inherit (edumeet) version src;
     inherit (edumeet.app) package;
     config = configApp;
@@ -56,7 +56,17 @@ in {
       # config uses require with relative paths so symlink won't work
       cp $config config/config.js
       ln -sfd $app public
-      ln -sfd $package/lib/node_modules/multiparty-meeting-server/node_modules node_modules
+
+      #ln -sfd $package/lib/node_modules/multiparty-meeting-server/node_modules node_modules
+      #FIXME fix this in the build process
+      cp -r $package/lib/node_modules/multiparty-meeting-server/node_modules node_modules
+      chmod +w node_modules/mediasoup/worker/out{,/out}
+      chmod -R +w node_modules
+      ls -ld node_modules/mediasoup/worker/out/out/ node_modules/mediasoup/worker/out/
+      ls -l node_modules/mediasoup/worker/out/out/ node_modules/mediasoup/worker/out/
+      realpath node_modules/mediasoup/worker/out/out/
+      realpath node_modules/mediasoup/worker/out/
+      mv node_modules/mediasoup/worker/out/out/Release node_modules/mediasoup/worker/out/Release
 
       ln -s ../lib/edumeet-server/server.js $out/bin/edumeet-server
       ln -s ../lib/edumeet-server/connect.js $out/bin/edumeet-connect

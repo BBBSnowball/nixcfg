@@ -89,10 +89,10 @@ module.exports =
 	// If omitted listens on every IP. ("0.0.0.0" and "::")
 	// listeningHost: 'localhost',
 	// Listening port for https server.
-	listeningPort         : 443,
+	listeningPort         : 8030,
 	// Any http request is redirected to https.
 	// Listening port for http server.
-	listeningRedirectPort : 8080,
+	listeningRedirectPort : 8031,
 	// Listens only on http, only on listeningPort
 	// listeningRedirectPort disabled
 	// use case: loadbalancer backend
@@ -298,7 +298,7 @@ module.exports =
 				'rtcp'
 			],
 			rtcMinPort : 40000,
-			rtcMaxPort : 49999
+			rtcMaxPort : 40999
 		},
 		// mediasoup Router settings.
 		router :
@@ -363,7 +363,7 @@ module.exports =
 			listenIps :
 			[
 				// change 192.0.2.1 IPv4 to your server's IPv4 address!!
-				{ ip: '192.0.2.1', announcedIp: null }
+				{ ip: '192.168.84.135', announcedIp: null }
 
 				// Can have multiple listening interfaces
 				// change 2001:DB8::1 IPv6 to your server's IPv6 address!!
