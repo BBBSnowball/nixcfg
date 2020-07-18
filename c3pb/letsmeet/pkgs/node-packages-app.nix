@@ -11201,13 +11201,13 @@ let
         sha512 = "OfBnObtnGgLGfweORmdZbyEz+3dgVePQBb3zipiaDsMHV1NpWm0rDFYIVXFV/AK+x4VIIfWHhrdMIeoTLyRr2g==";
       };
     };
-    "react-cookie-consent-2.5.0" = {
+    "react-cookie-consent-5.1.2" = {
       name = "react-cookie-consent";
       packageName = "react-cookie-consent";
-      version = "2.5.0";
+      version = "5.1.2";
       src = fetchurl {
-        url = "https://registry.npmjs.org/react-cookie-consent/-/react-cookie-consent-2.5.0.tgz";
-        sha512 = "wJQN8j78Y9biiCOwUbWAEvS9ehIE/Knba6+7TVH0U6YDem3potsWdjLAcyL4Rkob/flCzKBBKy3yUqUxRdV5ew==";
+        url = "https://registry.npmjs.org/react-cookie-consent/-/react-cookie-consent-5.1.2.tgz";
+        sha512 = "1qpwbai8d2jyp56w8xvj92vqs3zh8mpd5slb1vkifbc1k7bscf7lx0n8dmylrj48bag82xq9yp4qcyj2drylnihaqv9h9ka5arwpi0n";
       };
     };
     "react-dev-utils-10.2.1" = {
@@ -16384,7 +16384,7 @@ let
       })
       sources."react-16.13.1"
       sources."react-app-polyfill-1.0.6"
-      sources."react-cookie-consent-2.5.0"
+      sources."react-cookie-consent-5.1.2"
       (sources."react-dev-utils-10.2.1" // {
         dependencies = [
           sources."@babel/code-frame-7.8.3"
