@@ -6,11 +6,11 @@
       user = "autossh";
       extraArguments = "-o BatchMode=yes -o ServerAliveInterval=60 -o ServerAliveCountMax=3 ${lib.fileContents ./private/autossh-target-hackerspace.txt} -NL 5672:amqp:5672";
     }
-    {
-      name = "ldap";
-      user = "autossh";
-      extraArguments = "-o BatchMode=yes -o ServerAliveInterval=60 -o ServerAliveCountMax=3 ${lib.fileContents ./private/autossh-target-ldap.txt} -NL 3890:localhost:389 -L 6360:localhost:636";
-    }
+    #{
+    #  name = "ldap";
+    #  user = "autossh";
+    #  extraArguments = "-o BatchMode=yes -o ServerAliveInterval=60 -o ServerAliveCountMax=3 ${lib.fileContents ./private/autossh-target-ldap.txt} -NL 3890:localhost:389 -L 6360:localhost:636";
+    #}
   ];
   systemd.services.autossh-amqp.serviceConfig.Restart = lib.mkForce "always";
   systemd.services.autossh-amqp.serviceConfig.RestartSec = 10;
