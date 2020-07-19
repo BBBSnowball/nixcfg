@@ -1,7 +1,8 @@
 { config, pkgs, lib, ... }:
-{
+let
+  pkg = pkgs.edumeet-server;
+in {
   nixpkgs.overlays = [ (import ./overlay.nix) ];
-  environment.etc.abc.source = pkgs.edumeet-server;
 
   networking.firewall.allowedTCPPorts = [ 8030 ];
   networking.firewall.allowedUDPPortRanges = [ { from = 40000; to = 40999; } ];
@@ -18,4 +19,23 @@
 
   users.groups.redis-access = { };
   users.users.redis.group = "redis-access";
+
+  users.users.edumeet = {
+    description = "User for edumeet/multiparty-meeting server";
+    isSystemUser = true;
+    extraGroups = [ "redis-access" ];
+  };
+
+  systemd.services.edumeet = {
+    description = "WebRTC meeting service (edumeet / multiparty-meeting)";
+
+    wantedBy = [ "multi-user.target" ];
+    after = [ "network.target" ];
+
+    serviceConfig = {
+      ExecStart = "${pkg}/bin/edumeet-server";
+      WorkingDirectory = "${pkg}/lib/edumeet-server";
+      User = "edumeet";
+    };
+  };
 }
