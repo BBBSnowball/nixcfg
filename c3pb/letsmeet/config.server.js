@@ -71,7 +71,7 @@ module.exports =
 	//	}
 	//],
 	fileTracker  : 'wss://tracker.lab.vvc.niif.hu:443',
-	redisOptions : {},
+	redisOptions : { 'path': '/run/redis/redis.sock' },
 	// session cookie secret
 	cookieSecret : 'T0P-S3cR3t_cook!e',
 	cookieName   : 'multiparty-meeting.sid',

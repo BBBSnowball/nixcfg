@@ -9,6 +9,13 @@
   services.redis = {
     enable = true;
     bind = "127.0.0.1";
+    port = 0;
     unixSocket = "/run/redis/redis.sock";
+    extraConfig = ''
+      unixsocketperm 770
+    '';
   };
+
+  users.groups.redis-access = { };
+  users.users.redis.group = "redis-access";
 }
