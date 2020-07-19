@@ -14,7 +14,7 @@ let
   serverExternalIp = lib.fileContents ./private/serverExternalIp.txt;
   upstreamIP = (builtins.head config.networking.interfaces.ens3.ipv4.addresses).address;
 
-  favoritePkgs = with pkgs; [ wget htop tmux byobu git vim tig ];
+  favoritePkgs = with pkgs; [ wget htop tmux byobu git vim tig file ];
 
   myDefaultConfig = { config, pkgs, ...}: {
     environment.systemPackages = favoritePkgs ++ [ pkgs.vi-alias ];
