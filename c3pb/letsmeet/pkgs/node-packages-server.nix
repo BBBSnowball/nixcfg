@@ -2997,6 +2997,11 @@ let
     packageName = "multiparty-meeting-server";
     version = "3.3.0";
     src = "${edumeetSrc}/server";
+    postInstall= ''
+      echo postInstallHook
+      mv node_modules/mediasoup/worker/out/out/Release node_modules/mediasoup/worker/out/Release
+      find -name "*.o" -exec rm {} \+
+    '';
     dependencies = [
       sources."@panva/asn1.js-1.0.0"
       sources."@sindresorhus/is-0.14.0"
