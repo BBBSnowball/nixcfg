@@ -54,25 +54,22 @@ module.exports =
 	},
 	*/
 	// URI and key for requesting geoip-based TURN server closest to the client
-	turnAPIKey    : 'examplekey',
-	turnAPIURI    : 'https://example.com/api/turn',
-	turnAPIparams : {
-		'uri_schema' 	: 'turn',
-		'transport' 		: 'tcp',
-		'ip_ver'    		: 'ipv4',
-		'servercount'	: '2'
-	},
+	//turnAPIKey    : 'Ud3cheejieSue1maeik8uKae',
+	//turnAPIparams : {
+	//	'uri_schema' 	: 'turn',
+	//	'transport' 	: 'tcp',
+	//	'ip_ver'    	: 'ipv4',
+	//	'servercount'	: '2'
+	//},
 
 	// Backup turnservers if REST fails or is not configured
-	backupTurnServers : [
-		{
-			urls : [
-				'turn:turn.example.com:443?transport=tcp'
-			],
-			username   : 'example',
-			credential : 'example'
-		}
-	],
+	//backupTurnServers : [
+	//	{
+	//		urls : [
+	//			//'turn:turn.example.com:443?transport=tcp'
+	//		],
+	//	}
+	//],
 	fileTracker  : 'wss://tracker.lab.vvc.niif.hu:443',
 	redisOptions : {},
 	// session cookie secret
