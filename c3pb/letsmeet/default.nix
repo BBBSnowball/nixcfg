@@ -3,6 +3,8 @@ let
   pkg = pkgs.edumeet-server;
 in {
   nixpkgs.overlays = [ (import ./overlay.nix) ];
+  # make edumeet-connect available to the user
+  environment.systemPackages = [ pkg ];
 
   networking.firewall.allowedTCPPorts = [ 8030 ];
   networking.firewall.allowedUDPPortRanges = [ { from = 40000; to = 40999; } ];
