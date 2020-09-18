@@ -14,6 +14,7 @@ in {
       ./sound.nix
       ./smokeping.nix
       ./ntopng.nix
+      ./bbverl/syslog-udp.nix
     ];
 
   # Use the systemd-boot EFI boot loader.
@@ -50,7 +51,10 @@ in {
       via = "192.168.89.3";
     } ];
   };
-  networking.nameservers = [ "192.168.178.1" ];
+  networking.nameservers = [
+    #"192.168.178.1"
+    "192.168.89.3"
+  ];
 
   services.hostapd = {
     enable = true;

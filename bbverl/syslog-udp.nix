@@ -38,19 +38,19 @@ in
       "man:rsyslogd(8)"
       "http://www.rsyslog.com/doc/"
     ];
-    #FIXME is this useful?
-    requires = [ "syslog.socket" ];
     wantedBy = [ "multi-user.target" ];
     serviceConfig = {
       #FIXME copied from BeagleBone/Debian; can we make this a simple service?
       Type = "notify";
       #FIXME make it run as non-root, pass UDP socket from systemd if possible
-      ExecStartPre = "${pkgs.coreutils}/bin/mkdir -p /var/spool/rsyslog-udp";
-      ExecStartPre = "${pkgs.coreutils}/bin/chmod 700 /var/spool/rsyslog-udp";
+      ExecStartPre = [
+        "${pkgs.coreutils}/bin/mkdir -p /var/spool/rsyslog-udp"
+        "${pkgs.coreutils}/bin/chmod 700 /var/spool/rsyslog-udp"
+      ];
       ExecStart = "${pkgs.rsyslog}/sbin/rsyslogd -n -f ${config} -i /var/run/rsyslogd-udp.pid";
       Restart = "on-failure";
       # don't send output to journal
       #StandardOutput = "null";
     };
   };
-};
+}
