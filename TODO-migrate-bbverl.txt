@@ -3,7 +3,7 @@
   - Although that ESP isn't active at the moment and the plant it was monitoring is dead.
   - It is used for OpenWRT, though.
 - DONE RabbitMQ
-- fhem
+- DONE fhem
   - /usr/bin/perl ./fhem.pl fhem.cfg
 - ddclient
 - Graphite / Carbon
@@ -11,3 +11,4 @@
 - Apache2
 - tinc
 - DHCP (dnsmasq)
+- PXE
