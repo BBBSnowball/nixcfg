@@ -5,7 +5,7 @@
 - DONE RabbitMQ
 - DONE fhem
   - /usr/bin/perl ./fhem.pl fhem.cfg
-- ddclient
+- DONE ddclient
 - Graphite / Carbon
 - Samba
 - Apache2

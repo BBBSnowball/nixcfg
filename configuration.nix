@@ -17,6 +17,7 @@ in {
       ./bbverl/syslog-udp.nix
       ./bbverl/rabbitmq.nix
       ./bbverl/fhem.nix
+      ./bbverl/ddclient.nix
     ];
 
   # Use the systemd-boot EFI boot loader.
