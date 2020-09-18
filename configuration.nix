@@ -15,6 +15,7 @@ in {
       ./smokeping.nix
       ./ntopng.nix
       ./bbverl/syslog-udp.nix
+      ./bbverl/rabbitmq.nix
     ];
 
   # Use the systemd-boot EFI boot loader.
