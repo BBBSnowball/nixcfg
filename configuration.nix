@@ -11,7 +11,7 @@ in {
       ./hardware-configuration.nix
       ./wifi-ap-eap/default.nix
       ./zsh.nix
-      ./sound.nix
+      #./sound.nix
       ./smokeping.nix
       ./ntopng.nix
       ./bbverl/syslog-udp.nix
@@ -58,7 +58,7 @@ in {
   ];
 
   services.hostapd = {
-    enable = true;
+#   enable = true;
     interface = "wlp0s20f0u4";
     ssid = "FRITZ!Box 7595";
     channel = 7;
@@ -80,7 +80,7 @@ in {
     '';
   };
   services.wifi-ap-eap = {
-    enable = true;
+#   enable = true;
     countryCode = "DE";
     serverName = "ap.verl.bbbsnowball.de";
     #wifiFourAddressMode = true;
@@ -112,7 +112,7 @@ in {
   environment.systemPackages = with pkgs; [
     wget byobu tmux git tig cifs-utils pv file killall
     #vim
-    htop iotop iftop cpufrequtils inteltool powertop stress stress-ng sysprof nethogs nix-top unixtools.top usbtop
+    htop iotop iftop cpufrequtils inteltool powertop stress stress-ng sysprof nethogs nix-top unixtools.top usbtop lzop
     #FIXME throttled undervolt
     # atop ctop dnstop gotop nettop latencytop netatop gtop powerstat rPackages.gtop vtop
     # numatop nvtop pg_top radeontop
