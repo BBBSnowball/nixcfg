@@ -6,9 +6,9 @@
 - DONE fhem
   - /usr/bin/perl ./fhem.pl fhem.cfg
 - DONE ddclient
-- Graphite / Carbon
-- Samba
+- DONE Samba
 - Apache2
 - tinc
 - DHCP (dnsmasq)
 - PXE
+- Graphite / Carbon
