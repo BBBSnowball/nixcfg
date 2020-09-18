@@ -9,3 +9,4 @@
 - Samba
 - Apache2
 - tinc
+- DHCP (dnsmasq)
