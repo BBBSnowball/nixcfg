@@ -1,0 +1,11 @@
+- syslog for ESP
+  - /usr/sbin/rsyslogd -n -f /etc/rsyslog.udp.conf -i /var/run/rsyslogd-udp.pid
+  - Although that ESP isn't active at the moment and the plant it was monitoring is dead.
+- RabbitMQ
+- fhem
+  - /usr/bin/perl ./fhem.pl fhem.cfg
+- ddclient
+- Graphite / Carbon
+- Samba
+- Apache2
+- tinc
