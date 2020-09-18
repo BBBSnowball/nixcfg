@@ -7,8 +7,12 @@
   - /usr/bin/perl ./fhem.pl fhem.cfg
 - DONE ddclient
 - DONE Samba
-- Apache2
-- tinc
+- DONE tinc
 - DHCP (dnsmasq)
 - PXE
+- Apache2
+  - Graphite
+  - some hue stuff - was only a test
+  - forward to fhem
 - Graphite / Carbon
+  - There is an Apache2 site for Graphite on the Debian.

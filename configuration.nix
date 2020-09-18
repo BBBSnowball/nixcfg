@@ -15,6 +15,7 @@ in {
       ./smokeping.nix
       ./ntopng.nix
       ./samba.nix
+      ./tinc.nix
       ./bbverl/syslog-udp.nix
       ./bbverl/rabbitmq.nix
       ./bbverl/fhem.nix
