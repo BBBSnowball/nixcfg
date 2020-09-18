@@ -32,6 +32,12 @@ in
 {
   environment.systemPackages = [ pkgs.rsyslog ];
 
+  #FIXME I would really like to run this as non-root. However, it seems that socket
+  #      activation is only possible for imuxsock and it explicitely checks that the
+  #      fd is a Unix socket. We need imudp on a priviledged port so we are out of
+  #      luck. Furthermore, I couldn't find any option for dropping priviledges.
+  #      I think, I should disable this while not in use and switch to a different
+  #      syslog daemon in the long run.
   systemd.services.rsyslog-udp = {
     description = "System Logging Service for remote hosts";
     documentation = [
@@ -40,9 +46,7 @@ in
     ];
     wantedBy = [ "multi-user.target" ];
     serviceConfig = {
-      #FIXME copied from BeagleBone/Debian; can we make this a simple service?
       Type = "notify";
-      #FIXME make it run as non-root, pass UDP socket from systemd if possible
       ExecStartPre = [
         "${pkgs.coreutils}/bin/mkdir -p /var/spool/rsyslog-udp"
         "${pkgs.coreutils}/bin/chmod 700 /var/spool/rsyslog-udp"
@@ -53,4 +57,7 @@ in
       #StandardOutput = "null";
     };
   };
+
+  #FIXME only in local network
+  networking.firewall.interfaces.br0.allowedUDPPorts = [ 514 ];
 }
