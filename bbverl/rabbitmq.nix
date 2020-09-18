@@ -9,7 +9,7 @@
     ];
     #config = "[{rabbitmq_mqtt, [{subscription_ttl, 10000}]}].";
     configItems = {
-      "rabbitmq_mqtt.subscription_ttl" = "10000";
+      "mqtt.subscription_ttl" = "10000";
     };
   };
 }
