@@ -8,8 +8,8 @@
 - DONE ddclient
 - DONE Samba
 - DONE tinc
-- DHCP (dnsmasq)
-- PXE
+- DONE DHCP (dnsmasq)
+- DONE PXE
 - Apache2
   - Graphite
   - some hue stuff - was only a test

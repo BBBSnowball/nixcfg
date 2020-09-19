@@ -16,6 +16,7 @@ in {
       ./ntopng.nix
       ./samba.nix
       ./tinc.nix
+      ./dhcp-server.nix
       ./bbverl/syslog-udp.nix
       ./bbverl/rabbitmq.nix
       ./bbverl/fhem.nix
