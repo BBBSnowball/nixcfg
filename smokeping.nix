@@ -121,24 +121,40 @@
       menu = Services
       ++ DNS1
       probe = DNS
+      menu  = dig bkoch.eu
       title = dig bkoch.eu
-      host = bkoch.eu
+      lookup = bkoch.eu
+      host = 192.168.89.3
       ++ DNS1b
       probe = DNS
+      menu  = dig bkoch.eu @bkoch.eu
       title = dig bkoch.eu @bkoch.eu
       host = bkoch.eu
       lookup = bkoch.eu
       ++ DNS2
       probe = DNS
+      menu  = dig c3pb.de
       title = dig c3pb.de
-      host = c3pb.de
+      lookup = c3pb.de
+      host = 192.168.89.3
       ++ DNS3
       probe = DNS
+      menu  = dig hackerspace.servers.c3pb.de
       title = dig hackerspace.servers.c3pb.de
-      host = hackerspace.servers.c3pb.de
+      lookup = hackerspace.servers.c3pb.de
+      host = 192.168.89.3
       ++ DNS4
+      probe = DNS
+      menu  = dig google.de
       title = dig google.de
-      host = google.de
+      lookup = google.de
+      host = 192.168.89.3
+      ++ DNS5
+      probe = DNS
+      menu  = dig google.de @8.8.8.8
+      title = dig google.de @8.8.8.8
+      lookup = google.de
+      host = 8.8.8.8
       ++ SSH1
       probe = SSH
       title = ssh-keyscan bkoch.eu
