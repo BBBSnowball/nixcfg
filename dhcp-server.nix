@@ -5,6 +5,10 @@ let
   routerIP = "192.168.89.3";
 in
 {
+  # 67 is DHCP, 69 is TFTP
+  networking.firewall.allowedTCPPorts = [ 69 ];
+  networking.firewall.allowedUDPPorts = [ 67 69 ];
+
   services.dnsmasq = {
     enable = true;
     resolveLocalQueries = false;
