@@ -1,4 +1,7 @@
 { config, pkgs, lib, ... }:
+let
+  nameserver = builtins.head config.networking.nameservers;
+in
 {
   nixpkgs.overlays = [
     (self: super: {
@@ -124,7 +127,7 @@
       menu  = dig bkoch.eu
       title = dig bkoch.eu
       lookup = bkoch.eu
-      host = 192.168.89.3
+      host = ${nameserver}
       ++ DNS1b
       probe = DNS
       menu  = dig bkoch.eu @bkoch.eu
@@ -136,19 +139,19 @@
       menu  = dig c3pb.de
       title = dig c3pb.de
       lookup = c3pb.de
-      host = 192.168.89.3
+      host = ${nameserver}
       ++ DNS3
       probe = DNS
       menu  = dig hackerspace.servers.c3pb.de
       title = dig hackerspace.servers.c3pb.de
       lookup = hackerspace.servers.c3pb.de
-      host = 192.168.89.3
+      host = ${nameserver}
       ++ DNS4
       probe = DNS
       menu  = dig google.de
       title = dig google.de
       lookup = google.de
-      host = 192.168.89.3
+      host = ${nameserver}
       ++ DNS5
       probe = DNS
       menu  = dig google.de @8.8.8.8
