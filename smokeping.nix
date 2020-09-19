@@ -138,8 +138,7 @@ in
       probe = DNS
       menu  = dig c3pb.de
       title = dig c3pb.de
-      lookup = c3pb.de
-      host = ${nameserver}
+      host = c3pb.de
       ++ DNS3
       probe = DNS
       menu  = dig hackerspace.servers.c3pb.de
