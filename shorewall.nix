@@ -308,7 +308,7 @@ in
 
   config = {
     services.shorewall.enable = true;
-    #services.shorewall6.enable = true;
+    services.shorewall6.enable = true;
     services.shorewall.configs = common // {
       "shorewall.conf" = mainConfigFile + ''
         LOG_MARTIANS=Yes
@@ -334,5 +334,8 @@ in
       UDP: ${toString config.networking.firewall.allowedUDPPorts} ${toString config.networking.firewall.allowedUDPPortRanges}
       per interface: ${builtins.toJSON config.networking.firewall.interfaces}
     '';
+
+    #FIXME disabled because it doesn't work with the current config
+    systemd.services.shorewall6.wantedBy = lib.mkForce [];
   };
 }
