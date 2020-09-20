@@ -219,7 +219,7 @@ let
     PERL=${pkgs.perl}/bin/perl
     #PATH=${lib.strings.concatMapStringsSep ":" (p: "${p}/bin") packages}
     PATH=${lib.strings.makeBinPath packages}
-    PAGER="${pkgs.less}/bin/less -R"
+    PAGER=${pkgs.writeShellScript "less-R" "${pkgs.less}/bin/less -R \"$@\""}
   '';
 in
 {
