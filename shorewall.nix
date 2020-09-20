@@ -2,7 +2,7 @@
 let
   sections = [ "ALL" "ESTABLISHED" "RELATED" "INVALID" "UNTRACKED" "NEW" ];
 
-  common = {
+  common = ipv6: {
     zones = ''
       #ZONE     TYPE       OPTIONS       IN OPTIONS         OUT OPTIONS
 
@@ -13,14 +13,18 @@ let
       tinc      ip
     '';
 
-    interfaces = ''
+    interfaces = let
+      myDefaultOptions = if ipv6
+        then "tcpflags,nosmurfs"
+        else "tcpflags,nosmurfs,routefilter,logmartians,arp_filter=1";
+    in ''
       ?FORMAT 2
       #ZONE   INTERFACE       OPTIONS
 
-      net     NET_IF          tcpflags,nosmurfs,routefilter,logmartians,sourceroute=0,physical=ppp0,arp_filter=1
-      modem   MODEM_IF        tcpflags,nosmurfs,routefilter,logmartians,sourceroute=0,physical=enp4s0,arp_filter=1
-      loc     LOC_IF          tcpflags,nosmurfs,routefilter,logmartians,physical=br0,routeback,arp_filter=1,dhcp
-      tinc    TINC_IF         tcpflags,nosmurfs,routefilter,logmartians,physical=tinc.bbbsnowbal,routeback,arp_filter=1,dhcp
+      net     NET_IF          ${myDefaultOptions},sourceroute=0,physical=ppp0
+      modem   MODEM_IF        ${myDefaultOptions},sourceroute=0,physical=enp4s0
+      loc     LOC_IF          ${myDefaultOptions},physical=br0,routeback,dhcp
+      tinc    TINC_IF         ${myDefaultOptions},physical=tinc.bbbsnowbal,dhcp
     '';
 
     policy = ''
@@ -145,6 +149,12 @@ let
       { raw = [ ""                  ""                     "    172.16.0.0/12,\\"  ]; iptype = "ipv4"; }
       { raw = [ ""                  ""                     "    192.168.0.0/16"    ]; iptype = "ipv4"; }
       { raw = [ "ACCEPT"            "$FW"                  "net"             "icmp" ]; }
+      { source = "net";
+        dest   = "$FW";
+        proto  = "icmp";
+        iptype = "ipv6";
+        destPort = "1,2,3,4,136,137";  # various errors and mtu, neighbour-solicitation/adverticement
+      }
     ];
   };
 
@@ -309,7 +319,7 @@ in
   config = {
     services.shorewall.enable = true;
     services.shorewall6.enable = true;
-    services.shorewall.configs = common // {
+    services.shorewall.configs = (common false) // {
       "shorewall.conf" = mainConfigFile + ''
         LOG_MARTIANS=Yes
       '';
@@ -319,7 +329,7 @@ in
       '';
       rules = getRules (rule: rule.iptype == "both" || rule.iptype == "ipv4");
     };
-    services.shorewall6.configs = common // {
+    services.shorewall6.configs = (common true) // {
       "shorewall6.conf" = mainConfigFile;
       rules = getRules (rule: rule.iptype == "both" || rule.iptype == "ipv6");
     };
@@ -334,8 +344,5 @@ in
       UDP: ${toString config.networking.firewall.allowedUDPPorts} ${toString config.networking.firewall.allowedUDPPortRanges}
       per interface: ${builtins.toJSON config.networking.firewall.interfaces}
     '';
-
-    #FIXME disabled because it doesn't work with the current config
-    systemd.services.shorewall6.wantedBy = lib.mkForce [];
   };
 }
