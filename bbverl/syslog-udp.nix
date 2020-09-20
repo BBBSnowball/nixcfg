@@ -60,4 +60,9 @@ in
 
   #FIXME only in local network
   networking.firewall.interfaces.br0.allowedUDPPorts = [ 514 ];
+
+  services.shorewall.rules.syslog = {
+    proto = "udp";
+    destPort = [ 514 ];
+  };
 }

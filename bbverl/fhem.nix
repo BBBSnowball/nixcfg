@@ -128,6 +128,11 @@ in
 
   networking.firewall.interfaces.br0.allowedTCPPorts = [ 8083 8084 8085 ];
 
+  services.shorewall.rules.fhem-web = {
+    proto = "tcp";
+    destPort = [ 8083 8084 8085 ];
+  };
+
   services.udev.extraRules = ''
     # fhem needs access to CUL868 gateway but other users shouldn't accidentally use it
     KERNEL=="ttyACM*", ATTRS{idVendor}=="03eb", ATTRS{idProduct}=="204b", ATTRS{product}=="CUL868", SYMLINK+="ttyCUL868", OWNER="fhem", MODE="0600"

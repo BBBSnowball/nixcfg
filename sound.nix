@@ -21,10 +21,15 @@ in {
     mpc_cli ncmpc
   ];
 
-  networking.firewall.allowedTCPPorts = [
+  networking.firewall.br0.allowedTCPPorts = [
     6600
     ympdPort
   ];
+
+  services.shorewall.rules.mpd = {
+    proto = "tcp";
+    destPort = [ 6600 ympdPort ];
+  };
 
   # see https://wiki.archlinux.org/index.php/Music_Player_Daemon/Tips_and_tricks
   services.mpd = {

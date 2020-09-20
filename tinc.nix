@@ -14,6 +14,12 @@ in
   networking.firewall.allowedTCPPorts = [ 48656 ];
   networking.firewall.allowedUDPPorts = [ 48656 ];
 
+  services.shorewall.rules.tinc = {
+    proto = "tcp,udp";
+    destPort = 48656 ;
+    source = "loc,net";  # also from the internet
+  };
+
   services.tinc.networks.bbbsnowball = {
     name = "routeromen";
     listenAddress = upstreamIP;

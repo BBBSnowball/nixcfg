@@ -6,8 +6,19 @@ let
 in
 {
   # 67 is DHCP, 69 is TFTP
-  networking.firewall.allowedTCPPorts = [ 69 ];
-  networking.firewall.allowedUDPPorts = [ 67 69 ];
+  networking.firewall.interfaces.br0.allowedTCPPorts = [ 69 ];
+  networking.firewall.interfaces.br0.allowedUDPPorts = [ 67 69 ];
+
+  services.shorewall.rules = {
+    dhcp-server-tcp = {
+      proto = "tcp";
+      destPort = [ 69 ];
+    };
+    dhcp-server-dup = {
+      proto = "udp";
+      destPort = [ 67 69 ];
+    };
+  };
 
   services.dnsmasq = {
     enable = true;

@@ -20,7 +20,11 @@
     };
   };
 
-  networking.firewall.allowedTCPPorts = [ 139 445 ];
+  networking.firewall.interfaces.br0.allowedTCPPorts = [ 139 445 ];
+  services.shorewall.rules.samba = {
+    proto = "tcp";
+    destPort = [ 139 445 ];
+  };
 
   users.users.scans = {
     isNormalUser = true;

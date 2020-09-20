@@ -132,27 +132,95 @@ let
   '';
 in
 {
-  services.shorewall.enable = true;
-  #services.shorewall6.enable = true;
-  services.shorewall.configs = common // {
-    "shorewall.conf" = mainConfigFile + ''
-      LOG_MARTIANS=Yes
-    '';
-    snat = ''
-      #ACTION        SOURCE               DEST        PROTO    PORT    IPSEC    MARK    USER    SWITCH    ORIGDEST    PROBABILITY
-      MASQUERADE     192.168.89.0/24      NET_IF
+  options = {
+    services.shorewall = with lib.types; {
+      rules = lib.mkOption {
+        type = attrsOf (submodules {
+          options = {
+            enable = lib.mkOption {
+              type = bool;
+              default = true;
+            };
+            order = lib.mkOption {
+              type = int;
+              default = 10;
+            };
+            section = lib.mkOption {
+              type = enum [ "ALL" "ESTABLISHED" "RELATED" "INVALID" "UNTRACKED" "NEW" ];
+              default = "NEW";
+            };
+            action = lib.mkOption {
+              type = str;
+              default = "ACCEPT";
+            };
+            source = lib.mkOption {
+              type = nullOr str;
+              default = null;
+            };
+            dest = lib.mkOption {
+              type = nullOr str;
+              default = null;
+            };
+            proto = lib.mkOption {
+              type = nullOr str;
+              default = null;
+            };
+            destPort = lib.mkOption {
+              type = nullOr (oneOf [str port (listOf port)]);
+              default = null;
+            };
+            sourcePort = lib.mkOption {
+              type = nullOr (oneOf [str port (listOf port)]);
+              default = null;
+            };
+            extraFields = lib.mkOption {
+              type = str;
+              default = "";
+            };
+          };
+        });
+        default     = {};
+        description = ''
+          This defines Shorewall rules.
+        '';
+      };
+
+      defaultSource = lib.mkOption {
+        type = nullOr str;
+        description = "Default source for rules. This should usually be the internal network if you have many rules opening ports to that network.";
+        default = "loc";
+      };
+      defaultDest = lib.mkOption {
+        type = nullOr str;
+        description = "Default destination for rules. This should usually be the firewall if you have many rules opening ports on the firewall.";
+        default = "$FW";
+      };
+    };
+  };
+
+  config = {
+    services.shorewall.enable = true;
+    #services.shorewall6.enable = true;
+    services.shorewall.configs = common // {
+      "shorewall.conf" = mainConfigFile + ''
+        LOG_MARTIANS=Yes
+      '';
+      snat = ''
+        #ACTION        SOURCE               DEST        PROTO    PORT    IPSEC    MARK    USER    SWITCH    ORIGDEST    PROBABILITY
+        MASQUERADE     192.168.89.0/24      NET_IF
+      '';
+    };
+    services.shorewall6.configs = common // {
+      "shorewall6.conf" = mainConfigFile;
+    };
+    systemd.services.shorewall.path = packages;
+
+    #environment.systemPackages = packages;
+
+    environment.etc.nixos-firewall.text = ''
+      TCP: ${toString config.networking.firewall.allowedTCPPorts} ${toString config.networking.firewall.allowedTCPPortRanges}
+      UDP: ${toString config.networking.firewall.allowedUDPPorts} ${toString config.networking.firewall.allowedUDPPortRanges}
+      per interface: ${builtins.toJSON config.networking.firewall.interfaces}
     '';
   };
-  services.shorewall6.configs = common // {
-    "shorewall6.conf" = mainConfigFile;
-  };
-  systemd.services.shorewall.path = packages;
-
-  #environment.systemPackages = packages;
-
-  environment.etc.nixos-firewall.text = ''
-    TCP: ${toString config.networking.firewall.allowedTCPPorts} ${toString config.networking.firewall.allowedTCPPortRanges}
-    UDP: ${toString config.networking.firewall.allowedUDPPorts} ${toString config.networking.firewall.allowedUDPPortRanges}
-    per interface: ${builtins.toJSON config.networking.firewall.interfaces}
-  '';
 }
