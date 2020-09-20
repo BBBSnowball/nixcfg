@@ -92,45 +92,36 @@ let
       fieldLengths2 = mapMax fieldLengths (map stringLength titleFields);
       lines2 = [ titleFields "" ] ++ lines;
 
+      #FIXME don't pad the last field of the current line - regardless of how many fields the other lines have
       padding = n: if n > 0 then " " + (padding (n - 1)) else "";
       padField = width: value: if stringLength value < width
         then value + padding (width - (stringLength value))
         else value;
       lineToString = line: if isList line then lib.strings.concatStringsSep  "    " (lib.lists.zipListsWith padField fieldLengths2 line) else line;
       rules = lib.strings.concatMapStringsSep "\n" lineToString lines2;
-    in ''
-      #ACTION           SOURCE          DEST            PROTO   DPORT     SPORT    ORIGDEST    RATELIMIT    USER    MARK    CONNLIMIT    TIME    HEADERS    SWITCH    HELPER
+    in rules;
+  };
 
-      ?SECTION ALL
-      ?SECTION ESTABLISHED
-      ?SECTION RELATED
-      ?SECTION INVALID
-      ?SECTION UNTRACKED
-      ?SECTION NEW
-
-      Invalid(DROP)     net             all             tcp
-      DNS(ACCEPT)       $FW             net
-      SSH(ACCEPT)       loc             $FW
-      Ping(ACCEPT)      loc             $FW
-      Ping(ACCEPT)      net             $FW
-      ACCEPT            $FW             loc             icmp
-      REJECT            all:10.0.0.0/8,\
-                            169.254.0.0/16,\
-                            172.16.0.0/12,\
-                            192.168.0.0/16\
-                                        net
-      REJECT            all             net:10.0.0.0/8,\
-                                            169.254.0.0/16,\
-                                            172.16.0.0/12,\
-                                            192.168.0.0/16
-      ACCEPT            $FW             net             icmp
-
-      ${builtins.toJSON config.services.shorewall.rules}
-      ${builtins.toJSON rulesWithName}
-      {builtins.toJSON bySection}
-
-      ${rules}
-    '';
+  someRules = {
+    order = 50;
+    raw = [
+      [ "Invalid(DROP)"     "net"                  "all"             "tcp" ]
+      [ "DNS(ACCEPT)"       "$FW"                  "net" ]
+      [ "SSH(ACCEPT)"       "loc"                  "$FW" ]
+      [ "Ping(ACCEPT)"      "loc"                  "$FW" ]
+      [ "Ping(ACCEPT)"      "net"                  "$FW" ]
+      [ "ACCEPT"            "$FW"                  "loc"             "icmp" ]
+      [ "REJECT"            "all:10.0.0.0/8,\\"          ]
+      [ ""                  "    169.254.0.0/16,\\"      ]
+      [ ""                  "    172.16.0.0/12,\\"       ]
+      [ ""                  "    192.168.0.0/16\\"       ]
+      [ ""                  ""                     "net" ]
+      [ "REJECT"            "all"                  "net:10.0.0.0/8,\\"     ]
+      [ ""                  ""                     "    169.254.0.0/16,\\" ]
+      [ ""                  ""                     "    172.16.0.0/12,\\"  ]
+      [ ""                  ""                     "    192.168.0.0/16"    ]
+      [ "ACCEPT"            "$FW"                  "net"             "icmp" ]
+    ];
   };
 
   packages = with pkgs; [
@@ -292,6 +283,8 @@ in
     systemd.services.shorewall.path = packages;
 
     #environment.systemPackages = packages;
+
+    services.shorewall.rules.someRules = someRules;
 
     environment.etc.nixos-firewall.text = ''
       TCP: ${toString config.networking.firewall.allowedTCPPorts} ${toString config.networking.firewall.allowedTCPPortRanges}
