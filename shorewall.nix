@@ -43,6 +43,7 @@ let
     rules = with builtins; let
       rulesWithName = lib.attrsets.mapAttrsToList (name: value: { inherit name; } // value) config.services.shorewall.rules;
       bySection = lib.lists.groupBy (x: x.section) rulesWithName;
+
       dropTrailingNulls = xs:
         let xs2 = dropTrailingNulls (tail xs); in
         if xs == []
@@ -55,9 +56,11 @@ let
         if isList p
           then lib.strings.concatMapStringsSep "," toString p
           else toString p;
+    
       ruleToLines = rule:
-      if isNull rule.raw
-      then [
+      if ! (isNull rule.raw)
+      then rule.raw
+      else [
         "# ${rule.name}"
         (replaceNulls (dropTrailingNulls [
           "${if rule.enable then "" else "#"}${rule.action}"
@@ -67,13 +70,12 @@ let
           (portsToString rule.destPort)
           (portsToString rule.sourcePort)
           (if rule.extraFields == "" then null else rule.extraFields)
-        ])) ]
-      else if isList rule.raw && rule.raw != [] && isList (head rule.raw)
-        then rule.raw
-        else [ rule.raw ];
+        ])) ];
+  
       compareRules = a: b: a.order < b.order || a.order == b.order && a.name < b.name;
       sectionToLines = name: rules: [ "" "?SECTION ${name}" ] ++ concatMap ruleToLines (lib.lists.sort compareRules rules);
       lines = concatMap (name: sectionToLines name (bySection.${name} or [])) sections;
+
       max = a: b: if a >= b then a else b;
       mapMax = xs: ys:
         if xs == [] then ys
@@ -235,8 +237,13 @@ in
               default = "";
             };
             raw = lib.mkOption {
-              type = nullOr (oneOf [ str (listOf str) (listOf (listOf str)) ]);
-              description = "raw text of rule; replaces all other fields";
+              type = nullOr (listOf (oneOf [ str (listOf str) ]));
+              description = ''
+                raw text of rule
+
+                This replaces all other fields except for order.
+                The value is a list of lines. Each of them is either a string or a list of fields.
+              '';
               default = null;
             };
           };
