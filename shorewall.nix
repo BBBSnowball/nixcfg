@@ -8,6 +8,7 @@ let
       net       ip
       modem     ip
       loc       ip
+      tinc      ip
     '';
 
     interfaces = ''
@@ -17,13 +18,14 @@ let
       net     NET_IF          tcpflags,nosmurfs,routefilter,logmartians,sourceroute=0,physical=ppp0,arp_filter=1
       modem   MODEM_IF        tcpflags,nosmurfs,routefilter,logmartians,sourceroute=0,physical=enp4s0,arp_filter=1
       loc     LOC_IF          tcpflags,nosmurfs,routefilter,logmartians,physical=br0,routeback,arp_filter=1,dhcp
+      tinc    TINC_IF         tcpflags,nosmurfs,routefilter,logmartians,physical=tinc.bbbsnowbal,routeback,arp_filter=1,dhcp
     '';
 
     policy = ''
       #SOURCE DEST            POLICY          LOGLEVEL        RATE    CONNLIMIT
 
       loc     net             ACCEPT
-      $FW     net,loc         ACCEPT
+      $FW     net,loc,tinc    ACCEPT
       net     all             DROP            $LOG_LEVEL      $LOGLIMIT
       all     all             REJECT          $LOG_LEVEL      $LOGLIMIT
     '';
@@ -52,6 +54,15 @@ let
       Ping(ACCEPT)      loc             $FW
       Ping(ACCEPT)      net             $FW
       ACCEPT            $FW             loc             icmp
+      REJECT            all:10.0.0.0/8,\
+                            169.254.0.0/16,\
+                            172.16.0.0/12,\
+                            192.168.0.0/16\
+                                        net
+      REJECT            all             net:10.0.0.0/8,\
+                                            169.254.0.0/16,\
+                                            172.16.0.0/12,\
+                                            192.168.0.0/16
       ACCEPT            $FW             net             icmp
     '';
   };
