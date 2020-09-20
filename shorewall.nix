@@ -39,8 +39,10 @@ let
       ACCEPT       -            LOC_IF
       ACCEPT       LOC_IF       $FW          tcp         22
     '';
+  };
 
-    rules = with builtins; let
+  getRules = acceptRule:
+    with builtins; let
       rulesWithName = lib.attrsets.mapAttrsToList (name: value: { inherit name; } // value) config.services.shorewall.rules;
       bySection = lib.lists.groupBy (x: x.section) rulesWithName;
 
@@ -84,8 +86,9 @@ let
         let comment = replaceStrings ["$name$"] [rule.name] rule.comment; in
         map (x: "# " + x) (removeLastIfEmpty (lib.strings.splitString "\n" comment));
       ruleToLines = rule:
+        if ! (acceptRule rule) then [] else
         (commentToLines rule)
-        ++ (map (child: commentIfNotEnabled rule.enable (singleRuleToLine (fillFromParent rule child))) rule.rules);
+        ++ (map (child: commentIfNotEnabled rule.enable (singleRuleToLine child)) (filter acceptRule (map (fillFromParent rule) rule.rules)));
   
       compareRules = a: b: a.order < b.order || a.order == b.order && a.name < b.name;
       sectionToLines = name: rules: [ "" "?SECTION ${name}" ] ++ concatMap ruleToLines (lib.lists.sort compareRules rules);
@@ -118,7 +121,6 @@ let
       lineToString = line: if isList line then lib.strings.concatStringsSep  "    " (padFields fieldLengths2 line) else line;
       rules = lib.strings.concatMapStringsSep "\n" lineToString lines2;
     in rules;
-  };
 
   someRules = {
     order = 50;
@@ -133,15 +135,15 @@ let
       { raw = [ "Ping(ACCEPT)"      "loc"                  "$FW" ]; }
       { raw = [ "Ping(ACCEPT)"      "net"                  "$FW" ]; }
       { raw = [ "ACCEPT"            "$FW"                  "loc"             "icmp" ]; }
-      { raw = [ "REJECT"            "all:10.0.0.0/8,\\"          ]; }
-      { raw = [ ""                  "    169.254.0.0/16,\\"      ]; }
-      { raw = [ ""                  "    172.16.0.0/12,\\"       ]; }
-      { raw = [ ""                  "    192.168.0.0/16\\"       ]; }
-      { raw = [ ""                  ""                     "net" ]; }
-      { raw = [ "REJECT"            "all"                  "net:10.0.0.0/8,\\"     ]; }
-      { raw = [ ""                  ""                     "    169.254.0.0/16,\\" ]; }
-      { raw = [ ""                  ""                     "    172.16.0.0/12,\\"  ]; }
-      { raw = [ ""                  ""                     "    192.168.0.0/16"    ]; }
+      { raw = [ "REJECT"            "all:10.0.0.0/8,\\"          ]; iptype = "ipv4"; }
+      { raw = [ ""                  "    169.254.0.0/16,\\"      ]; iptype = "ipv4"; }
+      { raw = [ ""                  "    172.16.0.0/12,\\"       ]; iptype = "ipv4"; }
+      { raw = [ ""                  "    192.168.0.0/16\\"       ]; iptype = "ipv4"; }
+      { raw = [ ""                  ""                     "net" ]; iptype = "ipv4"; }
+      { raw = [ "REJECT"            "all"                  "net:10.0.0.0/8,\\"     ]; iptype = "ipv4"; }
+      { raw = [ ""                  ""                     "    169.254.0.0/16,\\" ]; iptype = "ipv4"; }
+      { raw = [ ""                  ""                     "    172.16.0.0/12,\\"  ]; iptype = "ipv4"; }
+      { raw = [ ""                  ""                     "    192.168.0.0/16"    ]; iptype = "ipv4"; }
       { raw = [ "ACCEPT"            "$FW"                  "net"             "icmp" ]; }
     ];
   };
@@ -217,6 +219,10 @@ in
             enable = lib.mkOption {
               type = bool;
               default = true;
+            };
+            iptype = lib.mkOption {
+              type = enum [ "ipv4" "ipv6" "both" "$parent$" ];
+              default = f "both";
             };
             action = lib.mkOption {
               type = str;
@@ -311,9 +317,11 @@ in
         #ACTION        SOURCE               DEST        PROTO    PORT    IPSEC    MARK    USER    SWITCH    ORIGDEST    PROBABILITY
         MASQUERADE     192.168.89.0/24      NET_IF
       '';
+      rules = getRules (rule: rule.iptype == "both" || rule.iptype == "ipv4");
     };
     services.shorewall6.configs = common // {
       "shorewall6.conf" = mainConfigFile;
+      rules = getRules (rule: rule.iptype == "both" || rule.iptype == "ipv6");
     };
     systemd.services.shorewall.path = packages;
 
