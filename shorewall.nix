@@ -85,12 +85,19 @@ let
         let rawLengths = lib.lists.foldl' (a: b: if isList b then mapMax a (map stringLength b) else a) [0] lines; in
         # never pad the last field
         (lib.lists.init rawLengths) ++ [ 0 ];
+
+      allTitleFields = [ "#ACTION" "SOURCE" "DEST" "PROTO" "DPORT" "SPORT" "ORIGDEST" "RATELIMIT" "USER" "MARK" "CONNLIMIT" "TIME" "HEADERS" "SWITCH" "HELPER" ];
+      titleFields = (lib.lists.take (length fieldLengths) allTitleFields)
+        ++ (if length fieldLengths >= length allTitleFields then [] else [ (lib.strings.concatStringsSep "    " (lib.lists.drop (length fieldLengths) allTitleFields)) ]);
+      fieldLengths2 = mapMax fieldLengths (map stringLength titleFields);
+      lines2 = [ titleFields "" ] ++ lines;
+
       padding = n: if n > 0 then " " + (padding (n - 1)) else "";
       padField = width: value: if stringLength value < width
         then value + padding (width - (stringLength value))
         else value;
-      lineToString = line: if isList line then lib.strings.concatStringsSep  "    " (lib.lists.zipListsWith padField fieldLengths line) else line;
-      rules = lib.strings.concatMapStringsSep "\n" lineToString lines;
+      lineToString = line: if isList line then lib.strings.concatStringsSep  "    " (lib.lists.zipListsWith padField fieldLengths2 line) else line;
+      rules = lib.strings.concatMapStringsSep "\n" lineToString lines2;
     in ''
       #ACTION           SOURCE          DEST            PROTO   DPORT     SPORT    ORIGDEST    RATELIMIT    USER    MARK    CONNLIMIT    TIME    HEADERS    SWITCH    HELPER
 
