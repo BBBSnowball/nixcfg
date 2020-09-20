@@ -2,6 +2,7 @@
   - /usr/sbin/rsyslogd -n -f /etc/rsyslog.udp.conf -i /var/run/rsyslogd-udp.pid
   - Although that ESP isn't active at the moment and the plant it was monitoring is dead.
   - It is used for OpenWRT, though.
+  - And for the other OpenWRT, as well. Oops.
 - DONE RabbitMQ
 - DONE fhem
   - /usr/bin/perl ./fhem.pl fhem.cfg
@@ -10,9 +11,49 @@
 - DONE tinc
 - DONE DHCP (dnsmasq)
 - DONE PXE
-- Apache2
+
+
+- OpenWRT: Firewall
+  - NAT
+  - Port forwarding
+  - etc
+
+  - connect existing router to downstream port of the bridge so we can
+    reconfigure the upstream port
+  - basic Shorewall setup
+  - replace existing rules with Shorewall, e.g. open ports
+    ./dhcp-server.nix:  networking.firewall.allowedTCPPorts = [ 69 ];
+    ./dhcp-server.nix:  networking.firewall.allowedUDPPorts = [ 67 69 ];
+    ./tinc.nix:  networking.firewall.allowedTCPPorts = [ 48656 ];
+    ./tinc.nix:  networking.firewall.allowedUDPPorts = [ 48656 ];
+    ./samba.nix:  networking.firewall.allowedTCPPorts = [ 139 445 ];  # also 137 and 138 for UDP?
+    ./sound.nix:  networking.firewall.allowedTCPPorts = [ 6600 6680 ];
+    ./bbverl/fhem.nix:  networking.firewall.interfaces.br0.allowedTCPPorts = [ 8083 8084 8085 ];
+    ./bbverl/syslog-udp.nix:  networking.firewall.interfaces.br0.allowedUDPPorts = [ 514 ];
+
+    -A nixos-fw -i br0 -p tcp -m tcp --dport 8083 -j nixos-fw-accept
+    -A nixos-fw -i br0 -p tcp -m tcp --dport 8084 -j nixos-fw-accept
+    -A nixos-fw -i br0 -p tcp -m tcp --dport 8085 -j nixos-fw-accept
+    -A nixos-fw -p tcp -m tcp --dport 22 -j nixos-fw-accept
+    -A nixos-fw -p tcp -m tcp --dport 69 -j nixos-fw-accept
+    -A nixos-fw -p tcp -m tcp --dport 139 -j nixos-fw-accept
+    -A nixos-fw -p tcp -m tcp --dport 445 -j nixos-fw-accept
+    -A nixos-fw -p tcp -m tcp --dport 48656 -j nixos-fw-accept
+    -A nixos-fw -i br0 -p udp -m udp --dport 514 -j nixos-fw-accept
+    -A nixos-fw -p udp -m udp --dport 67 -j nixos-fw-accept
+    -A nixos-fw -p udp -m udp --dport 69 -j nixos-fw-accept
+    -A nixos-fw -p udp -m udp --dport 48656 -j nixos-fw-accept
+    -A nixos-fw -p icmp -m icmp --icmp-type 8 -j nixos-fw-accept 
+
+- OpenWRT: PPPoE
+  - As soon as this is done, we can disconnect the existing router and connect the
+    ONT to the upstream port.
+  - Laptop and Unify AP are already connected to downstream ports.
+
+- bbverl: Apache2
   - Graphite
   - some hue stuff - was only a test
   - forward to fhem
-- Graphite / Carbon
+- bbverl: Graphite / Carbon
   - There is an Apache2 site for Graphite on the Debian.
+  - I think, I will also need Diamond to report values for the host.
