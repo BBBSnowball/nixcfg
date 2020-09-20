@@ -1,5 +1,7 @@
 { config, pkgs, lib, ... }:
 let
+  sections = [ "ALL" "ESTABLISHED" "RELATED" "INVALID" "UNTRACKED" "NEW" ];
+
   common = {
     zones = ''
       #ZONE     TYPE       OPTIONS       IN OPTIONS         OUT OPTIONS
@@ -38,7 +40,56 @@ let
       ACCEPT       LOC_IF       $FW          tcp         22
     '';
 
-    rules = ''
+    rules = with builtins; let
+      rulesWithName = lib.attrsets.mapAttrsToList (name: value: { inherit name; } // value) config.services.shorewall.rules;
+      bySection = lib.lists.groupBy (x: x.section) rulesWithName;
+      dropTrailingNulls = xs:
+        let xs2 = dropTrailingNulls (tail xs); in
+        if xs == []
+          then xs
+          else if head xs == null && xs2 == []
+            then []
+            else[ (head xs) ] ++ xs2;
+      replaceNulls = map (x: if isNull x then "-" else x);
+      portsToString = p:
+        if isList p
+          then lib.strings.concatMapStringsSep "," toString p
+          else toString p;
+      ruleToLines = rule:
+      if isNull rule.raw
+      then [
+        "# ${rule.name}"
+        (replaceNulls (dropTrailingNulls [
+          "${if rule.enable then "" else "#"}${rule.action}"
+          (if isNull rule.source then config.services.shorewall.defaultSource else rule.source)
+          (if isNull rule.dest   then config.services.shorewall.defaultDest   else rule.dest)
+          rule.proto
+          (portsToString rule.destPort)
+          (portsToString rule.sourcePort)
+          (if rule.extraFields == "" then null else rule.extraFields)
+        ])) ]
+      else if isList rule.raw && rule.raw != [] && isList (head rule.raw)
+        then rule.raw
+        else [ rule.raw ];
+      compareRules = a: b: a.order < b.order || a.order == b.order && a.name < b.name;
+      sectionToLines = name: rules: [ "" "?SECTION ${name}" ] ++ concatMap ruleToLines (lib.lists.sort compareRules rules);
+      lines = concatMap (name: sectionToLines name (bySection.${name} or [])) sections;
+      max = a: b: if a >= b then a else b;
+      mapMax = xs: ys:
+        if xs == [] then ys
+        else if ys == [] then xs
+        else [ (max (head xs) (head ys)) ] ++ (mapMax (tail xs) (tail ys));
+      fieldLengths =
+        let rawLengths = lib.lists.foldl' (a: b: if isList b then mapMax a (map stringLength b) else a) [0] lines; in
+        # never pad the last field
+        (lib.lists.init rawLengths) ++ [ 0 ];
+      padding = n: if n > 0 then " " + (padding (n - 1)) else "";
+      padField = width: value: if stringLength value < width
+        then value + padding (width - (stringLength value))
+        else value;
+      lineToString = line: if isList line then lib.strings.concatStringsSep  "    " (lib.lists.zipListsWith padField fieldLengths line) else line;
+      rules = lib.strings.concatMapStringsSep "\n" lineToString lines;
+    in ''
       #ACTION           SOURCE          DEST            PROTO   DPORT     SPORT    ORIGDEST    RATELIMIT    USER    MARK    CONNLIMIT    TIME    HEADERS    SWITCH    HELPER
 
       ?SECTION ALL
@@ -64,6 +115,12 @@ let
                                             172.16.0.0/12,\
                                             192.168.0.0/16
       ACCEPT            $FW             net             icmp
+
+      ${builtins.toJSON config.services.shorewall.rules}
+      ${builtins.toJSON rulesWithName}
+      {builtins.toJSON bySection}
+
+      ${rules}
     '';
   };
 
@@ -135,7 +192,7 @@ in
   options = {
     services.shorewall = with lib.types; {
       rules = lib.mkOption {
-        type = attrsOf (submodules {
+        type = attrsOf (submodule {
           options = {
             enable = lib.mkOption {
               type = bool;
@@ -146,7 +203,7 @@ in
               default = 10;
             };
             section = lib.mkOption {
-              type = enum [ "ALL" "ESTABLISHED" "RELATED" "INVALID" "UNTRACKED" "NEW" ];
+              type = enum sections;
               default = "NEW";
             };
             action = lib.mkOption {
@@ -176,6 +233,11 @@ in
             extraFields = lib.mkOption {
               type = str;
               default = "";
+            };
+            raw = lib.mkOption {
+              type = nullOr (oneOf [ str (listOf str) (listOf (listOf str)) ]);
+              description = "raw text of rule; replaces all other fields";
+              default = null;
             };
           };
         });

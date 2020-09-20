@@ -14,7 +14,7 @@ in
       proto = "tcp";
       destPort = [ 69 ];
     };
-    dhcp-server-dup = {
+    dhcp-server-udp = {
       proto = "udp";
       destPort = [ 67 69 ];
     };
