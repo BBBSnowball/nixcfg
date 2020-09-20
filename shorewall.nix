@@ -56,21 +56,30 @@ let
         if isList p
           then lib.strings.concatMapStringsSep "," toString p
           else toString p;
-    
-      ruleToLines = rule:
-      if ! (isNull rule.raw)
-      then rule.raw
-      else [
-        "# ${rule.name}"
-        (replaceNulls (dropTrailingNulls [
-          "${if rule.enable then "" else "#"}${rule.action}"
+
+      commentOne = line:
+        if line == "" || line == [] then line
+        else if isList line then ("#" + (head line)) ++ (tail line)
+        else "#" + line;
+      commentIfNotEnabled = enabled: line: if enabled then line else commentOne line;
+      singleRuleToLine = rule:
+        (commentIfNotEnabled rule.enable (replaceNulls (dropTrailingNulls (
+        if ! (isNull rule.raw)
+        then rule.raw
+        else [
+          rule.action
           (if isNull rule.source then config.services.shorewall.defaultSource else rule.source)
           (if isNull rule.dest   then config.services.shorewall.defaultDest   else rule.dest)
           rule.proto
           (portsToString rule.destPort)
           (portsToString rule.sourcePort)
           (if rule.extraFields == "" then null else rule.extraFields)
-        ])) ];
+        ]))));
+      ruleToLines = rule:
+        (if rule.omitComment then [] else [ "# ${rule.name}" ])
+        ++ (if rule.rules != []
+          then map (commentIfNotEnabled rule.enable) (map singleRuleToLine rule.rules)
+          else [ (singleRuleToLine rule) ]);
   
       compareRules = a: b: a.order < b.order || a.order == b.order && a.name < b.name;
       sectionToLines = name: rules: [ "" "?SECTION ${name}" ] ++ concatMap ruleToLines (lib.lists.sort compareRules rules);
@@ -104,23 +113,23 @@ let
 
   someRules = {
     order = 50;
-    raw = [
-      [ "Invalid(DROP)"     "net"                  "all"             "tcp" ]
-      [ "DNS(ACCEPT)"       "$FW"                  "net" ]
-      [ "SSH(ACCEPT)"       "loc"                  "$FW" ]
-      [ "Ping(ACCEPT)"      "loc"                  "$FW" ]
-      [ "Ping(ACCEPT)"      "net"                  "$FW" ]
-      [ "ACCEPT"            "$FW"                  "loc"             "icmp" ]
-      [ "REJECT"            "all:10.0.0.0/8,\\"          ]
-      [ ""                  "    169.254.0.0/16,\\"      ]
-      [ ""                  "    172.16.0.0/12,\\"       ]
-      [ ""                  "    192.168.0.0/16\\"       ]
-      [ ""                  ""                     "net" ]
-      [ "REJECT"            "all"                  "net:10.0.0.0/8,\\"     ]
-      [ ""                  ""                     "    169.254.0.0/16,\\" ]
-      [ ""                  ""                     "    172.16.0.0/12,\\"  ]
-      [ ""                  ""                     "    192.168.0.0/16"    ]
-      [ "ACCEPT"            "$FW"                  "net"             "icmp" ]
+    rules = [
+      { raw = [ "Invalid(DROP)"     "net"                  "all"             "tcp" ]; }
+      { raw = [ "DNS(ACCEPT)"       "$FW"                  "net" ]; }
+      { raw = [ "SSH(ACCEPT)"       "loc"                  "$FW" ]; }
+      { raw = [ "Ping(ACCEPT)"      "loc"                  "$FW" ]; }
+      { raw = [ "Ping(ACCEPT)"      "net"                  "$FW" ]; }
+      { raw = [ "ACCEPT"            "$FW"                  "loc"             "icmp" ]; }
+      { raw = [ "REJECT"            "all:10.0.0.0/8,\\"          ]; }
+      { raw = [ ""                  "    169.254.0.0/16,\\"      ]; }
+      { raw = [ ""                  "    172.16.0.0/12,\\"       ]; }
+      { raw = [ ""                  "    192.168.0.0/16\\"       ]; }
+      { raw = [ ""                  ""                     "net" ]; }
+      { raw = [ "REJECT"            "all"                  "net:10.0.0.0/8,\\"     ]; }
+      { raw = [ ""                  ""                     "    169.254.0.0/16,\\" ]; }
+      { raw = [ ""                  ""                     "    172.16.0.0/12,\\"  ]; }
+      { raw = [ ""                  ""                     "    192.168.0.0/16"    ]; }
+      { raw = [ "ACCEPT"            "$FW"                  "net"             "icmp" ]; }
     ];
   };
 
@@ -190,21 +199,11 @@ let
 in
 {
   options = {
-    services.shorewall = with lib.types; {
-      rules = lib.mkOption {
-        type = attrsOf (submodule {
-          options = {
+    services.shorewall = with lib.types; let
+      ruleOptions = {
             enable = lib.mkOption {
               type = bool;
               default = true;
-            };
-            order = lib.mkOption {
-              type = int;
-              default = 10;
-            };
-            section = lib.mkOption {
-              type = enum sections;
-              default = "NEW";
             };
             action = lib.mkOption {
               type = str;
@@ -244,7 +243,29 @@ in
               '';
               default = null;
             };
-          };
+      };
+    in {
+      rules = lib.mkOption {
+        type = attrsOf (submodule {
+          options = {
+            omitComment = lib.mkOption {
+              type = bool;
+              description = "don't add a comment with the name of the rule";
+              default = false;
+            };
+            order = lib.mkOption {
+              type = int;
+              default = 10;
+            };
+            section = lib.mkOption {
+              type = enum sections;
+              default = "NEW";
+            };
+            rules = lib.mkOption {
+              type = listOf (submodule { options = ruleOptions; });
+              default = [];
+            };
+          } // ruleOptions;
         });
         default     = {};
         description = ''
