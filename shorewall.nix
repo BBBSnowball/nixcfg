@@ -53,7 +53,8 @@ let
             else[ (head xs) ] ++ xs2;
       replaceNulls = map (x: if isNull x then "-" else x);
       portsToString = p:
-        if isList p
+        if isNull p then null
+        else if isList p
           then lib.strings.concatMapStringsSep "," toString p
           else toString p;
 
@@ -62,6 +63,8 @@ let
         else if isList line then ("#" + (head line)) ++ (tail line)
         else "#" + line;
       commentIfNotEnabled = enabled: line: if enabled then line else commentOne line;
+      traceId = x: trace x x;
+      traceIdJson = x: trace (toJSON x) x;
       singleRuleToLine = rule:
         (commentIfNotEnabled rule.enable (replaceNulls (dropTrailingNulls (
         if ! (isNull rule.raw)
@@ -102,14 +105,17 @@ let
       titleFields = (lib.lists.take (length fieldLengths) allTitleFields)
         ++ (if length fieldLengths >= length allTitleFields then [] else [ (lib.strings.concatStringsSep "    " (lib.lists.drop (length fieldLengths) allTitleFields)) ]);
       fieldLengths2 = mapMax fieldLengths (map stringLength titleFields);
-      lines2 = [ titleFields "" ] ++ lines;
+      lines2 = [ titleFields ] ++ lines;
 
-      #FIXME don't pad the last field of the current line - regardless of how many fields the other lines have
       padding = n: if n > 0 then " " + (padding (n - 1)) else "";
       padField = width: value: if stringLength value < width
         then value + padding (width - (stringLength value))
         else value;
-      lineToString = line: if isList line then lib.strings.concatStringsSep  "    " (lib.lists.zipListsWith padField fieldLengths2 line) else line;
+      padFields = widths: xs:
+        # don't pad the last field
+        if xs == [] || tail xs == [] || widths == [] then xs
+        else [ (padField (head widths) (head xs)) ] ++ (padFields (tail widths) (tail xs));
+      lineToString = line: if isList line then lib.strings.concatStringsSep  "    " (padFields fieldLengths2 line) else line;
       rules = lib.strings.concatMapStringsSep "\n" lineToString lines2;
     in rules;
   };
