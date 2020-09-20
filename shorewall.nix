@@ -76,8 +76,12 @@ let
           (if rule.extraFields == "" then null else rule.extraFields)
         ]))));
       fillFromParent = parent: mapAttrs (name: value: if value == "$parent$" then parent.${name} else value);
+      removeLastIfEmpty = xs: if xs != [] && lib.lists.last xs == "" then lib.lists.init xs else xs;
+      commentToLines = rule:
+        let comment = replaceStrings ["$name$"] [rule.name] rule.comment; in
+        map (x: "# " + x) (removeLastIfEmpty (lib.strings.splitString "\n" comment));
       ruleToLines = rule:
-        (if rule.omitComment then [] else [ "# ${rule.name}" ])
+        (commentToLines rule)
         ++ (map (child: commentIfNotEnabled rule.enable (singleRuleToLine (fillFromParent rule child))) rule.rules);
   
       compareRules = a: b: a.order < b.order || a.order == b.order && a.name < b.name;
@@ -112,6 +116,10 @@ let
 
   someRules = {
     order = 50;
+    comment = ''
+      These rules are mostly copied from the two-interface example.
+      see https://shorewall.org/two-interface.htm
+    '';
     rules = [
       { raw = [ "Invalid(DROP)"     "net"                  "all"             "tcp" ]; }
       { raw = [ "DNS(ACCEPT)"       "$FW"                  "net" ]; }
@@ -247,10 +255,10 @@ in
       rules = lib.mkOption {
         type = attrsOf (submodule {
           options = {
-            omitComment = lib.mkOption {
-              type = bool;
-              description = "don't add a comment with the name of the rule";
-              default = false;
+            comment = lib.mkOption {
+              type = str;
+              description = "comment for the rule; use an empty string to omit the comment";
+              default = "$name$";
             };
             order = lib.mkOption {
               type = int;
