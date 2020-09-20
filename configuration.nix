@@ -42,23 +42,22 @@ in {
   networking.useDHCP = false;
   #networking.interfaces.enp4s0.useDHCP = true;
 
+  #FIXME config for enp4s0
+
   #networking.interfaces.br0.useDHCP = true;
   #networking.dhcpcd.persistent = true;
-  networking.interfaces.br0.macAddress = "c8:d3:ff:44:05:14";
-  networking.bridges.br0.interfaces = ["enp4s0" "enp2s0f0" "enp2s0f1" "enp2s0f2" "enp2s0f3"];
-  # The FritzBox is often sending NAK so DHCP doesn't work most of the time.
+  networking.interfaces.br0.macAddress = "a0:36:9f:35:33:70";
+  networking.bridges.br0.interfaces = ["enp2s0f0" "enp2s0f1" "enp2s0f2" "enp2s0f3"];
   networking.interfaces.br0.ipv4 = {
     #addresses = [ { address = "192.168.178.59"; prefixLength = 24; } ];
     addresses = [ { address = "192.168.89.185"; prefixLength = 24; } ];
     routes = [ {
       address = "0.0.0.0";
       prefixLength = 0;
-      #via = "192.168.178.1";
       via = "192.168.89.3";
     } ];
   };
   networking.nameservers = [
-    #"192.168.178.1"
     "192.168.89.3"
   ];
 
