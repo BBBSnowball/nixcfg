@@ -10,13 +10,17 @@ in
   networking.firewall.interfaces.br0.allowedUDPPorts = [ 67 69 ];
 
   services.shorewall.rules = {
-    dhcp-server-tcp = {
-      proto = "tcp";
-      destPort = [ 69 ];
-    };
-    dhcp-server-udp = {
-      proto = "udp";
-      destPort = [ 67 69 ];
+    dhcp-server = {
+      rules = [
+        {
+          proto = "tcp";
+          destPort = [ 69 ];
+        }
+        {
+          proto = "udp";
+          destPort = [ 67 69 ];
+        }
+      ];
     };
   };
 

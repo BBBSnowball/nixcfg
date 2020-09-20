@@ -75,11 +75,10 @@ let
           (portsToString rule.sourcePort)
           (if rule.extraFields == "" then null else rule.extraFields)
         ]))));
+      fillFromParent = parent: mapAttrs (name: value: if value == "$parent$" then parent.${name} else value);
       ruleToLines = rule:
         (if rule.omitComment then [] else [ "# ${rule.name}" ])
-        ++ (if rule.rules != []
-          then map (commentIfNotEnabled rule.enable) (map singleRuleToLine rule.rules)
-          else [ (singleRuleToLine rule) ]);
+        ++ (map (child: commentIfNotEnabled rule.enable (singleRuleToLine (fillFromParent rule child))) rule.rules);
   
       compareRules = a: b: a.order < b.order || a.order == b.order && a.name < b.name;
       sectionToLines = name: rules: [ "" "?SECTION ${name}" ] ++ concatMap ruleToLines (lib.lists.sort compareRules rules);
@@ -200,38 +199,38 @@ in
 {
   options = {
     services.shorewall = with lib.types; let
-      ruleOptions = {
+      ruleOptions = f: {
             enable = lib.mkOption {
               type = bool;
               default = true;
             };
             action = lib.mkOption {
               type = str;
-              default = "ACCEPT";
+              default = f "ACCEPT";
             };
             source = lib.mkOption {
               type = nullOr str;
-              default = null;
+              default = f null;
             };
             dest = lib.mkOption {
               type = nullOr str;
-              default = null;
+              default = f null;
             };
             proto = lib.mkOption {
               type = nullOr str;
-              default = null;
+              default = f null;
             };
             destPort = lib.mkOption {
               type = nullOr (oneOf [str port (listOf port)]);
-              default = null;
+              default = f null;
             };
             sourcePort = lib.mkOption {
               type = nullOr (oneOf [str port (listOf port)]);
-              default = null;
+              default = f null;
             };
             extraFields = lib.mkOption {
               type = str;
-              default = "";
+              default = f "";
             };
             raw = lib.mkOption {
               type = nullOr (listOf (oneOf [ str (listOf str) ]));
@@ -262,10 +261,11 @@ in
               default = "NEW";
             };
             rules = lib.mkOption {
-              type = listOf (submodule { options = ruleOptions; });
-              default = [];
+              type = listOf (submodule { options = ruleOptions (x: "$parent$"); });
+              description = "list of the actual rules; missing values will be taken from the parent";
+              default = [{}];
             };
-          } // ruleOptions;
+          } // (ruleOptions (x: x));
         });
         default     = {};
         description = ''
