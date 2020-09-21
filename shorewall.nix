@@ -21,8 +21,8 @@ let
       ?FORMAT 2
       #ZONE   INTERFACE       OPTIONS
 
-      net     NET_IF          ${myDefaultOptions},sourceroute=0,physical=ppp0
-      modem   MODEM_IF        ${myDefaultOptions},sourceroute=0,physical=enp4s0
+      net     NET_IF          ${myDefaultOptions},sourceroute=0,physical=pppoe-wan
+      modem   MODEM_IF        ${myDefaultOptions},sourceroute=0,physical=upstream-7
       loc     LOC_IF          ${myDefaultOptions},physical=br0,routeback,dhcp
       tinc    TINC_IF         ${myDefaultOptions},physical=tinc.bbbsnowbal,dhcp
     '';

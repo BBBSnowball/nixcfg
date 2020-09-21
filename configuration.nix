@@ -18,6 +18,7 @@ in {
       ./tinc.nix
       ./shorewall.nix
       ./dhcp-server.nix
+      ./pppd.nix
       ./bbverl/syslog-udp.nix
       ./bbverl/rabbitmq.nix
       ./bbverl/fhem.nix

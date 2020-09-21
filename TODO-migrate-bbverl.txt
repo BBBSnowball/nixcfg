@@ -11,9 +11,7 @@
 - DONE tinc
 - DONE DHCP (dnsmasq)
 - DONE PXE
-
-
-- OpenWRT: Firewall
+- DONE OpenWRT: Firewall
   - NAT
   - Port forwarding
   - etc
