@@ -14,10 +14,39 @@
 
   services.pppd = {
     enable = true;
-    peers.upstream.config = "<will be replaced by link>";
-  };
+    peers.upstream.config = "
+      #debug
+      logfile /dev/null
+      noipdefault
+      noaccomp
+      nopcomp
+      nocrtscts
+      lock
+      maxfail 0
+      lcp-echo-failure 5
+      lcp-echo-interval 1
 
-  environment.etc."ppp/peers/upstream".source = "/etc/nixos/private/secret/pppd.conf";
+      nodetach
+      ipparam wan
+      ifname pppoe-wan
+      +ipv6
+      #nodefaultroute
+      defaultroute
+      defaultroute6
+      usepeerdns
+      maxfail 1
+      #ip-up-script /lib/netifd/ppp-up
+      #ipv6-up-script /lib/netifd/ppp6-up
+      #ip-down-script /lib/netifd/ppp-down
+      #ipv6-down-script /lib/netifd/ppp-down
+      mtu 1492
+      mru 1492
+      plugin rp-pppoe.so
+      nic-upstream-7
+
+      file /etc/nixos/private/secret/pppd-secret.conf
+    ";
+  };
 
   #services.shorewall.rules.pppoe = {
   #  # This won't work because we need to filter ethertype which is below IP layer.
