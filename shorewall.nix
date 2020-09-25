@@ -136,8 +136,7 @@ let
       { raw = [ "Invalid(DROP)"     "net"                  "all"             "tcp" ]; }
       { raw = [ "DNS(ACCEPT)"       "$FW"                  "net" ]; }
       { raw = [ "SSH(ACCEPT)"       "loc"                  "$FW" ]; }
-      { raw = [ "Ping(ACCEPT)"      "loc"                  "$FW" ]; }
-      { raw = [ "Ping(ACCEPT)"      "net"                  "$FW" ]; }
+      { raw = [ "Ping(ACCEPT)"      "all"                  "$FW" ]; }
       { raw = [ "ACCEPT"            "$FW"                  "loc"             "icmp" ]; }
       { raw = [ "REJECT"            "all:10.0.0.0/8,\\"          ]; iptype = "ipv4"; }
       { raw = [ ""                  "    169.254.0.0/16,\\"      ]; iptype = "ipv4"; }
