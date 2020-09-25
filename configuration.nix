@@ -5,6 +5,7 @@
 { config, pkgs, lib, ... }:
 let
   hostSpecificValue = path: import (./private/by-host/. + ("/" + config.networking.hostName) + path);
+  sshPublicPort = hostSpecificValue /sshPublicPort.nix;
 in {
   imports =
     [ # Include the results of the hardware scan.
@@ -241,6 +242,14 @@ in {
 
   # Enable the OpenSSH daemon.
   services.openssh.enable = true;
+
+  services.openssh.ports = [ 22 sshPublicPort ];
+  services.shorewall.rules.sshToInet = {
+    proto = "tcp";
+    destPort = sshPublicPort;
+    source = "all";
+    dest = "$FW";
+  };
 
   # Open ports in the firewall.
   # networking.firewall.allowedTCPPorts = [ ... ];
