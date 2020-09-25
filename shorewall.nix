@@ -141,8 +141,8 @@ let
       { raw = [ "ACCEPT"            "$FW"                  "loc"             "icmp" ]; }
       { raw = [ "REJECT"            "all:10.0.0.0/8,\\"          ]; iptype = "ipv4"; }
       { raw = [ ""                  "    169.254.0.0/16,\\"      ]; iptype = "ipv4"; }
-      { raw = [ ""                  "    172.16.0.0/12,\\"       ]; iptype = "ipv4"; }
-      { raw = [ ""                  "    192.168.0.0/16\\"       ]; iptype = "ipv4"; }
+      { raw = [ ""                  "    172.16.0.0/12\\"       ]; iptype = "ipv4"; }
+      #{ raw = [ ""                  "    192.168.0.0/16\\"       ]; iptype = "ipv4"; }
       { raw = [ ""                  ""                     "net" ]; iptype = "ipv4"; }
       { raw = [ "REJECT"            "all"                  "net:10.0.0.0/8,\\"     ]; iptype = "ipv4"; }
       { raw = [ ""                  ""                     "    169.254.0.0/16,\\" ]; iptype = "ipv4"; }
@@ -344,5 +344,10 @@ in
       UDP: ${toString config.networking.firewall.allowedUDPPorts} ${toString config.networking.firewall.allowedUDPPortRanges}
       per interface: ${builtins.toJSON config.networking.firewall.interfaces}
     '';
+
+    # Try to avoid warning in Shorewall module - doesn't work because warning happens before we override the value.
+    #environment.etc = with lib.attrsets; mapAttrs' (name: file: nameValuePair "shorewall/${name}" { source = file; }) config.services.shorewall.configs;
+
+    environment.systemPackages = [ pkgs.iptables-nftables-compat ];
   };
 }

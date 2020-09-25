@@ -2,12 +2,13 @@
 let
   self = config.networking.hostName;
   downstreamIP = (builtins.head config.networking.interfaces.br0.ipv4.addresses).address;
-  routerIP = "192.168.89.3";
+  #routerIP = "192.168.89.3";
+  routerIP = downstreamIP;
 in
 {
-  # 67 is DHCP, 69 is TFTP
+  # 67 is DHCP, 69 is TFTP, 53 is DNS
   networking.firewall.interfaces.br0.allowedTCPPorts = [ 69 ];
-  networking.firewall.interfaces.br0.allowedUDPPorts = [ 67 69 ];
+  networking.firewall.interfaces.br0.allowedUDPPorts = [ 53 67 69 ];
 
   services.shorewall.rules = {
     dhcp-server = {
@@ -22,7 +23,13 @@ in
         }
       ];
     };
+    dns = {
+      proto = "udp";
+      destPort = [ 53 ];
+    };
   };
+
+  networking.nameservers = [ "127.0.0.1" ];
 
   services.dnsmasq = {
     enable = true;
@@ -34,6 +41,8 @@ in
       dhcp-option=option:dns-server,${routerIP}
       except-interface=lo
       listen-address=${downstreamIP}
+      listen-address=127.0.0.1
+      dhcp-authoritative
 
       dhcp-boot=pxelinux.0
       #dhcp-option=66,"192.168.89.110"
@@ -48,6 +57,27 @@ in
 
       # static IPs are defined in this file
       conf-file=/etc/nixos/private/by-host/routeromen/dhcp-static-hosts.conf
+
+
+      # DNS config
+      resolv-file=/etc/ppp/resolv.conf
+      #dnssec
+      conntrack
+
+      # most of this is copied from OpenWRT
+      domain-needed  # don't lookup name without domain part on upstream servers
+      server=/lan/   # dito for *.lan
+      bogus-priv     # dito for reverse dns of private IPs
+      localise-queries
+      #read-ethers
+      expand-hosts
+      local-service
+      domain=lan
+      stop-dns-rebind
+      rebind-localhost-ok
+      dhcp-broadcast=tag:needs-broadcast
     '';
   };
+
+  systemd.services.dnsmasq.serviceConfig.StateDirectory = "dnsmasq";
 }
