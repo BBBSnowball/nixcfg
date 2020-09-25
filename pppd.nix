@@ -56,4 +56,6 @@
   #    { dest = "$FW";   source = "modem"; }
   #  ];
   #};
+
+  systemd.services.pppd-upstream.serviceConfig.ReadWritePaths = [ "/etc/ppp" ];
 }
