@@ -23,6 +23,7 @@
     environment.systemPackages = with pkgs; [
       (pkgs.callPackage (import ./flash-cc2652-firmware.nix) {})
       mosquitto
+      (pkgs.writeScriptBin "z2mctl" (builtins.readFile ./z2mctl.sh))
     ];
 
     services.udev.extraRules = ''
@@ -35,7 +36,7 @@
       mqtt.user = "!secret user";
       mqtt.password = "!secret password";
       advanced.network_key = "!secret network_key";
-      permit_join = "!permit_join permit_join";
+      permit_join = false;
     };
     systemd.services.zigbee2mqtt.path = with pkgs; [ utillinux ];
     systemd.services.zigbee2mqtt.preStart = ''
@@ -51,11 +52,6 @@
         ) > ${config.services.zigbee2mqtt.dataDir}/secret.yaml
         chmod 400 ${config.services.zigbee2mqtt.dataDir}/secret.yaml
         chown zigbee2mqtt ${config.services.zigbee2mqtt.dataDir}/secret.yaml
-      fi
-
-      if [ ! -e ${config.services.zigbee2mqtt.dataDir}/permit_join.yaml ] ; then
-        echo "permit_join: false" > ${config.services.zigbee2mqtt.dataDir}/permit_join.yaml
-        chown zigbee2mqtt ${config.services.zigbee2mqtt.dataDir}/permit_join.yaml
       fi
     '';
     # only required while we manually import it from nixos-20.09
