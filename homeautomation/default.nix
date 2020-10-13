@@ -1,0 +1,5 @@
+{
+  imports = [
+    ./zigbee.nix
+  ];
+}
