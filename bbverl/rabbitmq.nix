@@ -10,6 +10,8 @@
     #config = "[{rabbitmq_mqtt, [{subscription_ttl, 10000}]}].";
     configItems = {
       "mqtt.subscription_ttl" = "10000";
+      #"log.default.level" = "warning";
+      "log.connection.level" = "warning";
     };
   };
 }
