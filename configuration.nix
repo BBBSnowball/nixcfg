@@ -24,6 +24,7 @@ in {
       ./bbverl/rabbitmq.nix
       ./bbverl/fhem.nix
       ./bbverl/ddclient.nix
+      ./homeautomation/zigbee.nix
     ];
 
   # Use the systemd-boot EFI boot loader.
