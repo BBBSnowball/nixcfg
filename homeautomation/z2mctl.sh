@@ -14,6 +14,17 @@ case "$1" in
         ;;
     esac
     ;;
+  log_level)
+    case "$2" in
+      debug|info|warn|error)
+        mosquitto_pub -t zigbee2mqtt/bridge/config/log_level -m "$2"
+        ;;
+      *)
+        echo "unsupported value" >&2
+        exit 1
+        ;;
+    esac
+    ;;
   *)
     echo "unsupported command" >&2
     exit 1
