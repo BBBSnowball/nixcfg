@@ -122,14 +122,17 @@ in
       "network.target"
       #"auditd.service"
     ];
-    path = usedPackages;
+    path = usedPackages ++ [ pkgs.xorg.lndir ];
     environment.PERL5LIB="${fhemPkg}:${fhemPkg}/FHEM:$PERL5LIB:${perlDependencies}/lib/perl5/site_perl";
     environment.FHEM_MODPATH = fhemPkg;
     environment.FHEM_DATADIR = "/var/fhem/data";
+    preStart = ''
+      lndir -silent ${fhemPkg} /var/fhem/data
+    '';
     serviceConfig = {
       #Type = "forking";
       WorkingDirectory = "/var/fhem/data";
-      ExecStart = "${pkgs.perl}/bin/perl ${fhemPkg}/fhem.pl fhem.cfg";
+      ExecStart = "${pkgs.perl}/bin/perl ./fhem.pl fhem.cfg";
       Restart = "on-failure";
       RestartSec = "10";
     };
