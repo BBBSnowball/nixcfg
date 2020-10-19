@@ -96,17 +96,16 @@ let
       done
     '';
   };
-  fhem-5_7 = pkgs.fetchzip {
-    name = "fhem-5.7";
-    url = "http://fhem.de/fhem-5.7.tar.gz";
-    sha256 = "sha256-5Ew0D2SF3NqToPb66hm0aE2WKa3k/ovIr6wHOwSaSFw=";
+  fhemSrcHashes = {
+    "5.7" = "sha256-5Ew0D2SF3NqToPb66hm0aE2WKa3k/ovIr6wHOwSaSFw=";
+    "6.0" = "sha256-U1x9FfCBI0NTYTrwVAX0DZtoCXI+hbChOkEBqbKg6vE=";
   };
-  fhem-6_0 = pkgs.fetchzip {
-    name = "fhem-6.0";
-    url = "http://fhem.de/fhem-6.0.tar.gz";
-    sha256 = "sha256-U1x9FfCBI0NTYTrwVAX0DZtoCXI+hbChOkEBqbKg6vE=";
+  fhemVersion = "6.0";
+  fhemSrc = pkgs.fetchzip {
+    name = "fhem-${fhemVersion}";
+    url = "http://fhem.de/fhem-${fhemVersion}.tar.gz";
+    hash = fhemSrcHashes."${fhemVersion}";
   };
-  fhemSrc = fhem-5_7;
 in
 {
   systemd.services.fhem = {
