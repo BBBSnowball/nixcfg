@@ -98,14 +98,20 @@ let
     '';
   };
   fhemSrcHashes = {
-    "5.7" = "sha256-5Ew0D2SF3NqToPb66hm0aE2WKa3k/ovIr6wHOwSaSFw=";
-    "6.0" = "sha256-U1x9FfCBI0NTYTrwVAX0DZtoCXI+hbChOkEBqbKg6vE=";
+    "6.0" = "sha256-X8ldXi/r/80nDDc2JXrljVPnAEAx/gkTO7G5mqg34Q8=";
   };
-  fhemVersion = "6.0";
-  fhemSrc = pkgs.fetchzip {
-    name = "fhem-${fhemVersion}";
-    url = "http://fhem.de/fhem-${fhemVersion}.tar.gz";
-    hash = fhemSrcHashes."${fhemVersion}";
+  fhemPkg = pkgs.stdenv.mkDerivation rec {
+    pname = "fhem";
+    version = "6.0";
+    src = pkgs.fetchurl {
+      url = "http://fhem.de/fhem-${version}.tar.gz";
+      hash = fhemSrcHashes."${version}";
+    };
+    patches = [ ./01-fhem--keyFile-not-in-store.patch ];
+    dontBuild = true;
+    installPhase = ''
+      cp -r . $out
+    '';
   };
 in
 {
@@ -117,12 +123,13 @@ in
       #"auditd.service"
     ];
     path = usedPackages;
-    environment.PERL5LIB="${fhemSrc}:${fhemSrc}/FHEM:$PERL5LIB:${perlDependencies}/lib/perl5/site_perl";
-    environment.FHEM_MODPATH = fhemSrc;
+    environment.PERL5LIB="${fhemPkg}:${fhemPkg}/FHEM:$PERL5LIB:${perlDependencies}/lib/perl5/site_perl";
+    environment.FHEM_MODPATH = fhemPkg;
+    environment.FHEM_DATADIR = "/var/fhem/data";
     serviceConfig = {
       #Type = "forking";
       WorkingDirectory = "/var/fhem/data";
-      ExecStart = "${pkgs.perl}/bin/perl ${fhemSrc}/fhem.pl fhem.cfg";
+      ExecStart = "${pkgs.perl}/bin/perl ${fhemPkg}/fhem.pl fhem.cfg";
       Restart = "on-failure";
       RestartSec = "10";
     };

@@ -1,0 +1,28 @@
+--- a/fhem.pl
++++ b/fhem.pl
+@@ -5462,7 +5462,11 @@
+   my ($key) = @_;
+   my $fName = AttrVal("global", "keyFileName", "uniqueID");
+   $fName =~ s/\.\.//g;
+-  $fName = $attr{global}{modpath}."/FHEM/FhemUtils/$fName";
++  if ($ENV{'FHEM_DATADIR'} || 1) {
++    $fName = $ENV{'FHEM_DATADIR'}."/$fName";
++  } else {
++    $fName = $attr{global}{modpath}."/FHEM/FhemUtils/$fName";
++  }
+   my ($err, @l) = FileRead($fName);
+   return ($err, undef) if($err);
+   for my $l (@l) {
+@@ -5478,7 +5482,11 @@
+   my ($key,$value) = @_;
+   my $fName = AttrVal("global", "keyFileName", "uniqueID");
+   $fName =~ s/\.\.//g;
+-  $fName = $attr{global}{modpath}."/FHEM/FhemUtils/$fName";
++  if ($ENV{'FHEM_DATADIR'} || 1) {
++    $fName = $ENV{'FHEM_DATADIR'}."/$fName";
++  } else {
++    $fName = $attr{global}{modpath}."/FHEM/FhemUtils/$fName";
++  }
+   my ($err, @old) = FileRead($fName);
+   my @new;
+   if($err) {
