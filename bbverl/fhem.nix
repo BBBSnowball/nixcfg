@@ -68,37 +68,45 @@ let
                                   # libnet-bonjour-perl
     #CryptURandom                 # libcrypt-urandom-perl
   ];
-  perlDependencies = pkgs.buildPerlPackage {
+  #FIXME There *must* be a better way to do this. The Wiki suggests using nix-shell. Well...
+  perlDependencies = pkgs.stdenv.mkDerivation {
     pname = "fhem-dependencies";
     version = "0.1";
     src = null;
     dontUnpack = true;
     dontConfigure = true;
-    #dontInstall = true;
-    installPhase = "mkdir $out $devdoc";
-    propagatedBuildInputs = usedPerlPackages;
+    paths = usedPerlPackages;
+    passAsFile = [ "paths" ];
+    buildInputs = [ pkgs.xorg.lndir ];
+    installPhase = ''
+      addIt() {
+        if [ -f $1/nix-support/propagated-build-inputs ] ; then
+          for x in `cat $1/nix-support/propagated-build-inputs` ; do
+            addIt $x
+          done
+        fi
+        if [ -d $1/lib/perl5/site_perl ] ; then
+          lndir -silent $i $out
+        fi
+      }
+
+      mkdir $out
+      for i in $(cat $pathsPath); do
+        addIt $i
+      done
+    '';
   };
-  #FIXME There *must* be a better way to do this. The Wiki suggests using nix-shell. Well...
-  startIt = pkgs.writeShellScript "start-fhem.sh" ''
-    addIt() {
-      if [ -f $1/nix-support/propagated-build-inputs ] ; then
-        for x in `cat $1/nix-support/propagated-build-inputs` ; do
-          addIt $x
-        done
-      fi
-      if [ -d $1/lib/perl5/site_perl ] ; then
-        PERL5LIB=$PERL5LIB:$1/lib/perl5/site_perl
-      fi
-    }
-
-    PERL5LIB=${pkgs.perl}/lib/perl5/site_perl
-    for x in $buildInputs ; do
-      addIt $x
-    done
-
-    export PERL5LIB
-    exec ${pkgs.perl}/bin/perl ./fhem.pl fhem.cfg
-  '';
+  fhem-5_7 = pkgs.fetchzip {
+    name = "fhem-5.7";
+    url = "http://fhem.de/fhem-5.7.tar.gz";
+    sha256 = "sha256-5Ew0D2SF3NqToPb66hm0aE2WKa3k/ovIr6wHOwSaSFw=";
+  };
+  fhem-6_0 = pkgs.fetchzip {
+    name = "fhem-6.0";
+    url = "http://fhem.de/fhem-6.0.tar.gz";
+    sha256 = "sha256-U1x9FfCBI0NTYTrwVAX0DZtoCXI+hbChOkEBqbKg6vE=";
+  };
+  fhemSrc = fhem-5_7;
 in
 {
   systemd.services.fhem = {
@@ -109,11 +117,12 @@ in
       #"auditd.service"
     ];
     path = usedPackages;
-    environment.buildInputs = perlDependencies;
+    environment.PERL5LIB="${fhemSrc}:${fhemSrc}/FHEM:$PERL5LIB:${perlDependencies}/lib/perl5/site_perl";
+    environment.FHEM_MODPATH = fhemSrc;
     serviceConfig = {
-      Type = "forking";
-      WorkingDirectory = "/var/fhem";
-      ExecStart = "${startIt}";
+      #Type = "forking";
+      WorkingDirectory = "/var/fhem/data";
+      ExecStart = "${pkgs.perl}/bin/perl ${fhemSrc}/fhem.pl fhem.cfg";
       Restart = "on-failure";
       RestartSec = "10";
     };
