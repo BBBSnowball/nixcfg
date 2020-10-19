@@ -7,6 +7,7 @@ let
     #FIXME This won't make it available to binaries.
     libusb
     inetutils  # ifconfig
+    procps     # free
   ]);
   usedPerlPackages = with pkgs.perlPackages; [
     ArchiveZip                    #    libarchive-zip-perl/oldoldstable,now 1.39-1+deb8u1 all [installed,automatic]
