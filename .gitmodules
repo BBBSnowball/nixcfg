@@ -1,0 +1,3 @@
+[submodule "nixos-gpd-pocket"]
+	path = nixos-gpd-pocket
+	url = https://github.com/andir/nixos-gpd-pocket
