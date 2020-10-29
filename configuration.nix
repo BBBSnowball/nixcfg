@@ -106,6 +106,11 @@
   services.xserver.desktopManager.gnome3.enable = true;
   services.tlp.enable = true;
 
+  systemd.services.NetworkManager.preStart = ''
+    mkdir -p /etc/NetworkManager/system-connections/
+    install -m 700 -t /etc/NetworkManager/system-connections/ /etc/nixos/secret/nm-system-connections/*
+  '';
+
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
   # on your system were taken. It‘s perfectly fine and recommended to leave
