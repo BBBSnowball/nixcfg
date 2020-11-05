@@ -47,7 +47,7 @@ var config =
 	defaultResolution             : 'medium',
 	defaultFrameRate              : 15,
 	defaultScreenResolution       : 'veryhigh',
-	defaultScreenSharingFrameRate : 5,
+	defaultScreenSharingFrameRate : 15,
 	// Enable or disable simulcast for webcam video
 	simulcast                     : true,
 	// Enable or disable simulcast for screen sharing video
