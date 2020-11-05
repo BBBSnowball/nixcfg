@@ -20,7 +20,8 @@ in {
 
   config = {
     nixpkgs.overlays = [
-      (import ./matrix-synapse-update.nix)
+      # not required anymore
+      # (import ./matrix-synapse-update.nix)
     ];
 
     # add both ports because firewall will not be applied in the container
