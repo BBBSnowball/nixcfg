@@ -1,6 +1,6 @@
 self: super:
 let
-  nodejs = self.nodejs-13_x;
+  nodejs = self.nodejs-14_x;
   edumeet = import ./pkgs { pkgs = self; inherit nodejs; };
   configApp = ./config.app.js;
   configServer = ./config.server.js;

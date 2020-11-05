@@ -25,7 +25,7 @@ in {
   users.users.edumeet = {
     description = "User for edumeet/multiparty-meeting server";
     isSystemUser = true;
-    extraGroups = [ "redis-access" ];
+    extraGroups = [ "redis-access" "redis" ];
   };
 
   systemd.services.edumeet = {

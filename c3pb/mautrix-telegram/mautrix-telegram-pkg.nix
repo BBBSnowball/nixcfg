@@ -1,8 +1,9 @@
 { lib, stdenv, python3, pythonWithPkgs, fetchFromGitHub }:
 let
   pillow = python3.pkgs.pillow.override {
-    inherit (pythonWithPkgs.packages) pytest olefile;
-    pytestrunner = pythonWithPkgs.packages.pytest-runner;
+    inherit (pythonWithPkgs.packages) olefile;
+    #inherit (pythonWithPkgs.packages) pytest;
+    #pytestrunner = pythonWithPkgs.packages.pytest-runner;
     #propagatedBuildInputs = with pythonWithPkgs.packages; [ olefile ];
   };
 in python3.pkgs.buildPythonApplication rec {
