@@ -631,6 +631,7 @@ in {
           if [ ! -d $out ] ; then ${magpiePython}/bin/virtualenv -p ${magpiePython}/bin/python $out ; fi
           source $out/bin/activate
           pip install -r ${magpie}/requirements.txt
+          pip install future
           ${gnused}/bin/sed -i 's#libname = ctypes.util.find_library.*#libname = \"${file}/lib/libmagic${stdenv.hostPlatform.extensions.sharedLibrary}\"#' $out/lib/python2.7/site-packages/magic/api.py
           # workaround: setuptools writes the egg file to the local directory
           cp -r ${magpie} /tmp/magpie
@@ -669,7 +670,7 @@ in {
       imports = [ myDefaultConfig opensshWithUnixDomainSocket ];
 
       environment.systemPackages = with pkgs; [
-        magpie magpiePython gcc stdenv gnused git socat
+        magpie magpiePython initMagpieScript gcc stdenv gnused git socat
       ];
 
       # https://github.com/NixOS/nixpkgs/issues/88621
