@@ -21,10 +21,12 @@ in {
 
   users.groups.redis-access = { };
   users.users.redis.group = "redis-access";
+  users.groups.edumeet = { };
 
   users.users.edumeet = {
     description = "User for edumeet/multiparty-meeting server";
     isSystemUser = true;
+    group = "edumeet";
     extraGroups = [ "redis-access" "redis" ];
   };
 
@@ -38,6 +40,17 @@ in {
       ExecStart = "${pkg}/bin/edumeet-server";
       WorkingDirectory = "${pkg}/lib/edumeet-server";
       User = "edumeet";
+      PermissionsStartOnly = true;
     };
+
+    preStart = ''
+      install -d /etc/edumeet /etc/edumeet/server.config.d
+      if [ ! -e /etc/edumeet/server.config.d/cookieSecret.js ] ; then
+        umask 077
+        echo "module.exports = (function (config) { config.cookieSecret = '$(dd if=/dev/urandom bs=1 count=32 | base64 -w0)'; })" >/etc/edumeet/server.config.d/cookieSecret.js
+        chgrp edumeet /etc/edumeet/server.config.d/cookieSecret.js
+        chmod 740 /etc/edumeet/server.config.d/cookieSecret.js
+      fi
+    '';
   };
 }

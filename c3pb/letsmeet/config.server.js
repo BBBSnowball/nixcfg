@@ -73,7 +73,7 @@ module.exports =
 	fileTracker  : 'wss://tracker.lab.vvc.niif.hu:443',
 	redisOptions : { 'path': '/run/redis/redis.sock' },
 	// session cookie secret
-	cookieSecret : 'T0P-S3cR3t_cook!e',
+	//cookieSecret : 'T0P-S3cR3t_cook!e',
 	cookieName   : 'multiparty-meeting.sid',
 	// if you use encrypted private key the set the passphrase
 	tls          :
@@ -382,3 +382,10 @@ module.exports =
 	}
 	*/
 };
+
+const path = require("path");
+const fs = require("fs");
+const dir = "/etc/edumeet/server.config.d";
+fs.readdirSync(dir).forEach(function (file) {
+  require(path.join(dir, file))(module.exports);
+});
