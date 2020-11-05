@@ -150,9 +150,9 @@ in {
   # Select internationalisation properties.
   i18n = {
   #   consoleFont = "Lat2-Terminus16";
-      consoleKeyMap = "de";
       defaultLocale = "en_US.UTF-8";
   };
+  console.keyMap = "de";
 
   # Set your time zone.
   time.timeZone = "Europe/Berlin";
@@ -442,8 +442,10 @@ in {
       services.httpd = {
         enable = true;
         adminAddr = "postmaster@${builtins.readFile ./private/w-domain.txt}";
+      };
+      services.httpd.virtualHosts.default = {
         documentRoot = "/var/www/html";
-        enableSSL = false;
+        #enableSSL = false;
         #port = 8081;
         listen = [{port = ports.strichliste-apache.port;}];
         extraConfig = ''
@@ -489,12 +491,15 @@ in {
       services.httpd = {
         enable = true;
         adminAddr = "postmaster@${builtins.readFile ./private/w-domain.txt}";
+
+        extraModules = ["dav" { name = "dav_svn"; path = "${pkgs.subversion}/modules/mod_dav_svn.so"; }];
+      };
+
+      services.httpd.virtualHosts.default = {
         documentRoot = "/var/www/html";
         listen = [{port = ports.feg-svn-https.port;}];
 
-        extraModules = ["dav" { name = "dav_svn"; path = "${pkgs.subversion}/modules/mod_dav_svn.so"; }];
-
-        enableSSL = true;
+        onlySSL = true;
         sslServerKey = "${mainSSLKey}/key.pem";
         sslServerCert = "${mainSSLKey}/fullchain.pem";
         extraConfig =
@@ -532,15 +537,13 @@ in {
               #</LimitExcept>
             </Location>
           '';
+      };
 
-        virtualHosts = [
-          # ACME challenges are forwarded to use by mailinabox, see /etc/nginx/conf.d/01_feg.conf
-          {
-            listen = [{ port = ports.feg-svn-acme.port;}];
-            enableSSL = false;
-            documentRoot = "${acmeDir}/www";
-          }
-        ];
+      services.httpd.virtualHosts.acme = {
+        # ACME challenges are forwarded to use by mailinabox, see /etc/nginx/conf.d/01_feg.conf
+        listen = [{ port = ports.feg-svn-acme.port;}];
+        onlySSL = false;
+        documentRoot = "${acmeDir}/www";
       };
 
       users.users.acme = {
@@ -555,9 +558,10 @@ in {
         webroot = "${acmeDir}/www";
         postRun = "systemctl reload httpd.service";
         #allowKeysForGroup = true;
-        user = "acme";
+        #user = "acme";
         group = "wwwrun";
       }));
+      security.acme.acceptTerms = true;
 
       # acme.nix does this for nginx and lighttpd but not apache
      systemd.services.httpd.after = [ "acme-selfsigned-certificates.target" ];
@@ -600,14 +604,7 @@ in {
   containers.notes = {
     autoStart = true;
     config = { config, pkgs, ... }: let
-    in {
-      imports = [ myDefaultConfig opensshWithUnixDomainSocket ];
-
-      environment.systemPackages = with pkgs; [
-        magpie magpiePython gcc stdenv gnused git socat
-      ];
-
-      nixpkgs.overlays = [ (self: super: {
+      overlay = self: super: {
         #TODO Install Python libraries to system, use overridePythonAttrs to adjust version (see esphome)
         #TODO upgrade to Python 3
         magpiePython = self.python27.withPackages (ps: with ps; [
@@ -665,7 +662,20 @@ in {
           #NOTE We may have to create ~magpie/notes for a new setup but I'm going to
           #     copy the data from the old systemd.
         '';
-      } )];
+      };
+      # https://github.com/NixOS/nixpkgs/issues/88621
+      pkgs = import <nixpkgs> { overlays = [ overlay ]; };
+    in {
+      imports = [ myDefaultConfig opensshWithUnixDomainSocket ];
+
+      environment.systemPackages = with pkgs; [
+        magpie magpiePython gcc stdenv gnused git socat
+      ];
+
+      # https://github.com/NixOS/nixpkgs/issues/88621
+      nixpkgs.pkgs = pkgs;
+
+      nixpkgs.overlays = [ overlay ];
 
       users.users.magpie = {
         isNormalUser = true;
