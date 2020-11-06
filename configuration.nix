@@ -19,7 +19,7 @@
   boot.loader.grub.enable = true;
   boot.loader.grub.device = "nodev";
   boot.loader.grub.efiSupport = true;
-  boot.loader.grub.useOSProber = true;
+  #boot.loader.grub.useOSProber = true;
 
   boot.loader.grub.extraEntries = ''
     menuentry "Ubuntu" {
@@ -27,6 +27,9 @@
       configfile "($ubuntu)/boot/grub/grub.cfg"
     }
   '';
+
+  #boot.loader.grub.gfxmodeEfi = "1200x1920x32";
+  boot.loader.grub.gfxmodeEfi = "1920x1200x32";
 
   networking.hostName = "snowball-gpd"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
@@ -51,6 +54,7 @@
     keyMap = "us";
   };
 
+  hardware.video.hidpi.enable = true;
   
 
   # Configure keymap in X11
@@ -77,8 +81,9 @@
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
-    wget vim
+    wget vim git tig byobu tmux htop
     firefox
+    lm_sensors stress-ng
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
@@ -109,6 +114,12 @@
   systemd.services.NetworkManager.preStart = ''
     mkdir -p /etc/NetworkManager/system-connections/
     install -m 700 -t /etc/NetworkManager/system-connections/ /etc/nixos/secret/nm-system-connections/*
+  '';
+
+  environment.interactiveShellInit = ''
+    shopt -s histappend
+    export HISTSIZE=300000
+    export HISTFILESIZE=200000
   '';
 
   # This value determines the NixOS release from which the default
