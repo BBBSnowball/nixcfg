@@ -2,28 +2,31 @@
 let
   rev = {
     "4.17-rc3.hdg.1" = "b8653b1e56ee1b5e8b3e11d7c17928dc7b9be3c8";
+    "5.8" = "842bb80b0ed5e8f34d9c9bd403e4b510acfe7514";
   };
   sha256 = {
     "4.17-rc3.hdg.1" = "137wldp9szs2w1zv5qxnlbzijgwal7iq47bfi4vzzwai7w0f8inm";
-
+    "5.8" = "0l6yawcn6slqj4kzarz1w2yj9wfa0p068ilfzmlfhfyylgk094m1";
   };
-  version =  "4.17-rc3.hdg.1";
+  #version =  "4.17-rc3.hdg.1";
+  version =  "5.8";
 
-  pkg = { stdenv, buildPackages, gnumake, hostPlatform, fetchurl, fetchFromGitHub, perl, buildLinux, libelf, utillinux, ... } @ args:
+  pkg = { stdenv, buildPackages, gnumake, hostPlatform, fetchurl, fetchFromGitHub, perl, buildLinux, libelf, utillinux, flex, bison, ... } @ args:
     buildLinux (args // rec {
       inherit version;
       kernelPatches = [
         pkgs.kernelPatches.bridge_stp_helper
-        pkgs.kernelPatches.modinst_arg_list_too_long
+        #pkgs.kernelPatches.modinst_arg_list_too_long
       ];
-      modDirVersion = "4.17.0-rc3";
-      extrameta.branch = "4.17";
+      modDirVersion = "5.8.0";
+      extrameta.branch = "5.8-footrail";
       src = fetchFromGitHub {
         owner = "jwrdegoede";
         repo = "linux-sunxi";
         rev = rev.${version};
         sha256 = sha256.${version};
       };
+      nativeBuildInputs = [ flex bison ];
       extraConfig = ''
        ACPI_CUSTOM_METHOD m
        B43_SDIO y
@@ -33,7 +36,7 @@ let
 
        INTEL_SOC_PMIC? y
        INTEL_SOC_PMIC_CHTWC? y
-       INTEL_PMC_IPC m
+       #FIXME: INTEL_PMC_IPC m
        INTEL_BXTWC_PMIC_TMU m
 
        ACPI y
@@ -67,7 +70,7 @@ let
        PWM_LPSS_PLATFORM m
        PWM_SYSFS y
        RAW_DRIVER y
-       RTC_DS1685_SYSFS_REGS y
+       #FIXME: RTC_DS1685_SYSFS_REGS y
        SERIAL_8250_DW y
        SERIAL_8250_MID y
        SERIAL_8250_NR_UARTS 32
@@ -77,7 +80,7 @@ let
        TOUCHSCREEN_ELAN m
        TULIP_MMIO y
        W1_SLAVE_DS2433_CRC y
-       XXHASH m
+       XXHASH y
      '';
   });
 
