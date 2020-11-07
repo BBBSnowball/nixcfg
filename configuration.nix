@@ -445,9 +445,7 @@ in {
       };
       services.httpd.virtualHosts.default = {
         documentRoot = "/var/www/html";
-        #enableSSL = false;
-        #port = 8081;
-        listen = [{port = ports.strichliste-apache.port;}];
+        listen = [{ port = ports.strichliste-apache.port; ssl = false; }];
         extraConfig = ''
           #RewriteEngine on
 
@@ -497,9 +495,8 @@ in {
 
       services.httpd.virtualHosts.default = {
         documentRoot = "/var/www/html";
-        listen = [{port = ports.feg-svn-https.port;}];
+        listen = [{ port = ports.feg-svn-https.port; ssl = true; }];
 
-        onlySSL = true;
         sslServerKey = "${mainSSLKey}/key.pem";
         sslServerCert = "${mainSSLKey}/fullchain.pem";
         extraConfig =
@@ -541,8 +538,7 @@ in {
 
       services.httpd.virtualHosts.acme = {
         # ACME challenges are forwarded to use by mailinabox, see /etc/nginx/conf.d/01_feg.conf
-        listen = [{ port = ports.feg-svn-acme.port;}];
-        onlySSL = false;
+        listen = [{ port = ports.feg-svn-acme.port; ssl = false; }];
         documentRoot = "${acmeDir}/www";
       };
 
