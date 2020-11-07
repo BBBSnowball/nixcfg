@@ -480,17 +480,11 @@ in {
         subversion apacheHttpd
       ];
 
-      nixpkgs.overlays = [ (self: super: {
-        subversion = super.subversion.override {
-           httpServer = true;
-        };
-      } )];
-
       services.httpd = {
         enable = true;
         adminAddr = "postmaster@${builtins.readFile ./private/w-domain.txt}";
 
-        extraModules = ["dav" { name = "dav_svn"; path = "${pkgs.subversion}/modules/mod_dav_svn.so"; }];
+        extraModules = ["dav" { name = "dav_svn"; path = "${pkgs.apacheHttpdPackages.subversion}/modules/mod_dav_svn.so"; }];
       };
 
       services.httpd.virtualHosts.default = {
