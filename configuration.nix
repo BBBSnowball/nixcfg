@@ -502,9 +502,10 @@ in {
         extraConfig =
           ''
             Header always set Strict-Transport-Security "max-age=15552000"
-            SSLProtocol All -SSLv2 -SSLv3
-            SSLCipherSuite HIGH:!aNULL:!MD5:!EXP
-            SSLHonorCipherOrder on
+            # also set by NixOS
+            #SSLProtocol All -SSLv2 -SSLv3
+            #SSLCipherSuite HIGH:!aNULL:!MD5:!EXP
+            #SSLHonorCipherOrder on
 
 
             <Location /svn>
