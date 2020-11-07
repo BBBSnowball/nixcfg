@@ -1,37 +1,27 @@
-{ stdenv, lib, fetchFromGitHub, kernel }:
+{ stdenv, lib, fetchFromGitHub, kernel, bc }:
 
 
-let modDestDir = "$out/lib/modules/${kernel.modDirVersion}/kernel/drivers/net/wireless/realtek/r8168";
+let modDestDir = "$out/lib/modules/${kernel.modDirVersion}/kernel/drivers/net/wireless/realtek/rtl8821cu";
 
 in stdenv.mkDerivation rec {
-  name = "r8168-${kernel.version}-${version}";
+  name = "r8188-${kernel.version}-${version}";
   # on update please verify that the source matches the realtek version
-  version = "8.047.04";
+  version = "5.4.1";
 
-  # This is a mirror. The original website[1] doesn't allow non-interactive
-  # downloads, instead emailing you a download link.
-  # [1] http://www.realtek.com.tw/downloads/downloadsView.aspx?PFid=5&Level=5&Conn=4&DownTypeID=3
-  # I've verified manually (`diff -r`) that the source code for version 8.046.00
-  # is the same as the one available on the realtek website.
   src = fetchFromGitHub {
-    owner = "mtorromeo";
-    repo = "r8168";
-    rev = version;
-    sha256 = "1rni8jimwdhyx75603mdcylrdxgfwfpyprf1lf5x5cli2i4bbijg";
+    owner = "brektrou";
+    repo = "rtl8821CU";
+    rev = "45a8b4393e3281b969822c81bd93bdb731d58472";
+    sha256 = "1995zs1hvlxjhbh2w7zkwr824z19cgc91s00g7yhm5d7zjav14rd";
   };
 
   hardeningDisable = [ "pic" ];
 
-  nativeBuildInputs = kernel.moduleBuildDependencies;
+  nativeBuildInputs = kernel.moduleBuildDependencies ++ [ bc ];
 
-  # avoid using the Makefile directly -- it doesn't understand
-  # any kernel but the current.
-  # based on the ArchLinux pkgbuild: https://git.archlinux.org/svntogit/community.git/tree/trunk/PKGBUILD?h=packages/r8168
   preBuild = ''
-    makeFlagsArray+=("-C${kernel.dev}/lib/modules/${kernel.modDirVersion}/build")
-    makeFlagsArray+=("SUBDIRS=$PWD/src")
-    makeFlagsArray+=("EXTRA_CFLAGS=-DCONFIG_R8168_NAPI -DCONFIG_R8168_VLAN")
-    makeFlagsArray+=("modules")
+    makeFlagsArray+=("KVER=${kernel.modDirVersion}")
+    makeFlagsArray+=("KSRC=${kernel.dev}/lib/modules/${kernel.modDirVersion}/build")
   '';
 
   enableParallelBuilding = true;
@@ -43,15 +33,11 @@ in stdenv.mkDerivation rec {
   '';
 
   meta = with lib; {
-    broken = true;
-    description = "Realtek r8168 driver";
+    description = "Realtek RTL8188CU driver";
     longDescription = ''
-      A kernel module for Realtek 8168 network cards.
-      If you want to use this driver, you might need to blacklist the r8169 driver
-      by adding "r8169" to boot.blacklistedKernelModules.
+      A kernel module for Realtek 8188 network cards.
     '';
     license = licenses.gpl2Plus;
     platforms = platforms.linux;
-    maintainers = with maintainers; [ timokau ];
   };
 }
