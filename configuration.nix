@@ -81,9 +81,12 @@
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
-    wget vim git tig byobu tmux htop
+    wget vim git tig byobu tmux htop usbutils
     firefox
     lm_sensors stress-ng
+    i7z config.boot.kernelPackages.cpupower config.boot.kernelPackages.turbostat
+    iw wirelesstools
+    pavucontrol
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
