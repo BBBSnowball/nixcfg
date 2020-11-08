@@ -11,13 +11,13 @@ let
   #version =  "4.17-rc3.hdg.1";
   version =  "5.8";
 
-  cleanSource = src: pkgs.runCommand "clean-src-${version}" {} ''                         
-    set -ex                                                                               
-    cp -r ${src} $out                                                                     
-    chmod u+rw -R $out                                                                    
-    rm $out/.config                                                                       
-    ${pkgs.gnumake}/bin/make -C $out mrproper                                             
-  '';                                                                                     
+  cleanSource = src: pkgs.runCommand "clean-src-${version}" {} ''
+    set -ex
+    cp -r ${src} $out
+    chmod u+rw -R $out
+    rm $out/.config
+    ${pkgs.gnumake}/bin/make -C $out mrproper
+  '';
 
   pkg = { stdenv, buildPackages, gnumake, hostPlatform, fetchurl, fetchFromGitHub, perl, buildLinux, libelf, utillinux, flex, bison, ... } @ args:
     buildLinux (args // rec {
