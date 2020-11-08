@@ -129,6 +129,22 @@
   ];
   boot.kernelModules = [ "8821cu" ];
 
+  # "you are not privileged to build input-addressed derivations"
+  # https://github.com/NixOS/nix/issues/2789
+  # Remote user would have to be trusted by the remote machine and we certainly
+  # don't want that for a build-only user!
+  #nix.distributedBuilds = true;
+  nix.buildMachines = [
+    {
+      hostName = "omen-verl-remote";
+      system = "x86_64-linux";
+      maxJobs = 4;
+    }
+  ];
+  nix.extraOptions = ''
+    builders-use-substitutes = true
+  '';
+
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
   # on your system were taken. It‘s perfectly fine and recommended to leave
