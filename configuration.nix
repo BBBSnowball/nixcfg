@@ -128,9 +128,9 @@
   hardware.enableRedistributableFirmware = true;
 
   boot.extraModulePackages = [
-    (config.boot.kernelPackages.callPackage ./rtl8188.nix {})
+    (config.boot.kernelPackages.callPackage ./rtl8188gu.nix {})
   ];
-  boot.kernelModules = [ "8821cu" ];
+  #boot.kernelModules = [ "8188eu" ];
 
   # "you are not privileged to build input-addressed derivations"
   # https://github.com/NixOS/nix/issues/2789

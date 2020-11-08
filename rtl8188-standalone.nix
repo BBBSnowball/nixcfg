@@ -1,2 +1,2 @@
-{ pkgs ? import <nixpkgs> {} }:
-pkgs.callPackage (import ./rtl8188.nix) { kernel = pkgs.linux; }
+{ pkg ? ./rtl8188.nix, pkgs ? import <nixpkgs> {} }:
+pkgs.callPackage (import pkg) { kernel = pkgs.linux; }
