@@ -2,14 +2,16 @@
 let
   rev = {
     "4.17-rc3.hdg.1" = "b8653b1e56ee1b5e8b3e11d7c17928dc7b9be3c8";
+    "5.7" = "ba6f71b5034b9e74fb1f74d15a81491edae5e2d8";
     "5.8" = "842bb80b0ed5e8f34d9c9bd403e4b510acfe7514";
   };
   sha256 = {
     "4.17-rc3.hdg.1" = "137wldp9szs2w1zv5qxnlbzijgwal7iq47bfi4vzzwai7w0f8inm";
+    "5.7" = "sha256-F2T60oMq1KFC1QJLkEq1BWa7DMhZhqqveYqffz4IVuw=";
     "5.8" = "0l6yawcn6slqj4kzarz1w2yj9wfa0p068ilfzmlfhfyylgk094m1";
   };
   #version =  "4.17-rc3.hdg.1";
-  version =  "5.8";
+  version =  "5.7";
 
   cleanSource = src: pkgs.runCommand "clean-src-${version}" {} ''
     set -ex
@@ -26,8 +28,8 @@ let
         pkgs.kernelPatches.bridge_stp_helper
         #pkgs.kernelPatches.modinst_arg_list_too_long
       ];
-      modDirVersion = "5.8.0";
-      extrameta.branch = "5.8-footrail";
+      modDirVersion = "${version}.0";
+      extrameta.branch = "${version}-footrail";
       src = cleanSource (fetchFromGitHub {
         owner = "jwrdegoede";
         repo = "linux-sunxi";
