@@ -91,6 +91,58 @@ let
        TULIP_MMIO y
        W1_SLAVE_DS2433_CRC y
        XXHASH y
+
+
+       TYPEC_TCPM m
+       I2C y
+       I2C_DESIGNWARE_PLATFORM y
+       ACPI y
+       TYPEC_WCOVE m
+       #MFD_INTEL_PMC_BXT m
+       INTEL_SOC_PMIC m
+       BXT_WC_PMIC_OPREGION y
+
+       TYPEC_UCSI m
+       UCSI_CCG m
+       UCSI_ACPI m
+       TYPEC_DP_ALTMODE m
+       USB_ROLE_SWITCH m
+       USB_ROLES_INTEL_XHCI m
+       USB_LED_TRIG y
+       USB_ULPI_BUS m
+
+       CHARGER_BQ24190 m
+
+       MATOM y
+
+       # some "random" stuff from stockmind's 5.0 kernel config
+       ACPI_APEI y
+       ACPI_APEI_GHES y
+       ACPI_APEI_PCIEAER y
+       CPU_FREQ_STAT y
+       CPU_FREQ_DEFAULT_GOV_PERFORMANCE n
+       CPU_FREQ_DEFAULT_GOV_ONDEMAND y
+
+       #X86_INTEL_UMIP y
+       #X86_INTEL_MPX y
+       BT_HCIUART_INTEL y
+       INTEL_SOC_PMIC y
+       INTEL_SOC_PMIC_CHTWC y
+       SND_SOC_INTEL_SKYLAKE_HDAUDIO_CODEC y
+       INTEL_WMI_THUNDERBOLT m
+       INTEL_CHT_INT33FE m
+       INTEL_INT0002_VGPIO y
+       INTEL_HID_EVENT y
+       INTEL_VBTN y
+       INTEL_PMC_CORE y
+       INTEL_OAKTRAIL m
+       INTEL_PMC_IPC y
+       INTEL_TURBO_MAX_3 y
+       INTEL_CHTDC_TI_PWRBTN m
+       INTEL_ATOMISP2_PM y
+       INTEL_IOMMU_SVM y
+       EXTCON_INTEL_CHT_WC y
+       INTEL_TXT y
      '';
   });
 
