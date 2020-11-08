@@ -122,6 +122,13 @@
     export HISTFILESIZE=200000
   '';
 
+  hardware.enableRedistributableFirmware = true;
+
+  boot.extraModulePackages = [
+    (config.boot.kernelPackages.callPackage ./rtl8188.nix {})
+  ];
+  boot.kernelModules = [ "8821cu" ];
+
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
   # on your system were taken. It‘s perfectly fine and recommended to leave
