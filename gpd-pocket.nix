@@ -21,4 +21,23 @@
 
   services.thermald.enable = true;
   services.tlp.enable = true;
+
+  # https://nixos.wiki/wiki/Accelerated_Video_Playback
+  #nixpkgs.config.packageOverrides = pkgs: {
+  #  vaapiIntel = pkgs.vaapiIntel.override { enableHybridCodec = true; };
+  #};
+  hardware.opengl = {
+    enable = true;
+    extraPackages = with pkgs; [
+      intel-media-driver # LIBVA_DRIVER_NAME=iHD
+      vaapiIntel         # LIBVA_DRIVER_NAME=i965 (older but works better for Firefox/Chromium)
+      vaapiVdpau
+      libvdpau-va-gl
+    ];
+  };
+
+  # enables usb-modeswitch, also useful for USB WiFi adapter that enumerates as CDROM, by default
+  hardware.usbWwan.enable = true;
+
+  environment.systemPackages = with pkgs; [ libva-utils ];
 }
