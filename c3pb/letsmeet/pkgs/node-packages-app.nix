@@ -15011,7 +15011,11 @@ let
       sources."buffer-from-1.1.1"
       sources."buffer-indexof-1.1.1"
       sources."buffer-xor-1.0.3"
-      sources."bufferutil-4.0.2"
+      (sources."bufferutil-4.0.2" // {
+        dependencies = [
+          sources."node-gyp-build-4.2.3"
+        ];
+      })
       sources."builtin-status-codes-3.0.0"
       sources."bytes-3.0.0"
       (sources."cacache-13.0.1" // {
@@ -16957,7 +16961,11 @@ let
         ];
       })
       sources."ut_pex-2.0.1"
-      sources."utf-8-validate-5.0.3"
+      (sources."utf-8-validate-5.0.3" // {
+        dependencies = [
+          sources."node-gyp-build-4.2.3"
+        ];
+      })
       (sources."util-0.10.3" // {
         dependencies = [
           sources."inherits-2.0.1"
@@ -17133,7 +17141,7 @@ let
     buildInputs = globalBuildInputs;
     meta = {
       description = "multiparty meeting service";
-      homepage = ./;
+      homepage = "";
       license = "MIT";
     };
     production = true;

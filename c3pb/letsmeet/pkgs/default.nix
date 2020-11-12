@@ -1,6 +1,6 @@
 {pkgs ? import <nixpkgs> {
     inherit system;
-  }, system ? builtins.currentSystem, nodejs ? pkgs."nodejs-13_x"}:
+  }, system ? builtins.currentSystem, nodejs ? pkgs."nodejs-14_x"}:
 
 let
   nodeEnv = import ./node-env.nix {
@@ -18,7 +18,7 @@ let
 in
 {
   src = edumeetSrc;
-  inherit version;
+  inherit version nodejs;
   app = import ./node-packages-app.nix {
     inherit (pkgs) fetchurl fetchgit;
     inherit nodeEnv;
