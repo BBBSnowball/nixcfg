@@ -17,13 +17,10 @@ let
     sha256 = "1wm05wqmhymz5wslb2xqdk2v4s0hwr95bqlyymypxhihsmf82b70";
   };
   nodePackages = pkgs.nodePackages.override { inherit nodejs; };
-  nodeEnvWithGyp = sources: with builtins; nodeEnv // {
-    buildNodePackage = { buildInputs, dependencies, ... }@args: let
-      extraDepsSources = filter (x: let name = pkgs.lib.getName x.name; in name == "node-pre-gyp" || name == "node-gyp-build") (attrValues sources);
-      extraDeps = map (x: nodeEnv.buildNodePackage (x // { inherit dependencies; })) extraDepsSources;
-    in nodeEnv.buildNodePackage (args // { buildInputs = buildInputs ++ extraDeps; });
+  nodeEnvWithGyp = nodeEnv // {
+    buildNodePackage = args: let x = nodeEnv.buildNodePackage args; in
+      x.override { buildInputs = x.buildInputs ++ [ nodePackages.node-pre-gyp ]; };
   };
-  blub = file: args: file (args // { nodeEnv = nodeEnvWithGyp (file args).sources; });
 in
 {
   src = edumeetSrc;
@@ -33,7 +30,7 @@ in
     inherit nodeEnv;
     inherit edumeetSrc;
   };
-  server = blub (import ./node-packages-server.nix) {
+  server = import ./node-packages-server.nix {
     inherit (pkgs) fetchurl fetchgit runCommand;
     nodeEnv = nodeEnvWithGyp;
     inherit edumeetSrc;
