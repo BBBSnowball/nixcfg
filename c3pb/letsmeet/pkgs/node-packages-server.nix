@@ -2106,6 +2106,15 @@ let
         sha512 = "PPmu8eEeG9saEUvI97fm4OYxXVB6bFvyNTyiUOBichBpFG8A1Ljw3bY62+5oOjDEMHRnd0Y7HQ+x7uzxOzC6JA==";
       };
     };
+    "node-gyp-build-4.2.3" = {
+      name = "node-gyp-build";
+      packageName = "node-gyp-build";
+      version = "4.2.3";
+      src = fetchurl {
+        url = "https://registry.npmjs.org/node-gyp-build/-/node-gyp-build-4.2.3.tgz";
+        sha512 = "MN6ZpzmfNCRM+3t57PTJHgHyw/h4OWnZ6mR8P5j/uZtqQr46RRuDE/P+g3n0YR/AiYXeWixZZzaip77gdICfRg==";
+      };
+    };
     "node-pre-gyp-0.15.0" = {
       name = "node-pre-gyp";
       packageName = "node-pre-gyp";
@@ -3607,7 +3616,12 @@ let
       sources."base64-js-1.5.1"
       sources."base64id-2.0.0"
       sources."base64url-3.0.1"
-      sources."bcrypt-5.0.0"
+      (sources."bcrypt-5.0.0" // {
+        dependencies = [
+          sources."node-gyp-build-4.2.3"
+          sources."node-pre-gyp-0.15.0"
+        ];
+      })
       sources."bcrypt-pbkdf-1.0.2"
       sources."better-assert-1.0.2"
       sources."bintrees-1.0.1"
