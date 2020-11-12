@@ -1907,6 +1907,9 @@ let
         url = "https://registry.npmjs.org/mediasoup/-/mediasoup-3.6.25.tgz";
         sha512 = "vCuIbekcptbtxeJ7bYhHm28Px1t8E2+usq5hDInTghjuoBhPk/Ts7CuALxrRvBGi+QfQsKNWMT/jcyvc+FyD8A==";
       };
+      patches = [
+        (copyFileToStore ./mediasoup-avoid-long-path.patch)
+      ];
     };
     "meow-3.7.0" = {
       name = "meow";
