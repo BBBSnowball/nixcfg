@@ -18,8 +18,8 @@ let
   };
   nodePackages = pkgs.nodePackages.override { inherit nodejs; };
   nodeEnvWithGyp = nodeEnv // {
-    buildNodePackage = args: let x = nodeEnv.buildNodePackage args; in
-      x.override { buildInputs = x.buildInputs ++ [ nodePackages.node-pre-gyp ]; };
+    buildNodePackage = { buildInputs, ... }@args:
+      nodeEnv.buildNodePackage (args // { buildInputs = buildInputs ++ [ nodePackages.node-pre-gyp ]; });
   };
 in
 {
