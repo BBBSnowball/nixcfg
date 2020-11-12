@@ -19,12 +19,12 @@ in {
       # react-scripts doesn't want to use NODE_PATH so we use one of the
       # preferred alternatives.
       echo '{"compilerOptions": {"baseUrl": "node_modules"}}' >jsconfig.json
-      ln -s $package/lib/node_modules/multiparty-meeting/node_modules
+      ln -s $package/lib/node_modules/edumeet/node_modules
 
       rm public/config/config.example.js
       ln -s $config public/config/config.js
 
-      export PATH=$PATH:$package/lib/node_modules/multiparty-meeting/node_modules/.bin
+      export PATH=$PATH:$package/lib/node_modules/edumeet/node_modules/.bin
 
       react-scripts build
     '';
