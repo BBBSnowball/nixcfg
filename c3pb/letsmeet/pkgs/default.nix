@@ -16,6 +16,11 @@ let
     rev = "a83a27b72c4a812f5e008320f927f56092978b5b";
     sha256 = "1wm05wqmhymz5wslb2xqdk2v4s0hwr95bqlyymypxhihsmf82b70";
   };
+  nodePackages = pkgs.nodePackages.override { inherit nodejs; };
+  nodeEnvWithGyp = nodeEnv // {
+    buildNodePackage = args: let x = nodeEnv.buildNodePackage args; in
+      x.override { buildInputs = x.buildInputs ++ [ nodePackages.node-pre-gyp ]; };
+  };
 in
 {
   src = edumeetSrc;
@@ -27,7 +32,7 @@ in
   };
   server = import ./node-packages-server.nix {
     inherit (pkgs) fetchurl fetchgit runCommand;
-    inherit nodeEnv;
+    nodeEnv = nodeEnvWithGyp;
     inherit edumeetSrc;
   };
 }
