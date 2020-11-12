@@ -57,7 +57,7 @@ in {
       cp $config config/config.js
       ln -sfd $app public
 
-      ln -sfd $package/lib/node_modules/multiparty-meeting-server/node_modules node_modules
+      ln -sfd $package/lib/node_modules/edumeet-server/node_modules node_modules
 
       ln -s ../lib/edumeet-server/server.js $out/bin/edumeet-server
       ln -s ../lib/edumeet-server/connect.js $out/bin/edumeet-connect
