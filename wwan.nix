@@ -28,7 +28,7 @@ in
     # symlink. This is useful for debugging.
     ATTRS{idVendor}=="12d1", ATTRS{idProduct}=="1001", ENV{ID_USB_INTERFACE_NUM}=="02", \
       ENV{ID_MM_PORT_IGNORE}="1", \
-      GROUP="smsd", ENV{SMSD}="1", TAG+="systemd", ENV{SYSTEMD_WANTS}="smsd@", GROUP="smsd", MODE="0660", SYMLINK="ttySMS"
+      OWNER="smsd", ENV{SMSD}="1", TAG+="systemd", ENV{SYSTEMD_WANTS}="smsd@", GROUP="smsd", MODE="0660", SYMLINK="ttySMS"
   '';
 
   environment.etc."smsd.conf".text = ''
@@ -77,6 +77,8 @@ in
   users.users.smsd = {};
   users.groups.sms = {};
 
+  #NOTE This is template unit but we really can only handle one instance at a time because they
+  #     are using the same spool dirs and config file.
   systemd.services."smsd@" = {
     serviceConfig = {
       Type = "simple";
