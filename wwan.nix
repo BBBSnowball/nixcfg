@@ -58,6 +58,9 @@ in
     device = /dev/ttySMS
     incoming = yes
     pinsleeptime = 5
+    # required for E3531
+    # see http://smstools3.kekekasvi.com/topic.php?post=6220#post6220
+    init = AT+CPMS="ME";+CNMI=2,0,0,2,1
   '';
 
   services.logrotate = {
