@@ -14,6 +14,8 @@ in
     })
   ];
 
+  environment.systemPackages = [ pkgs.smstools ];
+
   services.udev.extraRules = ''
     # If you are using a different USB adapter, you must update idVendor and idProduct but also the interface number.
     # There is usually more than one ttyUSB. You need one for the modem and one for SMS and both of them must respond
@@ -43,12 +45,12 @@ in
     # log to stdout -> pin and SMS may end up in syslog!
     #logfile = 1
 
-    outgoing = /var/lib/sms/outgoing
-    checked  = /var/lib/sms/checked
-    failed   = /var/lib/sms/failed
-    incoming = /var/lib/sms/incoming
-    report   = /var/lib/sms/report
-    sent     = /var/lib/sms/sent
+    outgoing = /var/spool/sms/outgoing
+    checked  = /var/spool/sms/checked
+    failed   = /var/spool/sms/failed
+    incoming = /var/spool/sms/incoming
+    report   = /var/spool/sms/report
+    sent     = /var/spool/sms/sent
     infofile = /run/sms/smsd.running
     pidfile  = /run/sms/smsd.pid
     
@@ -115,8 +117,9 @@ in
       sed -i '/^\s*device\s*=/ d' /run/sms/smsd.conf
       echo "device = /dev/$(basename "$INSTANCE")" >>/run/sms/smsd.conf
 
+      install -m 0750 -o smsd -g sms -d /var/spool/sms
       for x in outgoing checked failed incoming report sent ; do
-        install -m 0770 -o smsd -g sms -d "/var/lib/sms/$x"
+        install -m 0770 -o smsd -g sms -d /var/spool/sms/$x
       done
     '';
   };
