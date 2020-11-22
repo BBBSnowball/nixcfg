@@ -39,9 +39,9 @@ in
     user = smsd
     group = sms
 
-    #logfile = /var/log/sms/smsd.log
-    # log to stdout
-    logfile = 1
+    logfile = /var/log/sms/smsd.log
+    # log to stdout -> pin and SMS may end up in syslog!
+    #logfile = 1
 
     outgoing = /var/lib/sms/outgoing
     checked  = /var/lib/sms/checked
@@ -58,6 +58,22 @@ in
     pinsleeptime = 5
   '';
 
+  services.logrotate = {
+    enable = true;
+    paths.smsd = {
+      path = "/var/log/sms/smsd.log";
+      user = "smsd";
+      group = "sms";
+      extraConfig = ''
+        missingok
+        postrotate
+          # It doesn't support SIGHUP and we don't want it to continue logging to the moved file.
+          systemctl restart system-smsd.slice
+        endscript
+      '';
+    };
+  };
+
   users.users.smsd = {};
   users.groups.sms = {};
 
@@ -71,13 +87,11 @@ in
 
       RuntimeDirectory = "sms";
       StateDirectory   = "sms";
-      #LogsDirectory    = "sms";
+      LogsDirectory    = "sms";
 
       # Config in runtime dir contains the pin but it is created with more
       # restricted mode. Logs might also contain the pin. The state dir
       # is group writable because it contains the spool directories.
-      #FIXME If logs do contain secrets, we shouldn't log to syslog (but not
-      #      doing that requires a logrotate config and smsd doesn't support SIGHUP).
       RuntimeDirectoryMode = "0750";
       StateDirectoryMode   = "0770";
       LogsDirectoryMode    = "0700";
