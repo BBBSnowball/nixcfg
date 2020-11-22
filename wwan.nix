@@ -37,7 +37,7 @@ in
     
     # Settings to run smsd without root priviledges:
     user = smsd
-    group = smsd
+    group = sms
 
     #logfile = /var/log/sms/smsd.log
     # log to stdout
@@ -59,7 +59,7 @@ in
   '';
 
   users.users.smsd = {};
-  users.groups.smsd = {};
+  users.groups.sms = {};
 
   systemd.services."smsd@" = {
     serviceConfig = {
@@ -67,7 +67,7 @@ in
 
       PermissionsStartOnly = true;
       User  = "smsd";
-      Group = "smsd";
+      Group = "sms";
 
       RuntimeDirectory = "sms";
       StateDirectory   = "sms";
@@ -92,7 +92,7 @@ in
 
     preStart = ''
       umask 077
-      install -m 0400 -o smsd -g smsd $(realpath /etc/smsd.conf) /run/sms/smsd.conf
+      install -m 0400 -o smsd -g sms $(realpath /etc/smsd.conf) /run/sms/smsd.conf
       if [ -e "${pinfile}" ] ; then
         echo "pin = $(cat ${pinfile})" >>/run/sms/smsd.conf
       fi
@@ -100,7 +100,7 @@ in
       echo "device = /dev/$(basename "$INSTANCE")" >>/run/sms/smsd.conf
 
       for x in outgoing checked failed incoming report sent ; do
-        install -m 0770 -o smsd -g smsd -d "/var/lib/sms/$x"
+        install -m 0770 -o smsd -g sms -d "/var/lib/sms/$x"
       done
     '';
   };
