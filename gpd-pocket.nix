@@ -36,8 +36,5 @@
     ];
   };
 
-  # enables usb-modeswitch, also useful for USB WiFi adapter that enumerates as CDROM, by default
-  hardware.usbWwan.enable = true;
-
   environment.systemPackages = with pkgs; [ libva-utils ];
 }
