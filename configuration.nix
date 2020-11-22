@@ -78,6 +78,7 @@
     extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
     openssh.authorizedKeys.keyFiles = [ ./sshkeys.txt ];
   };
+  users.users.root.openssh.authorizedKeys.keyFiles = [ ./sshkeys.txt ];
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
@@ -88,6 +89,7 @@
     i7z config.boot.kernelPackages.cpupower config.boot.kernelPackages.turbostat
     iw wirelesstools
     pavucontrol
+    i2c-tools
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
@@ -125,6 +127,8 @@
     export HISTSIZE=300000
     export HISTFILESIZE=200000
   '';
+
+  programs.vim.defaultEditor = true;
 
   hardware.enableRedistributableFirmware = true;
 
