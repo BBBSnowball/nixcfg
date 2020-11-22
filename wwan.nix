@@ -26,6 +26,8 @@
     #     AT+CPIN?
     #     AT+CLCK="SC",0,"<PIN>"
     #     AT+CPIN?
+    #     FIXME untested ^^
+    #     You should probably prefer: mmcli --list-modems; mmcli --sim=x --pin=xxxx --disable-pin
   '';
 
   users.groups.smsd = {};
