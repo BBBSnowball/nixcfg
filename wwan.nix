@@ -30,7 +30,7 @@ in
     # symlink. This is useful for debugging.
     ATTRS{idVendor}=="12d1", ATTRS{idProduct}=="1001", ENV{ID_USB_INTERFACE_NUM}=="02", \
       ENV{ID_MM_PORT_IGNORE}="1", \
-      OWNER="smsd", ENV{SMSD}="1", TAG+="systemd", ENV{SYSTEMD_WANTS}="smsd@", GROUP="smsd", MODE="0660", SYMLINK="ttySMS"
+      ENV{SMSD}="1", TAG+="systemd", ENV{SYSTEMD_WANTS}="smsd@", OWNER="smsd", MODE="0660", SYMLINK="ttySMS"
   '';
 
   environment.etc."smsd.conf".text = ''
@@ -45,19 +45,30 @@ in
     # log to stdout -> pin and SMS may end up in syslog!
     #logfile = 1
 
+    # send alarms to stdout, i.e. to syslog
+    alarmlevel = LOG_WARNING
+    alarmhandler = echo
+    executable_check = no
+    ignore_exec_output = yes
+
     outgoing = /var/spool/sms/outgoing
     checked  = /var/spool/sms/checked
     failed   = /var/spool/sms/failed
     incoming = /var/spool/sms/incoming
     report   = /var/spool/sms/report
     sent     = /var/spool/sms/sent
+    stats    = /var/spool/sms/stats
     infofile = /run/sms/smsd.running
     pidfile  = /run/sms/smsd.pid
+
+    store_received_pdu = 3
+    use_linux_ps_trick = yes
     
     [GSM1]
     device = /dev/ttySMS
     incoming = yes
     pinsleeptime = 5
+    phonecalls = clip
     # required for E3531
     # see http://smstools3.kekekasvi.com/topic.php?post=6220#post6220
     init = AT+CPMS="ME";+CNMI=2,0,0,2,1
@@ -70,7 +81,6 @@ in
       user = "smsd";
       group = "sms";
       extraConfig = ''
-        missingok
         postrotate
           # It doesn't support SIGHUP and we don't want it to continue logging to the moved file.
           systemctl restart system-smsd.slice
@@ -121,9 +131,13 @@ in
       echo "device = /dev/$(basename "$INSTANCE")" >>/run/sms/smsd.conf
 
       install -m 0750 -o smsd -g sms -d /var/spool/sms
+      install -m 0750 -o smsd -g sms -d /var/spool/sms/stats
       for x in outgoing checked failed incoming report sent ; do
         install -m 0770 -o smsd -g sms -d /var/spool/sms/$x
       done
     '';
+
+    # stop this service if device is gone
+    bindsTo = [ "%i.device" ];
   };
 }
