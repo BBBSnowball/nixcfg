@@ -30,7 +30,8 @@
     isNormalUser = true;
     createHome = true;
     #NOTE Samba user must be added with `smbpasswd -a scans`. User shouldn't be able to login in Linux.
-    hashedPassword = "x";
+    #hashedPassword = "x";
+    hashedPassword = null;
   };
 
   # stop annoying warning in syslog

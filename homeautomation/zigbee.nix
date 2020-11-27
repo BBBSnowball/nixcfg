@@ -10,7 +10,7 @@
   options = {};
 
   imports = [
-    (import <nixos-20.09/nixos/modules/services/misc/zigbee2mqtt.nix>)
+    # (import <nixos-20.09/nixos/modules/services/misc/zigbee2mqtt.nix>)
   ];
 
   config = {
