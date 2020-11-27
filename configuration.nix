@@ -245,12 +245,17 @@ in {
   services.openssh.enable = true;
 
   services.openssh.ports = [ 22 sshPublicPort ];
-  services.shorewall.rules.sshToInet = {
+  services.shorewall.rules.ssh.rules = [{
     proto = "tcp";
     destPort = sshPublicPort;
     source = "all";
     dest = "$FW";
-  };
+  } {
+    proto = "tcp";
+    destPort = 22;
+    source = "tinc";
+    dest = "$FW";
+  }];
 
   # Open ports in the firewall.
   # networking.firewall.allowedTCPPorts = [ ... ];
