@@ -289,6 +289,7 @@ in {
     hashedPassword = hostSpecificValue /hashedPassword.nix;
     openssh.authorizedKeys.keyFiles = [ ./private/ssh-laptop.pub ];
   };
+  users.groups.test = {};
   users.users.test = {
     isNormalUser = true;
     hashedPassword = hostSpecificValue /hashedPassword.nix;
@@ -303,12 +304,30 @@ in {
     ];
     extraGroups = [
       "audio"
+      "test"
     ];
   };
   nixpkgs.config.android_sdk.accept_license = true;
   nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
     "android-studio"
     "android-studio-stable"
+  ];
+  users.users.remoteBuild = {
+    isNormalUser = true;
+    hashedPassword = "!";
+    openssh.authorizedKeys.keyFiles = [ ./private/ssh-laptop.pub ./private/ssh-gpd.pub ];
+  };
+  users.users.test_nonet = {
+    isNormalUser = true;
+    hashedPassword = hostSpecificValue /hashedPassword.nix;
+    openssh.authorizedKeys.keyFiles = [ ./private/ssh-laptop.pub ];
+    extraGroups = [
+      "test"
+    ];
+  };
+
+  services.shorewall.rules.test_nonet.rules = [
+    { action = "REJECT"; source = "$FW"; dest = "all"; extraFields = "- - test_nonet"; }
   ];
 
   #programs.vim.defaultEditor = true;
