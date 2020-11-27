@@ -372,7 +372,8 @@ in {
   services.emacs.enable = true;
   #services.emacs.package = pkgs.emacs-nox;
   services.emacs.package = ((pkgs.emacsPackagesNgGen pkgs.emacs-nox).emacsWithPackages (epkgs: [
-    epkgs.emacs-libvterm
+    #epkgs.emacs-libvterm
+    epkgs.vterm
   ]));
 
   boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
