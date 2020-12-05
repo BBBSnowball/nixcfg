@@ -14,12 +14,6 @@
   ];
 
   config = {
-    nixpkgs.overlays = [
-      (_: _: {
-        zigbee2mqtt = (import <nixos-20.09> {}).zigbee2mqtt;
-      })
-    ];
-
     environment.systemPackages = with pkgs; [
       (pkgs.callPackage (import ./flash-cc2652-firmware.nix) {})
       mosquitto
