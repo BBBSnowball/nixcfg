@@ -382,6 +382,13 @@ in {
 
   documentation.dev.enable = true;
 
+  # Let's try flakes.
+  # see https://www.tweag.io/blog/2020-07-31-nixos-flakes/
+  nix.package = pkgs.nixUnstable;
+  nix.extraOptions = ''
+    experimental-features = nix-command flakes
+  '';
+
   # This value determines the NixOS release with which your system is to be
   # compatible, in order to avoid breaking some software such as database
   # servers. You should change this only after NixOS release notes say you
