@@ -30,9 +30,10 @@ in
 
 {
   options = {
+    users.defaultLinger = mkEnableOption "lingering for all users (can be overridden per user)";
     users.users = mkOption {
       options = [{
-        linger = mkEnableOption "lingering for the user";
+        linger = mkEnableOption "lingering for the user" // { default = config.users.defaultLinger; };
       }];
     };
   };
