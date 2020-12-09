@@ -332,7 +332,7 @@ in {
     ];
   };
 
-  users.defaultLinger = true;
+  users.defaultLingerNonSystem = true;
 
   services.shorewall.rules.test_nonet.rules = [
     { action = "REJECT"; source = "$FW"; dest = "all"; extraFields = "- - test_nonet"; }

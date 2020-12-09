@@ -13,7 +13,11 @@ let
 
   dataDir = "/var/lib/systemd/linger";
 
-  lingeringUsers = map (u: u.name) (attrValues (flip filterAttrs config.users.users (n: u: u.linger)));
+  shouldLinger = user:
+    if user.linger != null
+      then user.linger
+      else user.isNormalUser && config.users.defaultLingerNormal || !user.isSystemUser && config.users.defaultLingerNonSystem;
+  lingeringUsers = map (u: u.name) (filter shouldLinger (attrValues config.users.users));
 
   lingeringUsersFile = builtins.toFile "lingering-users"
     (concatStrings (map (s: "${s}\n")
@@ -30,10 +34,14 @@ in
 
 {
   options = {
-    users.defaultLinger = mkEnableOption "lingering for all users (can be overridden per user)";
+    users.defaultLingerNormal    = mkEnableOption "lingering for normal users (can be overridden per user)";
+    users.defaultLingerNonSystem = mkEnableOption "lingering for non-system users (can be overridden per user)";
     users.users = mkOption {
       options = [{
-        linger = mkEnableOption "lingering for the user" // { default = config.users.defaultLinger; };
+        linger = mkEnableOption "lingering for the user" // {
+          type = lib.types.nullOr lib.types.bool;
+          default = null;
+        };
       }];
     };
   };
