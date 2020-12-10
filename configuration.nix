@@ -26,6 +26,7 @@ in {
       ./bbverl/ddclient.nix
       ./homeautomation
       ./loginctl-linger.nix
+      ./fix-sudo.nix
     ];
 
   # Use the systemd-boot EFI boot loader.
@@ -333,8 +334,8 @@ in {
     ];
   };
 
-  users.defaultLinger = true;
-  users.users.root.linger = true;
+  #users.defaultLinger = true;
+  #users.users.root.linger = true;
 
   services.shorewall.rules.test_nonet.rules = [
     { action = "REJECT"; source = "$FW"; dest = "all"; extraFields = "- - test_nonet"; }
