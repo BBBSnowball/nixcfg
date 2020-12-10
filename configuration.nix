@@ -330,9 +330,11 @@ in {
     extraGroups = [
       "test"
     ];
+    linger = false;
   };
 
-  users.defaultLingerNonSystem = true;
+  users.defaultLinger = true;
+  users.users.root.linger = true;
 
   services.shorewall.rules.test_nonet.rules = [
     { action = "REJECT"; source = "$FW"; dest = "all"; extraFields = "- - test_nonet"; }

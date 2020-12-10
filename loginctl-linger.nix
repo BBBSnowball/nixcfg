@@ -16,7 +16,7 @@ let
   shouldLinger = user:
     if user.linger != null
       then user.linger
-      else user.isNormalUser && config.users.defaultLingerNormal || !user.isSystemUser && config.users.defaultLingerNonSystem;
+      else user.isNormalUser && config.users.defaultLinger;
   lingeringUsers = map (u: u.name) (filter shouldLinger (attrValues config.users.users));
 
   lingeringUsersFile = builtins.toFile "lingering-users"
@@ -34,8 +34,7 @@ in
 
 {
   options = {
-    users.defaultLingerNormal    = mkEnableOption "lingering for normal users (can be overridden per user)";
-    users.defaultLingerNonSystem = mkEnableOption "lingering for non-system users (can be overridden per user)";
+    users.defaultLinger = mkEnableOption "lingering for normal users (can be overridden per user)";
     users.users = mkOption {
       options = [{
         linger = mkEnableOption "lingering for the user" // {
