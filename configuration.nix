@@ -135,6 +135,7 @@ in {
     progress
     nix-index
     inetutils
+    lsof
 
     qemu_kvm
     wirelesstools iw
@@ -330,7 +331,6 @@ in {
     extraGroups = [
       "test"
     ];
-    linger = false;
   };
 
   users.defaultLinger = true;
