@@ -333,10 +333,6 @@ in {
     linger = false;
   };
 
-  #NOTE This doesn't work because systemd has an exception for this case.
-  #     see https://github.com/systemd/systemd/issues/10822#issuecomment-439631448
-  security.pam.services.sudo.startSession = true;
-
   users.defaultLinger = true;
   users.users.root.linger = true;
 
