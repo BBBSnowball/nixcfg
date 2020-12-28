@@ -27,6 +27,13 @@
     nixosModules.homeautomation = ./homeautomation;
     nixosModules.loginctl-linger = ./loginctl-linger.nix;
     nixosModules.fix-sudo = ./fix-sudo.nix;
+    nixosModules.common = ./common.nix;
+    nixosModules.enable-flakes = ./enable-flakes.nix;
+    nixosModules.nvim = ./nvim.nix;
+    nixosModules.emacs = ./emacs.nix;
+
+    # The common module includes all the settings and modules that I want to apply to all systems.
+    nixosModule = self.nixosModules.common;
  
     nixosConfigurations.routeromen = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
