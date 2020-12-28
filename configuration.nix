@@ -71,7 +71,7 @@ in
   # List packages installed in system profile. To search, run:
   # $ nix search wget
    environment.systemPackages = with pkgs; [
-     wget vim tmux byobu htop tig
+     wget vim tmux byobu htop tig git
    ];
 
   # Some programs need SUID wrappers, can be configured further or are
