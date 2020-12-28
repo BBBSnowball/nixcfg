@@ -1,5 +1,7 @@
-{ pkgs, modules ? import ./modules.nix { inherit pkgs; }, ... }:
-{
+{ pkgs, ... }@args:
+let
+  modules = args.modules or (import ./modules.nix {});
+in {
   imports =
     [
       modules.zsh

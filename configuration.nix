@@ -2,8 +2,10 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, lib, modules, private ? ./private, ... }:
+{ config, pkgs, lib, ... }@args:
 let
+  modules = args.modules or (import ./modules.nix {});
+  private = args.private or ./private;
   hostSpecificValue = path: import "${private}/by-host/${config.networking.hostName}${path}";
   sshPublicPort = hostSpecificValue "/sshPublicPort.nix";
 in {

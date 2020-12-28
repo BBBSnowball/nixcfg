@@ -1,5 +1,7 @@
-{ pkgs, jens-dotfiles, ... }:
-{
+{ pkgs, ... }@args:
+let
+  jens-dotfiles = args.jens-dotfiles or ./submodules/jens-dotfiles;
+in {
   #programs.bash.interactiveShellInit = ''
   #  # https://www.reddit.com/r/neovim/comments/6npyjk/neovim_terminal_management_avoiding_nested_neovim/
   #  if [ -n "$NVIM_LISTEN_ADDRESS" ]; then

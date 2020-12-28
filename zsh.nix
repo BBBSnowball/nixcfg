@@ -1,5 +1,6 @@
-{ config, pkgs, jens-dotfiles ? ./submodules/jens-dotfiles, ... }:
+{ config, pkgs, ... }@args:
 let
+  jens-dotfiles = args.jens-dotfiles or ./submodules/jens-dotfiles;
   jens = import "${jens-dotfiles}/layers/zsh.nix" { inherit pkgs; };
 in jens // {
   programs = jens.programs // {

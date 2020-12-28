@@ -1,5 +1,5 @@
 { self ? {}
-, pkgs ? self.inputs.nixpkgs
+, pkgs ? self.inputs.nixpkgs or (import <nixpkgs> {})
 , lib ? self.lib or (import ./lib.nix { inherit pkgs; })
 , flakeInputs ? self.inputs or { jens-dotfiles = ./submodules/jens-dotfiles; } }:
 let
