@@ -2,15 +2,15 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, modules, private ? ./private, ... }:
 let
-  hostSpecificValue = path: import (./private/by-host/. + ("/" + config.networking.hostName) + path);
-  sshPublicPort = hostSpecificValue /sshPublicPort.nix;
+  hostSpecificValue = path: import "${private}/by-host/${config.networking.hostName}${path}";
+  sshPublicPort = hostSpecificValue "/sshPublicPort.nix";
 in {
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
-      ./common.nix
+      modules.common
       ./wifi-ap-eap/default.nix
       #./sound.nix
       ./smokeping.nix
@@ -38,7 +38,7 @@ in {
   boot.kernelParams = [ "reboot=hard,pci" ];
 
   networking.hostName = "routeromen";
-  networking.hostId = hostSpecificValue /hostId.nix;
+  networking.hostId = hostSpecificValue "/hostId.nix";
   networking.wireless.enable = false;
 
   # The global useDHCP flag is deprecated, therefore explicitly set to false here.
@@ -206,18 +206,18 @@ in {
   users.users.benny = {
     isNormalUser = true;
     extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
-    hashedPassword = hostSpecificValue /hashedPassword.nix;
-    openssh.authorizedKeys.keyFiles = [ ./private/ssh-laptop.pub ];
+    hashedPassword = hostSpecificValue "/hashedPassword.nix";
+    openssh.authorizedKeys.keyFiles = [ "${private}/ssh-laptop.pub" ];
   };
   users.users.root = {
-    hashedPassword = hostSpecificValue /hashedPassword.nix;
-    openssh.authorizedKeys.keyFiles = [ ./private/ssh-laptop.pub ];
+    hashedPassword = hostSpecificValue "/hashedPassword.nix";
+    openssh.authorizedKeys.keyFiles = [ "${private}/ssh-laptop.pub" ];
   };
   users.groups.test = {};
   users.users.test = {
     isNormalUser = true;
-    hashedPassword = hostSpecificValue /hashedPassword.nix;
-    openssh.authorizedKeys.keyFiles = [ ./private/ssh-laptop.pub ];
+    hashedPassword = hostSpecificValue "/hashedPassword.nix";
+    openssh.authorizedKeys.keyFiles = [ "${private}/ssh-laptop.pub" ];
     packages = with pkgs; [
       anbox apktool
       android-studio # unfree :-(
@@ -239,12 +239,12 @@ in {
   users.users.remoteBuild = {
     isNormalUser = true;
     hashedPassword = "!";
-    openssh.authorizedKeys.keyFiles = [ ./private/ssh-laptop.pub ./private/ssh-gpd.pub ];
+    openssh.authorizedKeys.keyFiles = [ "${private}/ssh-laptop.pub" "${private}/ssh-gpd.pub" ];
   };
   users.users.test_nonet = {
     isNormalUser = true;
-    hashedPassword = hostSpecificValue /hashedPassword.nix;
-    openssh.authorizedKeys.keyFiles = [ ./private/ssh-laptop.pub ];
+    hashedPassword = hostSpecificValue "/hashedPassword.nix";
+    openssh.authorizedKeys.keyFiles = [ "${private}/ssh-laptop.pub" ];
     extraGroups = [
       "test"
     ];

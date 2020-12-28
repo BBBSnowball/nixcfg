@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, jens-dotfiles, ... }:
 {
   #programs.bash.interactiveShellInit = ''
   #  # https://www.reddit.com/r/neovim/comments/6npyjk/neovim_terminal_management_avoiding_nested_neovim/
@@ -12,7 +12,7 @@
 
   nixpkgs.overlays = [
     (self: super: {
-      neovim = import ./submodules/jens-dotfiles/pkgs/neovim { pkgs = super; };
+      neovim = import "${jens-dotfiles}/pkgs/neovim" { pkgs = super; };
     })
     (self: super: {
       neovim = super.neovim.override (old: {

@@ -1,12 +1,12 @@
-{ pkgs, ... }:
+{ pkgs, modules ? import ./modules.nix { inherit pkgs; }, ... }:
 {
   imports =
     [
-      ./zsh.nix
+      modules.zsh
       ./loginctl-linger.nix
       ./fix-sudo.nix
       ./enable-flakes.nix
-      ./nvim.nix
+      modules.nvim
     ];
 
   environment.systemPackages = with pkgs; [
