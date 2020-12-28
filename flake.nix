@@ -9,7 +9,7 @@
     withFlakeInputs = provideArgs flakeInputs;
   in {
 
-    nixosConfigurations.rockpro64 = nixpkgs.lib.nixosSystem {
+    nixosConfigurations.rockpro64-snowball = nixpkgs.lib.nixosSystem {
       system = "aarch64-linux";
       modules =
         [ (withFlakeInputs ./configuration.nix)
