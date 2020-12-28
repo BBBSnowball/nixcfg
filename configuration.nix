@@ -23,6 +23,8 @@ in
   # Enables the generation of /boot/extlinux/extlinux.conf
   boot.loader.generic-extlinux-compatible.enable = true;
 
+  fileSystems."/debian".neededForBoot = true;
+
   # networking.hostName = "nixos"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
@@ -86,6 +88,9 @@ in
 
   # Enable the OpenSSH daemon.
   services.openssh.enable = true;
+
+
+  #boot.kernelParams = [ "boot.shell_on_fail" ];
 
   # Open ports in the firewall.
   # networking.firewall.allowedTCPPorts = [ ... ];
