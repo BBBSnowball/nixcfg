@@ -4,9 +4,11 @@
   inputs.rockpro64Config.inputs.nixpkgs.follows = "nixpkgs";
 
   outputs = { self, nixpkgs, rockpro64Config }@flakeInputs: let
-    provideArgs = args: f: with (if nixpkgs.lib.isFunction f then { f2 = f; meta = {}; } else { f2 = import f; meta._file = builtins.toString f; });
-      nixpkgs.lib.setFunctionArgs (x: f2 (x // args) // meta) (builtins.removeAttrs (nixpkgs.lib.functionArgs f2) (builtins.attrNames args));
-    withFlakeInputs = provideArgs flakeInputs;
+    provideArgsToModule = args: m: args2: with nixpkgs.lib;
+      if isFunction m || isAttrs m
+        then unifyModuleSyntax "<unknown-file>" "" (applyIfFunction "" m (args // args2))
+        else unifyModuleSyntax (toString m) (toString m) (applyIfFunction (toString m) (import m) (args // args2));
+    withFlakeInputs = provideArgsToModule flakeInputs;
   in {
 
     nixosConfigurations.rockpro64-snowball = nixpkgs.lib.nixosSystem {
