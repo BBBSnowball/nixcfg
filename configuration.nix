@@ -98,6 +98,13 @@ in
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
 
+  # Let's try flakes.                                     
+  # see https://www.tweag.io/blog/2020-07-31-nixos-flakes/
+  nix.package = pkgs.nixUnstable;                         
+  nix.extraOptions = ''                                   
+    experimental-features = nix-command flakes            
+  '';                                                     
+
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
   # on your system were taken. It‘s perfectly fine and recommended to leave
