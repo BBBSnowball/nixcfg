@@ -2,15 +2,16 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, ... }:
 let
-  rockpro64Config = (import <nixpkgs> {}).fetchFromGitHub {
+  rockpro64ConfigDefault = (import <nixpkgs> {}).fetchFromGitHub {
     owner = "BBBSnowball";
     repo = "nixos-installer-rockpro64";
     rev = "ffc71447570df3a0988492514dae2f6a581febe9";
     sha256 = "1x0z0gaslz289iivhfy06j3rcp72syf0wsnrj05q0fcw6c1956a3";
   };
 in
+
+{ config, pkgs, rockpro64Config ? rockpro64ConfigDefault, ... }:
 {
   imports =
     [ # Include the results of the hardware scan.
