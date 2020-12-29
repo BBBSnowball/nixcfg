@@ -2,19 +2,19 @@
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-20.09";
   inputs.rockpro64Config.url = "github:BBBSnowball/nixos-installer-rockpro64";
   inputs.rockpro64Config.inputs.nixpkgs.follows = "nixpkgs";
+  #inputs.routeromen.url = "gitlab:snowball/nixos-config-for-routeromen?host=git.c3pb.de";
+  inputs.routeromen.url = "git+ssh://git@git.c3pb.de/snowball/nixos-config-for-routeromen.git";
+  inputs.routeromen.inputs.nixpkgs.follows = "nixpkgs";
 
-  outputs = { self, nixpkgs, rockpro64Config }@flakeInputs: let
-    provideArgsToModule = args: m: args2: with nixpkgs.lib;
-      if isFunction m || isAttrs m
-        then unifyModuleSyntax "<unknown-file>" "" (applyIfFunction "" m (args // args2))
-        else unifyModuleSyntax (toString m) (toString m) (applyIfFunction (toString m) (import m) (args // args2));
-    withFlakeInputs = provideArgsToModule flakeInputs;
+  outputs = { self, nixpkgs, rockpro64Config, routeromen }@flakeInputs: let
+    withFlakeInputs = routeromen.lib.provideArgsToModule flakeInputs;
   in {
 
     nixosConfigurations.rockpro64-snowball = nixpkgs.lib.nixosSystem {
       system = "aarch64-linux";
       modules =
         [ (withFlakeInputs ./configuration.nix)
+          routeromen.nixosModule
           ({ pkgs, ... }: {
             # Let 'nixos-version --json' know about the Git revision
             # of this flake.
