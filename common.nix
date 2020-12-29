@@ -1,4 +1,4 @@
-{ pkgs, ... }@args:
+{ pkgs, lib, ... }@args:
 let
   modules = args.modules or (import ./modules.nix {});
 in {
@@ -14,7 +14,7 @@ in {
   environment.systemPackages = with pkgs; [
     wget byobu tmux git tig cifs-utils pv file killall lzop
     dnsutils
-    htop iotop iftop cpufrequtils unixtools.top
+    htop iotop iftop unixtools.top
     pciutils usbutils lm_sensors
     smartmontools
     multipath-tools  # kpartx
@@ -25,7 +25,9 @@ in {
 
     neovim neovim-remote fzf ctags
     # only in nixos unstable: page
-  ];
+  ] ++ (if system == "x86_64-linux" then [
+    cpufrequtils
+  ] else []);
 
   #programs.vim.defaultEditor = true;
   #environment.variables = { EDITOR = "vim"; };
