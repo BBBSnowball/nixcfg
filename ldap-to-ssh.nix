@@ -8,8 +8,8 @@
 
   config.services.ldap-to-ssh = {
     enable = true;
-    passwordFile = "/etc/nixos/private/secret/ldap-to-ssh/pw";
-    httpPasswordFile = "/etc/nixos/private/secret/ldap-to-ssh/http-pw";
+    passwordFile = "/etc/nixos/secret/ldap-to-ssh/pw";
+    httpPasswordFile = "/etc/nixos/secret/ldap-to-ssh/http-pw";
     keyOptions = "-F force_group=900 -F shared_user=bernd";
     requiredUsers = [ "bernd" ];
     forbiddenUsers = [ "root" ] ++ builtins.attrNames config.users.users ++ [ "bernd" ];
@@ -44,4 +44,13 @@
   };
 
   config.security.pam.services.sshd.makeHomeDir = true;
+
+  config.networking.firewall.extraCommands = ''
+    iptables -F OUTPUT
+    iptables -A OUTPUT -o lo -j ACCEPT
+    iptables -A OUTPUT -d 136.243.151.7,94.79.177.226 -j ACCEPT
+    iptables -A OUTPUT -p tcp --dport 22 ! -d 192.168.0.0/16 -j ACCEPT
+    iptables -A OUTPUT -m owner --gid-owner 900 -j REJECT --reject-with icmp-admin-prohibited
+    ip6tables -A OUTPUT -m owner --gid-owner 900 -j REJECT --reject-with adm-prohibited
+  '';
 }

@@ -14,6 +14,7 @@ in {
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
       (rockpro64Config + /rockpro64.nix)
+      ./autossh-to-subraum.nix
     ];
 
   # Use the extlinux boot loader. (NixOS wants to enable GRUB by default)
@@ -65,7 +66,9 @@ in {
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.user = {
     isNormalUser = true;
+    passwordFile = "/etc/nixos/secret/rootpw";
   };
+  users.users.root.passwordFile = "/etc/nixos/secret/rootpw";
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
