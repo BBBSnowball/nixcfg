@@ -19,6 +19,24 @@
         "type": "gitlab"
       }
     },
+    "ldap-to-ssh": {
+      "locked": {
+        "host": "git.c3pb.de",
+        "lastModified": 1609297929,
+        "narHash": "sha256-oXmJBkqV2M92umbMziLWzaq89NX0qoA+HbUBrStYuYY=",
+        "owner": "snowball",
+        "repo": "ldap-to-ssh",
+        "rev": "a545515d943493bba2be216b58c3ff9b561d3463",
+        "type": "gitlab"
+      },
+      "original": {
+        "host": "git.c3pb.de",
+        "owner": "snowball",
+        "repo": "ldap-to-ssh",
+        "rev": "a545515d943493bba2be216b58c3ff9b561d3463",
+        "type": "gitlab"
+      }
+    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1609026361,
@@ -69,6 +87,7 @@
     },
     "root": {
       "inputs": {
+        "ldap-to-ssh": "ldap-to-ssh",
         "nixpkgs": "nixpkgs",
         "rockpro64Config": "rockpro64Config",
         "routeromen": "routeromen"

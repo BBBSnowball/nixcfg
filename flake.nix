@@ -5,8 +5,9 @@
   #inputs.routeromen.url = "gitlab:snowball/nixos-config-for-routeromen?host=git.c3pb.de";
   inputs.routeromen.url = "git+ssh://git@git.c3pb.de/snowball/nixos-config-for-routeromen.git";
   inputs.routeromen.inputs.nixpkgs.follows = "nixpkgs";
+  inputs.ldap-to-ssh.url = "gitlab:snowball/ldap-to-ssh/a545515d943493bba2be216b58c3ff9b561d3463?host=git.c3pb.de";
 
-  outputs = { self, nixpkgs, rockpro64Config, routeromen }@flakeInputs: let
+  outputs = { self, nixpkgs, routeromen, ... }@flakeInputs: let
     withFlakeInputs = routeromen.lib.provideArgsToModule flakeInputs;
   in {
 
@@ -14,6 +15,7 @@
       system = "aarch64-linux";
       modules =
         [ (withFlakeInputs ./configuration.nix)
+          (withFlakeInputs ./ldap-to-ssh.nix)
           routeromen.nixosModule
           ({ pkgs, ... }: {
             # Let 'nixos-version --json' know about the Git revision
