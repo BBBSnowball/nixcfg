@@ -2,7 +2,7 @@
 {
   services.ddclient = {
     enable = true;
-    configFile = "/etc/nixos/private/secret/ddclient.conf";
+    configFile = "/etc/nixos/secret/ddclient.conf";
   };
 
   systemd.services.ddclient.serviceConfig.User = "ddclient-dynamic";

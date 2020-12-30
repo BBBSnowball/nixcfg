@@ -44,7 +44,7 @@
       plugin rp-pppoe.so
       nic-upstream-7
 
-      file /etc/nixos/private/secret/pppd-secret.conf
+      file /etc/nixos/secret/pppd-secret.conf
     ";
   };
 

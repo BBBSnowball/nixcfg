@@ -36,7 +36,7 @@ in
 
   systemd.services."tinc.bbbsnowball".preStart = ''
     ${pkgs.coreutils}/bin/install -o tinc.bbbsnowball -m755 -d /etc/tinc/bbbsnowball/hosts
-    ${pkgs.coreutils}/bin/install -o root -m400 /etc/nixos/private/secret/tinc-bbbsnowball-rsa_key.priv /etc/tinc/bbbsnowball/rsa_key.priv
+    ${pkgs.coreutils}/bin/install -o root -m400 /etc/nixos/secret/tinc-bbbsnowball-rsa_key.priv /etc/tinc/bbbsnowball/rsa_key.priv
 
     #${pkgs.coreutils}/bin/install -o tinc.bbbsnowball -m444 /etc/nixos/private/tinc-pubkeys/bbbsnowball/* /etc/tinc/bbbsnowball/hosts/
     ${pkgs.rsync}/bin/rsync -r --delete /etc/nixos/private/tinc-pubkeys/bbbsnowball/ /etc/tinc/bbbsnowball/hosts
