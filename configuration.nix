@@ -3,12 +3,12 @@
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 { config, pkgs, ... }@args:
 let
-  rockpro64Config = args.rockpro64Config or (import <nixpkgs> {}).fetchFromGitHub {
+  rockpro64Config = args.rockpro64Config or ((import <nixpkgs> {}).fetchFromGitHub {
     owner = "BBBSnowball";
     repo = "nixos-installer-rockpro64";
     rev = "ffc71447570df3a0988492514dae2f6a581febe9";
     sha256 = "1x0z0gaslz289iivhfy06j3rcp72syf0wsnrj05q0fcw6c1956a3";
-  };
+  });
 in {
   imports =
     [ # Include the results of the hardware scan.
