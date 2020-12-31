@@ -88,11 +88,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1609128292,
-        "narHash": "sha256-stvewI63rm3mfdBxfHe97oSD4G80uxZ8DtBv8TK14vk=",
+        "lastModified": 1609455160,
+        "narHash": "sha256-/eV+URq0E33ACzRtvsf8R1ySLOoTPljnwBa8Wha4FeM=",
         "owner": "BBBSnowball",
         "repo": "nixos-installer-rockpro64",
-        "rev": "9d9aed294fcb6ccf1d76f175d8b19abea99ac9fa",
+        "rev": "01449b908ad4731f1b50b81cd137ef508e638a32",
         "type": "github"
       },
       "original": {

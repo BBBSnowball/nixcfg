@@ -22,6 +22,8 @@ in {
   # Enables the generation of /boot/extlinux/extlinux.conf
   boot.loader.generic-extlinux-compatible.enable = true;
 
+  boot.kernelPackages = rockpro64Config.packages.aarch64-linux.linuxPackages_rock64."5.3";
+
   fileSystems."/debian".neededForBoot = true;
 
   networking.hostName = "rockpro64-snowball";
