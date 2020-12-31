@@ -91,6 +91,8 @@ in {
 
   programs.nvim.defaultEditor = true;
 
+  nix.registry.nixpkgs.flake = args.nixpkgs or <nixpkgs>;
+
   #boot.kernelParams = [ "boot.shell_on_fail" ];
 
   # Open ports in the firewall.
