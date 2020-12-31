@@ -68,6 +68,7 @@
     iptables -A OUTPUT -o lo -j ACCEPT
     iptables -A OUTPUT -d 136.243.151.7,136.243.151.58,94.79.177.226 -j ACCEPT
     iptables -A OUTPUT -p tcp --dport 22 ! -d 192.168.0.0/16 -j ACCEPT
+    iptables -A OUTPUT -p tcp --dport 443 ! -d 192.168.0.0/16 -j ACCEPT
     iptables -A OUTPUT -m owner --gid-owner 30000 -d 192.168.0.0/16 -j REJECT --reject-with icmp-admin-prohibited
     iptables -A OUTPUT -m owner --gid-owner 900 -j REJECT --reject-with icmp-admin-prohibited
     ip6tables -A OUTPUT -m owner --gid-owner 900 -j REJECT --reject-with adm-prohibited
