@@ -6,13 +6,20 @@
     gid = 900;
   };
 
+  # shared user; all keys have access to it
+  config.users.users.bernd = {
+    isNormalUser = true;
+    # treated like the LDAP users
+    group = "from-ldap";
+  };
+
   config.services.ldap-to-ssh = {
     enable = true;
     passwordFile = "/etc/nixos/secret/ldap-to-ssh/pw";
     httpPasswordFile = "/etc/nixos/secret/ldap-to-ssh/http-pw";
     keyOptions = "-F force_group=900 -F shared_user=bernd";
     requiredUsers = [ "bernd" ];
-    forbiddenUsers = [ "root" ] ++ builtins.attrNames config.users.users ++ [ "bernd" ];
+    forbiddenUsers = [ "root" ] ++ builtins.filter (x: x != "bernd") (builtins.attrNames config.users.users);
     extraValidateScript = ''
       mv $STATE_DIRECTORY/.new/passwd $STATE_DIRECTORY/.new/passwd2
       while IFS=: read -r username password userid groupid comment homedir cmdshell ; do
