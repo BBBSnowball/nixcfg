@@ -1,18 +1,26 @@
-{ pkgs, ... }@args:
+{ config, pkgs, lib, ... }@args:
 let
   jens-dotfiles = args.jens-dotfiles or ./submodules/jens-dotfiles;
 in {
-  #programs.bash.interactiveShellInit = ''
-  #  # https://www.reddit.com/r/neovim/comments/6npyjk/neovim_terminal_management_avoiding_nested_neovim/
-  #  if [ -n "$NVIM_LISTEN_ADDRESS" ]; then
-  #    export VISUAL="nvr -cc tabedit --remote-wait +'set bufhidden=wipe'"
-  #  else
-  #    export VISUAL="nvim"
-  #  fi
-  #  EDITOR="$VISUAL"
-  #'';
+  options.programs.nvim.defaultEditor = lib.mkOption {
+    type = lib.types.bool;
+    default = false;
+    description = ''
+      When enabled, make neovim the default editor using the EDITOR environment variable.
+    '';
+  };
 
-  nixpkgs.overlays = [
+  config.programs.bash.interactiveShellInit = lib.mkIf config.programs.nvim.defaultEditor ''
+    # https://www.reddit.com/r/neovim/comments/6npyjk/neovim_terminal_management_avoiding_nested_neovim/
+    if [ -n "$NVIM_LISTEN_ADDRESS" ]; then
+      export VISUAL="nvr -cc tabedit --remote-wait +'set bufhidden=wipe'"
+    else
+      export VISUAL="nvim"
+    fi
+    EDITOR="$VISUAL"
+  '';
+
+  config.nixpkgs.overlays = [
     (self: super: {
       neovim = import "${jens-dotfiles}/pkgs/neovim" { pkgs = super; };
     })
