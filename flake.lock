@@ -1,5 +1,21 @@
 {
   "nodes": {
+    "flake-registry": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1606819374,
+        "narHash": "sha256-JGUmsbvPgK33mQxExZEThg0Q2b0dmlOjU/JYMmpCS+I=",
+        "owner": "NixOS",
+        "repo": "flake-registry",
+        "rev": "94269f4cd4cb50f937200585a9abd05c6faa4452",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "repo": "flake-registry",
+        "type": "github"
+      }
+    },
     "jens-dotfiles": {
       "flake": false,
       "locked": {
@@ -87,6 +103,7 @@
     },
     "root": {
       "inputs": {
+        "flake-registry": "flake-registry",
         "ldap-to-ssh": "ldap-to-ssh",
         "nixpkgs": "nixpkgs",
         "rockpro64Config": "rockpro64Config",
@@ -102,11 +119,11 @@
         "private": "private"
       },
       "locked": {
-        "lastModified": 1609201588,
-        "narHash": "sha256-dqUnOAYXg6fvKOJxi60RsryKsCJHPCYBoCMirDuhpUQ=",
+        "lastModified": 1609375311,
+        "narHash": "sha256-YZaZ9bQ6jfiljnnEY+kowb5gXWwBw+GqMYsD6aNseT0=",
         "ref": "master",
-        "rev": "e79493cd176616ac738c8a629ace544e69800e83",
-        "revCount": 236,
+        "rev": "42fa3c56455002dd2ca63bb0c0c8a95528bbf008",
+        "revCount": 238,
         "type": "git",
         "url": "ssh://git@git.c3pb.de/snowball/nixos-config-for-routeromen.git"
       },

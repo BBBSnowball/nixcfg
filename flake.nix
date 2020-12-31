@@ -6,6 +6,8 @@
   inputs.routeromen.url = "git+ssh://git@git.c3pb.de/snowball/nixos-config-for-routeromen.git";
   inputs.routeromen.inputs.nixpkgs.follows = "nixpkgs";
   inputs.ldap-to-ssh.url = "gitlab:snowball/ldap-to-ssh/a545515d943493bba2be216b58c3ff9b561d3463?host=git.c3pb.de";
+  inputs.flake-registry.url = "github:NixOS/flake-registry";
+  inputs.flake-registry.flake = false;
 
   outputs = { self, nixpkgs, routeromen, ... }@flakeInputs: let
     withFlakeInputs = routeromen.lib.provideArgsToModule flakeInputs;

@@ -1,4 +1,4 @@
-{ config, ldap-to-ssh, ... }:
+{ config, ldap-to-ssh, flake-registry, ... }:
 {
   imports = [ ldap-to-ssh.nixosModule ];
 
@@ -51,7 +51,18 @@
   };
 
   config.security.pam.services.sshd.makeHomeDir = true;
+  config.security.pam.makeHomeDir.skelDirectory = "/etc/skel";
 
+  # this is what the documentation says (XDG_CONFIG_HOME is empty/unset)
+  # see https://nixos.org/manual/nix/unstable/command-ref/conf-file.html
+  config.environment.etc."skel/.config/nix.conf".source = "/etc/user-nonet/nix.conf";
+  # this is what strace shows:
+  config.environment.etc."skel/.config/nix/nix.conf".source = "/etc/user-nonet/nix.conf";
+  config.environment.etc."user-nonet/nix.conf".text = ''
+    # use cached global registry instead of trying to download from Github
+    flake-registry = ${flake-registry}/flake-registry.json
+  '';
+ 
   config.networking.firewall.extraCommands = ''
     iptables -F OUTPUT
     iptables -A OUTPUT -o lo -j ACCEPT
