@@ -89,6 +89,7 @@ in {
   # Enable the OpenSSH daemon.
   services.openssh.enable = true;
 
+  programs.nvim.defaultEditor = true;
 
   #boot.kernelParams = [ "boot.shell_on_fail" ];
 
