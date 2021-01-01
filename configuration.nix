@@ -123,6 +123,8 @@ in {
   security.rngd.enable = false;
 
   system.autoUpgrade.enable = true;
+  system.autoUpgrade.allowReboot = true;
+  environment.etc.current-nixpkgs.source = <nixpkgs>;
 
   services.fstrim.enable = true;
 
