@@ -1,5 +1,7 @@
 {
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-20.09";
+  inputs.flake-compat.url = "github:edolstra/flake-compat";
+  inputs.flake-compat.flake = false;
   inputs.rockpro64Config.url = "github:BBBSnowball/nixos-installer-rockpro64";
   inputs.rockpro64Config.inputs.nixpkgs.follows = "nixpkgs";
   #inputs.routeromen.url = "gitlab:snowball/nixos-config-for-routeromen?host=git.c3pb.de";
@@ -12,10 +14,11 @@
   outputs = { self, nixpkgs, routeromen, ... }@flakeInputs: let
     withFlakeInputs = routeromen.lib.provideArgsToModule (flakeInputs // { inherit withFlakeInputs; });
   in {
+    nixosModule = withFlakeInputs ./main.nix;
     nixosConfigurations.rockpro64-snowball = nixpkgs.lib.nixosSystem {
       system = "aarch64-linux";
       modules =
-        [ (withFlakeInputs ./configuration.nix)
+        [ self.nixosModule
           ({ pkgs, ... }: {
             # Let 'nixos-version --json' know about the Git revision
             # of this flake.
