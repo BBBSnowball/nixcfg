@@ -148,11 +148,11 @@ var config =
 	hideTimeout          : 3000,
 	// max number of participant that will be visible in 
 	// as speaker
-	lastN                : 9,
+	lastN                : 20, //9,
 	mobileLastN          : 1,
 	// Highest number of lastN the user can select manually in 
 	// userinteface
-	maxLastN             : 20,
+	maxLastN             : 50, //20,
 	// If truthy, users can NOT change number of speakers visible
 	lockLastN            : false,
 	// Show logo if "logo" is not null, else show title
