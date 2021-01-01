@@ -26,9 +26,13 @@ let
     loginctl-linger = ./loginctl-linger.nix;
     fix-sudo = ./fix-sudo.nix;
     common = withInputs ./common.nix;
-    enable-flakes = ./enable-flakes.nix;
+    enable-flakes = withInputs ./enable-flakes.nix;
     nvim = withInputs ./nvim.nix;
     emacs = ./emacs.nix;
+    snowball = ./snowball.nix;
+    snowball-headless = ./snowball-headless.nix;
+    snowball-headless-big = ./snowball-headless-big.nix;
+    debug = ./debug.nix;
   };
   modules = publicModules // internalModules;
 in publicModules

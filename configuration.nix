@@ -28,6 +28,9 @@ in {
       ./bbverl/ddclient.nix
       ./homeautomation
       ./emacs.nix
+      modules.snowball
+      modules.snowball-headless
+      modules.snowball-headless-big
     ];
 
   # Use the systemd-boot EFI boot loader.
@@ -100,23 +103,6 @@ in {
   };
   #services.freeradius.debug = true;
 
-
-  # Configure network proxy if necessary
-  # networking.proxy.default = "http://user:password@proxy:port/";
-  # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
-
-  # Select internationalisation properties.
-  #i18n = {
-  #  consoleFont = "Lat2-Terminus16";
-  #  consoleKeyMap = "us";
-  #  defaultLocale = "en_US.UTF-8";
-  #};
-  console.font = "Lat2-Terminus16";
-  console.keyMap = "us";
-  i18n.defaultLocale = "en_US.UTF-8";
-
-  # Set your time zone.
-  time.timeZone = "Europe/Berlin";
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget

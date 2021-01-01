@@ -7,7 +7,7 @@ in {
       modules.zsh
       ./loginctl-linger.nix
       ./fix-sudo.nix
-      ./enable-flakes.nix
+      modules.enable-flakes
       modules.nvim
     ];
 

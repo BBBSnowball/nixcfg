@@ -1,13 +1,21 @@
-{ pkgs, ... }:
+{ config, pkgs, lib, ... }:
 {
-  services.emacs.enable = true;
-  #services.emacs.package = pkgs.emacs-nox;
-  services.emacs.package = ((pkgs.emacsPackagesNgGen pkgs.emacs-nox).emacsWithPackages (epkgs: [
+  config.services.emacs.enable = true;
+  #config.services.emacs.package = pkgs.emacs-nox;
+  config.services.emacs.package = ((pkgs.emacsPackagesNgGen pkgs.emacs-nox).emacsWithPackages (epkgs: [
     #epkgs.emacs-libvterm
     epkgs.vterm
   ]));
 
-  programs.bash.interactiveShellInit = ''
+  options.programs.emacs.defaultEditor = lib.mkOption {
+    type = lib.types.bool;
+    default = false;
+    description = ''
+      When enabled, make emacsclient the default editor using the EDITOR environment variable.
+    '';
+  };
+
+  config.programs.bash.interactiveShellInit = lib.mkIf config.programs.emacs.defaultEditor ''
     # nix-shell is setting TEMPDIR/TEMP/TMPDIR/TMP to $XDG_RUNTIME_DIR. I strongly object
     # to this but it is quite unlikely that this will be fixed soon.
     # see https://github.com/NixOS/nix/issues/2957

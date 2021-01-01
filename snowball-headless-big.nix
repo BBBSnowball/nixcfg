@@ -1,0 +1,3 @@
+{
+  programs.emacs.defaultEditor = true;
+}
