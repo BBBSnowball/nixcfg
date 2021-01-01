@@ -10,15 +10,12 @@
   inputs.flake-registry.flake = false;
 
   outputs = { self, nixpkgs, routeromen, ... }@flakeInputs: let
-    withFlakeInputs = routeromen.lib.provideArgsToModule flakeInputs;
+    withFlakeInputs = routeromen.lib.provideArgsToModule (flakeInputs // { inherit withFlakeInputs; });
   in {
-
     nixosConfigurations.rockpro64-snowball = nixpkgs.lib.nixosSystem {
       system = "aarch64-linux";
       modules =
         [ (withFlakeInputs ./configuration.nix)
-          (withFlakeInputs ./ldap-to-ssh.nix)
-          routeromen.nixosModule
           ({ pkgs, ... }: {
             # Let 'nixos-version --json' know about the Git revision
             # of this flake.

@@ -72,7 +72,7 @@
     "private": {
       "flake": false,
       "locked": {
-        "narHash": "sha256-A8vALy6VxjL4MHzc8l1SycRLoDcz5d5HEkaCkxVIb+E=",
+        "narHash": "sha256-oPeub0AsUsO8Qr1sS4OTG7qq9jLqxXRUU9zP++Z/34M=",
         "path": "./private",
         "type": "path"
       },
@@ -88,11 +88,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1609455160,
-        "narHash": "sha256-/eV+URq0E33ACzRtvsf8R1ySLOoTPljnwBa8Wha4FeM=",
+        "lastModified": 1609468851,
+        "narHash": "sha256-AjY8H9yob6jv2H8eQpak+ND8wa8o6SUHUHcqJeQ1Xr4=",
         "owner": "BBBSnowball",
         "repo": "nixos-installer-rockpro64",
-        "rev": "01449b908ad4731f1b50b81cd137ef508e638a32",
+        "rev": "3fe1eca614c48128d1b0b20195b61e13152526ed",
         "type": "github"
       },
       "original": {
@@ -119,11 +119,11 @@
         "private": "private"
       },
       "locked": {
-        "lastModified": 1609375311,
-        "narHash": "sha256-YZaZ9bQ6jfiljnnEY+kowb5gXWwBw+GqMYsD6aNseT0=",
+        "lastModified": 1609473880,
+        "narHash": "sha256-e6ZTyrWQOcnsoD5WOzLbUU49YdMcWcNmsAydEPPEDsw=",
         "ref": "master",
-        "rev": "42fa3c56455002dd2ca63bb0c0c8a95528bbf008",
-        "revCount": 238,
+        "rev": "cc8d4f381415d41311772b246eb8411044ddc8a6",
+        "revCount": 240,
         "type": "git",
         "url": "ssh://git@git.c3pb.de/snowball/nixos-config-for-routeromen.git"
       },
