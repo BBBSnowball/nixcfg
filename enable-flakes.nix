@@ -23,4 +23,6 @@ with lib;
   config.nix.registry.nixpkgs = if args ? nixpkgs
     then { flake = args.nixpkgs; }
     else { to.type = "path"; to.path = toString <nixpkgs>; };
+
+  config.environment.etc.current-nixpkgs.source = args.nixpkgs or <nixpkgs>;
 }
