@@ -11,28 +11,6 @@
   inputs.flake-registry.url = "github:NixOS/flake-registry";
   inputs.flake-registry.flake = false;
 
-  outputs = { self, nixpkgs, routeromen, ... }@flakeInputs: let
-    withFlakeInputs = routeromen.lib.provideArgsToModule (flakeInputs // { inherit withFlakeInputs; });
-  in {
-    nixosModule = withFlakeInputs ./main.nix;
-    nixosConfigurations.rockpro64-snowball = nixpkgs.lib.nixosSystem {
-      system = "aarch64-linux";
-      modules =
-        [ self.nixosModule
-          ({ pkgs, ... }: {
-            # Let 'nixos-version --json' know about the Git revision
-            # of this flake.
-            system.configurationRevision = nixpkgs.lib.mkIf (self ? rev) self.rev;
-
-            #NOTE Those will work similar to withFlakeInputs but can easily cause infinite recursion, e.g. when used inside `imports`.
-            #_module.args = builtins.removeAttrs flakeInputs ["self" "nixpkgs"];
-            #_module.args.flakeInputs = flakeInputs;
-            #_module.args = { inherit rockpro64Config; };
-
-            _file = "${self}/flake.nix#inline-config";
-          })
-        ];
-    };
-
-  };
+  outputs = { self, nixpkgs, routeromen, ... }@flakeInputs:
+    routeromen.lib.mkFlakeForHostConfig "rockpro64-snowball" "aarch64-linux" ./main.nix flakeInputs;
 }
