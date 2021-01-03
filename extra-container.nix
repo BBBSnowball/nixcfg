@@ -3,8 +3,8 @@ let
   extraContainerSource = pkgs.fetchFromGitHub {
     owner = "erikarvstedt";
     repo = "extra-container";
-    rev = "a6962448872e1a8510cc3c1a5898fc11d728a32f";
-    sha256 = "0hf8j1zj8p9c5h71xwqa45w75ksjjgwhad1aad6wsnazvq6wdxsf";
+    rev = "af89924644a133fa9119da959367a9653600f33d";
+    sha256 = "sha256-QbkT5+o3p2bdPX3hdlBavxL+sFQx/3sX1Kv7ekGuJ38=";
   };
   extra-container = pkgs.callPackage extraContainerSource { pkgSrc = extraContainerSource; };
 in
