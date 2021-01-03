@@ -379,11 +379,11 @@ in {
   # I want persistent tinc keys even in case of a complete rebuild.
   systemd.services."tinc.bbbsnowball".preStart = lib.mkBefore ''
     mkdir -p mkdir -p /etc/tinc/bbbsnowball
-    ( umask 077; cp -u /etc/nixos/secrets/tinc-bbbsnowball-rsa_key.priv /etc/tinc/bbbsnowball/rsa_key.priv )
+    ( umask 077; cp -u /etc/nixos/secret/tinc-bbbsnowball-rsa_key.priv /etc/tinc/bbbsnowball/rsa_key.priv )
   '';
   systemd.services."tinc.door".preStart = lib.mkBefore ''
     mkdir -p mkdir -p /etc/tinc/door
-    ( umask 077; cp -u /etc/nixos/secrets/tinc-door-rsa_key.priv /etc/tinc/door/rsa_key.priv )
+    ( umask 077; cp -u /etc/nixos/secret/tinc-door-rsa_key.priv /etc/tinc/door/rsa_key.priv )
   '';
 
   containers.mate = {

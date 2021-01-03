@@ -1,2 +1,5 @@
 .*.swp
-/secrets/*
+x/
+result*
+/tags
+*.bak
