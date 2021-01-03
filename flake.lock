@@ -82,11 +82,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1609632164,
-        "narHash": "sha256-4gS+0JpQG3Pms4MfsqJcollpvQjX3TDMAAmYS77mMfw=",
+        "lastModified": 1609634917,
+        "narHash": "sha256-S7+LnobntOjkPMqWti97Sr3PkNVdQAhFumCkkSuEl6w=",
         "ref": "master",
-        "rev": "8880eeb33b1c137bc6734a604a5c7bbafe3d0f9e",
-        "revCount": 247,
+        "rev": "e74e353574a5b293b0052cc1695c3c7823cfa932",
+        "revCount": 248,
         "type": "git",
         "url": "ssh://git@git.c3pb.de/snowball/nixos-config-for-routeromen.git"
       },

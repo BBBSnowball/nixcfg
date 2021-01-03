@@ -8,9 +8,9 @@
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
       ./c3pb
-      ./extra-container.nix
-      ./auto-upgrade.nix
-      (withFlakeInputs ./snowball-vm-sonline0.nix)
+      routeromen.nixosModules.extra-container
+      routeromen.nixosModules.auto-upgrade
+      routeromen.nixosModules.snowball-vm-sonline0
     ];
 
   networking.upstreamIp = "192.168.84.135";
