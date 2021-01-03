@@ -144,7 +144,7 @@ in {
     '';
 
     nat.PREROUTING.rules.vpn-deny.order = 100;
-    nat.PREROUTING.rules.vpn-deny.rules = ''
+    nat.PREROUTING.rules.vpn-deny.rules4 = ''
       #TODO We shoud properly filter incoming packets from VPN: deny from vpn_+ in INPUT, allow "--icmp-type destination-unreachable", whitelist appropriate ports
       #TODO This should already be rejected in FORWARD but this is not logged and connection times out instead.
       -i vpn_+ -d 192.168.0.0/16 -p tcp -j DNAT --to-destination 127.0.0.2:1
