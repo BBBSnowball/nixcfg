@@ -51,10 +51,23 @@
         "type": "github"
       }
     },
+    "private": {
+      "flake": false,
+      "locked": {
+        "narHash": "sha256-STC9CSxjFIXlvlMaf2qTUakSaxVep/CqrYCYyTpNC08=",
+        "path": "./private",
+        "type": "path"
+      },
+      "original": {
+        "path": "./private",
+        "type": "path"
+      }
+    },
     "root": {
       "inputs": {
         "flake-compat": "flake-compat",
         "nixpkgs": "nixpkgs",
+        "private": "private",
         "routeromen": "routeromen"
       }
     },
@@ -65,15 +78,15 @@
           "nixpkgs"
         ],
         "private": [
-          "nixpkgs"
+          "private"
         ]
       },
       "locked": {
-        "lastModified": 1609629240,
-        "narHash": "sha256-ogI+9IPIStlsRenD+frHbQVxosQBojLWVgGfWcUZy+0=",
+        "lastModified": 1609634917,
+        "narHash": "sha256-S7+LnobntOjkPMqWti97Sr3PkNVdQAhFumCkkSuEl6w=",
         "ref": "master",
-        "rev": "951b80fcc3087434efef5ceabf0c6c3b36e4b9e4",
-        "revCount": 244,
+        "rev": "e74e353574a5b293b0052cc1695c3c7823cfa932",
+        "revCount": 248,
         "type": "git",
         "url": "ssh://git@git.c3pb.de/snowball/nixos-config-for-routeromen.git"
       },
