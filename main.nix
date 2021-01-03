@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, lib, routeromen, withFlakeInputs, private, ... }:
+{ config, pkgs, lib, routeromen, private, ... }:
 {
   imports =
     [ # Include the results of the hardware scan.
@@ -19,9 +19,6 @@
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
-    socat
-    # not with programs.mosh.enable because we want to do firewall ourselves
-    mosh
     sqlite-interactive
   ];
 
