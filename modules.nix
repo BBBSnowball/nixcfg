@@ -32,6 +32,10 @@ let
     snowball = ./snowball.nix;
     snowball-headless = ./snowball-headless.nix;
     snowball-headless-big = ./snowball-headless-big.nix;
+    auto-upgrade = ./auto-upgrade.nix;
+    extra-container = ./extra-container.nix;
+    snowball-vm-sonline0 = withInputs ./snowball-vm-sonline0.nix;
+    snowball-vm = withInputs ./snowball-vm.nix;
     debug = ./debug.nix;
   };
   modules = publicModules // internalModules;
