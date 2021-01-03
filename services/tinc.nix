@@ -1,12 +1,21 @@
-{ config, pkgs, lib, ... }:
-{
-  services.tinc.networks.bbbsnowball = {
+{ config, pkgs, lib, private, ... }:
+let
+  readKeys = dir: with builtins; with lib;
+    attrsets.filterAttrs (name: value: ! isNull value)
+    (mapAttrs (name: type: if type == "regular" && ! strings.hasSuffix ".old" name then readFile (dir + "/${name}") else null)
+    (readDir dir));
+  
+  tincCommon = name: {
     name = "sonline";
-    hosts = {<redacted>};
+    hosts = readKeys "${private}/tinc/pubkeys/${name}";
     listenAddress = config.networking.upstreamIp;
     package = pkgs.tinc;  # the other nodes use stable so no need to use the pre-release
     interfaceType = "tap";  # must be consistent across the network
     chroot = true; #TODO could be a problem for scripts
+  };
+in
+{
+  services.tinc.networks.bbbsnowball = (tincCommon "bbbsnowball") // {
     extraConfig = ''
       AddressFamily=ipv4
       Mode=switch
@@ -14,13 +23,7 @@
     '';
   };
 
-  services.tinc.networks.door = {
-    name = "sonline";
-    hosts = {<redacted>};
-    listenAddress = config.networking.upstreamIp;
-    package = pkgs.tinc;  # the other nodes use stable so no need to use the pre-release
-    interfaceType = "tap";  # must be consistent across the network
-    chroot = true; #TODO could be a problem for scripts
+  services.tinc.networks.door = (tincCommon "door") // {
     extraConfig = ''
       AddressFamily=ipv4
       Mode=switch

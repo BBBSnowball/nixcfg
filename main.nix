@@ -22,7 +22,7 @@ in {
       namedFirewallPorts
       ./services/taskserver.nix
       ./services/openvpn.nix
-      ./services/tinc.nix
+      (withFlakeInputs ./services/tinc.nix)
       (withFlakeInputs ./containers/feg.nix)
       (withFlakeInputs ./containers/mate.nix)
       (withFlakeInputs ./containers/notes.nix)
