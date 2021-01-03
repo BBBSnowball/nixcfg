@@ -28,6 +28,7 @@ rec {
        modules =
          [ mainModule
            (mkModuleForConfigurationRevision flakeInputs)
+           { networking.hostName = hostname; }
          ];
      };
    };
