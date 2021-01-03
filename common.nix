@@ -25,6 +25,10 @@ in {
 
     neovim neovim-remote fzf ctags
     # only in nixos unstable: page
+
+    socat
+    # not with programs.mosh.enable because we want to do firewall ourselves
+    mosh
   ] ++ (if system == "x86_64-linux" then [
     cpufrequtils
   ] else []);
