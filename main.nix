@@ -11,6 +11,7 @@ in {
       (withFlakeInputs ./ldap-to-ssh.nix)
       routeromen.nixosModules.snowball-headless-big
       ./autossh-to-subraum.nix
+      ./rust.nix
     ];
 
   boot.kernelPackages = pkgs.linuxPackages_latest;
