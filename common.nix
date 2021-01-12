@@ -12,7 +12,7 @@ in {
     ];
 
   environment.systemPackages = with pkgs; [
-    wget byobu tmux git tig cifs-utils pv file killall lzop
+    wget byobu tmux git tig cifs-utils pv file killall lzop vimpager
     dnsutils
     htop iotop iftop unixtools.top
     pciutils usbutils lm_sensors
