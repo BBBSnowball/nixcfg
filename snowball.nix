@@ -1,5 +1,10 @@
-{ lib, config, ... }:
-{
+
+{ lib, config, ... }@args:
+let
+  modules = args.modules or (import ./modules.nix {});
+in {
+  imports = [ modules.common ];
+
   programs.nvim.defaultEditor = lib.mkDefault (! (config.programs.emacs.defaultEditor or false));
 
   console.font = lib.mkDefault "Lat2-Terminus16";

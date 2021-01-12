@@ -12,7 +12,6 @@ in {
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
-      modules.common
       ./wifi-ap-eap/default.nix
       #./sound.nix
       ./smokeping.nix
@@ -28,8 +27,6 @@ in {
       ./bbverl/ddclient.nix
       ./homeautomation
       ./emacs.nix
-      modules.snowball
-      modules.snowball-headless
       modules.snowball-headless-big
     ];
 

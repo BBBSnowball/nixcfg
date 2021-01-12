@@ -30,6 +30,8 @@ let
     nvim = withInputs ./nvim.nix;
     emacs = ./emacs.nix;
     snowball = ./snowball.nix;
+    snowball-big = ./snowball-big.nix;
+    snowball-desktop = ./snowball-desktop.nix;
     snowball-headless = ./snowball-headless.nix;
     snowball-headless-big = ./snowball-headless-big.nix;
     auto-upgrade = ./auto-upgrade.nix;
