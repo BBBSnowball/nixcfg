@@ -26,7 +26,6 @@ in {
       ./bbverl/fhem.nix
       ./bbverl/ddclient.nix
       ./homeautomation
-      ./emacs.nix
       modules.snowball-headless-big
     ];
 
