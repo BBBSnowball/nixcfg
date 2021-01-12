@@ -9,9 +9,7 @@ in {
       ./hardware-configuration.nix
       rockpro64Config.nixosModule
       (withFlakeInputs ./ldap-to-ssh.nix)
-      routeromen.nixosModule
-      routeromen.nixosModules.snowball
-      routeromen.nixosModules.snowball-headless
+      routeromen.nixosModules.snowball-headless-big
       ./autossh-to-subraum.nix
     ];
 
