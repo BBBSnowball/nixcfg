@@ -29,11 +29,11 @@ let
     enable-flakes = withInputs ./enable-flakes.nix;
     nvim = withInputs ./nvim.nix;
     emacs = ./emacs.nix;
-    snowball = ./snowball.nix;
-    snowball-big = ./snowball-big.nix;
-    snowball-desktop = ./snowball-desktop.nix;
-    snowball-headless = ./snowball-headless.nix;
-    snowball-headless-big = ./snowball-headless-big.nix;
+    snowball = withInputs ./snowball.nix;
+    snowball-big = withInputs ./snowball-big.nix;
+    snowball-desktop = withInputs ./snowball-desktop.nix;
+    snowball-headless = withInputs ./snowball-headless.nix;
+    snowball-headless-big = withInputs ./snowball-headless-big.nix;
     auto-upgrade = ./auto-upgrade.nix;
     extra-container = ./extra-container.nix;
     snowball-vm-sonline0 = withInputs ./snowball-vm-sonline0.nix;
