@@ -4,18 +4,24 @@
 , flakeInputs ? self.inputs or { jens-dotfiles = ./submodules/jens-dotfiles; } }:
 let
   withInputs = lib.provideArgsToModule (flakeInputs // { inherit modules; });
+  modulesFromDir = dir: with builtins; let
+    lib = pkgs.lib;
+    f = name: type: if (type == "regular" || type == "symlink") && !isNull (match "([^.].*)[.]nix" name)
+    then { name = head (match "([^.].*)[.]nix" name); value = withInputs (dir + "/${name}"); }
+    else if type == "directory" && ! isNull (match "[^.].*" name)
+    then { inherit name; value = modulesFromDir (dir + "/${name}"); }
+    else null;
+    in lib.attrsets.filterAttrs (name: value: ! isNull value) (lib.attrsets.mapAttrs' f (builtins.readDir dir));
   internalModules = {
   };
-  publicModules = {
+  publicModules = (modulesFromDir ./modules) // {
     # not all of these are useful for other systems
     #FIXME remove those that are not
     wifi-ap-eap = ./wifi-ap-eap/default.nix;
-    zsh = withInputs ./zsh.nix;
     smokeping = ./smokeping.nix;
     ntopng = ./ntopng.nix;
     samba = ./samba.nix;
     tinc = ./tinc.nix;
-    shorewall = ./shorewall.nix;
     dhcpServer = ./dhcp-server.nix;
     pppd = ./pppd.nix;
     syslog-udp = ./bbverl/syslog-udp.nix;
@@ -23,22 +29,6 @@ let
     fhem = ./bbverl/fhem.nix;
     ddclient = ./bbverl/ddclient.nix;
     homeautomation = ./homeautomation;
-    loginctl-linger = ./loginctl-linger.nix;
-    fix-sudo = ./fix-sudo.nix;
-    common = withInputs ./common.nix;
-    enable-flakes = withInputs ./enable-flakes.nix;
-    nvim = withInputs ./nvim.nix;
-    emacs = ./emacs.nix;
-    snowball = withInputs ./snowball.nix;
-    snowball-big = withInputs ./snowball-big.nix;
-    snowball-desktop = withInputs ./snowball-desktop.nix;
-    snowball-headless = withInputs ./snowball-headless.nix;
-    snowball-headless-big = withInputs ./snowball-headless-big.nix;
-    auto-upgrade = ./auto-upgrade.nix;
-    extra-container = ./extra-container.nix;
-    snowball-vm-sonline0 = withInputs ./snowball-vm-sonline0.nix;
-    snowball-vm = withInputs ./snowball-vm.nix;
-    debug = ./debug.nix;
   };
   modules = publicModules // internalModules;
 in publicModules

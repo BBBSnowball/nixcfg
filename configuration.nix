@@ -18,7 +18,7 @@ in {
       ./ntopng.nix
       ./samba.nix
       ./tinc.nix
-      ./shorewall.nix
+      modules.shorewall
       ./dhcp-server.nix
       ./pppd.nix
       ./bbverl/syslog-udp.nix
