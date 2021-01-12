@@ -8,7 +8,7 @@
     [ (modulesPath + "/installer/scan/not-detected.nix")
     ];
 
-  boot.initrd.availableKernelModules = [ ];
+  boot.initrd.availableKernelModules = [ "nvme" ];
   boot.initrd.kernelModules = [ ];
   boot.kernelModules = [ ];
   boot.extraModulePackages = [ ];
@@ -24,9 +24,8 @@
     };
 
   fileSystems."/nix" =
-    { device = "/debian/nix";
-      fsType = "none";
-      options = [ "bind" ];
+    { device = "/dev/disk/by-uuid/9d24eb43-9737-4ad8-b819-d99cdf92c53f";
+      fsType = "ext4";
     };
 
   swapDevices = [ ];
