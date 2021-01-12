@@ -1,7 +1,5 @@
-{ pkgs, lib, ... }@args:
-let
-  modules = args.modules or (import ./modules.nix {});
-in {
+{ pkgs, lib, modules, ... }:
+{
   imports =
     [
       modules.zsh

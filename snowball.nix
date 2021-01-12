@@ -1,8 +1,5 @@
-
-{ lib, config, ... }@args:
-let
-  modules = args.modules or (import ./modules.nix {});
-in {
+{ lib, config, modules, ... }:
+{
   imports = [ modules.common ];
 
   programs.nvim.defaultEditor = lib.mkDefault (! (config.programs.emacs.defaultEditor or false));
