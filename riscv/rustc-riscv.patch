@@ -1,0 +1,11 @@
+--- a/src/bootstrap/doc.rs	2021-01-16 01:29:28.114782019 +0100
++++ b/src/bootstrap/doc.rs	2021-01-16 01:27:40.253674431 +0100
+@@ -440,7 +440,7 @@
+ 
+             // Keep a whitelist so we do not build internal stdlib crates, these will be
+             // build by the rustc step later if enabled.
+-            cargo.arg("-p").arg(package);
++            //cargo.arg("-p").arg(package);
+             // Create all crate output directories first to make sure rustdoc uses
+             // relative links.
+             // FIXME: Cargo should probably do this itself.
