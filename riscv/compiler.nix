@@ -1,6 +1,8 @@
+{ system ? builtins.system, nixpkgs ? <nixpkgs>, ... }:
 let
-  p1 = import <nixpkgs> { };
-  p = import <nixpkgs> {
+  p1 = import nixpkgs { inherit system; };
+  p = import nixpkgs {
+    inherit system;
     crossSystem = p1.lib.systems.examples.riscv32-embedded // {
       # https://github.com/NixOS/nixpkgs/blob/master/doc/languages-frameworks/rust.section.md
       rustc.config = "riscv32imac-unknown-none-elf";
@@ -22,8 +24,8 @@ in rec {
 
   # https://github.com/NixOS/nixpkgs/issues/68804
   #rustc-riscv = p1.pkgsCross.riscv32-embedded.buildPackages.rustc;
-  rustc-riscv = p.buildPackages.rustc.overrideAttrs (old: { patches = (old.patches or []) ++ [ ./rustc-riscv.patch ]; });
-  cargo-riscv = p1.cargo.override { rustc = rustc-riscv; };
+  rustc = p.buildPackages.rustc.overrideAttrs (old: { patches = (old.patches or []) ++ [ ./rustc-riscv.patch ]; });
+  cargo = p1.cargo.override { inherit rustc; };
 
   shell = p.mkShell {
     depsBuildBuild = with p.pkgsBuildBuild; [ openssl pkg-config gcc rustc ];
