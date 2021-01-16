@@ -32,8 +32,9 @@
     forAllSystems = nixpkgs.lib.genAttrs supportedSystems;
     stuff = forAllSystems (system: import ./riscv/compiler.nix { inherit nixpkgs system; });
   in {
-    packages = forAllSystems (system: with stuff.${system}; { rustc-gd32 = rustc; cargo-gd32 = cargo; });
+    packages = forAllSystems (system: with stuff.${system}; { rustc-gd32 = rustc; cargo-gd32 = cargo; gcc-gd32 = gcc; });
     apps = forAllSystems (system: {
+      gcc-gd32   = { type = "app"; program = "${self.packages.${system}.gcc-gd32}/bin/gcc"; };
       rustc-gd32 = { type = "app"; program = "${self.packages.${system}.rustc-gd32}/bin/rustc"; };
       cargo-gd32 = { type = "app"; program = "${self.packages.${system}.cargo-gd32}/bin/cargo"; };
     });
