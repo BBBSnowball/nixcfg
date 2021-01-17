@@ -1,10 +1,14 @@
 --- a/src/librustc_codegen_llvm/back/archive.rs	2020-07-31 22:16:28.000000000 +0200
-+++ b/src/librustc_codegen_llvm/back/archive.rs	2021-01-16 21:43:41.877317411 +0100
-@@ -270,6 +270,7 @@
++++ b/src/librustc_codegen_llvm/back/archive.rs	2021-01-17 18:52:16.145033959 +0100
+@@ -270,8 +270,10 @@
                              // pass it in.
                              //
                              // See LLVM bug 25877 for more info.
 +                            println!("child_name: {:?}", child_name);
                              let child_name =
-                                 Path::new(child_name).file_name().unwrap().to_str().unwrap();
+-                                Path::new(child_name).file_name().unwrap().to_str().unwrap();
++                                Path::new(child_name).file_name().map_or("dummy.o", |x| x.to_str().unwrap_or("dummy2.o"));
++                            println!("child_name: -> {:?}", child_name);
                              let name = CString::new(child_name)?;
+                             let m = llvm::LLVMRustArchiveMemberNew(
+                                 ptr::null(),
