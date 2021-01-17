@@ -18,7 +18,7 @@
     nixosConfigurations.routeromen = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
       modules =
-       [ (self.lib.provideArgsToModule (self.inputs // { modules = self.nixosModules; }) ./configuration.nix)
+       [ (self.lib.provideArgsToModule (self.inputs // { modules = self.nixosModules; inherit self; }) ./configuration.nix)
           ({ pkgs, ... }: {
             _file = "${self}/flake.nix#inline-config";
             # Let 'nixos-version --json' know about the Git revision
