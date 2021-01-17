@@ -24,7 +24,7 @@ in rec {
 
   # https://github.com/NixOS/nixpkgs/issues/68804
   #rustc-riscv = p1.pkgsCross.riscv32-embedded.buildPackages.rustc;
-  rustc = p.buildPackages.rustc.overrideAttrs (old: { patches = (old.patches or []) ++ [ ./rustc-riscv.patch ./dbg.patch ]; });
+  rustc = p.buildPackages.rustc.overrideAttrs (old: { patches = (old.patches or []) ++ [ ./rustc-riscv.patch ]; });
   cargo = p1.cargo.override { inherit rustc; };
 
   shell = p.mkShell {
