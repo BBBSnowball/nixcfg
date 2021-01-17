@@ -38,5 +38,10 @@
       rustc-gd32 = { type = "app"; program = "${self.packages.${system}.rustc-gd32}/bin/rustc"; };
       cargo-gd32 = { type = "app"; program = "${self.packages.${system}.cargo-gd32}/bin/cargo"; };
     });
+    devShells = forAllSystems (system: with self.packages.${system}; with nixpkgs.legacyPackages.${system}; {
+      gd32 = mkShell {
+        buildInputs = [ gcc-gd32 binutils-gd32 rustc-gd32 cargo-gd32 ];
+      };
+    });
   });
 }
