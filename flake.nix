@@ -40,7 +40,7 @@
     });
     devShells = forAllSystems (system: with self.packages.${system}; with nixpkgs.legacyPackages.${system}; {
       gd32 = mkShell {
-        buildInputs = [ gcc-gd32 binutils-gd32 rustc-gd32 cargo-gd32 ];
+        buildInputs = [ gcc-gd32 binutils-gd32 rustc-gd32 cargo-gd32 ] ++ [ gcc lld_11 ];
       };
     });
   });
