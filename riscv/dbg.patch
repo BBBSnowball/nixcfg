@@ -1,0 +1,10 @@
+--- a/src/librustc_codegen_llvm/back/archive.rs	2020-07-31 22:16:28.000000000 +0200
++++ b/src/librustc_codegen_llvm/back/archive.rs	2021-01-16 21:43:41.877317411 +0100
+@@ -270,6 +270,7 @@
+                             // pass it in.
+                             //
+                             // See LLVM bug 25877 for more info.
++                            println!("child_name: {:?}", child_name);
+                             let child_name =
+                                 Path::new(child_name).file_name().unwrap().to_str().unwrap();
+                             let name = CString::new(child_name)?;
