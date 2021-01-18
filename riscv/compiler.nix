@@ -1,4 +1,4 @@
-{ system ? builtins.system, nixpkgs ? <nixpkgs>, ... }:
+{ system ? builtins.currentSystem, nixpkgs ? <nixpkgs>, ... }:
 let
   p1 = import nixpkgs { inherit system; };
   p = import nixpkgs {
@@ -54,9 +54,10 @@ let
     # see https://nixos.wiki/wiki/Overlays#Python_Packages_Overlay
     python3 = super.python3.override {
       packageOverrides = self2: super2: {
-        cython2 = super2.cython.override { inherit (self.pkgsBuildBuild) gdb; };
+        cython = super2.cython.override { inherit (self.pkgsBuildBuild) gdb; };
       };
     };
+    python3Packages = self.python3.pkgs;
 
     thin-provisioning-tools = super.thin-provisioning-tools.override { inherit (self.pkgsBuildBuild) binutils; };
   } else {};
