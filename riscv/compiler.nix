@@ -10,6 +10,7 @@ let
     config.allowUnsupportedSystem = true;
     overlays = [ fixUnnecessaryTargetDepsOverlay overlay ];
   };
+
   openocd-nuclei =
     { openocd, fetchFromGitHub, tcl, which, gnum4, automake, autoconf, libtool, libusb-compat-0_1 }:
     openocd.overrideAttrs (old: {
@@ -43,8 +44,23 @@ let
       configureFlags = old.configureFlags ++ [ "--enable-usbprog" "--enable-rlink" "--enable-armjtagew" ];
     });
 
+  gdb-nuclei =
+    { gdb, fetchFromGitHub }:
+    gdb.overrideAttrs (old: {
+      pname = "gdb-nuclei";
+      version = "2.32";
+
+      src = fetchFromGitHub {
+        owner = "riscv-mcu";
+        repo = "riscv-binutils-gdb";
+        rev = "0a91baedcda62bce52a4a8982df8311c03779318"; # riscv-binutils-2.32-nuclei
+        sha256 = "sha256-Oo6eU/iYXZa3yL+UcL5OspbF2N/0oEWCwvcq7c36OyE=";
+      };
+    });
+
   overlay = self: super: {
     openocd-nuclei = self.callPackage openocd-nuclei {};
+    gdb-nuclei = self.callPackage gdb-nuclei {};
   };
 
   # Some packages are different if the target platform changes but they shouldn't be, in my opinion.
@@ -63,7 +79,7 @@ let
   } else {};
 in rec {
   pkgs = p;
-  inherit (p.pkgsBuildHost) gcc binutils binutils-unwrapped openocd-nuclei;
+  inherit (p.pkgsBuildHost) gcc binutils binutils-unwrapped openocd-nuclei gdb-nuclei;
   gcc-riscv32imac = p1.runCommandLocal "gcc-riscv32imac-${gcc.version}" { } ''
     mkdir $out $out/bin
     for x in as c++ cc g++ gcc ld ld.bfd ; do
