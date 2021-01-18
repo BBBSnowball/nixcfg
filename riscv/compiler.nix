@@ -21,6 +21,28 @@ in rec {
       ln -s ${binutils-unwrapped}/bin/riscv32-none-elf-$x $out/bin/riscv32imac-unknown-none-elf-$x
     done
   '';
+  openocd-nuclei = p1.pkgsBuildTarget.openocd.overrideAttrs (old: {
+    pname = "openocd-nuclei";
+    version = "0.10.0-14";
+    src = p1.fetchFromGitHub {
+      owner = "riscv-mcu";
+      repo = "riscv-openocd";
+      rev = "nuclei-0.10.0-14"; #"9e6a7a2e5320cdaeeafcc79debedfd216f443f19"
+      sha256 = "sha256-dNEwrsIlxlWgm7mH16XBKoUVB78pNcJ58i+VjY33wXE=";
+      fetchSubmodules = true;
+    };
+    # patches in old.patches are already applied to that version
+    patches = [];
+    # autotools are required because we are building from git rather than source download; tcl is useful to avoid
+    # bootstrapping when cross-compiling
+    nativeBuildInputs = (old.nativeBuildInputs or []) ++ (with p.pkgsBuildHost; [ tcl which gnum4 automake autoconf libtool ]);
+    buildInputs = (old.buildInputs or []) ++ (with p.pkgsBuildBuild; [ libusb-compat-0_1 ]);
+    preConfigure = ''
+      ./bootstrap nosubmodule
+    '';
+    NIX_CFLAGS_COMPILE = old.NIX_CFLAGS_COMPILE + " -Wno-error=maybe-uninitialized -Wno-error=format";
+    configureFlags = old.configureFlags ++ [ "--enable-usbprog" "--enable-rlink" "--enable-armjtagew" ];
+  });
 
   # https://github.com/NixOS/nixpkgs/issues/68804
   #rustc-riscv = p1.pkgsCross.riscv32-embedded.buildPackages.rustc;
