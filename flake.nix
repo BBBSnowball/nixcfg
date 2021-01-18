@@ -6,8 +6,10 @@
   inputs.jens-dotfiles.flake = false;
   inputs.private.url = "path:./private";
   inputs.private.flake = false;
+  inputs.nix-bundle.url = "github:matthewbauer/nix-bundle";
+  inputs.nix-bundle.inputs.nixpkgs.follows = "nixpkgs";
 
-  outputs = { self, nixpkgs, ... }: {
+  outputs = { self, nixpkgs, nix-bundle, ... }: {
     lib = import ./lib.nix { pkgs = nixpkgs; };
 
     nixosModules = import ./modules.nix { inherit self; };
@@ -41,11 +43,22 @@
       gdb-gd32   = { type = "app"; program = "${self.packages.${system}.gdb-gd32}/bin/gdb"; };
       rustc-gd32 = { type = "app"; program = "${self.packages.${system}.rustc-gd32}/bin/rustc"; };
       cargo-gd32 = { type = "app"; program = "${self.packages.${system}.cargo-gd32}/bin/cargo"; };
+
+      bundle = { type = "app"; program = builtins.toString (with nixpkgs.legacyPackages.${system}; writeShellScript "nix-bundle-routeromen" ''
+        if [ -z "$1" ] ; then
+          echo "Usage: $0 program" >&2
+          echo "  program: $(nix-instantiate --eval -E 'let x = builtins.getFlake "${toString self}"; in builtins.attrNames x.apps.${system}')"
+          exit 1
+        else
+          nix-build -E 'let x = builtins.getFlake "${toString self}"; in x.defaultBundler { system = "${system}"; program = with x.apps.${system}; ('"$1"').program; }'
+        fi
+      ''); };
     });
     devShells = forAllSystems (system: with self.packages.${system}; with nixpkgs.legacyPackages.${system}; {
       gd32 = mkShell {
         buildInputs = [ gcc-gd32 binutils-gd32 rustc-gd32 cargo-gd32 ] ++ [ gcc lld_11 ];
       };
     });
+    inherit (nix-bundle) bundlers defaultBundler;
   });
 }
