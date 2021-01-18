@@ -48,13 +48,17 @@ let
     # see https://nixos.wiki/wiki/Overlays#Python_Packages_Overlay
     python3 = super.python3.override {
       packageOverrides = self2: super2: {
-        cython = super2.cython.overrideAttrs (old: {
+        cython2 = super2.cython.overrideAttrs (old: {
           # We should not depend on GDB for the target because Cython will only be used on the host.
-          buildInputs = [ self.glibcLocales ];
-          depsHostHost = [ self.gdb ];
+          # However, we don't want to rebuild all of Python because of moving one dependency so we do a quick&dirty monkey patch.
+          #buildInputs = [ self.glibcLocales ];
+          #depsHostHost = [ self.gdb ];
+          buildInputs = [ self.glibcLocales self.pkgsHostHost.gdb ];
         });
+        cython = super.pkgsBuildBuild.python38Packages.cython;
       };
     };
+    thin-provisioning-tools = super.thin-provisioning-tools.override { inherit (self.pkgsBuildBuild) binutils; };
   };
 in rec {
   pkgs = p;
