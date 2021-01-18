@@ -8,7 +8,7 @@ let
       rustc.config = "riscv32imac-unknown-none-elf";
     };
     config.allowUnsupportedSystem = true;
-    overlays = [ overlay ];
+    overlays = [ fixUnnecessaryTargetDepsOverlay overlay ];
   };
   openocd-nuclei =
     { openocd, fetchFromGitHub, tcl, which, gnum4, automake, autoconf, libtool, libusb-compat-0_1 }:
@@ -42,24 +42,24 @@ let
       NIX_CFLAGS_COMPILE = old.NIX_CFLAGS_COMPILE + " -Wno-error=maybe-uninitialized -Wno-error=format";
       configureFlags = old.configureFlags ++ [ "--enable-usbprog" "--enable-rlink" "--enable-armjtagew" ];
     });
+
   overlay = self: super: {
     openocd-nuclei = self.callPackage openocd-nuclei {};
+  };
 
+  # Some packages are different if the target platform changes but they shouldn't be, in my opinion.
+  # For example, Cython uses a GDB for the target but we won't ever use it for RISC-V code.
+  fixUnnecessaryTargetDepsOverlay = self: super:
+  if (with super.stdenv; buildPlatform.config == hostPlatform.config && hostPlatform.config != targetPlatform.config) then {
     # see https://nixos.wiki/wiki/Overlays#Python_Packages_Overlay
     python3 = super.python3.override {
       packageOverrides = self2: super2: {
-        cython2 = super2.cython.overrideAttrs (old: {
-          # We should not depend on GDB for the target because Cython will only be used on the host.
-          # However, we don't want to rebuild all of Python because of moving one dependency so we do a quick&dirty monkey patch.
-          #buildInputs = [ self.glibcLocales ];
-          #depsHostHost = [ self.gdb ];
-          buildInputs = [ self.glibcLocales self.pkgsHostHost.gdb ];
-        });
-        cython = super.pkgsBuildBuild.python38Packages.cython;
+        cython2 = super2.cython.override { inherit (self.pkgsBuildBuild) gdb; };
       };
     };
+
     thin-provisioning-tools = super.thin-provisioning-tools.override { inherit (self.pkgsBuildBuild) binutils; };
-  };
+  } else {};
 in rec {
   pkgs = p;
   inherit (p.pkgsBuildHost) gcc binutils binutils-unwrapped openocd-nuclei;
