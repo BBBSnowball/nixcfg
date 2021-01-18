@@ -25,7 +25,7 @@ let
       };
 
       # patches in old.patches are already applied to that version
-      patches = [];
+      patches = [ ./openocd-profile-usb-blaster.patch ];
 
       # autotools are required because we are building from git rather than source download; tcl is useful to avoid
       # bootstrapping when cross-compiling
