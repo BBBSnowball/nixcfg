@@ -1,0 +1,72 @@
+--- a/src/target/riscv/batch.h	2021-01-18 21:30:59.881128051 +0100
++++ b/src/target/riscv/batch.h	2021-01-19 05:19:30.395920119 +0100
+@@ -59,6 +59,6 @@
+ uint64_t riscv_batch_get_dmi_read(struct riscv_batch *batch, size_t key);
+ 
+ /* Scans in a NOP. */
+-void riscv_batch_add_nop(struct riscv_batch *batch);
++void riscv_batch_add_nop(struct riscv_batch *batch, bool read);
+ 
+ #endif
+--- a/src/target/riscv/batch.c	2021-01-18 21:30:59.881128051 +0100
++++ b/src/target/riscv/batch.c	2021-01-19 05:20:01.923933193 +0100
+@@ -48,7 +48,7 @@
+ 
+ 	keep_alive();
+ 
+-	riscv_batch_add_nop(batch);
++	riscv_batch_add_nop(batch, false);
+ 
+ 	for (size_t i = 0; i < batch->used_scans; ++i) {
+ 		jtag_add_dr_scan(batch->target->tap, 1, batch->fields + i, TAP_IDLE);
+@@ -73,9 +73,9 @@
+ 	struct scan_field *field = batch->fields + batch->used_scans;
+ 	field->num_bits = riscv_dmi_write_u64_bits(batch->target);
+ 	field->out_value = (void *)(batch->data_out + batch->used_scans * sizeof(uint64_t));
+-	field->in_value  = (void *)(batch->data_in  + batch->used_scans * sizeof(uint64_t));
++	field->in_value  = NULL; //(void *)(batch->data_in  + batch->used_scans * sizeof(uint64_t));
+ 	riscv_fill_dmi_write_u64(batch->target, (char *)field->out_value, address, data);
+-	riscv_fill_dmi_nop_u64(batch->target, (char *)field->in_value);
++	//riscv_fill_dmi_nop_u64(batch->target, (char *)field->in_value);
+ 	batch->last_scan = RISCV_SCAN_TYPE_WRITE;
+ 	batch->used_scans++;
+ }
+@@ -86,15 +86,15 @@
+ 	struct scan_field *field = batch->fields + batch->used_scans;
+ 	field->num_bits = riscv_dmi_write_u64_bits(batch->target);
+ 	field->out_value = (void *)(batch->data_out + batch->used_scans * sizeof(uint64_t));
+-	field->in_value  = (void *)(batch->data_in  + batch->used_scans * sizeof(uint64_t));
++	field->in_value  = NULL; //(void *)(batch->data_in  + batch->used_scans * sizeof(uint64_t));
+ 	riscv_fill_dmi_read_u64(batch->target, (char *)field->out_value, address);
+-	riscv_fill_dmi_nop_u64(batch->target, (char *)field->in_value);
++	//riscv_fill_dmi_nop_u64(batch->target, (char *)field->in_value);
+ 	batch->last_scan = RISCV_SCAN_TYPE_READ;
+ 	batch->used_scans++;
+ 
+ 	/* FIXME We get the read response back on the next scan.  For now I'm
+ 	 * just sticking a NOP in there, but this should be coalesced away. */
+-	riscv_batch_add_nop(batch);
++	riscv_batch_add_nop(batch, true);
+ 
+ 	batch->read_keys[batch->read_keys_used] = batch->used_scans - 1;
+ 	return batch->read_keys_used++;
+@@ -116,15 +116,16 @@
+ 		((uint64_t) base[7]) << 56;
+ }
+ 
+-void riscv_batch_add_nop(struct riscv_batch *batch)
++void riscv_batch_add_nop(struct riscv_batch *batch, bool read)
+ {
+ 	assert(batch->used_scans < batch->allocated_scans);
+ 	struct scan_field *field = batch->fields + batch->used_scans;
+ 	field->num_bits = riscv_dmi_write_u64_bits(batch->target);
+ 	field->out_value = (void *)(batch->data_out + batch->used_scans * sizeof(uint64_t));
+-	field->in_value  = (void *)(batch->data_in  + batch->used_scans * sizeof(uint64_t));
++	field->in_value  = read ? (void *)(batch->data_in  + batch->used_scans * sizeof(uint64_t)) : NULL;
+ 	riscv_fill_dmi_nop_u64(batch->target, (char *)field->out_value);
+-	riscv_fill_dmi_nop_u64(batch->target, (char *)field->in_value);
++	if (field->in_value)
++		riscv_fill_dmi_nop_u64(batch->target, (char *)field->in_value);
+ 	batch->last_scan = RISCV_SCAN_TYPE_NOP;
+ 	batch->used_scans++;
+ }
