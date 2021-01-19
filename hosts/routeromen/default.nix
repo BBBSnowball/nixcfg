@@ -12,20 +12,20 @@ in {
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
-      ./wifi-ap-eap/default.nix
-      #./sound.nix
-      ./smokeping.nix
-      ./ntopng.nix
-      ./samba.nix
-      ./tinc.nix
+      ../../wifi-ap-eap/default.nix
+      #../../sound.nix
+      ../../smokeping.nix
+      ../../ntopng.nix
+      ../../samba.nix
+      ../../tinc.nix
       modules.shorewall
-      ./dhcp-server.nix
-      ./pppd.nix
-      ./bbverl/syslog-udp.nix
-      ./bbverl/rabbitmq.nix
-      ./bbverl/fhem.nix
-      ./bbverl/ddclient.nix
-      ./homeautomation
+      ../../dhcp-server.nix
+      ../../pppd.nix
+      ../../bbverl/syslog-udp.nix
+      ../../bbverl/rabbitmq.nix
+      ../../bbverl/fhem.nix
+      ../../bbverl/ddclient.nix
+      ../../homeautomation
       modules.snowball-headless-big
     ];
 

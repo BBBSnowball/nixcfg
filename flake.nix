@@ -1,5 +1,5 @@
 {
-  description = "Config for routeromen, some modules are also used on other hosts";
+  description = "Config for my NixOS hosts";
 
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-20.09";
   inputs.jens-dotfiles.url = "gitlab:jens/dotfiles/cbded47f57fa7c5819709f2a2e97ea29af9b321a?host=git.c3pb.de";
@@ -21,7 +21,7 @@
     nixosConfigurations.routeromen = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
       modules =
-       [ (self.lib.provideArgsToModule (self.inputs // { modules = self.nixosModules; inherit self; }) ./configuration.nix)
+       [ (self.lib.provideArgsToModule (self.inputs // { modules = self.nixosModules; inherit self; }) hosts/routeromen)
           ({ pkgs, ... }: {
             _file = "${self}/flake.nix#inline-config";
             # Let 'nixos-version --json' know about the Git revision
