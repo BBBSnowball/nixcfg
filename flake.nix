@@ -6,7 +6,8 @@
   inputs.jens-dotfiles.flake = false;
   inputs.private.url = "path:./private";
   inputs.private.flake = false;
-  inputs.nix-bundle.url = "github:matthewbauer/nix-bundle";
+  #inputs.nix-bundle.url = "github:matthewbauer/nix-bundle";
+  inputs.nix-bundle.url = "github:BBBSnowball/nix-bundle";
   inputs.nix-bundle.inputs.nixpkgs.follows = "nixpkgs";
 
   outputs = { self, nixpkgs, nix-bundle, ... }: {
@@ -50,7 +51,7 @@
           echo "  program: $(nix-instantiate --eval -E 'let x = builtins.getFlake "${toString self}"; in builtins.attrNames x.apps.${system}')"
           exit 1
         else
-          nix-build -E 'let x = builtins.getFlake "${toString self}"; in x.defaultBundler { system = "${system}"; program = with x.apps.${system}; ('"$1"').program; }'
+          nix-build -E 'let x = builtins.getFlake "${toString self}"; in x.defaultBundler { system = "${system}"; program = with x.apps.${system}; ('"$1"').program; rsyncable = true; }'
         fi
       ''); };
     });

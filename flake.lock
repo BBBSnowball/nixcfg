@@ -26,15 +26,15 @@
         ]
       },
       "locked": {
-        "lastModified": 1606950256,
-        "narHash": "sha256-/yEq60qPyvEUEMJ/S5SMJGXsy44ICJZMzFCPDls1lY4=",
-        "owner": "matthewbauer",
+        "lastModified": 1611019385,
+        "narHash": "sha256-Um0coCW4R74jW6jY4NBq2+jDafLkEeNKFaDiiS/0bcM=",
+        "owner": "BBBSnowball",
         "repo": "nix-bundle",
-        "rev": "27f20492c5ac45ffbf2540aaa97a69d9e911249b",
+        "rev": "66b1e4615c3f9d5b1be9cc42d3c2f2c755372cf6",
         "type": "github"
       },
       "original": {
-        "owner": "matthewbauer",
+        "owner": "BBBSnowball",
         "repo": "nix-bundle",
         "type": "github"
       }
