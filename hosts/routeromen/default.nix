@@ -27,6 +27,7 @@ in {
       ../../bbverl/ddclient.nix
       ../../homeautomation
       modules.snowball-headless-big
+      modules.hotfixes
     ];
 
   # Use the systemd-boot EFI boot loader.
