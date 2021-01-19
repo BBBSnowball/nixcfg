@@ -58,7 +58,7 @@
  	ublast_flush_buffer();
  	return ret;
 --- a/src/flash/nor/gd32vf103.c	2021-01-18 21:30:59.864128043 +0100
-+++ b/src/flash/nor/gd32vf103.c	2021-01-19 03:18:06.230752066 +0100
++++ b/src/flash/nor/gd32vf103.c	2021-01-19 03:46:01.083532728 +0100
 @@ -561,6 +561,25 @@
  	return gd32vf103_write_options(bank);
  }
@@ -104,7 +104,15 @@
  
  	init_reg_param(&reg_params[0], "a0", 32, PARAM_IN_OUT);	/* flash base (in), status (out) */
  	init_reg_param(&reg_params[1], "a1", 32, PARAM_OUT);	/* count (halfword-16bit) */
-@@ -681,8 +705,15 @@
+@@ -670,6 +694,7 @@
+ 		buf_set_u32(reg_params[3].value, 0, 32, source->address + source->size);
+ 		buf_set_u32(reg_params[4].value, 0, 32, address);
+ 
++                print_time(); printf("gd32vf103_write_block: target_run_algorithm\n");
+ 		retval = target_run_algorithm(target, 0, NULL, 5, reg_params,
+ 				write_algorithm->address,write_algorithm->address+4,
+ 				10000, NULL);
+@@ -681,8 +706,15 @@
  			}
  		address +=thisrun_bytes;
  		
