@@ -24,12 +24,6 @@ let
         sha256 = "sha256-dNEwrsIlxlWgm7mH16XBKoUVB78pNcJ58i+VjY33wXE=";
         fetchSubmodules = true;
       };
-      src2 = fetchFromGitHub {
-        owner = "GigaDevice-Semiconductor";
-        repo = "openocd";
-        rev = "f1a0b8e4715b36f09af3eef25933987641fd226a";
-        sha256 = "sha256-ZHRewnB0hFH2DoyOrbNgELO3lESsTG3a7YhLzeCHcIQ=";
-      };
 
       # patches in old.patches are already applied to that version
       patches = [ ./openocd-profile-usb-blaster.patch ];
@@ -50,7 +44,7 @@ let
       configureFlags = old.configureFlags ++ [ "--enable-usbprog" "--enable-rlink" "--enable-armjtagew" ];
 
       postInstall = ''
-        cp $src2/tcl/target/gd32vf103.cfg $out/share/openocd/scripts/target/gd32vf103.cfg
+        cp ${./gd32vf103.cfg} $out/share/openocd/scripts/target/gd32vf103.cfg
       '';
     });
 
