@@ -1,5 +1,5 @@
 --- a/src/jtag/drivers/usb_blaster/usb_blaster.c	2021-01-18 21:30:59.871128047 +0100
-+++ b/src/jtag/drivers/usb_blaster/usb_blaster.c	2021-01-18 21:49:02.621601808 +0100
++++ b/src/jtag/drivers/usb_blaster/usb_blaster.c	2021-01-19 03:03:29.671454255 +0100
 @@ -777,6 +777,19 @@
  	tap_set_state(TAP_RESET);
  }
@@ -33,7 +33,14 @@
  		switch (cmd->type) {
  		case JTAG_RESET:
  			ublast_reset(cmd->cmd.reset->trst, cmd->cmd.reset->srst);
-@@ -817,7 +834,16 @@
+@@ -814,10 +831,23 @@
+ 			ublast_usleep(cmd->cmd.sleep->us);
+ 			break;
+ 		case JTAG_SCAN:
++                        {
++                          static const char * const type2str[] = { "", "SCAN_IN", "SCAN_OUT", "SCAN_IO" };
++                          printf("JTAG_SCAN: %s\n", type2str[jtag_scan_type(cmd->cmd.scan)]);
++                        }
  			ret = ublast_scan(cmd->cmd.scan);
  			break;
  		}
@@ -44,9 +51,72 @@
 +                cnt++;
  	}
 +        clock_gettime(CLOCK_MONOTONIC, &t4);
-+        printf("time for %d commands: ", cnt);
++        printf("%10d.%03d: time for %d commands: ", t4.tv_sec, t4.tv_nsec/1000/1000, cnt);
 +        print_diff(&t1, &t4);
 +        printf("\n");
  
  	ublast_flush_buffer();
  	return ret;
+--- a/src/flash/nor/gd32vf103.c	2021-01-18 21:30:59.864128043 +0100
++++ b/src/flash/nor/gd32vf103.c	2021-01-19 03:18:06.230752066 +0100
+@@ -561,6 +561,25 @@
+ 	return gd32vf103_write_options(bank);
+ }
+ 
++static void print_diff(struct timespec *start, struct timespec *end) {
++  struct timespec result;
++  if (end->tv_nsec >= start->tv_nsec) {
++    result.tv_sec = end->tv_sec - start->tv_sec;
++    result.tv_nsec = end->tv_nsec - start->tv_nsec;
++  } else {
++    result.tv_sec = end->tv_sec - start->tv_sec - 1;
++    result.tv_nsec = end->tv_nsec - start->tv_nsec + 1000*1000*1000;
++  }
++
++  printf("%ld.%03ld", result.tv_sec, result.tv_nsec/1000/1000);
++}
++
++static void print_time(void) {
++  struct timespec t4;
++  clock_gettime(CLOCK_MONOTONIC, &t4);
++  printf("%10ld.%03ld: ", t4.tv_sec, t4.tv_nsec/1000/1000);
++}
++
+ static int gd32vf103_write_block(struct flash_bank *bank, const uint8_t *buffer,
+ 		uint32_t offset, uint32_t count)
+ {
+@@ -577,6 +596,10 @@
+ #include "../../../contrib/loaders/flash/gd32v/gd32vf103.inc"
+ 	};
+ 
++        print_time(); printf("gd32vf103_write_block, offset=0x%08x, count=%d\n", offset, count);
++        struct timespec t1;
++        clock_gettime(CLOCK_MONOTONIC, &t1);
++
+ 	/* flash write code */
+ 	if (target_alloc_working_area(target, sizeof(gd32vf103_flash_write_code),
+ 			&write_algorithm) != ERROR_OK) {
+@@ -604,6 +627,7 @@
+ 			return ERROR_TARGET_RESOURCE_NOT_AVAILABLE;
+ 		}
+ 	}
++        print_time(); printf("gd32vf103_write_block, buffer_size=%d\n", buffer_size);
+ 
+ 	init_reg_param(&reg_params[0], "a0", 32, PARAM_IN_OUT);	/* flash base (in), status (out) */
+ 	init_reg_param(&reg_params[1], "a1", 32, PARAM_OUT);	/* count (halfword-16bit) */
+@@ -681,8 +705,15 @@
+ 			}
+ 		address +=thisrun_bytes;
+ 		
++                print_time(); printf("gd32vf103_write_block, address=0x%08x, thisrun_bytes=%d\n", address, thisrun_bytes);
+ 	}
+ 
++        struct timespec t2;
++        clock_gettime(CLOCK_MONOTONIC, &t2);
++        print_time(); printf("gd32vf103_write_block took ");
++        print_diff(&t1, &t2);
++        printf("\n");
++
+ 
+ 	if (retval == ERROR_FLASH_OPERATION_FAILED) {
+ 		LOG_ERROR("flash write failed at address 0x%"PRIx32,
