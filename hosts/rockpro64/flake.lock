@@ -1,0 +1,155 @@
+{
+  "nodes": {
+    "flake-compat": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1606424373,
+        "narHash": "sha256-oq8d4//CJOrVj+EcOaSXvMebvuTkmBJuT5tzlfewUnQ=",
+        "owner": "edolstra",
+        "repo": "flake-compat",
+        "rev": "99f1c2157fba4bfe6211a321fd0ee43199025dbf",
+        "type": "github"
+      },
+      "original": {
+        "owner": "edolstra",
+        "repo": "flake-compat",
+        "type": "github"
+      }
+    },
+    "flake-registry": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1606819374,
+        "narHash": "sha256-JGUmsbvPgK33mQxExZEThg0Q2b0dmlOjU/JYMmpCS+I=",
+        "owner": "NixOS",
+        "repo": "flake-registry",
+        "rev": "94269f4cd4cb50f937200585a9abd05c6faa4452",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "repo": "flake-registry",
+        "type": "github"
+      }
+    },
+    "jens-dotfiles": {
+      "flake": false,
+      "locked": {
+        "host": "git.c3pb.de",
+        "lastModified": 1587168120,
+        "narHash": "sha256-LBwPcCv7t4F2yQpwXP5o0pXv5a8LOKb6OLQKTg8eNl4=",
+        "owner": "jens",
+        "repo": "dotfiles",
+        "rev": "cbded47f57fa7c5819709f2a2e97ea29af9b321a",
+        "type": "gitlab"
+      },
+      "original": {
+        "host": "git.c3pb.de",
+        "owner": "jens",
+        "repo": "dotfiles",
+        "rev": "cbded47f57fa7c5819709f2a2e97ea29af9b321a",
+        "type": "gitlab"
+      }
+    },
+    "ldap-to-ssh": {
+      "locked": {
+        "host": "git.c3pb.de",
+        "lastModified": 1609297929,
+        "narHash": "sha256-oXmJBkqV2M92umbMziLWzaq89NX0qoA+HbUBrStYuYY=",
+        "owner": "snowball",
+        "repo": "ldap-to-ssh",
+        "rev": "a545515d943493bba2be216b58c3ff9b561d3463",
+        "type": "gitlab"
+      },
+      "original": {
+        "host": "git.c3pb.de",
+        "owner": "snowball",
+        "repo": "ldap-to-ssh",
+        "rev": "a545515d943493bba2be216b58c3ff9b561d3463",
+        "type": "gitlab"
+      }
+    },
+    "nixpkgs": {
+      "locked": {
+        "lastModified": 1609187327,
+        "narHash": "sha256-6lCwWpGpZxbSYclryv4ixsxxbISe7HuLyyQnGWCC8ZQ=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "e065200fc90175a8f6e50e76ef10a48786126e1c",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixos-20.09",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "private": {
+      "flake": false,
+      "locked": {
+        "narHash": "sha256-xRE81bMkQ3oAww07CoScTmfxTognsKIilJOW/EadZ04=",
+        "path": "./private",
+        "type": "path"
+      },
+      "original": {
+        "path": "./private",
+        "type": "path"
+      }
+    },
+    "rockpro64Config": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1609468851,
+        "narHash": "sha256-AjY8H9yob6jv2H8eQpak+ND8wa8o6SUHUHcqJeQ1Xr4=",
+        "owner": "BBBSnowball",
+        "repo": "nixos-installer-rockpro64",
+        "rev": "3fe1eca614c48128d1b0b20195b61e13152526ed",
+        "type": "github"
+      },
+      "original": {
+        "owner": "BBBSnowball",
+        "repo": "nixos-installer-rockpro64",
+        "type": "github"
+      }
+    },
+    "root": {
+      "inputs": {
+        "flake-compat": "flake-compat",
+        "flake-registry": "flake-registry",
+        "ldap-to-ssh": "ldap-to-ssh",
+        "nixpkgs": "nixpkgs",
+        "rockpro64Config": "rockpro64Config",
+        "routeromen": "routeromen"
+      }
+    },
+    "routeromen": {
+      "inputs": {
+        "jens-dotfiles": "jens-dotfiles",
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "private": "private"
+      },
+      "locked": {
+        "lastModified": 1610486656,
+        "narHash": "sha256-2xouKCFL8L4IP/RRd42DYK6JeAAg2EvjDIewVOeVP3o=",
+        "ref": "master",
+        "rev": "3778db332e3aa7e95de8740f19a5a2b57118e6a2",
+        "revCount": 257,
+        "type": "git",
+        "url": "ssh://git@git.c3pb.de/snowball/nixos-config-for-routeromen.git"
+      },
+      "original": {
+        "type": "git",
+        "url": "ssh://git@git.c3pb.de/snowball/nixos-config-for-routeromen.git"
+      }
+    }
+  },
+  "root": "root",
+  "version": 7
+}
