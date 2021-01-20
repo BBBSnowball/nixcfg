@@ -43,6 +43,7 @@
       system = "x86_64-linux";
       modules = [ self.nixosModules.hosts-routeromen ];
     };
+    nixosConfigurations.rockpro64-snowball = (builtins.getFlake (toString ./hosts/rockpro64)).nixosConfigurations.rockpro64-snowball;
   } // (let
     supportedSystems = [ "x86_64-linux" "i686-linux" "aarch64-linux" ];
     forAllSystems = nixpkgs.lib.genAttrs supportedSystems;
