@@ -1,5 +1,21 @@
 {
   "nodes": {
+    "flake-compat": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1611103378,
+        "narHash": "sha256-HSDGKZv3AkL1om31kYo0bFzj75yiE6ycsQVy7Qzpo30=",
+        "owner": "BBBSnowball",
+        "repo": "flake-compat",
+        "rev": "e7e5d481a0e15dcd459396e55327749989e04ce0",
+        "type": "github"
+      },
+      "original": {
+        "owner": "BBBSnowball",
+        "repo": "flake-compat",
+        "type": "github"
+      }
+    },
     "jens-dotfiles": {
       "flake": false,
       "locked": {
@@ -69,6 +85,7 @@
     },
     "root": {
       "inputs": {
+        "flake-compat": "flake-compat",
         "jens-dotfiles": "jens-dotfiles",
         "nix-bundle": "nix-bundle",
         "nixpkgs": "nixpkgs",

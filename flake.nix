@@ -2,26 +2,25 @@
   description = "Config for my NixOS hosts";
 
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-20.09";
+
+  #inputs.flake-compat.url = "github:edolstra/flake-compat";
+  inputs.flake-compat.url = "github:BBBSnowball/flake-compat";
+  inputs.flake-compat.flake = false;
+
   inputs.jens-dotfiles.url = "gitlab:jens/dotfiles/cbded47f57fa7c5819709f2a2e97ea29af9b321a?host=git.c3pb.de";
   inputs.jens-dotfiles.flake = false;
+
   inputs.private.url = "path:./private";
   inputs.private.flake = false;
+
   #inputs.nix-bundle.url = "github:matthewbauer/nix-bundle";
   inputs.nix-bundle.url = "github:BBBSnowball/nix-bundle";
   inputs.nix-bundle.inputs.nixpkgs.follows = "nixpkgs";
 
-  outputs = { self, nixpkgs, nix-bundle, ... }: {
-    lib = import ./lib.nix { pkgs = nixpkgs; };
-
-    nixosModules = import ./modules.nix { inherit self; };
-
-    # The common module includes all the settings and modules that I want to apply to all systems.
-    nixosModule = self.nixosModules.common;
- 
-    nixosConfigurations.routeromen = nixpkgs.lib.nixosSystem {
-      system = "x86_64-linux";
-      modules =
-       [ (self.lib.provideArgsToModule (self.inputs // { modules = self.nixosModules; inherit self; }) hosts/routeromen)
+  outputs = { self, nixpkgs, nix-bundle, ... }: let
+    nixosSystemModule = path: {
+      imports =
+        [ (self.lib.provideArgsToModule (self.inputs // { modules = self.nixosModules; inherit self; }) path)
           ({ pkgs, ... }: {
             _file = "${self}/flake.nix#inline-config";
             # Let 'nixos-version --json' know about the Git revision
@@ -29,6 +28,20 @@
             system.configurationRevision = nixpkgs.lib.mkIf (self ? rev) self.rev;
           })
         ];
+    };
+  in {
+    lib = import ./lib.nix { pkgs = nixpkgs; };
+
+    nixosModules = import ./modules.nix { inherit self; } // {
+      hosts-routeromen = nixosSystemModule hosts/routeromen;
+    };
+
+    # The common module includes all the settings and modules that I want to apply to all systems.
+    nixosModule = self.nixosModules.common;
+ 
+    nixosConfigurations.routeromen = nixpkgs.lib.nixosSystem {
+      system = "x86_64-linux";
+      modules = [ self.nixosModules.hosts-routeromen ];
     };
   } // (let
     supportedSystems = [ "x86_64-linux" "i686-linux" "aarch64-linux" ];
