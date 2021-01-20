@@ -10,5 +10,5 @@ let
     };
   flake = import flake-compat { src = ./.; };
   hostnameFromEnv = getEnv "NIXOS_BUILD_FOR_HOSTNAME";
-  hostname = if hostnameFromEnv != "" then hostnameFromEnv else replaceStrings ["\n"] [""] (readFile "/etc/hostname");
+  hostname = if hostnameFromEnv != "" then hostnameFromEnv else replaceStrings ["\n"] [""] (readFile "/proc/sys/kernel/hostname");
 in flake.defaultNix.nixosModules."hosts-${hostname}"
