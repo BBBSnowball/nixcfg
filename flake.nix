@@ -45,8 +45,8 @@
     };
 
     # getFlake doesn't work here when in pure mode so we use flake-compat.
-    #nixosConfigurations.rockpro64-snowball = (builtins.getFlake (toString ./hosts/rockpro64)).nixosConfigurations.rockpro64-snowball;
-    nixosConfigurations.rockpro64-snowball = (import flake-compat { src = ./hosts/rockpro64; }).defaultNix.nixosConfigurations.rockpro64-snowball;
+    #nixosConfigurations.rockpro64-snowball = (builtins.getFlake (toString ./hosts/rockpro64-snowball)).nixosConfigurations.rockpro64-snowball;
+    nixosConfigurations.rockpro64-snowball = (import flake-compat { src = ./hosts/rockpro64-snowball; }).defaultNix.nixosConfigurations.rockpro64-snowball;
   } // (let
     supportedSystems = [ "x86_64-linux" "i686-linux" "aarch64-linux" ];
     forAllSystems = nixpkgs.lib.genAttrs supportedSystems;
