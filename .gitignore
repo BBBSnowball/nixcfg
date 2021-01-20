@@ -4,3 +4,5 @@ x/
 result*
 /tags
 *.bak
+/secret
+/private
