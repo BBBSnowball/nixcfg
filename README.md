@@ -11,6 +11,19 @@ This repo contains most of my NixOS configs and Nix packages. Feel free to brows
 * Firewall configuration with Shorewall.
 * See `modules` for all the small but useful stuff.
 
+Hardware (with NixOS):
+
+* My laptop and servers (x86_64)
+* GPD Pocket
+* RockPro64
+
+Hardware (without NixOS):
+
+* GD32VF103 (RISC-V)
+* ESP32
+* (nRF52) (PineTime)
+* 8051 (PineBook Pro keyboard, PinePhone keyboard) - coming soon-ish
+
 You can use the code in this repository under the terms of the MIT license. However, I'm using
 several other flakes and repositories, which have their own licenses. Please respect the licenses
 of any code you are using. If you want to add code, you must make it available under the MIT license.
