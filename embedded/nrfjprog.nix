@@ -26,11 +26,21 @@ stdenv.mkDerivation {
   '';
 
   installPhase = ''
-    mkdir -p $out/{bin,include,share,share/nrfjprog/doc,share/mergehex/doc,share/jlink/doc}
+    mkdir -p $out/{bin,lib,include,share,share/nrfjprog/doc,share/mergehex/doc,share/jlink/doc}
     mv {mergehex,nrfjprog}/*.h $out/include/
     mv mergehex/*.txt $out/share/mergehex/doc
     mv nrfjprog/*.txt $out/share/nrfjprog/doc
     mv {mergehex,nrfjprog}/* $out/bin/
     mv JLink*/* $out/bin/
+  '';
+
+  # postFixup doesn't work here because it runs before autoPatchelfHook.
+  preDistPhases = [ "fixup2" ];
+  fixup2 = ''
+    echo abc
+    patchelf --set-interpreter "$(cat $NIX_CC/nix-support/dynamic-linker)" --set-rpath $out/bin:$out/lib $out/bin/nrfjprog
+    for x in $out/bin/libjlinkarm* ; do
+      patchelf --set-rpath $out/bin:$out/lib:$(patchelf --print-rpath "$x") "$x"
+    done
   '';
 }
