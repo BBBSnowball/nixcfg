@@ -14,7 +14,7 @@ let
     in lib.attrsets.filterAttrs (name: value: ! isNull value) (lib.attrsets.mapAttrs' f (builtins.readDir dir));
   internalModules = {
   };
-  publicModules = (modulesFromDir ./modules) // {
+  publicModules = (modulesFromDir ./modules) // (pkgs.lib.attrsets.mapAttrs (name: withInputs) {
     # not all of these are useful for other systems
     #FIXME remove those that are not
     wifi-ap-eap = ./wifi-ap-eap/default.nix;
@@ -29,6 +29,6 @@ let
     fhem = ./bbverl/fhem.nix;
     ddclient = ./bbverl/ddclient.nix;
     homeautomation = ./homeautomation;
-  };
+  });
   modules = publicModules // internalModules;
 in publicModules
