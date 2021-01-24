@@ -10,7 +10,7 @@
   inputs.jens-dotfiles.url = "gitlab:jens/dotfiles/cbded47f57fa7c5819709f2a2e97ea29af9b321a?host=git.c3pb.de";
   inputs.jens-dotfiles.flake = false;
 
-  inputs.private.url = "path:./private";
+  inputs.private.url = "path:./private/data";
   inputs.private.flake = false;
 
   #inputs.nix-bundle.url = "github:matthewbauer/nix-bundle";

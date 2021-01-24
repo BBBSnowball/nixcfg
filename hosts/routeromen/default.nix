@@ -5,7 +5,7 @@
 { config, pkgs, lib, ... }@args:
 let
   modules = args.modules or (import ./modules.nix {});
-  private = args.private or ./private;
+  private = args.private or ./private/data;
   hostSpecificValue = path: import "${private}/by-host/${config.networking.hostName}${path}";
   sshPublicPort = hostSpecificValue "/sshPublicPort.nix";
 in {

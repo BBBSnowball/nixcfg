@@ -74,12 +74,12 @@
     "private": {
       "flake": false,
       "locked": {
-        "narHash": "sha256-xRE81bMkQ3oAww07CoScTmfxTognsKIilJOW/EadZ04=",
-        "path": "./private",
+        "narHash": "sha256-Pu7zEhzqXDwj+rDjyuK1zp5IQ7GhkKjkiXlptNe98YY=",
+        "path": "./private/data",
         "type": "path"
       },
       "original": {
-        "path": "./private",
+        "path": "./private/data",
         "type": "path"
       }
     },

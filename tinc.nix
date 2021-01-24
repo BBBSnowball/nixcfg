@@ -1,5 +1,6 @@
 { config, pkgs, ... }:
 let
+  private    = "/etc/nixos/private/data";
   upstreamIP = (builtins.head config.networking.interfaces.br0.ipv4.addresses).address;
   tincIP     = (builtins.head config.networking.interfaces."tinc.bbbsnowbal".ipv4.addresses).address;
 in
@@ -38,8 +39,8 @@ in
     ${pkgs.coreutils}/bin/install -o tinc.bbbsnowball -m755 -d /etc/tinc/bbbsnowball/hosts
     ${pkgs.coreutils}/bin/install -o root -m400 /etc/nixos/secret/tinc-bbbsnowball-rsa_key.priv /etc/tinc/bbbsnowball/rsa_key.priv
 
-    #${pkgs.coreutils}/bin/install -o tinc.bbbsnowball -m444 /etc/nixos/private/tinc-pubkeys/bbbsnowball/* /etc/tinc/bbbsnowball/hosts/
-    ${pkgs.rsync}/bin/rsync -r --delete /etc/nixos/private/tinc-pubkeys/bbbsnowball/ /etc/tinc/bbbsnowball/hosts
+    #${pkgs.coreutils}/bin/install -o tinc.bbbsnowball -m444 ${private}/tinc-pubkeys/bbbsnowball/* /etc/tinc/bbbsnowball/hosts/
+    ${pkgs.rsync}/bin/rsync -r --delete ${private}/tinc-pubkeys/bbbsnowball/ /etc/tinc/bbbsnowball/hosts
     chmod 444 /etc/tinc/bbbsnowball/hosts/*
     chown -R tinc.bbbsnowball /etc/tinc/bbbsnowball/hosts/
   '';
