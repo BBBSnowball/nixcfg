@@ -3,27 +3,11 @@
     "flake-compat": {
       "flake": false,
       "locked": {
-        "lastModified": 1606424373,
-        "narHash": "sha256-oq8d4//CJOrVj+EcOaSXvMebvuTkmBJuT5tzlfewUnQ=",
-        "owner": "edolstra",
-        "repo": "flake-compat",
-        "rev": "99f1c2157fba4bfe6211a321fd0ee43199025dbf",
-        "type": "github"
-      },
-      "original": {
-        "owner": "edolstra",
-        "repo": "flake-compat",
-        "type": "github"
-      }
-    },
-    "flake-compat_2": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1611107432,
-        "narHash": "sha256-6kLOraj0ovkKAIRF+ZzMzZZ8UPttkTlkSs4pjLHZZL4=",
+        "lastModified": 1611465702,
+        "narHash": "sha256-Vcfqx3fNbzdS0uFx5ztaOv7hefZvl21LKVSTLqiD2CM=",
         "owner": "BBBSnowball",
         "repo": "flake-compat",
-        "rev": "5f989af4db2a323ac7d2b2ef2646ecad723ffa1a",
+        "rev": "70260a0ac22e79fde5ec51140c133725a92c9082",
         "type": "github"
       },
       "original": {
@@ -124,12 +108,12 @@
     "private": {
       "flake": false,
       "locked": {
-        "narHash": "sha256-xRE81bMkQ3oAww07CoScTmfxTognsKIilJOW/EadZ04=",
-        "path": "./private",
+        "narHash": "sha256-Pu7zEhzqXDwj+rDjyuK1zp5IQ7GhkKjkiXlptNe98YY=",
+        "path": "./private/data",
         "type": "path"
       },
       "original": {
-        "path": "./private",
+        "path": "./private/data",
         "type": "path"
       }
     },
@@ -155,7 +139,6 @@
     },
     "root": {
       "inputs": {
-        "flake-compat": "flake-compat",
         "flake-registry": "flake-registry",
         "ldap-to-ssh": "ldap-to-ssh",
         "nixpkgs": "nixpkgs",
@@ -165,7 +148,7 @@
     },
     "routeromen": {
       "inputs": {
-        "flake-compat": "flake-compat_2",
+        "flake-compat": "flake-compat",
         "jens-dotfiles": "jens-dotfiles",
         "nix-bundle": "nix-bundle",
         "nixpkgs": [
@@ -174,7 +157,7 @@
         "private": "private"
       },
       "locked": {
-        "narHash": "sha256-t2xzGvtFsjjgsFQw895kKmrf84ceZjWZoYyKjO7QEzQ=",
+        "narHash": "sha256-b0D0mFxMkxYX6lms1Y8mOANgxarBg5CFlL6WJYlgLMk=",
         "path": "../..",
         "type": "path"
       },

@@ -1,7 +1,5 @@
 {
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-20.09";
-  inputs.flake-compat.url = "github:edolstra/flake-compat";
-  inputs.flake-compat.flake = false;
   inputs.rockpro64Config.url = "github:BBBSnowball/nixos-installer-rockpro64";
   inputs.rockpro64Config.inputs.nixpkgs.follows = "nixpkgs";
   #inputs.routeromen.url = "gitlab:snowball/nixos-config-for-routeromen?host=git.c3pb.de";
