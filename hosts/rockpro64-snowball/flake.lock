@@ -16,6 +16,22 @@
         "type": "github"
       }
     },
+    "flake-compat_2": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1611107432,
+        "narHash": "sha256-6kLOraj0ovkKAIRF+ZzMzZZ8UPttkTlkSs4pjLHZZL4=",
+        "owner": "BBBSnowball",
+        "repo": "flake-compat",
+        "rev": "5f989af4db2a323ac7d2b2ef2646ecad723ffa1a",
+        "type": "github"
+      },
+      "original": {
+        "owner": "BBBSnowball",
+        "repo": "flake-compat",
+        "type": "github"
+      }
+    },
     "flake-registry": {
       "flake": false,
       "locked": {
@@ -149,6 +165,7 @@
     },
     "routeromen": {
       "inputs": {
+        "flake-compat": "flake-compat_2",
         "jens-dotfiles": "jens-dotfiles",
         "nix-bundle": "nix-bundle",
         "nixpkgs": [
@@ -157,17 +174,13 @@
         "private": "private"
       },
       "locked": {
-        "lastModified": 1611030618,
-        "narHash": "sha256-MhGyjxUWFEaOnY+GkwOBUv3k27xLxpEPvEdqcr5Th+Q=",
-        "ref": "master",
-        "rev": "25c6e46973c35bd76cd7e69c35307f236fb24cc2",
-        "revCount": 284,
-        "type": "git",
-        "url": "ssh://git@git.c3pb.de/snowball/nixos-config-for-routeromen.git"
+        "narHash": "sha256-t2xzGvtFsjjgsFQw895kKmrf84ceZjWZoYyKjO7QEzQ=",
+        "path": "../..",
+        "type": "path"
       },
       "original": {
-        "type": "git",
-        "url": "ssh://git@git.c3pb.de/snowball/nixos-config-for-routeromen.git"
+        "path": "../..",
+        "type": "path"
       }
     }
   },
