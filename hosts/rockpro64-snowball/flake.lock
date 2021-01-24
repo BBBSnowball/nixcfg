@@ -69,13 +69,33 @@
         "type": "gitlab"
       }
     },
+    "nix-bundle": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1611019385,
+        "narHash": "sha256-Um0coCW4R74jW6jY4NBq2+jDafLkEeNKFaDiiS/0bcM=",
+        "owner": "BBBSnowball",
+        "repo": "nix-bundle",
+        "rev": "66b1e4615c3f9d5b1be9cc42d3c2f2c755372cf6",
+        "type": "github"
+      },
+      "original": {
+        "owner": "BBBSnowball",
+        "repo": "nix-bundle",
+        "type": "github"
+      }
+    },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1609187327,
-        "narHash": "sha256-6lCwWpGpZxbSYclryv4ixsxxbISe7HuLyyQnGWCC8ZQ=",
+        "lastModified": 1611413872,
+        "narHash": "sha256-nD9e3f9P+YQ1qDSHdRXIAor40eqANBv1o03zGvpJsnM=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "e065200fc90175a8f6e50e76ef10a48786126e1c",
+        "rev": "fe08be60cb84148a3dba29cfdb090fa185cacdaa",
         "type": "github"
       },
       "original": {
@@ -130,17 +150,18 @@
     "routeromen": {
       "inputs": {
         "jens-dotfiles": "jens-dotfiles",
+        "nix-bundle": "nix-bundle",
         "nixpkgs": [
           "nixpkgs"
         ],
         "private": "private"
       },
       "locked": {
-        "lastModified": 1610486656,
-        "narHash": "sha256-2xouKCFL8L4IP/RRd42DYK6JeAAg2EvjDIewVOeVP3o=",
+        "lastModified": 1611030618,
+        "narHash": "sha256-MhGyjxUWFEaOnY+GkwOBUv3k27xLxpEPvEdqcr5Th+Q=",
         "ref": "master",
-        "rev": "3778db332e3aa7e95de8740f19a5a2b57118e6a2",
-        "revCount": 257,
+        "rev": "25c6e46973c35bd76cd7e69c35307f236fb24cc2",
+        "revCount": 284,
         "type": "git",
         "url": "ssh://git@git.c3pb.de/snowball/nixos-config-for-routeromen.git"
       },
