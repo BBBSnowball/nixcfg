@@ -80,5 +80,13 @@
       };
     });
     inherit (nix-bundle) bundlers defaultBundler;
-  });
+  }) // {
+    checks.x86_64-linux = {
+      host-routeromen = self.nixosConfigurations.routeromen.config.system.build.toplevel;
+      #host-rockpro64-snowball = nixpkgs.legacyPackages.x86_64-linux.runCommand "drv" { target = self.nixosConfigurations.rockpro64-snowball.config.system.build.toplevel.drvPath; } ''ln -s $target $out'';
+    } // self.packages.x86_64-linux;
+    checks.aarch64-linux = {
+      host-rockpro64-snowball = self.nixosConfigurations.rockpro64-snowball.config.system.build.toplevel;
+    } // self.packages.aarch64-linux;
+  };
 }
