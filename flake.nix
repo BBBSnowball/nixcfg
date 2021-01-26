@@ -55,6 +55,7 @@
     packages = forAllSystems (system: with stuff.${system}; {
       rustc-gd32 = rustc; cargo-gd32 = cargo; gcc-gd32 = gcc; binutils-gd32 = binutils; openocd-gd32 = openocd-nuclei; gdb-gd32 = gdb-nuclei;
       nrfjprog = nixpkgs.legacyPackages.${system}.callPackage ./embedded/nrfjprog.nix {};
+      apio = nixpkgs.legacyPackages.${system}.callPackage ./embedded/apio.nix {};
     });
     apps = forAllSystems (system: {
       gcc-gd32   = { type = "app"; program = "${self.packages.${system}.gcc-gd32}/bin/gcc"; };
@@ -63,6 +64,7 @@
       rustc-gd32 = { type = "app"; program = "${self.packages.${system}.rustc-gd32}/bin/rustc"; };
       cargo-gd32 = { type = "app"; program = "${self.packages.${system}.cargo-gd32}/bin/cargo"; };
       nrfjprog   = { type = "app"; program = "${self.packages.${system}.nrfjprog}/bin/nrfjprog"; };
+      apio       = { type = "app"; program = "${self.packages.${system}.apio}/bin/apio"; };
 
       bundle = { type = "app"; program = builtins.toString (with nixpkgs.legacyPackages.${system}; writeShellScript "nix-bundle-routeromen" ''
         if [ -z "$1" ] ; then
