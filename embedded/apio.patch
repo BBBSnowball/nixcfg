@@ -1,0 +1,65 @@
+diff -Naur a/apio/managers/installer.py b/apio/managers/installer.py
+--- a/apio/managers/installer.py	1980-01-02 00:00:00.000000000 +0100
++++ b/apio/managers/installer.py	2021-01-27 00:30:32.544593730 +0100
+@@ -176,6 +176,9 @@
+                 self._unpack(dlpath, util.safe_join(
+                     self.packages_dir, self.package_name))
+ 
++            import apio.nixos
++            apio.nixos.autoPatchelf(package_dir)
++
+             remove(dlpath)
+             self.profile.add_package(self.package, self.version)
+             self.profile.save()
+diff -Naur a/apio/nixos.py b/apio/nixos.py
+--- a/apio/nixos.py	1970-01-01 01:00:00.000000000 +0100
++++ b/apio/nixos.py	2021-01-27 01:20:58.397570459 +0100
+@@ -0,0 +1,8 @@
++import os
++from apio import util
++
++def autoPatchelf(dir):
++    result = util.exec_command([os.path.abspath(__file__) + ".sh", dir], stdout=None, stderr=None, env={})
++    if result.get('returncode') != 0:
++        raise Exception("Couldn't patch ELF files in %r" % (dir,))
++
+diff -Naur a/apio/nixos.py.sh b/apio/nixos.py.sh
+--- a/apio/nixos.py.sh	1970-01-01 01:00:00.000000000 +0100
++++ b/apio/nixos.py.sh	2021-01-27 01:47:07.217135776 +0100
+@@ -0,0 +1,24 @@
++#!@bash@/bin/bash -e
++
++cd "$1"
++export PATH=@coreutils@/bin:@bash@/bin
++exec @nix@/bin/nix-shell --pure @autoPatchShell@ --run 'autoPatchelf .'
++
++# copied from nixpkgs, pkgs/stdenv/generic/setup.sh
++# Return success if the specified file is an ELF object.
++isELF() {
++    local fn="$1"
++    local fd
++    local magic
++    exec {fd}< "$fn"
++    read -r -n 4 -u "$fd" magic
++    exec {fd}<&-
++    if [ "$magic" = $'\177ELF' ]; then return 0; else return 1; fi
++}
++
++NIX_CC="@NIX_CC@"
++nativeBuildInputs="@stdenv_nativeBuildInputs@"
++source @stdenv@/nix-support/setup-hook
++source @autoPatchelfHook@/nix-support/setup-hook
++autoPatchelf "$@"
++
+diff -Naur a/setup.py b/setup.py
+--- a/setup.py	1980-01-02 00:00:00.000000000 +0100
++++ b/setup.py	2021-01-27 00:28:19.352776942 +0100
+@@ -65,7 +65,7 @@
+     },
+ 
+     install_requires=[
+-        'click>=5,<7',
++        'click>=5,<8',
+         'semantic_version>=2.5.0,<3',
+         'requests>=2.4.0,<3',
+         'pyjwt>=1.5.3,<2',
