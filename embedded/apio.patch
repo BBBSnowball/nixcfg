@@ -13,43 +13,18 @@ diff -Naur a/apio/managers/installer.py b/apio/managers/installer.py
              self.profile.save()
 diff -Naur a/apio/nixos.py b/apio/nixos.py
 --- a/apio/nixos.py	1970-01-01 01:00:00.000000000 +0100
-+++ b/apio/nixos.py	2021-01-27 01:20:58.397570459 +0100
-@@ -0,0 +1,8 @@
++++ b/apio/nixos.py	2021-01-27 01:53:19.185071422 +0100
+@@ -0,0 +1,11 @@
 +import os
 +from apio import util
 +
 +def autoPatchelf(dir):
-+    result = util.exec_command([os.path.abspath(__file__) + ".sh", dir], stdout=None, stderr=None, env={})
++    result = util.exec_command(['@nix@/bin/nix-shell', '--pure', '@autoPatchShell@', '--run', 'autoPatchelf .'], stdout=None, stderr=None, cwd=dir, env={
++        "NIX_BUILD_SHELL": "@bash@/bin/bash",
++        "PATH": "@coreutils@/bin:@bash@/bin",
++    })
 +    if result.get('returncode') != 0:
 +        raise Exception("Couldn't patch ELF files in %r" % (dir,))
-+
-diff -Naur a/apio/nixos.py.sh b/apio/nixos.py.sh
---- a/apio/nixos.py.sh	1970-01-01 01:00:00.000000000 +0100
-+++ b/apio/nixos.py.sh	2021-01-27 01:47:07.217135776 +0100
-@@ -0,0 +1,24 @@
-+#!@bash@/bin/bash -e
-+
-+cd "$1"
-+export PATH=@coreutils@/bin:@bash@/bin
-+exec @nix@/bin/nix-shell --pure @autoPatchShell@ --run 'autoPatchelf .'
-+
-+# copied from nixpkgs, pkgs/stdenv/generic/setup.sh
-+# Return success if the specified file is an ELF object.
-+isELF() {
-+    local fn="$1"
-+    local fd
-+    local magic
-+    exec {fd}< "$fn"
-+    read -r -n 4 -u "$fd" magic
-+    exec {fd}<&-
-+    if [ "$magic" = $'\177ELF' ]; then return 0; else return 1; fi
-+}
-+
-+NIX_CC="@NIX_CC@"
-+nativeBuildInputs="@stdenv_nativeBuildInputs@"
-+source @stdenv@/nix-support/setup-hook
-+source @autoPatchelfHook@/nix-support/setup-hook
-+autoPatchelf "$@"
 +
 diff -Naur a/setup.py b/setup.py
 --- a/setup.py	1980-01-02 00:00:00.000000000 +0100

@@ -43,11 +43,6 @@ python3Packages.buildPythonPackage rec {
   autoPatchShell = builtins.unsafeDiscardOutputDependency (mkShell { buildInputs = [ stdenv autoPatchelfHook ]; }).drvPath;
 
   postPatch = ''
-    substituteInPlace apio/nixos.py.sh --subst-var autoPatchelfHook --subst-var bash --subst-var nix --subst-var autoPatchShell --subst-var coreutils
-  '';
-
-  postInstall = ''
-    chmod +x apio/nixos.py.sh
-    cp apio/nixos.py.sh $out/lib/python*/site-packages/apio/
+    substituteInPlace apio/nixos.py --subst-var autoPatchelfHook --subst-var bash --subst-var nix --subst-var autoPatchShell --subst-var coreutils
   '';
 }
