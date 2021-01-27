@@ -2,18 +2,54 @@
 /plugin/;
 
 / {
-  //compatible = "pine64,rockpro64v2.1", "pine64,rockpro64", "rockchip,rk3399";
   compatible = "pine64,rockpro64v2.1", "pine64,rockpro64";
+
+  // thermal-zone trips [°C]
+  // name          4.19       mainline
+  // cpu_alert0    80_000     70_000
+  // cpu_alert1    95_000     75_000
+  // cpu_crit      100_000    95_000
+  //
+  // 4.19 is from this kernel: https://github.com/BBBSnowball/nixos-installer-rockpro64/blob/master/linux-rock64/4.19.nix
+  // mainline is from version 5.9.16.
+  //
+  // 4.19 slows down one CPU for the first trip and two for the second one. It also enables the fan.
+  // mainline slows down two CPUs for the first trip and all of them for the second trip.
+  //
+  // This overlay implements the following mix of those:
+  // - Use temperatures and throttling of mainline.
+  // - Enable the fan at those temperatures.
+  // - Enable the fan at slow speed if temperature is above 50°C.
 
   fragment@0 {
     target-path = "/pwm-fan";
     __overlay__ {
       cooling-min-state = <0>;
-      cooling-max-state = <3>;
-      //FIXME add 80
-      cooling-levels = <0 102 170 230>;
+      cooling-max-state = <4>;
+      cooling-levels = <0 80 102 170 230>;
     };
   };
 
-  //FIXME adjust thermal-zones
+  fragment@1 {
+    target-path = "/thermal-zones/cpu/trips";
+    __overlay__ {
+      cpu_warm: cpu_warm {
+        temperature = <50000>;
+        hysteresis = <5000>;
+        type = "passive";
+      };
+    };
+  };
+
+  fragment@2 {
+    target-path = "/thermal-zones/cpu/trips";
+    __overlay__ {
+      cooling-maps {
+        map10 {
+          trip = <&cpu_warm>;
+          cooling-device = <&{/pwm-fan} 0x00 0x01>;
+        };
+      };
+    };
+  };
 };
