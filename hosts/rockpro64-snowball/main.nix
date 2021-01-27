@@ -12,6 +12,7 @@ in {
       routeromen.nixosModules.snowball-headless-big
       ./autossh-to-subraum.nix
       ./rust.nix
+      ./rockpro64-fan.nix
     ];
 
   boot.kernelPackages = pkgs.linuxPackages_latest;
