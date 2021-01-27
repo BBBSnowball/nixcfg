@@ -23,7 +23,8 @@
 
   fragment@0 {
     target-path = "/pwm-fan";
-    __overlay__ {
+    pwm_fan: __overlay__ {
+      #cooling-cells = <0x02>;
       cooling-min-state = <0>;
       cooling-max-state = <4>;
       cooling-levels = <0 80 102 170 230>;
@@ -42,13 +43,38 @@
   };
 
   fragment@2 {
-    target-path = "/thermal-zones/cpu/trips";
+    target-path = "/thermal-zones/cpu/trips/cpu_alert0";
+    cpu_alert0: __overlay__ {};
+  };
+
+  fragment@3 {
+    target-path = "/thermal-zones/cpu/trips/cpu_alert1";
+    cpu_alert1: __overlay__ {};
+  };
+
+  fragment@4 {
+    target-path = "/thermal-zones/cpu/trips/cpu_crit";
+    cpu_crit: __overlay__ {};
+  };
+
+  fragment@5 {
+    target-path = "/thermal-zones/cpu/cooling-maps";
     __overlay__ {
-      cooling-maps {
-        map10 {
-          trip = <&cpu_warm>;
-          cooling-device = <&{/pwm-fan} 0x00 0x01>;
-        };
+      map10 {
+        trip = <&cpu_warm>;
+        cooling-device = <&pwm_fan 0x00 0x01>;
+      };
+      map11 {
+        trip = <&cpu_alert0>;
+        cooling-device = <&pwm_fan 0x01 0x02>;
+      };
+      map12 {
+        trip = <&cpu_alert1>;
+        cooling-device = <&pwm_fan 0x02 0x03>;
+      };
+      map13 {
+        trip = <&cpu_crit>;
+        cooling-device = <&pwm_fan 0x03 0x04>;
       };
     };
   };
