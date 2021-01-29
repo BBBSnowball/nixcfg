@@ -50,13 +50,21 @@
   } // (let
     supportedSystems = [ "x86_64-linux" "i686-linux" "aarch64-linux" ];
     forAllSystems = nixpkgs.lib.genAttrs supportedSystems;
-    stuff = forAllSystems (system: import ./riscv/compiler.nix { inherit nixpkgs system; });
+    gd32 = forAllSystems (system: import ./riscv/compiler.nix { inherit nixpkgs system; });
+    rppico = forAllSystems (system: import ./raspi-pico/toolchain.nix { inherit nixpkgs system; });
   in {
-    packages = forAllSystems (system: with stuff.${system}; {
-      rustc-gd32 = rustc; cargo-gd32 = cargo; gcc-gd32 = gcc; binutils-gd32 = binutils; openocd-gd32 = openocd-nuclei; gdb-gd32 = gdb-nuclei;
-      nrfjprog = nixpkgs.legacyPackages.${system}.callPackage ./embedded/nrfjprog.nix {};
-      apio = nixpkgs.legacyPackages.${system}.callPackage ./embedded/apio.nix {};
-    });
+    packages = forAllSystems (system: let pkgs = nixpkgs.legacyPackages.${system}; in {
+      nrfjprog = pkgs.callPackage ./embedded/nrfjprog.nix {};
+      apio = pkgs.callPackage ./embedded/apio.nix {};
+    } // (with gd32.${system}; {
+      gcc-gd32 = gcc; binutils-gd32 = binutils; openocd-gd32 = openocd-nuclei; gdb-gd32 = gdb-nuclei;
+      rustc-gd32 = rustc; cargo-gd32 = cargo;
+    }) // (with rppico.${system}; {
+      gcc-rppico = gcc; binutils-rppico = binutils; gdb-rppico = gdb;
+      inherit openocd-rppico picotool pioasm elf2uf2 picoprobe picosdk;
+      rppicoShell = shell;
+    }) // (let x = import ./raspi-zero/overlay.nix (pkgs // x) pkgs; in x));
+
     apps = forAllSystems (system: {
       gcc-gd32   = { type = "app"; program = "${self.packages.${system}.gcc-gd32}/bin/gcc"; };
       openocd-gd32 = { type = "app"; program = "${self.packages.${system}.openocd-gd32}/bin/openocd"; };

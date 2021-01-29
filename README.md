@@ -22,6 +22,8 @@ Hardware (without NixOS):
 * GD32VF103 (RISC-V)
 * ESP32
 * (nRF52) (PineTime)
+* UPduino v3.0
+* Raspberry Pi Pico (RP2040)
 * 8051 (PineBook Pro keyboard, PinePhone keyboard) - coming soon-ish
 
 You can use the code in this repository under the terms of the MIT license. However, I'm using
