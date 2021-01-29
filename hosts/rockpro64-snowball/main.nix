@@ -13,6 +13,7 @@ in {
       ./autossh-to-subraum.nix
       ./rust.nix
       ./rockpro64-fan.nix
+      routeromen.nixosModules.raspi-pico
     ];
 
   boot.kernelPackages = pkgs.linuxPackages_latest;

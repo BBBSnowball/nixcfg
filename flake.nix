@@ -34,6 +34,7 @@
 
     nixosModules = import ./modules.nix { inherit self; } // {
       hosts-routeromen = nixosSystemModule hosts/routeromen;
+      raspi-pico = import ./raspi-pico;
     };
 
     # The common module includes all the settings and modules that I want to apply to all systems.
@@ -62,6 +63,7 @@
     }) // (with rppico.${system}; {
       gcc-rppico = gcc; binutils-rppico = binutils; gdb-rppico = gdb;
       inherit openocd-rppico picotool pioasm elf2uf2 picoprobe picosdk;
+      inherit picoexamples picoplayground picoextras;
       rppicoShell = shell;
     }) // (let x = import ./raspi-zero/overlay.nix (pkgs // x) pkgs; in x));
 

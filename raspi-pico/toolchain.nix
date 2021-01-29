@@ -62,14 +62,7 @@ let
         "--enable-ftdi" "--enable-sysfsgpio" "--enable-bcm2835gpio"
       ] ++ (if enablePicoprobe then [ "--enable-picoprobe" ] else []);
     });
-
-  picoexamples = { fetchFromGitHub }: fetchFromGitHub {
-      owner = "raspberrypi";
-      repo = "pico-examples";
-      rev = "58f46b252629da33069bb5d04625c223b5262649";  # master
-      sha256 = "sha256-/lh5y38WxvVhg5xcBtyYS9mcx9Xs1AbAChHiDN9FXuk=";
-  };
-
+  
   picosdk = { stdenv, fetchFromGitHub, python3, pkg-config, cmake, gnumake, gcc, doxygen, graphviz, picoexamples, which, picotool, pioasm, elf2uf2 }: stdenv.mkDerivation {
     pname = "pico-sdk";
     version = "2021-01-23-0f3b79";
@@ -82,7 +75,7 @@ let
       fetchSubmodules = true;
     };
 
-    PICO_EXAMPLES_PATH = picoexamples;
+    PICO_EXAMPLES_PATH = picoexamples.src;
 
     depsBuildBuild = [ doxygen graphviz gcc ];
     depsBuildBuildPropagated = [ which picotool pioasm elf2uf2 ];
@@ -206,13 +199,6 @@ let
 
     buildInputs = [ picosdk ];
 
-    #PICO_SDK_PATH = picosdk;
-
-    #patchPhase = ''
-    #  #FIXME fix in picosdk
-    #  echo "add_custom_target( Pioasm )" >>CMakeLists.txt
-    #'';
-
     configurePhase = ''cmake .'';
 
     installPhase = ''
@@ -221,19 +207,90 @@ let
     '';
   };
 
+  picoexamples = { stdenv, fetchFromGitHub, picosdk }: stdenv.mkDerivation {
+    pname = "picoexamples";
+    version = "2021-01-26-58f46b";
+
+    src = fetchFromGitHub {
+      owner = "raspberrypi";
+      repo = "pico-examples";
+      rev = "58f46b252629da33069bb5d04625c223b5262649";  # master
+      sha256 = "sha256-/lh5y38WxvVhg5xcBtyYS9mcx9Xs1AbAChHiDN9FXuk=";
+    };
+
+    buildInputs = [ picosdk ];
+
+    configurePhase = ''cmake .'';
+
+    installPhase = ''
+      mkdir $out
+      cp -r . $out/
+    '';
+  };
+
+  picoplayground = { stdenv, fetchFromGitHub, picosdk, picoextras }: stdenv.mkDerivation {
+    pname = "picoplayground";
+    version = "2021-01-28-6288b0";
+
+    src = fetchFromGitHub {
+      owner = "raspberrypi";
+      repo = "pico-playground";
+      rev = "6288b02e9a35e9e4e9bf47844c6f4f34ae8906c6";  # master
+      sha256 = "sha256-BMHvXfONhnm91h5XsnOVAaiUBCUxtNjs4zD9s7yhEeY=";
+    };
+
+    buildInputs = [ picosdk picoextras ];
+
+    configurePhase = ''cmake .'';
+
+    installPhase = ''
+      cp -r . $out
+    '';
+  };
+
+  picoextras = { stdenv, fetchFromGitHub, picosdk }: stdenv.mkDerivation {
+    pname = "picoextras";
+    version = "2021-01-28-f5c7be";
+
+    src = fetchFromGitHub {
+      owner = "raspberrypi";
+      repo = "pico-extras";
+      rev = "f5c7be9a86e3131cd13d2cc3493b84b23676f8c4";  # master
+      sha256 = "sha256-MeoDMmGgVzbwP+Q2KH6YthZADcXAAf9GfcgVJAKeZVs=";
+      fetchSubmodules = true;
+    };
+
+    buildInputs = [ picosdk ];
+
+    patchPhase = ''
+      echo "void __sync_synchronize(void) {}" >test/sample_conversion_test/sync_dummy.c
+      sed -i 's/ sample_conversion_test.cpp)/ sample_conversion_test.cpp sync_dummy.c)/' test/sample_conversion_test/CMakeLists.txt
+    '';
+
+    configurePhase = ''cmake .'';
+
+    installPhase = ''
+      cp -r . $out
+      mkdir $out/nix-support/
+      echo "export PICO_EXTRAS_PATH=$out" >$out/nix-support/setup-hook
+    '';
+  };
+
   overlay = self: super: {
     openocd-rppico = self.callPackage openocd-rppico {};
-    picoexamples = self.callPackage picoexamples {};
     picosdk = self.callPackage picosdk {};
     pioasm = self.callPackage pioasm {};
     elf2uf2 = self.callPackage elf2uf2 {};
     picotool = self.callPackage picotool {};
     picoprobe = self.callPackage picoprobe {};
+    picoexamples = self.callPackage picoexamples {};
+    picoplayground = self.callPackage picoplayground {};
+    picoextras = self.callPackage picoextras {};
   };
 in rec {
   pkgs = p;
   inherit (p.pkgsBuildHost) gcc binutils binutils-unwrapped openocd-rppico gdb picotool pioasm elf2uf2;
-  inherit (p.pkgsHostHost) picoprobe picosdk;
+  inherit (p.pkgsHostHost) picoprobe picosdk picoexamples picoplayground picoextras;
 
   shell = p.mkShell {
     depsBuildBuild = with p.pkgsBuildBuild; [
@@ -242,6 +299,6 @@ in rec {
     nativeBuildInputs = with p.pkgsBuildHost; [
       gcc binutils binutils-unwrapped openocd-rppico gdb picotool
     ];
-    buildInputs = with p.pkgsHostHost; [ picosdk picoprobe ];
+    buildInputs = with p.pkgsHostHost; [ picosdk picoprobe picoextras ];
   };
 }
