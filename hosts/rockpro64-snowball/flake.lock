@@ -105,10 +105,25 @@
         "type": "github"
       }
     },
+    "nixpkgs-unstable": {
+      "locked": {
+        "lastModified": 1611865826,
+        "narHash": "sha256-qe54fus5QQcIEqVpJI8UKrESX6yvgBLwmE2RHCE+Jl8=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "11ec29dd70d75274aa2557f3802ba91af9727508",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
     "private": {
       "flake": false,
       "locked": {
-        "narHash": "sha256-Pu7zEhzqXDwj+rDjyuK1zp5IQ7GhkKjkiXlptNe98YY=",
+        "narHash": "sha256-pQpattmS9VmO3ZIQUFn66az8GSmB4IvYhTTCFn6SUmo=",
         "path": "./private/data",
         "type": "path"
       },
@@ -142,6 +157,7 @@
         "flake-registry": "flake-registry",
         "ldap-to-ssh": "ldap-to-ssh",
         "nixpkgs": "nixpkgs",
+        "nixpkgs-unstable": "nixpkgs-unstable",
         "rockpro64Config": "rockpro64Config",
         "routeromen": "routeromen"
       }
@@ -157,7 +173,7 @@
         "private": "private"
       },
       "locked": {
-        "narHash": "sha256-b0D0mFxMkxYX6lms1Y8mOANgxarBg5CFlL6WJYlgLMk=",
+        "narHash": "sha256-uRx2s8wR79k9iY2FAasPkH6jXK6wMDhrJRCaTgmVmaY=",
         "path": "../..",
         "type": "path"
       },

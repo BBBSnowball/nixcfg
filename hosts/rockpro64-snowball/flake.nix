@@ -10,6 +10,16 @@
   inputs.flake-registry.url = "github:NixOS/flake-registry";
   inputs.flake-registry.flake = false;
 
-  outputs = { self, nixpkgs, routeromen, ... }@flakeInputs:
-    routeromen.lib.mkFlakeForHostConfig "rockpro64-snowball" "aarch64-linux" ./main.nix flakeInputs;
+  inputs.nixpkgs-unstable.url = "github:NixOS/nixpkgs";
+
+  outputs = { self, nixpkgs, routeromen, nixpkgs-unstable, ... }@flakeInputs:
+    routeromen.lib.mkFlakeForHostConfig "rockpro64-snowball" "aarch64-linux" ./main.nix flakeInputs
+    // {
+      packages.aarch64-linux.htop = let
+        system = "aarch64-linux";
+        f = import ./htop-with-sensors.nix { inherit system nixpkgs-unstable; };
+        super = nixpkgs.legacyPackages.${system};
+        self = super // (f self super);
+      in self.htop;
+    };
 }
