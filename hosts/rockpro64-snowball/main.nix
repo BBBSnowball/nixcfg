@@ -13,6 +13,7 @@ in {
       ./autossh-to-subraum.nix
       ./rust.nix
       ./rockpro64-fan.nix
+      routeromen.nixosModules.raspi-zero-usbboot
       routeromen.nixosModules.raspi-pico
     ];
 
@@ -31,6 +32,7 @@ in {
   users.users.user = {
     isNormalUser = true;
     passwordFile = "/etc/nixos/secret/rootpw";
+    extraGroups = [ "dialout" ];
   };
   users.users.root.passwordFile = "/etc/nixos/secret/rootpw";
 
