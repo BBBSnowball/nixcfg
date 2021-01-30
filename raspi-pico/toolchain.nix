@@ -2,11 +2,26 @@
 { system ? builtins.currentSystem, nixpkgs ? <nixpkgs>, ... }:
 let
   p1 = import nixpkgs { inherit system; };
-  p = import nixpkgs {
+  p2 = import nixpkgs {
     inherit system;
     crossSystem = p1.lib.systems.examples.arm-embedded;
     config.allowUnsupportedSystem = true;
     overlays = [ fixUnnecessaryTargetDepsOverlay overlay ];
+  };
+  rppico-arch = p1.lib.systems.examples.arm-embedded // {
+    platform = {
+      #gcc.arch = "armv6-m";
+      gcc.cpu = "cortex-m0plus";
+      gcc.extraFlags = ["-mthumb"];
+      #FIXME uggh. ugly. I don't think there is any attribute for extraOptions, though. -> doesn't work because the value is used in other places
+      #gcc.cpu = "cortex-m0plus -mthumb";
+    };
+  };
+  p = import nixpkgs {
+    inherit system;
+    crossSystem = rppico-arch;
+    config.allowUnsupportedSystem = true;
+    overlays = [ fixUnnecessaryTargetDepsOverlay fromP2Overlay overlay ];
   };
   lib = p1.lib;
 
@@ -24,6 +39,10 @@ let
 
     thin-provisioning-tools = super.thin-provisioning-tools.override { inherit (self.pkgsBuildBuild) binutils; };
   } else {};
+
+  fromP2Overlay = self: super:
+    let pkgs = p2.pkgsBuildHost; in
+    if (with super.stdenv; buildPlatform.config == pkgs.stdenv.buildPlatform.config && hostPlatform.config == pkgs.stdenv.hostPlatform.config && targetPlatform.config == pkgs.stdenv.targetPlatform.config) then { inherit (pkgs) gcc-unwrapped binutils-unwrapped; } else {};
 
   enablePicoprobe = true;
   openocd-rppico =
@@ -289,7 +308,7 @@ let
   };
 in rec {
   pkgs = p;
-  inherit (p.pkgsBuildHost) gcc binutils binutils-unwrapped openocd-rppico gdb picotool pioasm elf2uf2;
+  inherit (p.pkgsBuildHost) gcc gcc-unwrapped binutils binutils-unwrapped openocd-rppico gdb picotool pioasm elf2uf2;
   inherit (p.pkgsHostHost) picoprobe picosdk picoexamples picoplayground picoextras;
 
   shell = p.mkShell {
