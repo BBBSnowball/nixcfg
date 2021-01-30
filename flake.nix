@@ -34,6 +34,7 @@
 
     nixosModules = import ./modules.nix { inherit self; } // {
       hosts-routeromen = nixosSystemModule hosts/routeromen;
+      raspi-zero-usbboot = import ./raspi-zero/usbboot.nix;
       raspi-pico = import ./raspi-pico;
     };
 

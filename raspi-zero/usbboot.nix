@@ -12,4 +12,22 @@
     patch = null;
     extraConfig = ''GPIO_SYSFS y'';
   } ];
+
+  environment.systemPackages = with pkgs; [ rpiboot rpireset picocom ];
+
+  systemd.services.rpireset-for-dialout = {
+    serviceConfig.Type = "oneshot";
+    wantedBy = [ "multi-user.target" ];
+    script = ''
+      # see rpireset in overlay.nix
+      num=54
+      [ -e /sys/class/gpio ] || ( echo "Kernel doesn't have CONFIG_GPIO_SYSFS!" >&2; exit 1 )
+      [ -e /sys/class/gpio/gpio$num ] || echo $num >/sys/class/gpio/export
+      echo 1 >/sys/class/gpio/gpio$num/value || true
+      echo out >/sys/class/gpio/gpio$num/direction
+      echo 1 >/sys/class/gpio/gpio$num/value
+      chgrp dialout /sys/class/gpio/gpio$num/value
+      chmod g+w /sys/class/gpio/gpio$num/value
+    '';
+  };
 }
