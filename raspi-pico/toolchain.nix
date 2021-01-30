@@ -10,11 +10,8 @@ let
   };
   rppico-arch = p1.lib.systems.examples.arm-embedded // {
     platform = {
-      #gcc.arch = "armv6-m";
       gcc.cpu = "cortex-m0plus";
       gcc.extraFlags = ["-mthumb"];
-      #FIXME uggh. ugly. I don't think there is any attribute for extraOptions, though. -> doesn't work because the value is used in other places
-      #gcc.cpu = "cortex-m0plus -mthumb";
     };
   };
   p = import nixpkgs {
