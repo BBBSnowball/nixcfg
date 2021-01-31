@@ -25,7 +25,8 @@
   # On a Raspberry Pi 4 with 4 GB, you should either disable this parameter or increase to at least 64M if you want the USB ports to work.
   boot.kernelParams = [
     "cma=32M" "console=ttyS0,115200n8" "console=ttyAMA0,115200n8" "console=tty0"
-    "otg.lpm_enable=0" "root=/dev/nfs" "nfsroot=10.42.0.1:/pi/root" "rw" "ip=10.42.0.14:10.42.0.1::255.255.255.0:pi:usb0:static" "elevator=deadline" "modules-load=dwc2,g_ether" "fsck.repair=yes" "rootwait" "g_ether.host_addr=5e:a1:4f:5d:cf:d2"
+    "dwc_otg.lpm_enable=0" "root=/dev/nfs" "nfsroot=10.42.0.1:/pi/root" "rw" "ip=10.42.0.14:10.42.0.1::255.255.255.0:pi:usb0:static" "elevator=deadline" "modules-load=dwc2,g_ether" "fsck.repair=yes" "rootwait" "g_ether.host_addr=5e:a1:4f:5d:cf:d2"
+    "dwc_otg.speed=0"
   ];
     
   # File systems configuration for using the installer's partition layout
@@ -42,7 +43,7 @@
     # Allows early (earlier) modesetting for the Raspberry Pi
     "vc4" "bcm2835_dma" "i2c_bcm2835"
 
-    "g_ether" "libcomposite" "u_ether" "udc-core" "usb_f_rndis" "usb_f_ecm"
+    "g_ether" "libcomposite" "u_ether" "udc-core" "usb_f_rndis" "usb_f_ecm" "g_serial" "dwc2"
   ];
 
   documentation.enable = false;
