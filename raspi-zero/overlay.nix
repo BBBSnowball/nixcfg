@@ -38,6 +38,50 @@ self: super: {
     [ -e /sys/class/gpio/gpio$num ] || echo $num >/sys/class/gpio/export
     [ "`cat /sys/class/gpio/gpio$num/direction`" == "out" ] || echo out >/sys/class/gpio/gpio$num/direction
     echo 0 >/sys/class/gpio/gpio$num/value
+    sleep 0.2
     echo 1 >/sys/class/gpio/gpio$num/value
+  '';
+
+  rpiConfig = import (self.nixpkgsPath + "/nixos") {
+    system = self.stdenv.buildPlatform.system;
+    configuration = ../hosts/raspi-zero/main.nix;
+  };
+
+  # see <nixpkgs/nixos/modules/installer/cd-dvd/sd-image-aarch64.nix>
+  # and https://dev.webonomic.nl/how-to-run-or-boot-raspbian-on-a-raspberry-pi-zero-without-an-sd-card
+  rpibootfiles = super.runCommand "rpibootfiles" (with self.rpiConfig.pkgs; {
+    inherit raspberrypifw;
+    inherit (self) rpiboot;
+    uboot = ubootRaspberryPiZero;
+    configTxt = writeText "config.txt" ''
+      #kernel=u-boot.bin
+      kernel=zImage
+
+      # U-Boot used to need this to work, regardless of whether UART is actually used or not.
+      enable_uart=1
+
+      # Prevent the firmware from smashing the framebuffer setup done by the mainline kernel
+      # when attempting to show low-voltage or overtemperature warnings.
+      avoid_warnings=1
+
+      # enable OTG
+      dtoverlay=dwc2
+      # set initramfs
+      initramfs initrd followkernel
+    '';
+  }) ''
+    mkdir $out
+    cp -r $raspberrypifw/share/raspberrypi/boot/* $out/
+    sed -ib "s/BOOT_UART=0/BOOT_UART=1/" $out/bootcode.bin
+    rm $out/kernel*.img
+    # use bootcode.bin from rpiboot because the other one doesn't work here (for whatever reason - closed source and whatnot...)
+    rm -f $out/bootcode.bin
+    cp $rpiboot/share/rpiboot/msd/bootcode.bin $out/bootcode.bin
+    cp $uboot/u-boot.bin $out/
+    cp $configTxt $out/config.txt
+    #''${self.rpiConfig.config.boot.loader.generic-extlinux-compatible.populateCmd} -c ''${self.rpiConfig.config.system.build.toplevel} -d ./files/boot
+    cp ${self.rpiConfig.config.system.build.kernel}/zImage $out/
+    cp ${self.rpiConfig.config.system.build.initialRamdisk}/* $out/
+    echo "${self.lib.strings.concatStringsSep " " self.rpiConfig.config.boot.kernelParams}" >$out/cmdline.txt
   '';
 }
