@@ -66,12 +66,12 @@
       inherit openocd-rppico picotool pioasm elf2uf2 picoprobe picosdk;
       inherit picoexamples picoplayground picoextras;
       rppicoShell = shell;
-    }) // (let x = import ./raspi-zero/overlay.nix (pkgs // x) pkgs; in x));
+    }) // (let x = import ./raspi-zero/overlay.nix (pkgs // x // { nixpkgsPath = nixpkgs; }) pkgs; in x));
 
     apps = forAllSystems (system: {
       gcc-gd32   = { type = "app"; program = "${self.packages.${system}.gcc-gd32}/bin/gcc"; };
       openocd-gd32 = { type = "app"; program = "${self.packages.${system}.openocd-gd32}/bin/openocd"; };
-      gdb-gd32   = { type = "app"; program = "${self.packages.${system}.gdb-gd32}/bin/gdb"; };
+      gdb-gd32   = { type = "app"; program = "${self.packages.${system}.gdb-gd32}/bin/riscv32-none-elf-gdb"; };
       rustc-gd32 = { type = "app"; program = "${self.packages.${system}.rustc-gd32}/bin/rustc"; };
       cargo-gd32 = { type = "app"; program = "${self.packages.${system}.cargo-gd32}/bin/cargo"; };
       nrfjprog   = { type = "app"; program = "${self.packages.${system}.nrfjprog}/bin/nrfjprog"; };

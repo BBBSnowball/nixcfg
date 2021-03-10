@@ -50,6 +50,9 @@
     '';
   };
 
+  #FIXME move upstream
+  config.systemd.services.ldap-to-ssh.after = [ "network.target" ];
+
   config.security.pam.services.sshd.makeHomeDir = true;
   config.security.pam.makeHomeDir.skelDirectory = "/etc/skel";
 
