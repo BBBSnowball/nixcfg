@@ -40,7 +40,11 @@ in {
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
-    dtc
+    dtc kitty.terminfo
+    telnet
+    #nix-output-monitor
+    mbuffer brotli zopfli
+    tree
   ];
 
   networking.firewall.allowedUDPPortRanges = [ { from = 60000; to = 61000; } ];
