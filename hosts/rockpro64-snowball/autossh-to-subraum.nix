@@ -15,7 +15,7 @@ in {
     {
       name = "hackerspace";
       user = "autossh";
-      extraArguments = "-F ${sshConfigHackerspace} snowball@hackerspace.c3pb.de -NR 10000:localhost:22";
+      extraArguments = "-M 10001 -F ${sshConfigHackerspace} snowball@hackerspace.c3pb.de -NR 10000:localhost:22";
     }
   ];
 
