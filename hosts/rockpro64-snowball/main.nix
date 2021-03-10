@@ -15,6 +15,7 @@ in {
       ./rockpro64-fan.nix
       routeromen.nixosModules.raspi-zero-usbboot
       routeromen.nixosModules.raspi-pico
+      ./udev.nix
     ];
 
   boot.kernelPackages = pkgs.linuxPackages_latest;
