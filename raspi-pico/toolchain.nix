@@ -78,7 +78,7 @@ let
         "--enable-ftdi" "--enable-sysfsgpio" "--enable-bcm2835gpio"
       ] ++ (if enablePicoprobe then [ "--enable-picoprobe" ] else []);
     });
-  
+
   picosdk = { stdenv, fetchFromGitHub, python3, pkg-config, cmake, gnumake, gcc, doxygen, graphviz, picoexamples, which, picotool, pioasm, elf2uf2 }: stdenv.mkDerivation {
     pname = "pico-sdk";
     version = "2021-01-23-0f3b79";
