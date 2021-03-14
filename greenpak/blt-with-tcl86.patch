@@ -1,0 +1,243 @@
+This is a band-aid for the most obvious problems. With this
+patch, blt compiles with Tcl 8.6. However, various issues remain:
+
+- There are many casts between 32-bit ints and pointers. This is
+  probably ok-ish for key/inode as long as we don't have too many
+  of them. Don't use this library with untrusted data! It didn't
+  even compile for 64-bit. This says a lot about how much that has
+  been tested.
+- Memory management of strings in interp results is inconsistent
+  and - I think - incorrect. I expect some memory leaks and
+  use-after-free errors.
+- There are probably some other classes of errors.
+
+Let me repeat: Don't use this with untrusted data. Ever.
+
+That being said, tclspice should be working ok-ish as long as you
+avoid the buggy parts. You may have to work around some segfaults.
+
+diff -aur a/src/bltBgexec.c b/src/bltBgexec.c
+--- a/src/bltBgexec.c	1970-01-01 01:00:01.000000000 +0100
++++ b/src/bltBgexec.c	2021-03-14 17:24:10.815331020 +0100
+@@ -44,7 +44,7 @@
+ #if (TCL_MAJOR_VERSION == 7)
+ #define FILEHANDLER_USES_TCLFILES 1
+ #else
+-typedef int Tcl_File;
++typedef intptr_t Tcl_File;
+ #endif
+ 
+ static Tcl_CmdProc BgexecCmd;
+@@ -55,7 +55,7 @@
+     HANDLE hProcess;
+ } Process;
+ #else
+-typedef int Process;
++typedef intptr_t Process;
+ #endif
+ 
+ #if (TCL_VERSION_NUMBER <  _VERSION(8,1,0)) 
+diff -aur a/src/bltHash.h.in b/src/bltHash.h.in
+--- a/src/bltHash.h.in	1970-01-01 01:00:01.000000000 +0100
++++ b/src/bltHash.h.in	2021-03-14 17:26:18.783168930 +0100
+@@ -88,7 +88,7 @@
+  * Acceptable key types for hash tables:
+  */
+ #define BLT_STRING_KEYS		0
+-#define BLT_ONE_WORD_KEYS	((size_t)-1)
++#define BLT_ONE_WORD_KEYS	((ssize_t)-1)
+ 
+ /*
+  * Forward declaration of Blt_HashTable.  Needed by some C++ compilers
+diff -aur a/src/bltInit.c b/src/bltInit.c
+--- a/src/bltInit.c	1970-01-01 01:00:01.000000000 +0100
++++ b/src/bltInit.c	2021-03-14 18:34:15.027067096 +0100
+@@ -413,7 +413,7 @@
+ 	 * Check that the versions of Tcl that have been loaded are
+ 	 * the same ones that BLT was compiled against.
+ 	 */
+-	if (Tcl_PkgRequire(interp, "Tcl", TCL_VERSION, EXACT) == NULL) {
++	if (Tcl_PkgRequire(interp, "Tcl", TCL_PATCH_LEVEL, EXACT) == NULL) {
+ 	    return TCL_ERROR;
+ 	}
+ 	/* Set the "blt_version", "blt_patchLevel", and "blt_libPath" Tcl
+diff -aur a/src/bltNsUtil.h b/src/bltNsUtil.h
+--- a/src/bltNsUtil.h	1970-01-01 01:00:01.000000000 +0100
++++ b/src/bltNsUtil.h	2021-03-14 16:47:23.734649136 +0100
+@@ -47,8 +47,8 @@
+ #endif
+ 
+ 
+-EXTERN Tcl_Command Tcl_FindCommand _ANSI_ARGS_((Tcl_Interp *interp,
+-	char *name, Tcl_Namespace *nsPtr, int flags));
++//EXTERN Tcl_Command Tcl_FindCommand _ANSI_ARGS_((Tcl_Interp *interp,
++//	char *name, Tcl_Namespace *nsPtr, int flags));
+ 
+ #define NS_SEARCH_NONE		(0)
+ #define NS_SEARCH_CURRENT	(1<<0)
+@@ -64,16 +64,16 @@
+ EXTERN Tcl_Namespace *Tcl_GetGlobalNamespace _ANSI_ARGS_((Tcl_Interp *interp));
+ 
+ #if (TCL_MAJOR_VERSION >= 8)
+-EXTERN Tcl_Namespace *Tcl_CreateNamespace _ANSI_ARGS_((Tcl_Interp *interp,
+-	char *name, ClientData clientData, Tcl_NamespaceDeleteProc *nsDelProc));
++//EXTERN Tcl_Namespace *Tcl_CreateNamespace _ANSI_ARGS_((Tcl_Interp *interp,
++//	char *name, ClientData clientData, Tcl_NamespaceDeleteProc *nsDelProc));
+ 
+ EXTERN void Tcl_DeleteNamespace _ANSI_ARGS_((Tcl_Namespace *nsPtr));
+ 
+-EXTERN Tcl_Namespace *Tcl_FindNamespace _ANSI_ARGS_((Tcl_Interp *interp,
+-	char *name, Tcl_Namespace *context, int flags));
++//EXTERN Tcl_Namespace *Tcl_FindNamespace _ANSI_ARGS_((Tcl_Interp *interp,
++//	char *name, Tcl_Namespace *context, int flags));
+ 
+-EXTERN int Tcl_Export _ANSI_ARGS_((Tcl_Interp *interp, Tcl_Namespace *nsPtr,
+-	char *name, int resetFlag));
++//EXTERN int Tcl_Export _ANSI_ARGS_((Tcl_Interp *interp, Tcl_Namespace *nsPtr,
++//	char *name, int resetFlag));
+ 
+ EXTERN Tcl_Var Tcl_FindNamespaceVar _ANSI_ARGS_((Tcl_Interp *interp, char *name,
+ 	Tcl_Namespace *contextNsPtr, int flags));
+diff -aur a/src/bltScrollbar.c b/src/bltScrollbar.c
+--- a/src/bltScrollbar.c	1970-01-01 01:00:01.000000000 +0100
++++ b/src/bltScrollbar.c	2021-03-14 17:05:17.705195253 +0100
+@@ -534,7 +534,7 @@
+ 	} else {
+ 	    fraction = ((double)pixels / (double)barWidth);
+ 	}
+-	sprintf(interp->result, "%g", fraction);
++        Tcl_SetObjResult(interp, Tcl_ObjPrintf("%g", fraction));
+     } else if ((c == 'f') && (strncmp(argv[1], "fraction", length) == 0)) {
+ 	int x, y, pos, barWidth;
+ 	double fraction;
+diff -aur a/src/bltTed.c b/src/bltTed.c
+--- a/src/bltTed.c	1970-01-01 01:00:01.000000000 +0100
++++ b/src/bltTed.c	2021-03-14 17:04:30.761090194 +0100
+@@ -1504,7 +1504,7 @@
+ 	tablePtr->flags |= ARRANGE_PENDING;
+ 	Tcl_DoWhenIdle(tablePtr->arrangeProc, tablePtr);
+     }
+-    interp->result = Tk_PathName(tedPtr->tkwin);
++    Tcl_AppendResult(interp, Tk_PathName(tedPtr->tkwin), NULL);
+     tedPtr->flags |= LAYOUT_PENDING;
+     EventuallyRedraw(tedPtr);
+     return TCL_OK;
+@@ -1678,7 +1678,7 @@
+ 	    tedPtr->activeRectArr[4].width = grip - 1;
+ 	    tedPtr->activeRectArr[4].height = grip - 1;
+ 
+-	    interp->result = Tk_PathName(entryPtr->tkwin);
++            Tcl_AppendResult(interp, Tk_PathName(entryPtr->tkwin), NULL);
+ 	    active = 1;
+ 	    break;
+ 	}
+@@ -1751,7 +1751,7 @@
+ 	tablePtr->flags |= ARRANGE_PENDING;
+ 	Tcl_DoWhenIdle(tablePtr->arrangeProc, tablePtr);
+     }
+-    interp->result = Tk_PathName(tedPtr->tkwin);
++    Tcl_AppendResult(interp, Tk_PathName(tedPtr->tkwin), NULL);
+     tedPtr->flags |= LAYOUT_PENDING;
+     EventuallyRedraw(tedPtr);
+     return TCL_OK;
+diff -aur a/src/bltSwitch.c b/src/bltSwitch.c
+--- a/src/bltSwitch.c	1970-01-01 01:00:01.000000000 +0100
++++ b/src/bltSwitch.c	2021-03-14 17:27:26.223115935 +0100
+@@ -285,7 +285,7 @@
+     for (count = 0; count < argc; count++) {
+ 	arg = argv[count];
+ 	if (flags & BLT_SWITCH_OBJV_PARTIAL) {
+-	    if ((arg[0] != '-') || ((arg[1] == '-') && (argv[2] == '\0'))) {
++	    if ((arg[0] != '-') || ((arg[1] == '-') && (arg[2] == '\0'))) {
+ 		/* 
+ 		 * If the argument doesn't start with a '-' (not a switch)
+ 		 * or is '--', stop processing and return the number of
+diff -aur a/src/bltTree.c b/src/bltTree.c
+--- a/src/bltTree.c	1970-01-01 01:00:01.000000000 +0100
++++ b/src/bltTree.c	2021-03-14 16:48:37.126801819 +0100
+@@ -96,16 +96,16 @@
+ 
+ #define REBUILD_MULTIPLIER	3
+ 
+-#if (SIZEOF_VOID_P == 8)
+-#define RANDOM_INDEX(i)		HashOneWord(mask, downshift, i)
+-#define BITSPERWORD		64
+-#else 
+-
+ #define START_LOGSIZE		5 /* Initial hash table size is 32. */
+ #define MAX_LIST_VALUES		20 /* Convert to hash table when node
+ 				    * value list gets bigger than this
+ 				    * many values. */
+ 
++#if (SIZEOF_VOID_P == 8)
++#define RANDOM_INDEX(i)		HashOneWord(mask, downshift, i)
++#define BITSPERWORD		64
++#else 
++
+ /*
+  * The following macro takes a preliminary integer hash value and
+  * produces an index into a hash tables bucket list.  The idea is
+diff -aur a/src/bltVecMath.c b/src/bltVecMath.c
+--- a/src/bltVecMath.c	1970-01-01 01:00:01.000000000 +0100
++++ b/src/bltVecMath.c	2021-03-14 16:53:47.995596567 +0100
+@@ -764,20 +764,20 @@
+     if ((errno == EDOM) || (value != value)) {
+ 	Tcl_AppendResult(interp, "domain error: argument not in valid range",
+ 	    (char *)NULL);
+-	Tcl_SetErrorCode(interp, "ARITH", "DOMAIN", interp->result,
++	Tcl_SetErrorCode(interp, "ARITH", "DOMAIN", Tcl_GetStringResult(interp),
+ 	    (char *)NULL);
+     } else if ((errno == ERANGE) || IS_INF(value)) {
+ 	if (value == 0.0) {
+ 	    Tcl_AppendResult(interp, 
+ 			     "floating-point value too small to represent",
+ 		(char *)NULL);
+-	    Tcl_SetErrorCode(interp, "ARITH", "UNDERFLOW", interp->result,
++	    Tcl_SetErrorCode(interp, "ARITH", "UNDERFLOW", Tcl_GetStringResult(interp),
+ 		(char *)NULL);
+ 	} else {
+ 	    Tcl_AppendResult(interp, 
+ 			     "floating-point value too large to represent",
+ 		(char *)NULL);
+-	    Tcl_SetErrorCode(interp, "ARITH", "OVERFLOW", interp->result,
++	    Tcl_SetErrorCode(interp, "ARITH", "OVERFLOW", Tcl_GetStringResult(interp),
+ 		(char *)NULL);
+ 	}
+     } else {
+@@ -786,7 +786,7 @@
+ 	sprintf(buf, "%d", errno);
+ 	Tcl_AppendResult(interp, "unknown floating-point error, ",
+ 	    "errno = ", buf, (char *)NULL);
+-	Tcl_SetErrorCode(interp, "ARITH", "UNKNOWN", interp->result,
++	Tcl_SetErrorCode(interp, "ARITH", "UNKNOWN", Tcl_GetStringResult(interp),
+ 	    (char *)NULL);
+     }
+ }
+diff -aur a/src/tkButton.c b/src/tkButton.c
+--- a/src/tkButton.c	1970-01-01 01:00:01.000000000 +0100
++++ b/src/tkButton.c	2021-03-14 17:07:34.685500063 +0100
+@@ -526,7 +526,23 @@
+ static Blt_TileChangedProc TileChangedProc;
+ static Tcl_CmdProc ButtonCmd, LabelCmd, CheckbuttonCmd, RadiobuttonCmd;
+ 
+-EXTERN int TkCopyAndGlobalEval _ANSI_ARGS_((Tcl_Interp *interp, char *script));
++//EXTERN int TkCopyAndGlobalEval _ANSI_ARGS_((Tcl_Interp *interp, char *script));
++// copied from https://github.com/tcltk/tk/commit/b888cd3011dbbc4984d32475243bb501947969f2
++int
++TkCopyAndGlobalEval(
++    Tcl_Interp *interp,		/* Interpreter in which to evaluate script. */
++    const char *script)		/* Script to evaluate. */
++{
++    Tcl_DString buffer;
++    int code;
++
++    Tcl_DStringInit(&buffer);
++    Tcl_DStringAppend(&buffer, script, -1);
++    code = Tcl_EvalEx(interp, Tcl_DStringValue(&buffer),
++	    Tcl_DStringLength(&buffer), TCL_EVAL_GLOBAL);
++    Tcl_DStringFree(&buffer);
++    return code;
++}
+ 
+ #if (TK_MAJOR_VERSION > 4)
+ EXTERN void TkComputeAnchor _ANSI_ARGS_((Tk_Anchor anchor, Tk_Window tkwin, 
