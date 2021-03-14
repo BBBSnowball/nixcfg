@@ -1,7 +1,7 @@
 # Edit this configuration file to define what should be installed on
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
-{ config, pkgs, rockpro64Config, routeromen, withFlakeInputs, ... }:
+{ config, pkgs, lib, rockpro64Config, routeromen, withFlakeInputs, ... }:
 let
 in {
   imports =
@@ -50,6 +50,14 @@ in {
   networking.firewall.allowedUDPPortRanges = [ { from = 60000; to = 61000; } ];
 
   nix.registry.routeromen.flake = routeromen;
+
+  # Yeah, this is usually not a good idea. We need this for some binary-only
+  # things, e.g. GreenPak support for ngspice.
+  boot.binfmt.emulatedSystems = [ "x86_64-linux" ];
+  # Let's not build a special qemu for that - the normal one works just fine.
+  boot.binfmt.registrations.x86_64-linux.interpreter = lib.mkForce "${pkgs.qemu}/bin/qemu-x86_64";
+
+  programs.command-not-found.enable = true;
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
