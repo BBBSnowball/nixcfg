@@ -27,6 +27,7 @@ in {
       (withFlakeInputs ./containers/mate.nix)
       (withFlakeInputs ./containers/notes.nix)
       (withFlakeInputs ./containers/rss.nix)
+      (withFlakeInputs ./containers/php.nix)
       ./firewall-iptables-restore
     ];
 
