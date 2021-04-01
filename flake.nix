@@ -5,7 +5,8 @@
   inputs.private.url = "path:./private";
   inputs.private.flake = false;
   #inputs.routeromen.url = "gitlab:snowball/nixos-config-for-routeromen?host=git.c3pb.de";
-  inputs.routeromen.url = "git+ssh://git@git.c3pb.de/snowball/nixos-config-for-routeromen.git";
+  #inputs.routeromen.url = "git+ssh://git@git.c3pb.de/snowball/nixos-config-for-routeromen.git";
+  inputs.routeromen.url = "github:BBBSnowball/nixcfg";
   inputs.routeromen.inputs.nixpkgs.follows = "nixpkgs";
   inputs.routeromen.inputs.private.follows = "private";
 
