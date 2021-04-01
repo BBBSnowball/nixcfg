@@ -7,8 +7,8 @@ let
       default = true;
     };
     policy = mkOption {
-      type = types.nullOr (types.enum [ "ACCEPT" "DROP" ]);
-      default = null;
+      type = types.enum [ "ACCEPT" "DROP" ];
+      default = "ACCEPT";
       example = "DROP";
       description = ''default action, only valid for built-in chains'';
     };

@@ -101,9 +101,11 @@ in {
   networking.firewall.iptables.tables = {
     filter.FORWARD.policy = "DROP";
     filter.FORWARD.rules.vpn.rules4 = ''
-      -i vpn_android-+ -o tinc.bbbsnowbal -p tcp -d 192.168.84.36 --dport 443 -j ACCEPT  # calendar
+      # calendar
+      -i vpn_android-+ -o tinc.bbbsnowbal -p tcp -d 192.168.84.36 --dport 443 -j ACCEPT
       -o vpn_android-+ -i tinc.bbbsnowbal -p tcp -s 192.168.84.36 --sport 443 -j ACCEPT
-      -i vpn_android-+ -o tinc.bbbsnowbal -p tcp -d 192.168.84.47 --dport 80 -j ACCEPT  # fhem
+      # fhem
+      -i vpn_android-+ -o tinc.bbbsnowbal -p tcp -d 192.168.84.47 --dport 80 -j ACCEPT
       -o vpn_android-+ -i tinc.bbbsnowbal -p tcp -s 192.168.84.47 --sport 80 -j ACCEPT
       -i vpn_+ -o ens3 -d 192.168.0.0/16,127.0.0.0/8 -j fw-reject
       -i vpn_+ -o ens3 -j ACCEPT
