@@ -127,6 +127,9 @@ in
     environment.FHEM_MODPATH = fhemPkg;
     environment.FHEM_DATADIR = "/var/fhem/data";
     preStart = ''
+      if [ -e /var/fhem/data ] ; then
+        find /var/fhem/data -type l -lname "/nix/store/*" -exec rm {} \+
+      fi
       lndir -silent ${fhemPkg} /var/fhem/data
     '';
     serviceConfig = {
