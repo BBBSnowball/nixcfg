@@ -77,7 +77,7 @@ in {
     #mkdir -p -m 0711 "$root/etc/nixos/secret"
     #cp -u --remove-destination /etc/nixos/secret/{smtp-password.txt,janina-wordpress-db-password} -t $root/etc/nixos/secret/
 
-    chmod 700 /etc/nixos/secret/{smtp-password.txt,janina-wordpress-db-password}
+    chmod 600 /etc/nixos/secret/{smtp-password.txt,janina-wordpress-db-password}
     systemd-nspawn -D "$root" --bind-ro=/nix/store:/nix/store --pipe -- `which mkdir` -p -m 0755 "/etc/nixos"
     systemd-nspawn -D "$root" --bind-ro=/nix/store:/nix/store --pipe -- `which mkdir` -p -m 0711 "/etc/nixos/secret"
     tar -C /etc/nixos/secret -c smtp-password.txt janina-wordpress-db-password \
