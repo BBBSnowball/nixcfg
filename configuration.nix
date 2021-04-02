@@ -4,7 +4,15 @@
 
 { config, pkgs, ... }:
 
-{
+let
+  ssh_keys = [
+    #(builtins.readFile ./private/ssh-some-admin-key.pub)
+    (builtins.readFile ./private/ssh-laptop.pub)
+    (builtins.readFile ./private/ssh-dom0.pub)
+  ];
+  favorite_pkgs = with pkgs; [ wget htop tmux byobu git vim ];
+
+in {
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
@@ -41,8 +49,7 @@
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
-    wget vim htop tmux byobu
-  ];
+  ] ++ favorite_pkgs;
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
@@ -55,7 +62,7 @@
   services.openssh.enable = true;
 
   # Open ports in the firewall.
-  # networking.firewall.allowedTCPPorts = [ ... ];
+  networking.firewall.allowedTCPPorts = [ 8081 8080 1237 ];
   # networking.firewall.allowedUDPPorts = [ ... ];
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
@@ -93,11 +100,7 @@
   #   isNormalUser = true;
   #   extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
   # };
-  users.users.root.openssh.authorizedKeys.keys = [
-    #(builtins.readFile ./private/ssh-some-admin-key.pub)
-    (builtins.readFile ./private/ssh-laptop.pub)
-    (builtins.readFile ./private/ssh-dom0.pub)
-  ];
+  users.users.root.openssh.authorizedKeys.keys = ssh_keys;
 
   #headless = true;
   sound.enable = false;
@@ -117,6 +120,74 @@
   services.taskserver.organisations.snente.users = [ "snowball" "ente" ];
 
   services.fstrim.enable = true;
+
+  containers.mate = {
+    config = { config, pkgs, ... }: let
+      node = pkgs.nodejs-8_x;
+    in {
+      environment.systemPackages = with pkgs; [
+        node npm2nix cacert
+        #node2nix
+      ] ++ favorite_pkgs;
+
+      users.users.root.openssh.authorizedKeys.keys = ssh_keys;
+
+      users.users.strichliste = {
+        isNormalUser = true;
+        extraGroups = [ ];
+        openssh.authorizedKeys.keys = ssh_keys;
+      };
+
+      systemd.services.strichliste = {
+        description = "Strichliste API";
+        serviceConfig = {
+          User = "strichliste";
+          Group = "users";
+          ExecStart = "${node}/bin/node server.js";
+          WorkingDirectory = "/home/strichliste/strichliste";
+          KillMode = "process";
+        };
+        #wantedBy = [ "multi-user.target" ];
+        after = [ "network.target" "fs.target" ];
+      };
+
+      systemd.services.pizzaimap = {
+        description = "Retrieve emails with orders and make them available for the web client";
+        serviceConfig = {
+          User = "strichliste";
+          Group = "users";
+          ExecStart = "${node}/bin/node --harmony pizzaimap.js";
+          WorkingDirectory = "/home/strichliste/pizzaimap";
+          KillMode = "process";
+          # must define PIZZA_PASSWORD
+          EnvironmentFile = "/root/pizzaimap.vars";
+
+          RestartSec = "10";
+          Restart = "always";
+        };
+        #wantedBy = [ "multi-user.target" ];
+        after = [ "network.target" "fs.target" ];
+      };
+
+      services.httpd = {
+        enable = true;
+        adminAddr = "postmaster@${builtins.readFile ./private/w-domain.txt}";
+        documentRoot = "/var/www/html";
+        enableSSL = false;
+        #port = 8081;
+        listen = [{port = 8081;}];
+        extraConfig = ''
+          #RewriteEngine on
+
+          ProxyPass        /strich-api  http://localhost:8080
+          ProxyPassReverse /strich-api  http://localhost:8080
+
+          ProxyPass        /recent-orders.txt  http://localhost:1237/recent-orders.txt
+          ProxyPassReverse /recent-orders.txt  http://localhost:1237/recent-orders.txt
+        '';
+      };
+    };
+  };
 
   # This value determines the NixOS release with which your system is to be
   # compatible, in order to avoid breaking some software such as database
