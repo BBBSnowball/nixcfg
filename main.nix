@@ -132,8 +132,9 @@ in {
       -i vpn_android-+ -s 192.168.91.0/23 -d 37.187.106.83/32 -p tcp --dport 1743 -j DNAT --to-destination 192.168.84.36:443
     '';
     nat.POSTROUTING.rules.vpn.rules4 = ''
-      -I POSTROUTING -s 192.168.88.0/23 -d 192.168.84.36/32 -o tinc.bbbsnowbal -j MASQUERADE  # adjust source IP so tinc can handle the packets
-      -I POSTROUTING -s 192.168.91.0/23 -d 192.168.84.36/32 -o tinc.bbbsnowbal -j MASQUERADE  # adjust source IP so tinc can handle the packets
+      # adjust source IP so tinc can handle the packets
+      -s 192.168.88.0/23 -d 192.168.84.36/32 -o tinc.bbbsnowbal -j MASQUERADE  
+      -s 192.168.91.0/23 -d 192.168.84.36/32 -o tinc.bbbsnowbal -j MASQUERADE
     '';
 
     nat.PREROUTING.rules.fwd-bbverl.rules4 = ''
@@ -144,7 +145,8 @@ in {
       -i vpn_android-+ -s 192.168.88.0/23 -d 192.168.85.47/32 -p tcp --dport 80 -j DNAT --to-destination 192.168.84.47:80
     '';
     nat.POSTROUTING.rules.fwd-bbverl.rules4 = ''
-      -s 192.168.88.0/23 -d 192.168.84.47/32 -o tinc.bbbsnowbal -j MASQUERADE  # adjust source IP so tinc can handle the packets
+      # adjust source IP so tinc can handle the packets
+      -s 192.168.88.0/23 -d 192.168.84.47/32 -o tinc.bbbsnowbal -j MASQUERADE
     '';
 
     nat.PREROUTING.rules.vpn-deny.order = 100;

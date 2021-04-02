@@ -58,7 +58,7 @@ in
       '';
 
     raw.nixos-fw-rpfilter.enable = kernelHasRPFilter && (cfg.checkReversePath != false);
-    raw.nixos-fw-rpfilter.rules.default.rules = ''
+    raw.nixos-fw-rpfilter.rules.default.rules4 = ''
       # Perform a reverse-path test to refuse spoofers
       # For now, we just drop, as the raw table doesn't have a log-refuse yet
       -m rpfilter --validmark ${optionalString (cfg.checkReversePath == "loose") "--loose"} -j RETURN
@@ -72,7 +72,17 @@ in
       ${optionalString cfg.logReversePathDrops ''
         -j LOG --log-level info --log-prefix "rpfilter drop: "
       ''}
-      -A nixos-fw-rpfilter -j DROP
+      -j DROP
+      '';
+    raw.nixos-fw-rpfilter.rules.default.rules6 = ''
+      # Perform a reverse-path test to refuse spoofers
+      # For now, we just drop, as the raw table doesn't have a log-refuse yet
+      -m rpfilter --validmark ${optionalString (cfg.checkReversePath == "loose") "--loose"} -j RETURN
+  
+      ${optionalString cfg.logReversePathDrops ''
+        -j LOG --log-level info --log-prefix "rpfilter drop: "
+      ''}
+      -j DROP
       '';
     raw.PREROUTING.rules.rpfilter = {
       enable = kernelHasRPFilter && (cfg.checkReversePath != false);
