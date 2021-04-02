@@ -4,6 +4,11 @@ let
   mysqlPort = 3307;
   url1 = builtins.readFile "${private}/janina/url1.txt";
   url2 = builtins.readFile "${private}/janina/url2.txt";
+
+  passwordProtectPlugin = pkgs.fetchzip {
+    url = "https://downloads.wordpress.org/plugin/password-protected.2.4.zip";
+    sha256 = "sha256-whZfEyoTKj3ttEjh2zzpMnnPzCVHQlqfsih7QRa8wTU=";
+  };
 in {
   containers.janina-wordpress = {
     autoStart = true;
@@ -15,7 +20,7 @@ in {
       imports = [ modules.container-common ];
 
       environment.systemPackages = with pkgs; [
-        wp-cmd
+        wp-cmd unzip
       ];
 
       services.wordpress."janina" = {
@@ -32,11 +37,18 @@ in {
             $_SERVER['HTTPS']='on';
         '';
         #themes = [ responsiveTheme ];
-        #plugins = [ akismetPlugin ];
+        plugins = [ passwordProtectPlugin ];
         virtualHost = {
           adminAddr = "postmaster@${url2}";
           serverAliases = [ url2 ];
           listen = [ { port = ports.janina-wordpress.port; } ];
+          locations."/extra-fonts" = {
+            #alias = "/var/www/extra-fonts";
+            alias = "/var/www%{REQUEST_URI}";  # oh, well... ugly hack!
+            extraConfig = ''
+              Require all granted
+            '';
+          };
         };
       };
 
