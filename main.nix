@@ -124,6 +124,11 @@ in {
       -j REJECT
     '';
 
+    nat.POSTROUTING.rules.nat.rules4 = ''
+      -o ens3 -j MASQUERADE
+    '';
+    nat.POSTROUTING.rules.nat.order = 200;
+
     nat.PREROUTING.rules.vpn.rules4 = ''
       -i vpn_android-+ -d 192.168.112.10/32 -p tcp --dport 80 -j DNAT --to-destination ${upstreamIP}:${toString ports.rss.port}
       -i vpn_android-+ -d 192.168.118.10/32 -p tcp --dport 80 -j DNAT --to-destination ${upstreamIP}:${toString ports.notes-magpie-ext.port}
