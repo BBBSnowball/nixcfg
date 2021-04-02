@@ -1,6 +1,7 @@
-{ config, lib, modules, ... }:
+{ config, lib, modules, private, ... }:
 let
   ports = config.networking.firewall.allowedPorts;
+  url1 = builtins.readFile "${private}/janina/url1.txt";
 in {
   containers.php = {
     autoStart = true;
@@ -60,8 +61,8 @@ in {
           host = "192.168.84.130";
           port = "587";
           passwordeval = "cat /etc/nixos/secret/smtp-password.txt";
-          user = "noreply@XXX";
-          from = "noreply@XXX";
+          user = "noreply@${url1}";
+          from = "noreply@${url1}";
           tls = "on";
           tls_certcheck = "off";
         };
