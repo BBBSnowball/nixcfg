@@ -51,6 +51,7 @@ in {
 
       services.mysql.enable = true;
       services.mysql.package = pkgs.mariadb;
+      services.mysql.settings.mysqld.skip-networking = true;
 
       programs.msmtp = {
         enable = true;
