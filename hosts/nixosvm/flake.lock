@@ -1,0 +1,126 @@
+{
+  "nodes": {
+    "flake-compat": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1611465702,
+        "narHash": "sha256-Vcfqx3fNbzdS0uFx5ztaOv7hefZvl21LKVSTLqiD2CM=",
+        "owner": "BBBSnowball",
+        "repo": "flake-compat",
+        "rev": "70260a0ac22e79fde5ec51140c133725a92c9082",
+        "type": "github"
+      },
+      "original": {
+        "owner": "BBBSnowball",
+        "repo": "flake-compat",
+        "type": "github"
+      }
+    },
+    "jens-dotfiles": {
+      "flake": false,
+      "locked": {
+        "host": "git.c3pb.de",
+        "lastModified": 1587168120,
+        "narHash": "sha256-LBwPcCv7t4F2yQpwXP5o0pXv5a8LOKb6OLQKTg8eNl4=",
+        "owner": "jens",
+        "repo": "dotfiles",
+        "rev": "cbded47f57fa7c5819709f2a2e97ea29af9b321a",
+        "type": "gitlab"
+      },
+      "original": {
+        "host": "git.c3pb.de",
+        "owner": "jens",
+        "repo": "dotfiles",
+        "rev": "cbded47f57fa7c5819709f2a2e97ea29af9b321a",
+        "type": "gitlab"
+      }
+    },
+    "nix-bundle": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1611019385,
+        "narHash": "sha256-Um0coCW4R74jW6jY4NBq2+jDafLkEeNKFaDiiS/0bcM=",
+        "owner": "BBBSnowball",
+        "repo": "nix-bundle",
+        "rev": "66b1e4615c3f9d5b1be9cc42d3c2f2c755372cf6",
+        "type": "github"
+      },
+      "original": {
+        "owner": "BBBSnowball",
+        "repo": "nix-bundle",
+        "type": "github"
+      }
+    },
+    "nixpkgs": {
+      "locked": {
+        "lastModified": 1617271991,
+        "narHash": "sha256-VdzjIQaT1FtycNid0iPSVr44Jrstoox6QRLrwCY1uG0=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "da7f4c4842520167f65c20ad75ecdbd14e27ae91",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixos-20.09",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "private": {
+      "flake": false,
+      "locked": {
+        "narHash": "sha256-2CoJiFoQwLpt3CD5y+MMlXfjHUJNmcA0nRAoaV/uRe8=",
+        "path": "./private",
+        "type": "path"
+      },
+      "original": {
+        "path": "./private",
+        "type": "path"
+      }
+    },
+    "root": {
+      "inputs": {
+        "flake-compat": [
+          "routeromen",
+          "flake-compat"
+        ],
+        "nixpkgs": "nixpkgs",
+        "private": "private",
+        "routeromen": "routeromen"
+      }
+    },
+    "routeromen": {
+      "inputs": {
+        "flake-compat": "flake-compat",
+        "jens-dotfiles": "jens-dotfiles",
+        "nix-bundle": "nix-bundle",
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "private": [
+          "private"
+        ]
+      },
+      "locked": {
+        "lastModified": 1615749138,
+        "narHash": "sha256-tZdaAJHY/hnDVW7GD6gav8LsZ/zRdddVoiLHczu32PQ=",
+        "owner": "BBBSnowball",
+        "repo": "nixcfg",
+        "rev": "46fdb0f4a3a8a4e553c00f2803687d2c8d15cbeb",
+        "type": "github"
+      },
+      "original": {
+        "owner": "BBBSnowball",
+        "repo": "nixcfg",
+        "type": "github"
+      }
+    }
+  },
+  "root": "root",
+  "version": 7
+}

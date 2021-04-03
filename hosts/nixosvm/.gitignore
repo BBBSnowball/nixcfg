@@ -1,0 +1,5 @@
+.*.swp
+x/
+result*
+/tags
+*.bak
