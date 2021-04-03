@@ -74,7 +74,7 @@
     "private": {
       "flake": false,
       "locked": {
-        "narHash": "sha256-hoB1LICMEEAEjBb0q2MlxdtagqMGQYxrfKSqZeBjILA=",
+        "narHash": "sha256-2CoJiFoQwLpt3CD5y+MMlXfjHUJNmcA0nRAoaV/uRe8=",
         "path": "./private",
         "type": "path"
       },

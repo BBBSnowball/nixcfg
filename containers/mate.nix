@@ -1,4 +1,4 @@
-{ config, lib, modules, ... }:
+{ config, lib, modules, private, ... }:
 let
   ports = config.networking.firewall.allowedPorts;
 in {
@@ -56,7 +56,7 @@ in {
 
       services.httpd = {
         enable = true;
-        adminAddr = "postmaster@${builtins.readFile ./private/w-domain.txt}";
+        adminAddr = "postmaster@${lib.fileContents "${private}/w-domain.txt"}";
       };
       services.httpd.virtualHosts.default = {
         documentRoot = "/var/www/html";

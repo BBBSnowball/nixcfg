@@ -1,7 +1,7 @@
 { config, lib, modules, private, ... }:
 let
   ports = config.networking.firewall.allowedPorts;
-  url1 = builtins.readFile "${private}/janina/url1.txt";
+  url1 = (lib.fileContents "${private}/janina/url1.txt") + "\n";
 in {
   containers.php = {
     autoStart = true;

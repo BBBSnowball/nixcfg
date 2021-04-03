@@ -1,4 +1,4 @@
-{ config, lib, modules, ... }:
+{ config, lib, modules, private, ... }:
 let
   ports = config.networking.firewall.allowedPorts;
 in {
@@ -7,10 +7,10 @@ in {
     config = { config, pkgs, ... }: let
       acmeDir = "/var/lib/acme";
       fqdns = [
-        #"${builtins.readFile ./private/feg-svn-test-domain.txt}"
-        "${builtins.readFile ./private/feg-svn-domain.txt}"
+        #"${lib.fileContents "${private}/feg-svn-test-domain.txt"}"
+        "${lib.fileContents "${private}/feg-svn-domain.txt"}"
       ];
-      mainSSLKey = "${acmeDir}/${builtins.readFile ./private/feg-svn-domain.txt}";
+      mainSSLKey = "${acmeDir}/${lib.fileContents "${private}/feg-svn-domain.txt"}";
     in {
       imports = [ modules.container-common ];
 
@@ -21,7 +21,7 @@ in {
 
       services.httpd = {
         enable = true;
-        adminAddr = "postmaster@${builtins.readFile ./private/w-domain.txt}";
+        adminAddr = "postmaster@${lib.fileContents "${private}/w-domain.txt"}";
 
         extraModules = ["dav" { name = "dav_svn"; path = "${pkgs.apacheHttpdPackages.subversion}/modules/mod_dav_svn.so"; }];
       };
@@ -84,7 +84,7 @@ in {
 
       #security.acme.production = false;  # for debugging
       security.acme.certs = (lib.attrsets.genAttrs fqdns (fqdn: {
-        email = builtins.readFile ./private/acme-email-feg.txt;
+        email = lib.fileContents "${private}/acme-email-feg.txt";
         webroot = "${acmeDir}/www";
         postRun = "systemctl reload httpd.service";
         #allowKeysForGroup = true;

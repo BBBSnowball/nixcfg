@@ -20,7 +20,7 @@ in {
       routeromen.nixosModules.auto-upgrade
       routeromen.nixosModules.snowball-vm-sonline0
       namedFirewallPorts
-      ./services/taskserver.nix
+      (withFlakeInputs ./services/taskserver.nix)
       ./services/openvpn.nix
       (withFlakeInputs ./services/tinc.nix)
       (withFlakeInputs ./containers/feg.nix)
