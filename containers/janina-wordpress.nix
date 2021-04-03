@@ -2,8 +2,8 @@
 let
   ports = config.networking.firewall.allowedPorts;
   mysqlPort = 3307;
-  url1 = (lib.fileContents "${private}/janina/url1.txt") + "\n";
-  url2 = (lib.fileContents "${private}/janina/url2.txt") + "\n";
+  url1 = lib.fileContents "${private}/janina/url1.txt";
+  url2 = lib.fileContents "${private}/janina/url2.txt";
 
   passwordProtectPlugin = pkgs.fetchzip {
     url = "https://downloads.wordpress.org/plugin/password-protected.2.4.zip";
