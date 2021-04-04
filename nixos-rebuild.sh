@@ -3,7 +3,7 @@
 set -e -o pipefail
 shopt -s inherit_errexit
 
-if [ -z "$1" -o -z "$2" -o "$1" == "--help" ] ; then
+if [ $# -lt 2 -o "$1" == "--help" ] ; then
   echo "Usage: $0 hostname action [nix-build opts]" >&2
   echo "  action: test switch boot build dry-build dry-activate"
   echo "  actions not supported by nixos-rebuild: reboot build-drv diff-drv diff-cl/diff-closures"
@@ -45,9 +45,14 @@ case "$action" in
       eval .#nixosConfigurations."$targetHost".config.system.build.toplevel.drvPath "$@"
     ;;
   diff-drv)
+    if [ -z "$targetHost" ] ; then
+      read -r hostname < /proc/sys/kernel/hostname
+    else
+      hostname="$targetHost"
+    fi
     currentDrv="$(targetHostCmd 'nix-store --query --deriver $(readlink -f /run/current-system)')"
     newDrv="$(nix --experimental-features 'nix-command flakes' --log-format bar-with-logs \
-      eval --raw ".#nixosConfigurations.$targetHost.config.system.build.toplevel.drvPath" "$@")"
+      eval --raw ".#nixosConfigurations.$hostname.config.system.build.toplevel.drvPath" "$@")"
     if [ -e "$currentDrv" -o -z "$targetHost" ] ; then
       nix-shell -p nix-diff --run "nix-diff $currentDrv $newDrv"
     else
@@ -69,8 +74,14 @@ case "$action" in
   switch|boot)
     ;;
   *)
-    rm -f "./result-$targetHost"
-    mv result "./result-$targetHost"
+    if [ -z "$targetHost" ] ; then
+      read -r hostname < /proc/sys/kernel/hostname
+      pathToConfig="./result-$hostname"
+    else
+      pathToConfig="./result-$targetHost"
+    fi
+    rm -f "$pathToConfig"
+    mv result "$pathToConfig"
     ;;
 esac
 
@@ -81,8 +92,14 @@ case "$post_cmd" in
     targetHostCmd reboot
     ;;
   diff-cl|diff-closures)
-    nix-copy-closure --to "$targetHost" "./result-$targetHost"
-    targetHostCmd nix store diff-closures /run/current-system "$(readlink -f "result-$targetHost")"
+    if [ -n "$targetHost" ] ; then
+      nix-copy-closure --to "$targetHost" "$pathToConfig"
+    fi
+    if targetHostCmd nix store --help &>/dev/null ; then
+      targetHostCmd nix store diff-closures /run/current-system "$(readlink -f "$pathToConfig")"
+    else
+      targetHostCmd nix diff-closures /run/current-system "$(readlink -f "$pathToConfig")"
+    fi
     ;;
   *)
     echo "ERROR: unsupported post_cmd: $post_cmd" >&2
