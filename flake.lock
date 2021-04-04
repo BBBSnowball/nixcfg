@@ -83,13 +83,26 @@
         "type": "path"
       }
     },
+    "private-nixosvm": {
+      "flake": false,
+      "locked": {
+        "narHash": "sha256-qOBWt3e84ioMRfDltBCGWXbwGO7nLxJJ3LdBSANu5eY=",
+        "path": "./hosts/nixosvm/private",
+        "type": "path"
+      },
+      "original": {
+        "path": "./hosts/nixosvm/private",
+        "type": "path"
+      }
+    },
     "root": {
       "inputs": {
         "flake-compat": "flake-compat",
         "jens-dotfiles": "jens-dotfiles",
         "nix-bundle": "nix-bundle",
         "nixpkgs": "nixpkgs",
-        "private": "private"
+        "private": "private",
+        "private-nixosvm": "private-nixosvm"
       }
     }
   },

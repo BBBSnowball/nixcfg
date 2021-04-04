@@ -13,6 +13,9 @@
   inputs.private.url = "path:./private/data";
   inputs.private.flake = false;
 
+  inputs.private-nixosvm.url = "path:./hosts/nixosvm/private";
+  inputs.private-nixosvm.flake = false;
+
   #inputs.nix-bundle.url = "github:matthewbauer/nix-bundle";
   inputs.nix-bundle.url = "github:BBBSnowball/nix-bundle";
   inputs.nix-bundle.inputs.nixpkgs.follows = "nixpkgs";
@@ -49,6 +52,12 @@
     # getFlake doesn't work here when in pure mode so we use flake-compat.
     #nixosConfigurations.rockpro64-snowball = (builtins.getFlake (toString ./hosts/rockpro64-snowball)).nixosConfigurations.rockpro64-snowball;
     nixosConfigurations.rockpro64-snowball = (import flake-compat { src = ./hosts/rockpro64-snowball; inputOverrides.routeromen = self; }).defaultNix.nixosConfigurations.rockpro64-snowball;
+    
+    nixosConfigurations.nixosvm = (import flake-compat {
+      src = ./hosts/nixosvm;
+      inputOverrides.routeromen = self;
+      inputOverrides.private = self.inputs.private-nixosvm;
+    }).defaultNix.nixosConfigurations.nixosvm;
   } // (let
     supportedSystems = [ "x86_64-linux" "i686-linux" "aarch64-linux" ];
     forAllSystems = nixpkgs.lib.genAttrs supportedSystems;

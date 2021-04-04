@@ -12,7 +12,7 @@
   inputs.routeromen.inputs.private.follows = "private";
 
   outputs = { self, nixpkgs, routeromen, ... }@flakeInputs:
-  (routeromen.lib.mkFlakeForHostConfig "nixos" "x86_64-linux" ./main.nix flakeInputs) // {
+  (routeromen.lib.mkFlakeForHostConfig "nixosvm" "x86_64-linux" ./main.nix flakeInputs) // {
     nixosModules = {
       container-common = self.lib.withFlakeInputs ./container-common.nix;
     };
