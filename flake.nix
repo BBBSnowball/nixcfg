@@ -51,11 +51,15 @@
 
     # getFlake doesn't work here when in pure mode so we use flake-compat.
     #nixosConfigurations.rockpro64-snowball = (builtins.getFlake (toString ./hosts/rockpro64-snowball)).nixosConfigurations.rockpro64-snowball;
-    nixosConfigurations.rockpro64-snowball = (import flake-compat { src = ./hosts/rockpro64-snowball; inputOverrides.routeromen = self; }).defaultNix.nixosConfigurations.rockpro64-snowball;
+    nixosConfigurations.rockpro64-snowball = (import flake-compat {
+      src = ./hosts/rockpro64-snowball;
+      #inputOverrides.routeromen = self;
+    }).defaultNix.nixosConfigurations.rockpro64-snowball;
     
     nixosConfigurations.nixosvm = (import flake-compat {
       src = ./hosts/nixosvm;
-      inputOverrides.routeromen = self;
+      # This is faster but it would use routeromen with the wrong nixpkgs!
+      #inputOverrides.routeromen = self;
       inputOverrides.private = self.inputs.private-nixosvm;
     }).defaultNix.nixosConfigurations.nixosvm;
   } // (let
