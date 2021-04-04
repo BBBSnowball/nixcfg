@@ -2,7 +2,7 @@
 #!nix-shell -i bash -p jq nixUnstable
 set -e
 if [ -z "$1" ] ; then
-  echo "Usage: $0 hostname [nix-build opts]" >&2
+  echo "Usage: $0 hostname [--drv] [nix-build opts]" >&2
   exit 1
 fi
 hostname="$1"
