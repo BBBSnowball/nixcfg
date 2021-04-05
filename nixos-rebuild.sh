@@ -15,7 +15,7 @@ shift; shift
 
 cd "$(dirname "$0")"
 
-./update-path-inputs.sh
+./update-path-inputs.sh "$targetHost"
 
 targetHostCmd() {
     if [ -z "$targetHost" ]; then
