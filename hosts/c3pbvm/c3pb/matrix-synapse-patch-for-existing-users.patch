@@ -1,0 +1,67 @@
+From 0b9e69edc3d140cb569d39db9320f9eed278d21b Mon Sep 17 00:00:00 2001
+From: Benjamin Koch <bbbsnowball@gmail.com>
+Date: Thu, 4 Jun 2020 01:43:36 +0200
+Subject: [PATCH] add config option that allows merging OpenID Connect users
+ with existing users
+
+---
+ synapse/config/oidc_config.py    |  5 +++++
+ synapse/handlers/oidc_handler.py | 20 +++++++++++---------
+ 2 files changed, 16 insertions(+), 9 deletions(-)
+
+diff --git a/synapse/config/oidc_config.py b/synapse/config/oidc_config.py
+index f3ef1cf8b..f1a3f9d1d 100644
+--- a/synapse/config/oidc_config.py
++++ b/synapse/config/oidc_config.py
+@@ -58,6 +58,7 @@ class OIDCConfig(Config):
+         self.oidc_jwks_uri = oidc_config.get("jwks_uri")
+         self.oidc_subject_claim = oidc_config.get("subject_claim", "sub")
+         self.oidc_skip_verification = oidc_config.get("skip_verification", False)
++        self.oidc_merge_with_existing_users = oidc_config.get("merge_with_existing_users", False)
+ 
+         ump_config = oidc_config.get("user_mapping_provider", {})
+         ump_config.setdefault("module", DEFAULT_USER_MAPPING_PROVIDER)
+diff --git a/synapse/handlers/oidc_handler.py b/synapse/handlers/oidc_handler.py
+index 6bc336fd2..6ff1741f0 100644
+--- a/synapse/handlers/oidc_handler.py
++++ b/synapse/handlers/oidc_handler.py
+@@ -113,6 +113,7 @@ class OidcHandler:
+             hs.config.oidc_user_mapping_provider_config
+         )  # type: OidcMappingProvider
+         self._skip_verification = hs.config.oidc_skip_verification  # type: bool
++        self._merge_with_existing_users = hs.config.oidc_merge_with_existing_users  # type: bool
+ 
+         self._http_client = hs.get_proxied_http_client()
+         self._auth_handler = hs.get_auth_handler()
+@@ -884,17 +885,20 @@ class OidcHandler:
+ 
+         user_id = UserID(localpart, self._hostname)
+         if await self._datastore.get_users_by_id_case_insensitive(user_id.to_string()):
+-            # This mxid is taken
+-            raise MappingException(
+-                "mxid '{}' is already taken".format(user_id.to_string())
++            if self._merge_with_existing_users:
++                registered_user_id = user_id.to_string()
++            else:
++                # This mxid is taken
++                raise MappingException(
++                    "mxid '{}' is already taken".format(user_id.to_string())
++                )
++        else:
++            # It's the first time this user is logging in and the mapped mxid was
++            # not taken, register the user
++            registered_user_id = await self._registration_handler.register_user(
++                localpart=localpart, default_display_name=attributes["display_name"],
+             )
+ 
+-        # It's the first time this user is logging in and the mapped mxid was
+-        # not taken, register the user
+-        registered_user_id = await self._registration_handler.register_user(
+-            localpart=localpart, default_display_name=attributes["display_name"],
+-        )
+-
+         await self._datastore.record_user_external_id(
+             self._auth_provider_id, remote_user_id, registered_user_id,
+         )
+-- 
+2.21.1

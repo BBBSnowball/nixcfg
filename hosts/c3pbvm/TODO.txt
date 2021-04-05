@@ -1,0 +1,59 @@
+- DONE autossh
+- DONE mumble-web
+- DONE dinge.info
+- DONE matrix-synapse
+- DONE OpenID Connect
+  - Synapse 1.14 has been released on May 28th.
+- DONE mautrix-telegram
+  - I think this has some local changes, e.g. not forwarding messages with some special marker.
+  - Update to 0.7.2.
+- DONE HTTPS on federation port
+  - Versions before 1.0 were accepting keys by trust on first sight.
+  - They have changed that: https://github.com/matrix-org/synapse/blob/master/docs/MSC1711_certificates_FAQ.md
+  - It seems that I have already fixed it though: Port 8448 is redirected to port 443 on mailinabox, which does
+    HTTPS offloading.
+- DONE matrix_edi.py
+  - This is using password login which we have to disable due to bugs in Riot.
+  - Can we use an access token, instead?
+    -> yes
+- DONE Move test server into container
+  - I think, I want to keep the test server. However, NixOS only supports one instance and I will probably want
+    to test different versions anyway.
+  - Can we use declarative containers with a different channel for the container?
+    - We cannot even do this for imperative containers, it seems.
+    - At least, we can update an imperative container without switching the host config. This can be used as a poor
+      man's workaround, i.e. update the channel and only rebuild the container.
+  - There doesn't seem to be any declarative way to forward ports into imperative containers. There is a `--port`
+    switch for `nixos-container create` but I cannot find any config for it.
+    - I think `--port` specifies the value of HOST_PORT in the config file and this is also set by forwardsPorts:
+      https://github.com/NixOS/nixpkgs/blob/31bbaa4a114440fe0087bf85c65ffe39e6e31cbf/nixos/modules/virtualisation/nixos-containers.nix#L795
+    - That means I should try something like this: `--port tcp:8009:8008`
+  - I could also try extra-container:
+    https://github.com/erikarvstedt/extra-container
+- DONE Use builtin webclient?
+  - I hosting the webclient with Nginx on host mailinabox. This is certainly more efficient
+    but I have to manually upgrade it.
+  - If Synapse includes a recent Riot client, I should consider using that to avoid the need for manual updates.
+  - I'm disabling some of the features in my config. Can I apply this to the builtin webclient?
+  - This is only meant to be a redirect to the real client:
+    https://github.com/matrix-org/synapse/blob/66a564c859c035c273c8feb25c624473055f1d78/synapse/config/server.py#L621
+  - That's not useful, then.
+- DONE Move production server to NixOS
+- DONE Update Wiki
+- DONE Announce update
+  - Existing users should login soon-ish to add OIDC info to their account (while the local patch is still applied).
+- DONE Kill access to LDAP
+  - SSH key and user.
+- DONE Move mumble-web?
+- TODO Finish PR for OIDC with Gitlab
+  - The devs want more complex changes so I need a proper dev environment.
+  - Let's make a container for that. Enter like this:
+    nixos-container root-login matrix-dev
+    su - test
+    cd ~/synapse
+    # python -m twisted.trial tests
+    # python -m twisted.trial tests.handlers.test_oidc
+    # PYTHONPATH=. ./scripts/register_new_matrix_user -u admin -p abcabc -a -c oidc-config.yaml http://localhost:8030
+    # PYTHONPATH=. python synapse/app/homeserver.py $(systemctl cat matrix-synapse|sed -nE 's#^.*( --config-path /nix/store/[a-z0-9]+-homeserver[.]yaml) .*#\1#p') -c oidc-config.yaml
+- TODO Move strichliste (from my NixOS VM) ?
+- TODO Update mautrix-telegram
