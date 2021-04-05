@@ -90,7 +90,7 @@
     "private": {
       "flake": false,
       "locked": {
-        "narHash": "sha256-5yiBtDWT08zbkRx9mHcDgI2lTxBCyezz2YX8pcFOTCE=",
+        "narHash": "sha256-GXuWnmzu2W0PSE6PSFLlS1YC+kRx/KyW5p0tQo/GDBs=",
         "path": "./private",
         "type": "path"
       },
