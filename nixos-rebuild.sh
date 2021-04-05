@@ -75,7 +75,9 @@ esac
 # `nixos-rebuild` doesn't pass through `--log-format bar-with-logs` or `--print-build-logs` but `-L` works.
 # Explicit build-host is required to work around a bug in nixos-rebuild: It would set buildHost=targetHost,
 # build on the local host anyway, omit copying to target.
+set -x
 nixos-rebuild --target-host "$targetHost" --build-host localhost --flake ".#$targetHost" "$action" -L "${extraBuildFlags[@]}" "$@"
+set +x
 
 case "$action" in
   switch|boot)

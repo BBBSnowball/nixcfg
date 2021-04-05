@@ -18,10 +18,14 @@ else
 fi
 
 if [ -n "$update_cmd" ] ; then
+  echo "+ cd $PWD"
   jq <flake.lock '.nodes|to_entries|.[]|if .value.locked.type == "path" then .key else null end|select(.)' -r | xargs -n1 -t $NIX flake $update_cmd --update-input
+  echo ""
   if [ -n "$hostname" -a -e "hosts/$hostname/flake.lock" ] ; then
+    echo "+ cd $PWD/hosts/$hostname"
     ( cd "hosts/$hostname" && jq <flake.lock '.nodes|to_entries|.[]|if .value.locked.type == "path" then .key else null end|select(.)' -r | xargs -n1 -t $NIX flake $update_cmd --update-input )
-    fi
+    echo ""
+  fi
 else
   echo "WARN: Modern nix tooling not available -> not updating path:... in lock file." >&2
 fi
