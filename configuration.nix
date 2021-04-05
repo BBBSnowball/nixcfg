@@ -7,7 +7,8 @@ let
   ssh_keys = builtins.map lib.fileContents [
     #./private/ssh-admin-dom0.pub
     ./private/ssh-laptop.pub
-    ./private/ssh-root-dom0-old.pub
+    #./private/ssh-root-dom0-old.pub
+    ./private/ssh-dom0.pub
   ];
 
   serverExternalIp = lib.fileContents ./private/serverExternalIp.txt;
@@ -48,6 +49,7 @@ in {
       ./hardware-configuration.nix
       <nixpkgs/nixos/modules/profiles/qemu-guest.nix>
       myDefaultConfig
+      ./c3pb-services.nix
     ];
 
   # Use the GRUB 2 boot loader.
