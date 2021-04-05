@@ -41,8 +41,13 @@ case "$action" in
     #extraBuildFlags=()
     ;;
   build-drv)
+    if [ -z "$targetHost" ] ; then
+      read -r hostname < /proc/sys/kernel/hostname
+    else
+      hostname="$targetHost"
+    fi
     exec nix --experimental-features 'nix-command flakes' --log-format bar-with-logs \
-      eval .#nixosConfigurations."$targetHost".config.system.build.toplevel.drvPath "$@"
+      eval --raw .#nixosConfigurations."$hostname".config.system.build.toplevel.drvPath "$@"
     ;;
   diff-drv)
     if [ -z "$targetHost" ] ; then
