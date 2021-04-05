@@ -6,8 +6,8 @@ let
       ${pkgs.coreutils}/bin/mkdir $out
       ${pkgs.gnutar}/bin/tar -C $out -xf $tarball
     '';
+    inherit (pkgs) system;
     inherit tarball;
-    system = builtins.currentSystem;
   };
   webmumbleDist = extractTarball ./mumble-web-dist.tar;
   port = 8020;
