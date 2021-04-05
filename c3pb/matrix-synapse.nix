@@ -16,7 +16,7 @@ in {
     dataDir = "/var/data/matrix-synapse";
     database_type = "sqlite3";
 
-    server_name = "test." + domain;
+    server_name = "test.${domain}";
     public_baseurl = "https://test.${domain}/";
     listeners = let
       default = addr: port: {
@@ -45,9 +45,9 @@ in {
       { bind_address = local; port = 9000; type = "manhole"; resources = []; }
     ];
     no_tls = false;
-    tls_certificate_path = "/etc/nixos/secret-matrix-synapse/homeserver.tls.crt";
-    tls_dh_params_path   = "/etc/nixos/secret-matrix-synapse/homeserver.tls.dh";
-    tls_private_key_path = "/etc/nixos/secret-matrix-synapse/homeserver.tls.key";
+    tls_certificate_path = "/etc/nixos/secret/matrix-synapse/homeserver.tls.crt";
+    tls_dh_params_path   = "/etc/nixos/secret/matrix-synapse/homeserver.tls.dh";
+    tls_private_key_path = "/etc/nixos/secret/matrix-synapse/homeserver.tls.key";
 
 
     extraConfig = ''
@@ -56,15 +56,15 @@ in {
       group_creation_prefix: "unofficial/"
       acme:
         enabled: false
-      signing_key_path: "/etc/nixos/secret-matrix-synapse/homeserver.signing.key"
+      signing_key_path: "/etc/nixos/secret/matrix-synapse/homeserver.signing.key"
     '';
     extraConfigFiles = [
-      "/etc/nixos/secret-matrix-synapse/homeserver-secret.yaml"
-      "/etc/nixos/secret-matrix-synapse/oidc-config.yaml"
+      "/etc/nixos/secret/matrix-synapse/homeserver-secret.yaml"
+      "/etc/nixos/secret/matrix-synapse/oidc-config.yaml"
     ];
     app_service_config_files = [
       #"/etc/matrix-synapse/matrix_irc_hackint.yaml"
-      "/etc/nixos/secret-matrix-synapse/mautrix-telegram.yaml"
+      "/etc/nixos/secret/matrix-synapse/mautrix-telegram.yaml"
     ];
   };
 }

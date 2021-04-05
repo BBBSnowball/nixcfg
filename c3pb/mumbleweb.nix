@@ -24,7 +24,7 @@ in {
       Type = "simple";
       ExecStart = "${pkgs.pythonPackages.websockify}/bin/websockify --ssl-target --web=${mumbleWebDist} --cert=server.crt --key=server.key 64737 ${lib.fileContents ../private/mumble-domain-c3pb.txt}:64738";
       #WorkingDirectory = "/home/mumble";
-      WorkingDirectory = "/etc/nixos/secret-mumble-web";
+      WorkingDirectory = "/etc/nixos/secret/mumble-web";
       User = "mumbleweb";
       Restart = "always";
       RestartSec = 10;

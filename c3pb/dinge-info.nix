@@ -19,7 +19,7 @@ in {
   systemd.services.dinge-info = {
     after = ["network.target"];
     description = "Forwarding service for dinge.info";
-    environment.CONFIG = "/etc/nixos/secret-dinge-info.js";
+    environment.CONFIG = "/etc/nixos/secret/dinge-info.js";
     environment.NODE_PATH = "${nodeDeps}/lib/node_modules";
     serviceConfig = {
       Type = "simple";
