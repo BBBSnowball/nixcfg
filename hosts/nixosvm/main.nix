@@ -33,7 +33,11 @@ in {
     ];
 
   networking.upstreamIp = "192.168.84.133";
-  users.users.root.openssh.authorizedKeys.keyFiles = [ "${private}/ssh-laptop.pub" "${private}/ssh-dom0.pub" ];
+  users.users.root.openssh.authorizedKeys.keyFiles = [
+    "${private}/ssh-laptop.pub"
+    "${private}/ssh-dom0.pub"
+    "${private}/ssh-routeromen.pub"
+  ];
 
   networking.interfaces."tinc.bbbsnowbal".ipv4.addresses = [ {
     address = "192.168.84.39";
