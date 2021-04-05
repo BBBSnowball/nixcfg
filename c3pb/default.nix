@@ -8,4 +8,6 @@
     ./mautrix-telegram
     ./matrix-edi.nix
   ];
+
+  services.matrix-synapse.isTestInstance = false;
 }

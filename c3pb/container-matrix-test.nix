@@ -19,7 +19,7 @@ with lib;
         ./matrix-edi.nix
       ];
 
-      services.matrix-synapse.server_name = "test." + (lib.fileContents ../private/trueDomain.txt);
+      services.matrix-synapse.isTestInstance = true;
     };
   };
 }
