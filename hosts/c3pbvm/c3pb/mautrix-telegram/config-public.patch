@@ -8,7 +8,7 @@
 +    address: https://localhost:8448
      # The domain of the homeserver (for MXIDs, etc).
 -    domain: matrix.org
-+    domain: (FIXME:trueDomain)
++    domain: @trueDomain@
      # Whether or not to verify the SSL certificate of the homeserver.
      # Only applies if address starts with https://
 -    verify_ssl: true
@@ -25,7 +25,7 @@
          # The base URL where the public-facing endpoints are available. The prefix is not added
          # implicitly.
 -        external: https://example.com/public
-+        external: https://(FIXME:trueDomain)/telegram/public
++        external: https://@trueDomain@/telegram/public
  
      # Provisioning API part of the web server for automated portal creation and fetching information.
      # Used by things like Dimension (https://dimension.t2bot.io/).
@@ -45,7 +45,7 @@
 -        "example.com": "full"
 -        "@admin:example.com": "admin"
 +        '*': relaybot
-+        (FIXME:trueDomain): full
++        @trueDomain@: full
  
      # Options related to the message relay Telegram bot.
      relaybot:
