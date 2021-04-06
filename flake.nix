@@ -35,6 +35,14 @@
           })
         ];
     };
+
+    # getFlake doesn't work here when in pure mode so we use flake-compat.
+    mkHostInSubflake = name: (import flake-compat {
+      src = ./hosts + "/${name}";
+      outputFunctionOverrides.routeromen = inputs: outputFunction (inputs1 // removeDummyFlakes inputs);
+      inputOverrides = if self.inputs ? "private-${name}" then { private = self.inputs."private-${name}"; } else {};
+    }).defaultNix.nixosConfigurations.${name};
+    removeDummyFlakes = inputs1.nixpkgs.lib.attrsets.filterAttrs (key: x: key == "self" || !(x ? emptyDummyFlake));
   in {
     lib = import ./lib.nix { pkgs = nixpkgs; };
 
@@ -52,24 +60,9 @@
       modules = [ self.nixosModules.hosts-routeromen ];
     };
 
-    # getFlake doesn't work here when in pure mode so we use flake-compat.
-    #nixosConfigurations.rockpro64-snowball = (builtins.getFlake (toString ./hosts/rockpro64-snowball)).nixosConfigurations.rockpro64-snowball;
-    nixosConfigurations.rockpro64-snowball = (import flake-compat {
-      src = ./hosts/rockpro64-snowball;
-      outputFunctionOverrides.routeromen = inputs: outputFunction (inputs1 // inputs1.nixpkgs.lib.attrsets.filterAttrs (key: x: key == "self" || !(x ? emptyDummyFlake)) inputs);
-    }).defaultNix.nixosConfigurations.rockpro64-snowball;
-    
-    nixosConfigurations.nixosvm = (import flake-compat {
-      src = ./hosts/nixosvm;
-      outputFunctionOverrides.routeromen = inputs: outputFunction (inputs1 // inputs1.nixpkgs.lib.attrsets.filterAttrs (key: x: key == "self" || !(x ? emptyDummyFlake)) inputs);
-      inputOverrides.private = self.inputs.private-nixosvm;
-    }).defaultNix.nixosConfigurations.nixosvm;
-
-    nixosConfigurations.c3pbvm = (import flake-compat {
-      src = ./hosts/c3pbvm;
-      outputFunctionOverrides.routeromen = inputs: outputFunction (inputs1 // inputs1.nixpkgs.lib.attrsets.filterAttrs (key: x: key == "self" || !(x ? emptyDummyFlake)) inputs);
-      inputOverrides.private = self.inputs.private-c3pbvm;
-    }).defaultNix.nixosConfigurations.c3pbvm;
+    nixosConfigurations.rockpro64-snowball = mkHostInSubflake "rockpro64-snowball";
+    nixosConfigurations.nixosvm = mkHostInSubflake "nixosvm";
+    nixosConfigurations.c3pbvm = mkHostInSubflake "c3pbvm";
   } // (let
     supportedSystems = [ "x86_64-linux" "i686-linux" "aarch64-linux" ];
     forAllSystems = nixpkgs.lib.genAttrs supportedSystems;
