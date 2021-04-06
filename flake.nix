@@ -56,18 +56,18 @@
     #nixosConfigurations.rockpro64-snowball = (builtins.getFlake (toString ./hosts/rockpro64-snowball)).nixosConfigurations.rockpro64-snowball;
     nixosConfigurations.rockpro64-snowball = (import flake-compat {
       src = ./hosts/rockpro64-snowball;
-      outputFunctionOverrides.routeromen = inputs: outputFunction (inputs1 // inputs);
+      outputFunctionOverrides.routeromen = inputs: outputFunction (inputs1 // inputs1.nixpkgs.lib.attrsets.filterAttrs (key: x: key == "self" || !(x ? emptyDummyFlake)) inputs);
     }).defaultNix.nixosConfigurations.rockpro64-snowball;
     
     nixosConfigurations.nixosvm = (import flake-compat {
       src = ./hosts/nixosvm;
-      outputFunctionOverrides.routeromen = inputs: outputFunction (inputs1 // inputs);
+      outputFunctionOverrides.routeromen = inputs: outputFunction (inputs1 // inputs1.nixpkgs.lib.attrsets.filterAttrs (key: x: key == "self" || !(x ? emptyDummyFlake)) inputs);
       inputOverrides.private = self.inputs.private-nixosvm;
     }).defaultNix.nixosConfigurations.nixosvm;
 
     nixosConfigurations.c3pbvm = (import flake-compat {
       src = ./hosts/c3pbvm;
-      outputFunctionOverrides.routeromen = inputs: outputFunction (inputs1 // inputs);
+      outputFunctionOverrides.routeromen = inputs: outputFunction (inputs1 // inputs1.nixpkgs.lib.attrsets.filterAttrs (key: x: key == "self" || !(x ? emptyDummyFlake)) inputs);
       inputOverrides.private = self.inputs.private-c3pbvm;
     }).defaultNix.nixosConfigurations.c3pbvm;
   } // (let

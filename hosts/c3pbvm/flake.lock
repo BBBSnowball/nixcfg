@@ -1,5 +1,21 @@
 {
   "nodes": {
+    "dummy": {
+      "locked": {
+        "lastModified": 1617671808,
+        "narHash": "sha256-GrGsmvHq8Emd9c9OIRwus0PjbrkkUY3kNE1O6/MdCr8=",
+        "owner": "BBBSnowball",
+        "repo": "nixcfg",
+        "rev": "ab7ab3690bdb7f662bb386e554d953dc8200c977",
+        "type": "github"
+      },
+      "original": {
+        "owner": "BBBSnowball",
+        "ref": "dummy",
+        "repo": "nixcfg",
+        "type": "github"
+      }
+    },
     "flake-compat": {
       "flake": false,
       "locked": {
@@ -85,6 +101,7 @@
     },
     "root": {
       "inputs": {
+        "dummy": "dummy",
         "flake-compat": [
           "routeromen",
           "flake-compat"
@@ -103,15 +120,21 @@
           "nixpkgs"
         ],
         "private": [
-          "private"
+          "dummy"
+        ],
+        "private-c3pbvm": [
+          "dummy"
+        ],
+        "private-nixosvm": [
+          "dummy"
         ]
       },
       "locked": {
-        "lastModified": 1615749138,
-        "narHash": "sha256-tZdaAJHY/hnDVW7GD6gav8LsZ/zRdddVoiLHczu32PQ=",
+        "lastModified": 1617667987,
+        "narHash": "sha256-hhsztyLlDm3ggRXJ906+IILJf+mh8JFo8WzXCXtcNVo=",
         "owner": "BBBSnowball",
         "repo": "nixcfg",
-        "rev": "46fdb0f4a3a8a4e553c00f2803687d2c8d15cbeb",
+        "rev": "794ea0dec237674351d474394a3b316cc1ea38e9",
         "type": "github"
       },
       "original": {
