@@ -19,11 +19,11 @@ fi
 
 if [ -n "$update_cmd" ] ; then
   echo "+ cd $PWD"
-  jq <flake.lock '.nodes|to_entries|.[]|if .value.locked.type == "path" then .key else null end|select(.)' -r | xargs -n1 -t $NIX flake $update_cmd --update-input
+  jq <flake.lock '.nodes|to_entries|.[]|if .value.locked.type == "path" then .key else null end|select(.)' -r | xargs -rn1 -t $NIX flake $update_cmd --update-input
   echo ""
   if [ -n "$hostname" -a -e "hosts/$hostname/flake.lock" ] ; then
     echo "+ cd $PWD/hosts/$hostname"
-    ( cd "hosts/$hostname" && jq <flake.lock '.nodes|to_entries|.[]|if .value.locked.type == "path" then .key else null end|select(.)' -r | xargs -n1 -t $NIX flake $update_cmd --update-input )
+    ( cd "hosts/$hostname" && jq <flake.lock '.nodes|to_entries|.[]|if .value.locked.type == "path" then .key else null end|select(.)' -r | xargs -rn1 -t $NIX flake $update_cmd --update-input )
     echo ""
   fi
 else
