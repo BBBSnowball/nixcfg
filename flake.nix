@@ -23,7 +23,7 @@
   inputs.nix-bundle.url = "github:BBBSnowball/nix-bundle";
   inputs.nix-bundle.inputs.nixpkgs.follows = "nixpkgs";
 
-  outputs = { self, nixpkgs, nix-bundle, flake-compat, ... }: let
+  outputs = inputs1: let outputFunction = { self, nixpkgs, nix-bundle, flake-compat, ... }: (let
     nixosSystemModule = path: {
       imports =
         [ (self.lib.provideArgsToModule (self.inputs // { modules = self.nixosModules; inherit self; }) path)
@@ -56,18 +56,18 @@
     #nixosConfigurations.rockpro64-snowball = (builtins.getFlake (toString ./hosts/rockpro64-snowball)).nixosConfigurations.rockpro64-snowball;
     nixosConfigurations.rockpro64-snowball = (import flake-compat {
       src = ./hosts/rockpro64-snowball;
-      #inputOverrides.routeromen = self;
+      outputFunctionOverrides.routeromen = inputs: outputFunction (inputs1 // inputs);
     }).defaultNix.nixosConfigurations.rockpro64-snowball;
     
     nixosConfigurations.nixosvm = (import flake-compat {
       src = ./hosts/nixosvm;
-      # This is faster but it would use routeromen with the wrong nixpkgs!
-      #inputOverrides.routeromen = self;
+      outputFunctionOverrides.routeromen = inputs: outputFunction (inputs1 // inputs);
       inputOverrides.private = self.inputs.private-nixosvm;
     }).defaultNix.nixosConfigurations.nixosvm;
 
     nixosConfigurations.c3pbvm = (import flake-compat {
       src = ./hosts/c3pbvm;
+      outputFunctionOverrides.routeromen = inputs: outputFunction (inputs1 // inputs);
       inputOverrides.private = self.inputs.private-c3pbvm;
     }).defaultNix.nixosConfigurations.c3pbvm;
   } // (let
@@ -122,5 +122,5 @@
     checks.aarch64-linux = {
       host-rockpro64-snowball = self.nixosConfigurations.rockpro64-snowball.config.system.build.toplevel;
     } // self.packages.aarch64-linux;
-  };
+  }); in outputFunction inputs1;
 }

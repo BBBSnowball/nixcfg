@@ -3,11 +3,11 @@
     "flake-compat": {
       "flake": false,
       "locked": {
-        "lastModified": 1611465702,
-        "narHash": "sha256-Vcfqx3fNbzdS0uFx5ztaOv7hefZvl21LKVSTLqiD2CM=",
+        "lastModified": 1617671040,
+        "narHash": "sha256-kM5xZE67AkbXP0w9V/7tzhvxcC68mDybYFHkl3qpCxk=",
         "owner": "BBBSnowball",
         "repo": "flake-compat",
-        "rev": "70260a0ac22e79fde5ec51140c133725a92c9082",
+        "rev": "e299543e6d7a705212bb890475fa6f00efa2b290",
         "type": "github"
       },
       "original": {
