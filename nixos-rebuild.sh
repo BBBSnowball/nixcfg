@@ -64,6 +64,7 @@ case "$action" in
       nix-copy-closure --to "$targetHost" "$newDrv"
       targetHostCmd nix-shell -p nix-diff --run "\"nix-diff $currentDrv $newDrv\""
     fi
+    exit
     ;;
   diff-cl|diff-closures)
     post_cmd="$action"
