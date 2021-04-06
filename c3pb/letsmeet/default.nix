@@ -1,8 +1,8 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, private, ... }:
 let
   pkg = pkgs.edumeet-server;
 in {
-  nixpkgs.overlays = [ (import ./overlay.nix) ];
+  nixpkgs.overlays = [ (import ./overlay.nix private) ];
   # make edumeet-connect available to the user
   environment.systemPackages = [ pkg ];
 

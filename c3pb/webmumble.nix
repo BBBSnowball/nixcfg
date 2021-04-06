@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, private, ... }:
 let
   extractTarball = tarball: builtins.derivation {
     name = builtins.baseNameOf tarball;
@@ -26,7 +26,7 @@ in {
     serviceConfig.ExecStart = ''
       ${pkgs.python3Packages.websockify}/bin/websockify --ssl-target \
         --web=${webmumbleDist} \
-        0.0.0.0:${toString port} ${lib.fileContents ../private/mumble-domain-c3pb.txt}:64738
+        0.0.0.0:${toString port} ${lib.fileContents "${private}/mumble-domain-c3pb.txt"}:64738
     '';
     wantedBy = [ "multi-user.target" ];
     environment.OPENSSL_CONF = opensslConf;

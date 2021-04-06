@@ -1,14 +1,14 @@
-{ pkgs, config, lib, ... }:
+{ pkgs, config, lib, withFlakeInputs, ... }:
 {
   imports = [
-    ./autossh.nix
-    #./mumbleweb.nix
-    ./dinge-info.nix
-    ./matrix-synapse.nix
-    ./mautrix-telegram
-    ./matrix-edi.nix
-    ./webmumble.nix
-    ./letsmeet
+    (withFlakeInputs ./autossh.nix)
+    #(withFlakeInputs ./mumbleweb.nix)
+    (withFlakeInputs ./dinge-info.nix)
+    (withFlakeInputs ./matrix-synapse.nix)
+    (withFlakeInputs ./mautrix-telegram)
+    (withFlakeInputs ./matrix-edi.nix)
+    (withFlakeInputs ./webmumble.nix)
+    (withFlakeInputs ./letsmeet)
   ];
 
   services.matrix-synapse.isTestInstance = false;

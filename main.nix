@@ -2,12 +2,12 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, lib, routeromen, private, ... }:
+{ config, pkgs, lib, routeromen, private, withFlakeInputs, ... }:
 {
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
-      ./c3pb
+      (withFlakeInputs ./c3pb)
       routeromen.nixosModules.extra-container
       routeromen.nixosModules.auto-upgrade
       routeromen.nixosModules.snowball-vm-sonline0
