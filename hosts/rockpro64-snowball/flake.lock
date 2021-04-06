@@ -1,13 +1,29 @@
 {
   "nodes": {
+    "dummy": {
+      "locked": {
+        "lastModified": 1617671808,
+        "narHash": "sha256-GrGsmvHq8Emd9c9OIRwus0PjbrkkUY3kNE1O6/MdCr8=",
+        "owner": "BBBSnowball",
+        "repo": "nixcfg",
+        "rev": "ab7ab3690bdb7f662bb386e554d953dc8200c977",
+        "type": "github"
+      },
+      "original": {
+        "owner": "BBBSnowball",
+        "ref": "dummy",
+        "repo": "nixcfg",
+        "type": "github"
+      }
+    },
     "flake-compat": {
       "flake": false,
       "locked": {
-        "lastModified": 1611465702,
-        "narHash": "sha256-Vcfqx3fNbzdS0uFx5ztaOv7hefZvl21LKVSTLqiD2CM=",
+        "lastModified": 1617671040,
+        "narHash": "sha256-kM5xZE67AkbXP0w9V/7tzhvxcC68mDybYFHkl3qpCxk=",
         "owner": "BBBSnowball",
         "repo": "flake-compat",
-        "rev": "70260a0ac22e79fde5ec51140c133725a92c9082",
+        "rev": "e299543e6d7a705212bb890475fa6f00efa2b290",
         "type": "github"
       },
       "original": {
@@ -120,18 +136,6 @@
         "type": "github"
       }
     },
-    "private": {
-      "flake": false,
-      "locked": {
-        "narHash": "sha256-pQpattmS9VmO3ZIQUFn66az8GSmB4IvYhTTCFn6SUmo=",
-        "path": "./private/data",
-        "type": "path"
-      },
-      "original": {
-        "path": "./private/data",
-        "type": "path"
-      }
-    },
     "rockpro64Config": {
       "inputs": {
         "nixpkgs": [
@@ -154,6 +158,7 @@
     },
     "root": {
       "inputs": {
+        "dummy": "dummy",
         "flake-registry": "flake-registry",
         "ldap-to-ssh": "ldap-to-ssh",
         "nixpkgs": "nixpkgs",
@@ -170,16 +175,28 @@
         "nixpkgs": [
           "nixpkgs"
         ],
-        "private": "private"
+        "private": [
+          "dummy"
+        ],
+        "private-c3pbvm": [
+          "dummy"
+        ],
+        "private-nixosvm": [
+          "dummy"
+        ]
       },
       "locked": {
-        "narHash": "sha256-uRx2s8wR79k9iY2FAasPkH6jXK6wMDhrJRCaTgmVmaY=",
-        "path": "../..",
-        "type": "path"
+        "lastModified": 1617667987,
+        "narHash": "sha256-hhsztyLlDm3ggRXJ906+IILJf+mh8JFo8WzXCXtcNVo=",
+        "owner": "BBBSnowball",
+        "repo": "nixcfg",
+        "rev": "794ea0dec237674351d474394a3b316cc1ea38e9",
+        "type": "github"
       },
       "original": {
-        "path": "../..",
-        "type": "path"
+        "owner": "BBBSnowball",
+        "repo": "nixcfg",
+        "type": "github"
       }
     }
   },
