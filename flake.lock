@@ -83,6 +83,18 @@
         "type": "path"
       }
     },
+    "private-c3pbvm": {
+      "flake": false,
+      "locked": {
+        "narHash": "sha256-7mVlzHcKO01t3awpnvwRPQccQQsPaoo4bkmkUib3YTU=",
+        "path": "./hosts/c3pbvm/private",
+        "type": "path"
+      },
+      "original": {
+        "path": "./hosts/c3pbvm/private",
+        "type": "path"
+      }
+    },
     "private-nixosvm": {
       "flake": false,
       "locked": {
@@ -102,6 +114,7 @@
         "nix-bundle": "nix-bundle",
         "nixpkgs": "nixpkgs",
         "private": "private",
+        "private-c3pbvm": "private-c3pbvm",
         "private-nixosvm": "private-nixosvm"
       }
     }

@@ -16,6 +16,9 @@
   inputs.private-nixosvm.url = "path:./hosts/nixosvm/private";
   inputs.private-nixosvm.flake = false;
 
+  inputs.private-c3pbvm.url = "path:./hosts/c3pbvm/private";
+  inputs.private-c3pbvm.flake = false;
+
   #inputs.nix-bundle.url = "github:matthewbauer/nix-bundle";
   inputs.nix-bundle.url = "github:BBBSnowball/nix-bundle";
   inputs.nix-bundle.inputs.nixpkgs.follows = "nixpkgs";
@@ -62,6 +65,11 @@
       #inputOverrides.routeromen = self;
       inputOverrides.private = self.inputs.private-nixosvm;
     }).defaultNix.nixosConfigurations.nixosvm;
+
+    nixosConfigurations.c3pbvm = (import flake-compat {
+      src = ./hosts/c3pbvm;
+      inputOverrides.private = self.inputs.private-c3pbvm;
+    }).defaultNix.nixosConfigurations.c3pbvm;
   } // (let
     supportedSystems = [ "x86_64-linux" "i686-linux" "aarch64-linux" ];
     forAllSystems = nixpkgs.lib.genAttrs supportedSystems;
