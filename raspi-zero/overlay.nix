@@ -42,14 +42,14 @@ self: super: {
     echo 1 >/sys/class/gpio/gpio$num/value
   '';
 
-  rpiConfig = import (self.nixpkgsPath + "/nixos") {
-    system = self.stdenv.buildPlatform.system;
-    configuration = ../hosts/raspi-zero/main.nix;
-  };
-
   # see <nixpkgs/nixos/modules/installer/cd-dvd/sd-image-aarch64.nix>
   # and https://dev.webonomic.nl/how-to-run-or-boot-raspbian-on-a-raspberry-pi-zero-without-an-sd-card
-  rpibootfiles = super.runCommand "rpibootfiles" (with self.rpiConfig.pkgs; {
+  rpibootfiles = let
+    rpiConfig = import (self.nixpkgsPath + "/nixos") {
+      system = self.stdenv.buildPlatform.system;
+      configuration = ../hosts/raspi-zero/main.nix;
+    };
+  in super.runCommand "rpibootfiles" (with self.rpiConfig.pkgs; {
     inherit raspberrypifw;
     inherit (self) rpiboot;
     uboot = ubootRaspberryPiZero;
@@ -69,6 +69,7 @@ self: super: {
       # set initramfs
       initramfs initrd followkernel
     '';
+    passthru.config = rpiConfig;
   }) ''
     mkdir $out
     cp -r $raspberrypifw/share/raspberrypi/boot/* $out/
