@@ -3,7 +3,6 @@
   imports = [
     ./hardware.nix
     ./kernel.nix
-    ./firmware
     ./xserver.nix
     ./bluetooth.nix
     ./touch.nix
@@ -13,6 +12,7 @@
     vim
   ];
   nixpkgs.config.allowUnfree = true; # for firmware
+  hardware.enableAllFirmware = true;  #FIXME can we enable more specific packages?
   networking.wireless.enable = false;
   # neet 4.14+ for proper hardware support (and modesetting)
   # especially for screen rotation on boot
