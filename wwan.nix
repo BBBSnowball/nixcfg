@@ -89,7 +89,9 @@ in
     };
   };
 
-  users.users.smsd = {};
+  users.users.smsd = {
+    isSystemUser = true;
+  };
   users.groups.sms = {};
 
   #NOTE This is template unit but we really can only handle one instance at a time because they

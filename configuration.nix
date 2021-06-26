@@ -114,7 +114,8 @@
   networking.networkmanager.enable = true;
   services.xserver.enable = true;
   services.xserver.displayManager.gdm.enable = true;
-  services.xserver.desktopManager.gnome3.enable = true;
+  #services.xserver.desktopManager.gnome3.enable = true;
+  services.xserver.desktopManager.gnome.enable = true;
   services.tlp.enable = true;
 
   systemd.services.NetworkManager.preStart = ''
@@ -152,6 +153,9 @@
   nix.extraOptions = ''
     builders-use-substitutes = true
   '';
+
+  #FIXME disabled because it conflicts with tlp but would it be better?
+  services.power-profiles-daemon.enable = false;
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
