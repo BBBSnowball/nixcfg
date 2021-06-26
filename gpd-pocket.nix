@@ -7,15 +7,12 @@
     ./nixos-gpd-pocket/xserver.nix
     ./nixos-gpd-pocket/bluetooth.nix
     ./nixos-gpd-pocket/touch.nix
+    ./nixos-gpd-pocket/power.nix
   ];
 
-  # neet 4.14+ for proper hardware support (and modesetting)
-  # especially for screen rotation on boot
-  boot.kernelPackages = pkgs.linuxPackagesFor pkgs.linux_gpd_pocket;
-  boot.initrd.kernelModules = [
-    "pwm-lpss" "pwm-lpss-platform" # for brightness control
-    "g_serial" # be a serial device via OTG
-  ];
+  #boot.kernelPackages = pkgs.linuxPackagesFor pkgs.linux_gpd_pocket;
+  boot.kernelPatches = [ pkgs.linux_gpd_pocket_patches ];
+  boot.initrd.kernelModules = pkgs.linux_gpd_pocket_modules;
 
   services.thermald.enable = true;
   services.tlp.enable = true;
