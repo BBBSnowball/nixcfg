@@ -1,3 +1,2 @@
 {
-  hardware.enableAllFirmware = true;
 }
