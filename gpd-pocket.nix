@@ -3,13 +3,13 @@
   imports = [
     ./nixos-gpd-pocket/hardware.nix
     ./nixos-gpd-pocket/kernel.nix
-    ./nixos-gpd-pocket/firmware
     ./nixos-gpd-pocket/xserver.nix
     ./nixos-gpd-pocket/bluetooth.nix
     ./nixos-gpd-pocket/touch.nix
   ];
 
   nixpkgs.config.allowUnfree = true; # for firmware
+  hardware.enableAllFirmware = true;  #FIXME can we enable more specific packages?
 
   # neet 4.14+ for proper hardware support (and modesetting)
   # especially for screen rotation on boot
