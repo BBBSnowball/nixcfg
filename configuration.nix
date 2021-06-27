@@ -86,7 +86,7 @@
     wget vim git tig byobu tmux htop usbutils
     firefox
     lm_sensors stress-ng
-    i7z config.boot.kernelPackages.cpupower config.boot.kernelPackages.turbostat
+    i7z config.boot.kernelPackages.cpupower config.boot.kernelPackages.turbostat powertop
     iw wirelesstools
     pavucontrol
     i2c-tools
