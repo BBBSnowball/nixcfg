@@ -100,6 +100,14 @@
           nix-build -E 'let x = builtins.getFlake "${toString self}"; in x.defaultBundler { system = "${system}"; program = with x.apps.${system}; ('"$1"').program; rsyncable = true; }'
         fi
       ''); };
+
+      nixFlakes = { type = "app"; program = builtins.toString (with nixpkgs.legacyPackages.${system}; writeShellScript "nix-flakes" ''
+        exec ${nixFlakes}/bin/nix --experimental-features "nix-command flakes" "$@"
+      ''); };
+
+      test2 = { type = "app"; program = builtins.toString (with nixpkgs.legacyPackages.${system}; writeShellScript "test" ''
+        echo 2
+      ''); };
     });
     devShells = forAllSystems (system: with self.packages.${system}; with nixpkgs.legacyPackages.${system}; {
       gd32 = mkShell {
