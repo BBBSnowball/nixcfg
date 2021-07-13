@@ -5,21 +5,21 @@
 #   pypi2nix -r requirements.txt -E zlib -E libffi -e cryptg -e pytest-runner -e pytest -e pytest-asyncio -e pytest-mock -e olefile -e setuptools_scm
 #
 
-{ pkgs ? import <nixpkgs> {},
+{ pkgs ? import <nixpkgs> {}, lib ? pkgs.stdenv.lib,
   overrides ? ({ pkgs, python }: self: super: {})
 }:
 
 let
 
   inherit (pkgs) makeWrapper;
-  inherit (pkgs.stdenv.lib) fix' extends inNixShell;
+  inherit (lib) fix' extends inNixShell;
 
-  pythonPackages =
-  import "${toString pkgs.path}/pkgs/top-level/python-packages.nix" {
-    inherit pkgs;
-    inherit (pkgs) stdenv;
-    python = pkgs.python3;
-  };
+  pythonPackages = pkgs.python3Packages;
+  #import "${toString pkgs.path}/pkgs/top-level/python-packages.nix" {
+  #  inherit pkgs lib;
+  #  inherit (pkgs) stdenv;
+  #  python = pkgs.python3;
+  #} pythonPackages;
 
   commonBuildInputs = with pkgs; [ zlib libffi ];
   commonDoCheck = false;

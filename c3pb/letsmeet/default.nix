@@ -14,9 +14,7 @@ in {
     bind = "127.0.0.1";
     port = 0;
     unixSocket = "/run/redis/redis.sock";
-    extraConfig = ''
-      unixsocketperm 770
-    '';
+    settings.unixsocketperm = lib.mkForce "770";  # edumeet should be able to connect
   };
 
   users.groups.redis-access = { };

@@ -5,7 +5,7 @@ let
 
   replaceDomain = input: import ../substitute.nix pkgs input "--replace @trueDomain@ ${lib.fileContents "${private}/trueDomain.txt"}";
 
-  pythonWithPkgs = import ./requirements.nix { inherit pkgs; };
+  pythonWithPkgs = import ./requirements.nix { inherit pkgs lib; };
   mautrixTelegram = pkgs.callPackage ./mautrix-telegram-pkg.nix { inherit pythonWithPkgs; };
   python = pythonWithPkgs.interpreterWithPackages (_: [ mautrixTelegram pythonWithPkgs.packages.alembic ]);
   configPatches = [
@@ -42,7 +42,7 @@ in {
   networking.firewall.allowedTCPPorts = [ 8080 8081 ];
 
   users.users."${name}" = {
-    isNormalUser = false;
+    isSystemUser = true;
     home = "/var/lib/${name}";
   };
 
