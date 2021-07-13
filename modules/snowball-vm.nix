@@ -39,7 +39,7 @@
     #systemd.services."serial-getty@ttyS0".enable = true;
     boot.kernelParams = [ "console=ttyS0" ];
   
-    security.rngd.enable = false;
+    #security.rngd.enable = false;  # removed in 21.09
   
     services.fstrim.enable = true;
   };
