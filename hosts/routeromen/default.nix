@@ -40,6 +40,7 @@ in {
   boot.kernelParams = [ "reboot=hard,pci" ];
 
   networking.hostName = "routeromen";
+  networking.domain = "local";
   networking.hostId = hostSpecificValue "/hostId.nix";
   networking.wireless.enable = false;
 

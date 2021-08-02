@@ -25,7 +25,7 @@
     '';
 
     services.zigbee2mqtt.enable = true;
-    services.zigbee2mqtt.config = {
+    services.zigbee2mqtt.settings = {
       serial.port = "/dev/ttyZigbee";
       mqtt.user = "!secret user";
       mqtt.password = "!secret password";
