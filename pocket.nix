@@ -6,7 +6,7 @@
     ./firmware.nix
     ./xserver.nix
     ./bluetooth.nix
-    ./touch.nix
+    ./suspend.nix
   ];
 
   environment.systemPackages = with pkgs; [
