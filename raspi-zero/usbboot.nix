@@ -1,4 +1,8 @@
-{ pkgs, ... }:
+{ lib, pkgs, ... }:
+let
+  # well, just a very rough guess ;-)
+  isSBC = pkgs.stdenv.buildPlatform == "aarch64-linux";
+in
 {
   nixpkgs.overlays = [ (import ./overlay.nix) ];
 
@@ -7,7 +11,7 @@
   '';
 
   # enable /sys/class/gpio because we use that to control the nRESET/RUN line of the Pi
-  boot.kernelPatches = [ {
+  boot.kernelPatches = lib.mkIf isSBC [ {
     name = "gpio-in-sysfs";
     patch = null;
     extraConfig = ''GPIO_SYSFS y'';
@@ -15,7 +19,7 @@
 
   environment.systemPackages = with pkgs; [ rpiboot rpireset picocom ];
 
-  systemd.services.rpireset-for-dialout = {
+  systemd.services.rpireset-for-dialout = lib.mkIf isSBC {
     serviceConfig.Type = "oneshot";
     wantedBy = [ "multi-user.target" ];
     script = ''

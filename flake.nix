@@ -19,6 +19,9 @@
   inputs.private-c3pbvm.url = "path:./hosts/c3pbvm/private";
   inputs.private-c3pbvm.flake = false;
 
+  inputs.private-gk3v-pb.url = "path:./hosts/gk3v-pb/private";
+  inputs.private-gk3v-pb.flake = false;
+
   #inputs.nix-bundle.url = "github:matthewbauer/nix-bundle";
   inputs.nix-bundle.url = "github:BBBSnowball/nix-bundle";
   inputs.nix-bundle.inputs.nixpkgs.follows = "nixpkgs";
@@ -63,6 +66,7 @@
     nixosConfigurations.rockpro64-snowball = mkHostInSubflake "rockpro64-snowball";
     nixosConfigurations.nixosvm = mkHostInSubflake "nixosvm";
     nixosConfigurations.c3pbvm = mkHostInSubflake "c3pbvm";
+    nixosConfigurations.gk3v-pb = mkHostInSubflake "gk3v-pb";
   } // (let
     supportedSystems = [ "x86_64-linux" "i686-linux" "aarch64-linux" ];
     forAllSystems = nixpkgs.lib.genAttrs supportedSystems;
