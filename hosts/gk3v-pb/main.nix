@@ -6,11 +6,14 @@ let
 in
 {
   imports =
+    with routeromen.nixosModules; [
+      snowball-headless-big
+      raspi-zero-usbboot
+      raspi-pico
+      network-manager
+    ] ++
     [ ./hardware-configuration.nix
-      routeromen.nixosModules.snowball-headless-big
       ./rust.nix
-      routeromen.nixosModules.raspi-zero-usbboot
-      routeromen.nixosModules.raspi-pico
       ./udev.nix
     ];
 
@@ -21,15 +24,9 @@ in
   boot.loader.efi.canTouchEfiVariables = true;
   boot.loader.efi.efiSysMountPoint = "/boot/efi";
 
-  networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
-  networking.wireless.networks = {                                                                  
-    ...
-  };                  
-  networking.wireless.interfaces = [ "wlp3s0" ];
-                                                  
+  #FIXME Also replace by nm because this may hang at boot if DHCP is not available.
   networking.useDHCP = false;
   networking.interfaces.enp2s0.useDHCP = true;
-  networking.interfaces.wlp3s0.useDHCP = true;
 
   services.openssh.enable = true;
   networking.firewall.allowedTCPPorts = [ 22 ];
