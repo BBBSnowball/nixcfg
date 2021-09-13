@@ -6,4 +6,7 @@
   ];
 
   programs.emacs.defaultEditor = true;
+
+  programs.command-not-found.enable = true;
+  documentation.dev.enable = true;
 }
