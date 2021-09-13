@@ -34,6 +34,11 @@ in
     passwordFile = "/etc/nixos/secret/rootpw";
     extraGroups = [ "dialout" "wheel" ];
     openssh.authorizedKeys.keyFiles = [ "${private}/ssh-laptop.pub" ];
+
+    packages = with pkgs; [
+      cura freecad kicad
+      firefox pavucontrol
+    ];
   };
   users.users.root = {
     # generate contents with `mkpasswd -m sha-512`
