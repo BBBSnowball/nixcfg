@@ -16,6 +16,7 @@ in
     [ ./hardware-configuration.nix
       ./rust.nix
       ./udev.nix
+      ./3dprint.nix
     ];
 
   networking.hostName = "gk3v-pb";
@@ -25,9 +26,7 @@ in
   boot.loader.efi.canTouchEfiVariables = true;
   boot.loader.efi.efiSysMountPoint = "/boot/efi";
 
-  #FIXME Also replace by nm because this may hang at boot if DHCP is not available.
   networking.useDHCP = false;
-  networking.interfaces.enp2s0.useDHCP = true;
 
   users.users.user = {
     isNormalUser = true;
@@ -38,6 +37,8 @@ in
     packages = with pkgs; [
       cura freecad kicad
       firefox pavucontrol
+      mplayer mpv vlc
+      speedcrunch
     ];
   };
   users.users.root = {
