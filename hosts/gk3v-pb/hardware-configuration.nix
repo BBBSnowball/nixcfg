@@ -32,7 +32,8 @@
     [ { device = "/dev/sda4"; }
     ];
 
-  powerManagement.cpuFreqGovernor = lib.mkDefault "powersave";
+  #powerManagement.cpuFreqGovernor = lib.mkDefault "powersave";
+  powerManagement.cpuFreqGovernor = lib.mkDefault "schedutil";
   # high-resolution display
   hardware.video.hidpi.enable = lib.mkDefault true;
 }
