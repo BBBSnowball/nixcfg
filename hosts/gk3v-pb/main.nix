@@ -48,6 +48,9 @@ in
     openssh.authorizedKeys.keyFiles = [ "${private}/ssh-laptop.pub" ];
   };
 
+  services.xrdp.enable = true;
+  networking.firewall.allowedTCPPorts = [ config.services.xrdp.port ];
+
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
