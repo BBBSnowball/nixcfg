@@ -95,4 +95,8 @@
   };
 
   networking.firewall.allowedTCPPorts = [ 5000 5050 ];
+
+  # don't abort a running print, please
+  # (NixOS will tell us when a restart is necessary and we can do it at a time of our choosing.)
+  systemd.services.octoprint.restartIfChanged = false;
 }
