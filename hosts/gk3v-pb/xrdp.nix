@@ -4,7 +4,11 @@ with lib;
 
 let
   cfg = config.services.xrdp;
-  confDir = pkgs.runCommand "xrdp.conf" { preferLocalBuild = true; } ''
+  confDir = pkgs.runCommand "xrdp.conf" {
+    preferLocalBuild = true;
+    inherit (cfg) extraConfig extraSesmanConfig;
+    passAsFile = [ "extraConfig" "extraSesmanConfig" ];
+  } ''
     mkdir $out
 
     cp ${cfg.package}/etc/xrdp/{km-*,xrdp,sesman,xrdp_keyboard}.ini $out
@@ -22,6 +26,7 @@ let
       --replace "key_file=" "key_file=${cfg.sslKey}" \
       --replace LogFile=xrdp.log LogFile=/dev/null \
       --replace EnableSyslog=true EnableSyslog=false
+    cat "$extraConfigPath" >>$out/xrdp.ini
 
     substituteInPlace $out/sesman.ini \
       --replace LogFile=xrdp-sesman.log LogFile=/dev/null \
@@ -32,6 +37,9 @@ let
     LANG=${config.i18n.defaultLocale}\
     LOCALE_ARCHIVE=${config.i18n.glibcLocales}/lib/locale/locale-archive
     ' $out/sesman.ini
+    cat "$extraSesmanConfigPath" >>$out/sesman.ini
+
+    ${cfg.extraConfigScript}
   '';
 in
 {
@@ -97,6 +105,20 @@ in
         '';
       };
 
+      extraSesmanConfig = mkOption {
+        type = types.str;
+        default = "";
+      };
+
+      extraConfig = mkOption {
+        type = types.str;
+        default = "";
+      };
+
+      extraConfigScript = mkOption {
+        type = types.str;
+        default = "";
+      };
     };
   };
 

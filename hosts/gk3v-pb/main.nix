@@ -17,8 +17,11 @@ in
       ./rust.nix
       ./udev.nix
       ./3dprint.nix
+      ./xrdp.nix
       ./brother_ql_service.nix
     ];
+
+  disabledModules = [ "services/networking/xrdp.nix" ];
 
   networking.hostName = "gk3v-pb";
 
@@ -42,6 +45,7 @@ in
       firefox pavucontrol
       mplayer mpv vlc
       speedcrunch
+      x11vnc
       (python3Packages.brother-ql)
     ];
   };
@@ -53,6 +57,15 @@ in
   };
 
   services.xrdp.enable = true;
+  services.xrdp.extraConfig = ''
+    [ExistingVNC]
+    name=Existing VNC
+    lib=libvnc.so
+    port=ask5900
+    username=na
+    password=ask
+    ip=127.0.0.1
+  '';
   networking.firewall.allowedTCPPorts = [ config.services.xrdp.port ];
 
   # List packages installed in system profile. To search, run:
