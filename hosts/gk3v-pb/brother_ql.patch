@@ -1,0 +1,12 @@
+diff --git a/brother_ql/backends/pyusb.py b/brother_ql/backends/pyusb.py
+index bce5f88..206f7b1 100755
+--- a/brother_ql/backends/pyusb.py
++++ b/brother_ql/backends/pyusb.py
+@@ -74,6 +74,7 @@ class BrotherQLBackendPyUSB(BrotherQLBackendGeneric):
+             if device_specifier.startswith('usb://'):
+                 device_specifier = device_specifier[6:]
+             vendor_product, _, serial = device_specifier.partition('/')
++            vendor_product = vendor_product.partition('_')[0]
+             vendor, _, product = vendor_product.partition(':')
+             vendor, product = int(vendor, 16), int(product, 16)
+             for result in list_available_devices():
