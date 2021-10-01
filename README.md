@@ -10,6 +10,8 @@ This repo contains most of my NixOS configs and Nix packages. Feel free to brows
 * WPA Enterprise with hostapd plus a small script for managing client certificates
 * Firewall configuration with Shorewall.
 * See `modules` for all the small but useful stuff.
+* Start a Nix shell with all the apps: `nix-shell https://github.com/BBBSnowball/nixcfg/archive/refs/heads/master.tar.gz`
+  (including `nixFlakes`, which is *very* useful for bootstrapping)
 
 Hardware (with NixOS):
 

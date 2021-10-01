@@ -33,6 +33,7 @@ let
     set -e
     shopt -s inherit_errexit
     bash $(nix-build "${toString ./.}" -A buildApp --argstr appToBuild "${name}")
+    # debug: ${toString (nixpkgs.runCommand "abc" {} "ln -s ${toString ./.} $out")}
     exec "${builtins.unsafeDiscardStringContext program}" "$@"
   '';
   makeAppLazy = name: app:
