@@ -32,6 +32,7 @@
       mqtt.user = "!secret user";
       mqtt.password = "!secret password";
       advanced.network_key = "!secret network_key";
+      advanced.pan_id = 6759;
       advanced.log_level = "warn";  # "info" logs every MQTT message - way too verbose
       advanced.log_output = [ "console" ];  # don't log to file, as well
       permit_join = false;
