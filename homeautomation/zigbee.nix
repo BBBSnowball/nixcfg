@@ -21,8 +21,10 @@
     ];
 
     services.udev.extraRules = ''
-      ATTRS{interface}=="slae.sh cc2652rb stick - slaesh's iot stuff", SYMLINK+="ttyZigbee", GROUP="zigbee2mqtt"
+      ATTRS{interface}=="slae.sh cc2652rb stick - slaesh's iot stuff", SYMLINK+="ttyZigbee", GROUP="zigbee2mqtt", TAG+="systemd", ENV{SYSTEMD_WANTS}="zigbee2mqtt.service", ENV{SYSTEMD_ALIAS}="/sys/devices/ttyZigbee"
     '';
+    systemd.services.zigbee2mqtt.bindsTo = [ "sys-devices-ttyZigbee.device" ];
+    systemd.services.zigbee2mqtt.after   = [ "sys-devices-ttyZigbee.device" ];
 
     services.zigbee2mqtt.enable = true;
     services.zigbee2mqtt.settings = {
