@@ -81,6 +81,12 @@ in
       probe = FPing1k
       title = mail.bkoch.info, 1k packets
       host = mail.bkoch.info
+      ++ ping_online_net
+      host = ping.online.net
+      ++ ping_online_net_1k
+      probe = FPing1k
+      title = ping.online.net, 1k packets
+      host = ping.online.net
       ++ c3pb_de
       host = c3pb.de
       ++ c3pb_de_1k
