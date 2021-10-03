@@ -4,7 +4,7 @@ stdenv.mkDerivation {
   version = "10.12.1";
 
   src = fetchurl {
-    url = "https://www.nordicsemi.com/-/media/Software-and-other-downloads/Desktop-software/nRF-command-line-tools/sw/Versions-10-x-x/10-12-1/nRFCommandLineTools10121Linuxamd64tar.gz";
+    url = "https://www.nordicsemi.com/-/media/Software-and-other-downloads/Desktop-software/nRF-command-line-tools/sw/Versions-10-x-x/10-12-1/nRFCommandLineTools10121Linuxamd64.tar.gz";
     sha256 = "sha256-uZVY3WMdt/Bv58+rCodtNShRu8HpcBVDJIZYi5yvgYQ=";
   };
 
