@@ -204,18 +204,19 @@ in
       menu = to closest
       probe = speedtest-upload
       host = dummy.com
-      ++ from_frace1
-      title = from France
-      menu = from France
-      probe = speedtest-download
-      server = 39765
-      host = dummy.com
-      ++ to_france1
-      title = to France
-      menu = to France
-      probe = speedtest-upload
-      server = 39765
-      host = dummy.com
+      #NOTE We cannot use any servers that aren't offered to us. Meh.
+      #++ from_frace1
+      #title = from France
+      #menu = from France
+      #probe = speedtest-download
+      #server = 39765
+      #host = dummy.com
+      #++ to_france1
+      #title = to France
+      #menu = to France
+      #probe = speedtest-upload
+      #server = 39765
+      #host = dummy.com
     '';
   };
 }
