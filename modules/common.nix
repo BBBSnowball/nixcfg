@@ -1,4 +1,4 @@
-{ pkgs, lib, modules, ... }:
+{ config, pkgs, lib, modules, ... }:
 {
   imports =
     [
@@ -20,6 +20,7 @@
     iperf iperf3
     utillinux parted
     lsof
+    stress-ng
 
     neovim neovim-remote fzf ctags
     # only in nixos unstable: page
@@ -29,6 +30,7 @@
     mosh
   ] ++ (if system == "x86_64-linux" then [
     cpufrequtils
+    i7z config.boot.kernelPackages.cpupower config.boot.kernelPackages.turbostat powertop
   ] else []);
 
   #programs.vim.defaultEditor = true;
@@ -39,5 +41,7 @@
 
   programs.bash.interactiveShellInit = ''
     shopt -s histappend
+    export HISTSIZE=300000
+    export HISTFILESIZE=200000
   '';
 }

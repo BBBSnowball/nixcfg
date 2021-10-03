@@ -1,5 +1,21 @@
 {
   "nodes": {
+    "dummy": {
+      "locked": {
+        "lastModified": 1617671808,
+        "narHash": "sha256-GrGsmvHq8Emd9c9OIRwus0PjbrkkUY3kNE1O6/MdCr8=",
+        "owner": "BBBSnowball",
+        "repo": "nixcfg",
+        "rev": "ab7ab3690bdb7f662bb386e554d953dc8200c977",
+        "type": "github"
+      },
+      "original": {
+        "owner": "BBBSnowball",
+        "ref": "dummy",
+        "repo": "nixcfg",
+        "type": "github"
+      }
+    },
     "flake-compat": {
       "flake": false,
       "locked": {
@@ -13,6 +29,22 @@
       "original": {
         "owner": "BBBSnowball",
         "repo": "flake-compat",
+        "type": "github"
+      }
+    },
+    "flake-registry": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1614596001,
+        "narHash": "sha256-FRus+cq5zVKn9cqAJsMg8OVqNZDrr8QhbOzAz6kxti4=",
+        "owner": "NixOS",
+        "repo": "flake-registry",
+        "rev": "846277a41f292c63d7c2a4bed07152d982829bcb",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "repo": "flake-registry",
         "type": "github"
       }
     },
@@ -57,11 +89,11 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1632918953,
-        "narHash": "sha256-XY3TKBfhP7wCu/SeqrwIkTWkyYHy5W1yRR8pxyzRY9Y=",
+        "lastModified": 1631275245,
+        "narHash": "sha256-vROU1OFI2zvKSBjbMpbpl9R08Or3eUwaW5HJLq88QWY=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "ee90403e147b181300dffca5b0afa405e14f1945",
+        "rev": "8b0b81dab17753ab344a44c04be90a61dc55badf",
         "type": "github"
       },
       "original": {
@@ -71,64 +103,47 @@
         "type": "github"
       }
     },
-    "private": {
-      "flake": false,
-      "locked": {
-        "narHash": "sha256-Pu7zEhzqXDwj+rDjyuK1zp5IQ7GhkKjkiXlptNe98YY=",
-        "path": "./private/data",
-        "type": "path"
-      },
-      "original": {
-        "path": "./private/data",
-        "type": "path"
-      }
-    },
-    "private-c3pbvm": {
-      "flake": false,
-      "locked": {
-        "narHash": "sha256-7mVlzHcKO01t3awpnvwRPQccQQsPaoo4bkmkUib3YTU=",
-        "path": "./hosts/c3pbvm/private",
-        "type": "path"
-      },
-      "original": {
-        "path": "./hosts/c3pbvm/private",
-        "type": "path"
-      }
-    },
-    "private-gk3v-pb": {
-      "flake": false,
-      "locked": {
-        "narHash": "sha256-1bf4qqiStrJRj+M/CIWcJR7tKZf+FcZmQlEpU1j15G4=",
-        "path": "./hosts/gk3v-pb/private",
-        "type": "path"
-      },
-      "original": {
-        "path": "./hosts/gk3v-pb/private",
-        "type": "path"
-      }
-    },
-    "private-nixosvm": {
-      "flake": false,
-      "locked": {
-        "narHash": "sha256-P2q6CUbnElb8QKAt7iiBlWMOw+E18rvotJzQL+gGUrg=",
-        "path": "./hosts/nixosvm/private",
-        "type": "path"
-      },
-      "original": {
-        "path": "./hosts/nixosvm/private",
-        "type": "path"
-      }
-    },
     "root": {
+      "inputs": {
+        "dummy": "dummy",
+        "flake-registry": "flake-registry",
+        "nixpkgs": "nixpkgs",
+        "private": [
+          "dummy"
+        ],
+        "routeromen": "routeromen"
+      }
+    },
+    "routeromen": {
       "inputs": {
         "flake-compat": "flake-compat",
         "jens-dotfiles": "jens-dotfiles",
         "nix-bundle": "nix-bundle",
-        "nixpkgs": "nixpkgs",
-        "private": "private",
-        "private-c3pbvm": "private-c3pbvm",
-        "private-gk3v-pb": "private-gk3v-pb",
-        "private-nixosvm": "private-nixosvm"
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "private": [
+          "dummy"
+        ],
+        "private-c3pbvm": [
+          "dummy"
+        ],
+        "private-nixosvm": [
+          "dummy"
+        ]
+      },
+      "locked": {
+        "lastModified": 1630278823,
+        "narHash": "sha256-VHOdkfe86TmDodNwqLsY9nc7/QIpr/4clcpMLinggLM=",
+        "owner": "BBBSnowball",
+        "repo": "nixcfg",
+        "rev": "6fa8b3bec5dfa072eb854ea3d8e330585379505e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "BBBSnowball",
+        "repo": "nixcfg",
+        "type": "github"
       }
     }
   },
