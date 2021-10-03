@@ -1,6 +1,51 @@
 { config, pkgs, lib, ... }:
 let
   nameserver = builtins.head config.networking.nameservers;
+  fping = { name = ""; probe = null; key = ""; };
+  fping1k = { name = ", 1k packets"; probe = "FPing1k"; key = "1k"; };
+  fping_1k = fping1k // { key = "_1k"; };  # just different key to keep it as before
+  targetHosts = [
+    { host = "localhost"; key = "LocalMachine"; }
+    { name = "FritzBox"; host = "192.168.178.1"; probes = [ fping fping1k ]; }
+    { name = "Printer"; host = "192.168.178.21"; }
+    { name = "work"; host = "192.168.178.56"; probes = [ fping fping_1k ]; }
+    { key = "Google"; host = "google.de"; }
+    #rec { key = "DNS1"; name = "DNS 1 (${host})"; host = "176.95.16.219"; }
+    { name = "DNS 1"; host = "176.95.16.219"; }
+    { name = "DNS 2"; host = "176.95.16.251"; }
+    { host = "mail.bkoch.info"; probes = [ fping fping_1k ]; }
+    { host = "ping.online.net"; probes = [ fping fping_1k ]; }
+    { host = "c3pb.de"; probes = [ fping fping_1k ]; }
+    { host = "hackerspace.servers.c3pb.de"; name = "hackerspace"; }
+    { host = "verl.bbbsnowball.de"; name = "verl"; probes = [ fping fping_1k ]; }
+    { name = "gpd pocket"; host = "192.168.178.68"; probes = [ fping fping_1k ]; }
+    { name = "laptop lan"; key = "laptop_lan"; host = "192.168.178.59"; probes = [ fping fping_1k ]; }
+    { name = "laptop wifi"; key = "laptop_wifi"; host = "192.168.178.67"; probes = [ fping fping_1k ]; }
+    { host = "sslvpn4.beckhoff.com"; probes = [ fping fping_1k ]; }
+    # { host = "sslvpn2.beckhoff.com"; probes = [ fping fping_1k ]; }
+  ];
+  completeHost = x: rec {
+    key    = x.key or (lib.strings.replaceChars ["." " "] ["_" ""] name);
+    host   = x.host;
+    name   = x.name or x.host;
+    title  = x.title or (if host == name then name else "${name} (${host})");
+    probes = x.probes or [ fping ];
+  };
+  perProbe = x: probe: x // {
+    key = x.key + probe.key;
+    name = x.name + probe.name;
+    title = x.title + probe.name;
+    probe = probe.probe;
+  };
+  targetHostsPerProbe = lib.concatMap (x: let y = completeHost x; in map (perProbe y) y.probes) targetHosts;
+  renderProbe = with lib; p: replaceStrings ["\n\n\n" "\n\n"] ["\n" "\n"] ''
+    ++ ${p.key}
+    ${optionalString (p.probe != null) "probe = ${p.probe}"}
+    ${optionalString (p.title != p.host) "title = ${p.title}\nmenu = ${p.title}"}
+    host = ${p.host}
+  '';
+  targetHostsText = lib.concatMapStringsSep "" renderProbe targetHostsPerProbe;
+  # compare to previous: nixos-rebuild build && ( x="$(sed -En 's/^ExecStart=([^ ]*)( .*)?/\1/p' result/etc/systemd/system/smokeping.service)"; y="$(sed -En 's/.*--config=([^ ]*) .*/\1/p' "$x")"; diff /nix/store/mck2kz613hcs8d35mf0p0bm9pg8jpd2q-smokeping.conf "$y" -u )
 in
 {
   nixpkgs.overlays = [
@@ -48,84 +93,7 @@ in
       + Hosts
       menu = Hosts
       title = Local Network and Internet
-      ++ LocalMachine
-      host = localhost
-      ++ FritzBox
-      title = FritzBox (192.168.178.1)
-      host = 192.168.178.1
-      ++ FritzBox1k
-      probe = FPing1k
-      title = FritzBox (192.168.178.1), 1k packets
-      host = 192.168.178.1
-      ++ Printer
-      title = Printer (192.168.178.21)
-      host = 192.168.178.21
-      ++ work
-      title = work (192.168.178.56)
-      host = 192.168.178.56
-      ++ work_1k
-      probe = FPing1k
-      title = work (192.168.178.56), 1k packets
-      host = 192.168.178.56
-      ++ Google
-      host = google.de
-      ++ DNS1
-      title = DNS 1 (176.95.16.219)
-      host = 176.95.16.219
-      ++ DNS2
-      title = DNS 2 (176.95.16.251)
-      host = 176.95.16.251
-      ++ mail_bkoch_info
-      host = mail.bkoch.info
-      ++ mail_bkoch_info_1k
-      probe = FPing1k
-      title = mail.bkoch.info, 1k packets
-      host = mail.bkoch.info
-      ++ ping_online_net
-      host = ping.online.net
-      ++ ping_online_net_1k
-      probe = FPing1k
-      title = ping.online.net, 1k packets
-      host = ping.online.net
-      ++ c3pb_de
-      host = c3pb.de
-      ++ c3pb_de_1k
-      probe = FPing1k
-      title = c3pb.de, 1k packets
-      host = c3pb.de
-      ++ hackerspace
-      host = hackerspace.servers.c3pb.de
-      ++ verl
-      host = verl.bbbsnowball.de
-      ++ verl_1k
-      probe = FPing1k
-      title = verl.bbbsnowball.de, 1k packets
-      host = verl.bbbsnowball.de
-      ++ gpdpocket
-      host = 192.168.178.68
-      ++ gpdpocket_1k
-      probe = FPing1k
-      title = gpd pocket 192.168.178.68, 1k packets
-      host = 192.168.178.68
-      ++ laptop_lan
-      host = 192.168.178.59
-      ++ laptop_lan_1k
-      probe = FPing1k
-      title = laptop lan 192.168.178.59, 1k packets
-      host = 192.168.178.59
-      ++ laptop_wifi
-      host = 192.168.178.67
-      ++ laptop_wifi_1k
-      probe = FPing1k
-      title = laptop wifi 192.168.178.67, 1k packets
-      host = 192.168.178.67
-      ++ sslvpn4_beckhoff_com
-      host = sslvpn4.beckhoff.com
-      ++ sslvpn4_beckhoff_com_1k
-      probe = FPing1k
-      title = sslvpn4.beckhoff.com, 1k packets
-      host = sslvpn4.beckhoff.com
-
+      ${targetHostsText}
       + Services
       menu = Services
       ++ DNS1
