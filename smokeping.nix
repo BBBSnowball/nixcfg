@@ -137,10 +137,8 @@ in
       pings = 3
       ++ speedtest-download
       measurement = download
-      extraargs = --no-upload
       ++ speedtest-upload
       measurement = upload
-      extraargs = --no-download
     '';
     targetConfig = ''
       probe = FPingNormal
