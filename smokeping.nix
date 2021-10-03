@@ -22,10 +22,33 @@ let
     { name = "laptop lan"; key = "laptop_lan"; host = "192.168.178.59"; probes = [ fping fping_1k ]; }
     { name = "laptop wifi"; key = "laptop_wifi"; host = "192.168.178.67"; probes = [ fping fping_1k ]; }
     { host = "sslvpn4.beckhoff.com"; probes = [ fping fping_1k ]; }
-    # { host = "sslvpn2.beckhoff.com"; probes = [ fping fping_1k ]; }
+    { host = "sslvpn2.beckhoff.com"; probes = [ fping fping_1k ]; }
+
+    # Telekom (DTAG) is dropping *lots* of packets from France, even from large
+    # Tier 1 providers. Let's collect some stats about that.
+
+    # https://www.cogentco.com/en/looking-glass
+    { name = "Cogent, Paris";     host = "ism01.par01.atlas.cogentco.com"; }
+    { name = "Cogent, Marseille"; host = "ism01.mrs01.atlas.cogentco.com"; }
+    { name = "Cogent, Bordeaux";  host = "ism01.bod01.atlas.cogentco.com"; }
+    { name = "Cogent, Berlin";    host = "ism01.ber01.atlas.cogentco.com"; }
+    { name = "Cogent, London";    host = "ism01.lon13.atlas.cogentco.com"; }
+
+    # Level 3 / CenturyLink
+    # https://lookingglass.centurylink.com/
+    { name = "Level 3, Paris";     host = "lo-22.ear1.Paris1.Level3.net"; }
+    { name = "Level 3, Marseille"; host = "lo0.0.edge4.Marseille1.level3.net"; }
+    { name = "Level 3, London";    host = "lo-0.ear1.London1.Level3.net"; }
+
+    # Telia
+    # https://lg.twelve99.net/?type=ping&router=prs-b8&address=163.172.39.101
+    { name = "Telia, Paris 1"; host = "prs-b6.ip.twelve99.net"; }
+    { name = "Telia, Paris 2"; host = "prs-b8.ip.twelve99.net"; }
+    { name = "Telia, Paris 3"; host = "prs-b8.ip.twelve99.net"; }
+    { name = "Telia, London";  host = "slou-b1.ip.twelve99.net"; }
   ];
   completeHost = x: rec {
-    key    = x.key or (lib.strings.replaceChars ["." " "] ["_" ""] name);
+    key    = x.key or (lib.strings.replaceChars ["." "," " "] ["_" "_" ""] name);
     host   = x.host;
     name   = x.name or x.host;
     title  = x.title or (if host == name then name else "${name} (${host})");
