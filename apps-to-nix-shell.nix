@@ -1,16 +1,7 @@
 { inNixShell ? false, system ? builtins.currentSystem, appToBuild ? null }:
 with builtins;
 let
-  lock = fromJSON (readFile ./flake.lock);
-  flake-compat =
-    if lock.nodes.flake-compat.locked ? url && substring 0 7 lock.nodes.flake-compat.locked.url == "file://"
-    then substring 7 (-1) lock.nodes.flake-compat.locked.url
-    else fetchTarball {
-      url = "https://github.com/edolstra/flake-compat/archive/${lock.nodes.flake-compat.locked.rev}.tar.gz";
-      sha256 = lock.nodes.flake-compat.locked.narHash;
-    };
-  flakeAll = import flake-compat { src = ./.; };
-  flake = flakeAll.defaultNix;
+  flake = (import ./flake-compat.nix { src = ./.; }).defaultNix;
 
   lib = flake.inputs.nixpkgs.lib;
   nixpkgs = flake.inputs.nixpkgs.legacyPackages.${system};
