@@ -12,6 +12,7 @@ in
       raspi-pico
       network-manager
       desktop-base
+      tinc-client
     ] ++
     [ ./hardware-configuration.nix
       ./rust.nix
@@ -31,6 +32,11 @@ in
   boot.loader.efi.efiSysMountPoint = "/boot/efi";
 
   networking.useDHCP = false;
+
+  networking.interfaces."tinc.bbbsnowbal".ipv4.addresses = [ {
+    address = "192.168.84.55";
+    prefixLength = 24;
+  } ];
 
   users.users.user = {
     isNormalUser = true;
