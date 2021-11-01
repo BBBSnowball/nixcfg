@@ -47,12 +47,23 @@ in
     openssh.authorizedKeys.keyFiles = [ "${private}/ssh-laptop.pub" ];
 
     packages = with pkgs; [
-      cura freecad kicad
-      firefox pavucontrol
+      # GraphViz is used for dependency tree in FreeCAD.
+      cura freecad kicad graphviz blender
+      firefox pavucontrol chromium
       mplayer mpv vlc
       speedcrunch
+      libreoffice gimp
+      gnome.eog gnome.evince
       x11vnc
       (python3Packages.brother-ql)
+      #vscodium
+      vscode  # We need MS C++ Extension for PlatformIO.
+      python3 # for PlatformIO
+      #platformio  # would be a different version than that in VS Code
+      w3m
+      kupfer
+      (git.override { guiSupport = true; })
+      gnome.gnome-screenshot
     ];
   };
   users.users.root = {
@@ -61,6 +72,16 @@ in
 
     openssh.authorizedKeys.keyFiles = [ "${private}/ssh-laptop.pub" ];
   };
+
+  nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
+    "vscode"
+  ];
+
+  environment.interactiveShellInit = ''
+    # works for AVR and ESP32-C3
+    alias pioFix='nix-shell -p autoPatchelfHook -p udev -p zlib -p ncurses5 -p expat -p mpfr -p libftdi -p libusb1 -p hidapi -p libusb-compat-0_1 -p xorg.libxcb -p freetype -p fontconfig -p python2 --run "patchShebangs /home/user/.platformio/packages/tool-avrdude/avrdude && autoPatchelf ~/.platformio/packages/ ~/.vscode/extensions"'
+    alias fixPlatformIO=pioFix
+  '';
 
   services.xrdp.enable = true;
   services.xrdp.extraConfig = ''
