@@ -1,9 +1,9 @@
-{ pkgs, config, lib, ... }:
+{ pkgs, config, lib, private, ... }:
 let
   isTestInstance = config.services.matrix-synapse.isTestInstance;
   portOffset = if isTestInstance then 1 else 0;
   domainTestPrefix = if isTestInstance then "test." else "";
-  domain = lib.fileContents ../private/trueDomain.txt;
+  domain = lib.fileContents "${private}/trueDomain.txt";
 in {
   options = with lib; {
     services.matrix-synapse = {

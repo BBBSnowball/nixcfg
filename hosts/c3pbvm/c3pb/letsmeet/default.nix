@@ -1,8 +1,8 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, private, ... }:
 let
   pkg = pkgs.edumeet-server;
 in {
-  nixpkgs.overlays = [ (import ./overlay.nix) ];
+  nixpkgs.overlays = [ (import ./overlay.nix private) ];
   # make edumeet-connect available to the user
   environment.systemPackages = [ pkg ];
 
@@ -14,9 +14,7 @@ in {
     bind = "127.0.0.1";
     port = 0;
     unixSocket = "/run/redis/redis.sock";
-    extraConfig = ''
-      unixsocketperm 770
-    '';
+    settings.unixsocketperm = lib.mkForce "770";  # edumeet should be able to connect
   };
 
   users.groups.redis-access = { };

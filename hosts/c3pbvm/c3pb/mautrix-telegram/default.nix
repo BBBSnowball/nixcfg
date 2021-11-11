@@ -1,13 +1,15 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, private, ... }:
 let
   test = config.services.matrix-synapse.isTestInstance;
   name = "mautrix-telegram";
 
-  pythonWithPkgs = import ./requirements.nix { inherit pkgs; };
+  replaceDomain = input: import ../substitute.nix pkgs input "--replace @trueDomain@ ${lib.fileContents "${private}/trueDomain.txt"}";
+
+  pythonWithPkgs = import ./requirements.nix { inherit pkgs lib; };
   mautrixTelegram = pkgs.callPackage ./mautrix-telegram-pkg.nix { inherit pythonWithPkgs; };
   python = pythonWithPkgs.interpreterWithPackages (_: [ mautrixTelegram pythonWithPkgs.packages.alembic ]);
   configPatches = [
-    /etc/nixos/c3pb/mautrix-telegram/config-public.patch
+    (replaceDomain ./config-public.patch)
     /etc/nixos/secret/mautrix-telegram/config-secret.patch
   ] ++ (if test then [
     /etc/nixos/secret/mautrix-telegram/config-test.patch
@@ -40,7 +42,7 @@ in {
   networking.firewall.allowedTCPPorts = [ 8080 8081 ];
 
   users.users."${name}" = {
-    isNormalUser = false;
+    isSystemUser = true;
     home = "/var/lib/${name}";
   };
 

@@ -1,9 +1,9 @@
-self: super:
+private: self: super:
 let
   nodejs = self.nodejs-14_x;
   edumeet = import ./pkgs { pkgs = self; inherit nodejs; };
   configApp = ./config.app.js;
-  configServer = ./config.server.js;
+  configServer  = import ../substitute.nix self ./config.server.js "--replace @serverExternalIp@ ${self.lib.fileContents "${private}/serverExternalIp.txt"}";
 in {
   edumeet-app = self.stdenv.mkDerivation rec {
     name = "edumeet-app-web";
