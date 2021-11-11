@@ -19,11 +19,11 @@
     "flake-compat": {
       "flake": false,
       "locked": {
-        "lastModified": 1611465702,
-        "narHash": "sha256-Vcfqx3fNbzdS0uFx5ztaOv7hefZvl21LKVSTLqiD2CM=",
+        "lastModified": 1617671040,
+        "narHash": "sha256-kM5xZE67AkbXP0w9V/7tzhvxcC68mDybYFHkl3qpCxk=",
         "owner": "BBBSnowball",
         "repo": "flake-compat",
-        "rev": "70260a0ac22e79fde5ec51140c133725a92c9082",
+        "rev": "e299543e6d7a705212bb890475fa6f00efa2b290",
         "type": "github"
       },
       "original": {
@@ -54,6 +54,7 @@
     "nix-bundle": {
       "inputs": {
         "nixpkgs": [
+          "routeromen",
           "nixpkgs"
         ]
       },
@@ -73,16 +74,16 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1617136447,
-        "narHash": "sha256-JYvmMBbdu+LnlyWtcBjRqJJ9fOwd5bMcYaJW3M6bVy0=",
+        "lastModified": 1636333654,
+        "narHash": "sha256-3wh9PtCzcaJQuZrgZ+ygKfhltkDNNqT6zOzGsRbjZEo=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "7640739f71e7afd18ad771255fa225d7753ab636",
+        "rev": "e74894146a42ba552ebafa19ab2d1df7ccbc1738",
         "type": "github"
       },
       "original": {
         "owner": "NixOS",
-        "ref": "nixos-20.09",
+        "ref": "nixos-21.05",
         "repo": "nixpkgs",
         "type": "github"
       }
@@ -96,6 +97,18 @@
       },
       "original": {
         "path": "./private",
+        "type": "path"
+      }
+    },
+    "private-gk3v-pb": {
+      "flake": false,
+      "locked": {
+        "narHash": "sha256-1bf4qqiStrJRj+M/CIWcJR7tKZf+FcZmQlEpU1j15G4=",
+        "path": "./hosts/gk3v-pb/private",
+        "type": "path"
+      },
+      "original": {
+        "path": "./hosts/gk3v-pb/private",
         "type": "path"
       }
     },
@@ -125,16 +138,17 @@
         "private-c3pbvm": [
           "dummy"
         ],
+        "private-gk3v-pb": "private-gk3v-pb",
         "private-nixosvm": [
           "dummy"
         ]
       },
       "locked": {
-        "lastModified": 1617667987,
-        "narHash": "sha256-hhsztyLlDm3ggRXJ906+IILJf+mh8JFo8WzXCXtcNVo=",
+        "lastModified": 1633302112,
+        "narHash": "sha256-84zwi4OWR8Hgt4UhwSb5Vrfa5zd16bhOwx//xvTtRhw=",
         "owner": "BBBSnowball",
         "repo": "nixcfg",
-        "rev": "794ea0dec237674351d474394a3b316cc1ea38e9",
+        "rev": "5796db7657f189e9b5eb65bd30e6ff0713734ef2",
         "type": "github"
       },
       "original": {

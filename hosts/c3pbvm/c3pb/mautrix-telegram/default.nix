@@ -42,7 +42,7 @@ in {
   networking.firewall.allowedTCPPorts = [ 8080 8081 ];
 
   users.users."${name}" = {
-    isNormalUser = false;
+    isSystemUser = true;
     home = "/var/lib/${name}";
   };
 

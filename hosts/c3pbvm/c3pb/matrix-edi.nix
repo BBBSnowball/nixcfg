@@ -66,7 +66,7 @@ let
   '';
 in {
   users.users."${name}" = {
-    isNormalUser = false;
+    isSystemUser = true;
   };
 
   systemd.services."${name}" = {
