@@ -28,8 +28,65 @@ let
       else:
         raise
   '';
+
+  openthread = pkgs.stdenv.mkDerivation {
+    pname = "openthread";
+    version = "20211001-313209";
+
+    src = pkgs.fetchFromGitHub {
+      owner  = "openthread";
+      repo   = "openthread";
+      rev    = "31320993fbf477a75c384b16529ea129a1f6d0e5";
+      sha256 = "sha256-rVJotsa7wVgtYYz746KcM+zglpg6/MWI2qhRKyoaxBo=";
+    };
+
+    nativeBuildInputs = with pkgs; [ automake autoconf cmake libtool m4 ninja shellcheck python3 ];
+
+    postPatch = ''
+      patchShebangs .
+
+      # third_party/nlbuild-autotools/repo/scripts/mkversion insists on using absolute paths
+      # and it isn't as smart as make or configure: export AWK=$(which gawk); export BASENAME=$(which basename); export PRINTF=$(which printf)
+      substituteInPlace third_party/nlbuild-autotools/repo/scripts/mkversion \
+        --replace "\''${USRBINDIR}/" "" \
+        --replace "\''${BINDIR}/" ""
+    '';
+
+    #configurePhase = ''./script/bootstrap'';
+    dontConfigure = true;
+    buildPhase = ''script/cmake-build posix -DOT_DAEMON=ON'';
+  };
+
+  openthread-nrf528xx = pkgs.stdenv.mkDerivation {
+    pname = "openthread-nrf528xx";
+    version = "20211001-95b27f";
+
+    src = pkgs.fetchFromGitHub {
+      owner  = "openthread";
+      repo   = "ot-nrf528xx";
+      rev    = "95b27f9143df64481b87eaa7a5507304d8f80cd9";
+      sha256 = "sha256-x9WlgXEyru+K89DsPKilUK3aF7dnO+3UTTwOMt+UTjw=";
+    };
+    openthreadSrc = openthread.src;
+
+    nativeBuildInputs = with pkgs; [
+      automake autoconf cmake gcc-arm-embedded libtool m4 ninja shellcheck
+      (python3.withPackages (p: [ p.yapf p.mdv ]))
+      clang_9  # for clang-format and clang-tidy
+    ];
+
+    patches = [ ./ot-nrf528xx--diag-pullup-pulldown.patch ];
+
+    postPatch = ''
+      patchShebangs .
+
+      ln -s $openthreadSrc openthread
+    '';
+  };
 in
 {
+  inherit openthread openthread-nrf528xx;
+
   shell = pkgs.mkShell {
     buildInputs = with pkgs; [
       automake autoconf cmake gcc-arm-embedded libtool m4 ninja shellcheck
