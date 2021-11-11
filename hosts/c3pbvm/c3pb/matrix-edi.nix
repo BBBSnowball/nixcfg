@@ -6,8 +6,8 @@ let
   python = pkgs.python3.withPackages (p: with p; [matrix-client amqplib]);
   src = pkgs.fetchgit {
     url = "https://${(import "${private}/deploy-tokens.nix").matrix-edi}@git.c3pb.de/edi/edi-bot-matrix";
-    rev = "cf7c4d800026cd10e15854ef8fb1c05224480f51";
-    sha256 = "1ylwk8ipqikjzxspdgqf9cpswwgvq5xhb8si9828smpq0h3l5lg5";
+    rev = "73778f7ecffef3024065bc5bfc4b520f5e30c508";
+    sha256 = "sha256-Shjl8o+wqFi0cHyzITBwV89uhLpKKm4geYGHfa0EnwI=";
   };
   #src = "/tmp/matrix-edi";
 
@@ -30,6 +30,10 @@ let
         #FIXME remove?
         "channels" : {"_channel_" : "#subraum",
                       "_c3pb_"    : "#c3pb"},
+        "ops": ["@gigadoc2:revreso.de"],
+        "op_servers": ["wahrhe.it"],
+        "voices": [],
+        "voice_servers": [ "revreso.de" ],
     }
 
     config["channel-aliases"] = { v : k for k, v in config["channels"].items() }
