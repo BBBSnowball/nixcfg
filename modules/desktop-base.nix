@@ -1,5 +1,6 @@
 {
   services.printing.enable = true;
+  services.system-config-printer.enable = true;
   sound.enable = true;
   hardware.pulseaudio.enable = true;
 
