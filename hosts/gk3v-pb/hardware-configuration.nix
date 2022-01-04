@@ -9,7 +9,7 @@
     ];
 
   boot.initrd.availableKernelModules = [ "ahci" "xhci_pci" "usbhid" "sd_mod" "sdhci_pci" ];
-  boot.initrd.kernelModules = [ ];
+  boot.initrd.kernelModules = [ "dm-snapshot" ];
   boot.kernelModules = [ "kvm-intel" ];
   boot.extraModulePackages = [ ];
 
@@ -29,11 +29,10 @@
     };
 
   swapDevices =
-    [ { device = "/dev/sda4"; }
+    [ { device = "/dev/mapper/main-swap"; }
     ];
 
-  #powerManagement.cpuFreqGovernor = lib.mkDefault "powersave";
-  powerManagement.cpuFreqGovernor = lib.mkDefault "schedutil";
+  hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
   # high-resolution display
   hardware.video.hidpi.enable = lib.mkDefault true;
 }
