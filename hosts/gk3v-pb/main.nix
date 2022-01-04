@@ -64,6 +64,7 @@ in
       kupfer
       (git.override { guiSupport = true; })
       gnome.gnome-screenshot
+      nfs-utils
     ];
   };
   users.users.root = {
@@ -256,6 +257,8 @@ in
   in [ ql500b ];
 
   services.printing.extraConf = "LogLevel debug2";
+
+  services.rpcbind.enable = true;  # for NFS client
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
