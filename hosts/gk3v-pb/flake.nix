@@ -1,5 +1,5 @@
 {
-  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-21.05";
+  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-21.11";
   inputs.routeromen.url = "github:BBBSnowball/nixcfg";
   #inputs.routeromen.url = "path:../..";
   inputs.routeromen.inputs.nixpkgs.follows = "nixpkgs";
