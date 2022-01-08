@@ -8,6 +8,7 @@ in
       snowball-headless-big
     ] ++
     [ ./hardware-configuration.nix
+      ./provide-ssh-key.nix
     ];
 
   networking.hostName = "hetzner-temp";
@@ -23,10 +24,10 @@ in
 
   users.users.user = {
     isNormalUser = true;
-    openssh.authorizedKeys.keyFiles = [ ./ssh-key.txt ];
+    #openssh.authorizedKeys.keyFiles = [ ./ssh-key.txt ];
   };
   users.users.root = {
-    openssh.authorizedKeys.keyFiles = [ ./ssh-key.txt ];
+    #openssh.authorizedKeys.keyFiles = [ ./ssh-key.txt ];
   };
 
   # List packages installed in system profile. To search, run:
