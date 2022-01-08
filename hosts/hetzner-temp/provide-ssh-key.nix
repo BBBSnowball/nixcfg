@@ -14,7 +14,7 @@
       cd $RUNTIME_DIRECTORY
       cat /etc/ssh/ssh_host_*_key.pub >host-keys
       openssl dgst -sha256 -hmac <(cat /etc/ssh-shared-secret) -binary <host-keys | openssl enc -base64 -A >host-keys.sig
-      tar -c -C $T -f keys.tar host-keys host-keys.sig
+      tar -cf keys.tar host-keys host-keys.sig
       rm host-keys{,.sig}
     '';
     script = ''
