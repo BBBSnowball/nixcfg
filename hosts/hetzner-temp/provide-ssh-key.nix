@@ -4,10 +4,10 @@
     unitConfig.ConditionPathExists = "/etc/ssh-shared-secret";
     serviceConfig.DynamicUser = true;
     serviceConfig.RuntimeDirectory = "provide-ssh-key";
-    serviceConfig.PermissionsStartOnly = false;
+    serviceConfig.PermissionsStartOnly = true;
     serviceConfig.ProtectSystem = "full";
 
-    path = with pkgs; [ openssl socat ];
+    path = with pkgs; [ openssl socat gnutar ];
 
     preStart = ''
       umask 077
