@@ -67,6 +67,7 @@
     nixosConfigurations.nixosvm = mkHostInSubflake "nixosvm";
     nixosConfigurations.c3pbvm = mkHostInSubflake "c3pbvm";
     nixosConfigurations.gk3v-pb = mkHostInSubflake "gk3v-pb";
+    nixosConfigurations.hetzner-temp = mkHostInSubflake "hetzner-temp";
   } // (let
     supportedSystems = [ "x86_64-linux" "i686-linux" "aarch64-linux" ];
     forAllSystems = nixpkgs.lib.genAttrs supportedSystems;
@@ -112,6 +113,8 @@
       test2 = { type = "app"; program = builtins.toString (with nixpkgs.legacyPackages.${system}; writeShellScript "test" ''
         echo 2
       ''); };
+
+      nixos-install = { type = "app"; program = "${nixpkgs.legacyPackages.${system}.nixos-install-tools}/bin/nixos-install"; };
     });
     devShells = forAllSystems (system: with self.packages.${system}; with nixpkgs.legacyPackages.${system}; {
       gd32 = mkShell {

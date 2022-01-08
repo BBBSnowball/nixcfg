@@ -1,0 +1,152 @@
+{
+  "nodes": {
+    "dummy": {
+      "locked": {
+        "lastModified": 1617671808,
+        "narHash": "sha256-GrGsmvHq8Emd9c9OIRwus0PjbrkkUY3kNE1O6/MdCr8=",
+        "owner": "BBBSnowball",
+        "repo": "nixcfg",
+        "rev": "ab7ab3690bdb7f662bb386e554d953dc8200c977",
+        "type": "github"
+      },
+      "original": {
+        "owner": "BBBSnowball",
+        "ref": "dummy",
+        "repo": "nixcfg",
+        "type": "github"
+      }
+    },
+    "flake-compat": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1617671040,
+        "narHash": "sha256-kM5xZE67AkbXP0w9V/7tzhvxcC68mDybYFHkl3qpCxk=",
+        "owner": "BBBSnowball",
+        "repo": "flake-compat",
+        "rev": "e299543e6d7a705212bb890475fa6f00efa2b290",
+        "type": "github"
+      },
+      "original": {
+        "owner": "BBBSnowball",
+        "repo": "flake-compat",
+        "type": "github"
+      }
+    },
+    "flake-registry": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1614596001,
+        "narHash": "sha256-FRus+cq5zVKn9cqAJsMg8OVqNZDrr8QhbOzAz6kxti4=",
+        "owner": "NixOS",
+        "repo": "flake-registry",
+        "rev": "846277a41f292c63d7c2a4bed07152d982829bcb",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "repo": "flake-registry",
+        "type": "github"
+      }
+    },
+    "jens-dotfiles": {
+      "flake": false,
+      "locked": {
+        "host": "git.c3pb.de",
+        "lastModified": 1587168120,
+        "narHash": "sha256-LBwPcCv7t4F2yQpwXP5o0pXv5a8LOKb6OLQKTg8eNl4=",
+        "owner": "jens",
+        "repo": "dotfiles",
+        "rev": "cbded47f57fa7c5819709f2a2e97ea29af9b321a",
+        "type": "gitlab"
+      },
+      "original": {
+        "host": "git.c3pb.de",
+        "owner": "jens",
+        "repo": "dotfiles",
+        "rev": "cbded47f57fa7c5819709f2a2e97ea29af9b321a",
+        "type": "gitlab"
+      }
+    },
+    "nix-bundle": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1611019385,
+        "narHash": "sha256-Um0coCW4R74jW6jY4NBq2+jDafLkEeNKFaDiiS/0bcM=",
+        "owner": "BBBSnowball",
+        "repo": "nix-bundle",
+        "rev": "66b1e4615c3f9d5b1be9cc42d3c2f2c755372cf6",
+        "type": "github"
+      },
+      "original": {
+        "owner": "BBBSnowball",
+        "repo": "nix-bundle",
+        "type": "github"
+      }
+    },
+    "nixpkgs": {
+      "locked": {
+        "lastModified": 1641423937,
+        "narHash": "sha256-iIBSDySeZ79FDFiI5but9EtOIRc5Ncu/gq27Hg/yXjo=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "e67c94a1adbb5cf8a0448bc9c434589b2dd293c2",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixos-21.11",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "root": {
+      "inputs": {
+        "dummy": "dummy",
+        "flake-registry": "flake-registry",
+        "nixpkgs": "nixpkgs",
+        "private": [
+          "dummy"
+        ],
+        "routeromen": "routeromen"
+      }
+    },
+    "routeromen": {
+      "inputs": {
+        "flake-compat": "flake-compat",
+        "jens-dotfiles": "jens-dotfiles",
+        "nix-bundle": "nix-bundle",
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "private": [
+          "dummy"
+        ],
+        "private-c3pbvm": [
+          "dummy"
+        ],
+        "private-nixosvm": [
+          "dummy"
+        ]
+      },
+      "locked": {
+        "lastModified": 1630278823,
+        "narHash": "sha256-VHOdkfe86TmDodNwqLsY9nc7/QIpr/4clcpMLinggLM=",
+        "owner": "BBBSnowball",
+        "repo": "nixcfg",
+        "rev": "6fa8b3bec5dfa072eb854ea3d8e330585379505e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "BBBSnowball",
+        "repo": "nixcfg",
+        "type": "github"
+      }
+    }
+  },
+  "root": "root",
+  "version": 7
+}
