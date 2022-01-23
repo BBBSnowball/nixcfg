@@ -5,8 +5,8 @@
     #(withFlakeInputs ./mumbleweb.nix)
     (withFlakeInputs ./dinge-info.nix)
     (withFlakeInputs ./matrix-synapse.nix)
-    (withFlakeInputs ./mautrix-telegram)
-    (withFlakeInputs ./matrix-edi.nix)
+    #(withFlakeInputs ./mautrix-telegram)
+    #(withFlakeInputs ./matrix-edi.nix)
     (withFlakeInputs ./webmumble.nix)
     (withFlakeInputs ./letsmeet)
   ];
