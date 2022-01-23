@@ -14,7 +14,9 @@ in {
   users.users.dinge = {
     isSystemUser = true;
     home = "/home/dinge";
+    group = "dinge";
   };
+  users.groups.dinge = {};
 
   systemd.services.dinge-info = {
     after = ["network.target"];

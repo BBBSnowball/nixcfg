@@ -18,7 +18,7 @@ in {
   };
 
   users.groups.redis-access = { };
-  users.users.redis.group = "redis-access";
+  users.users.redis.extraGroups = [ "redis-access" ];
   users.groups.edumeet = { };
 
   users.users.edumeet = {
