@@ -9,6 +9,7 @@
   inputs.routeromen.url = "github:BBBSnowball/nixcfg";
   inputs.routeromen.inputs.nixpkgs.follows = "nixpkgs";
   inputs.routeromen.inputs.private.follows = "private";
+  #inputs.routeromen.inputs.nix-bundle.inputs.nixpkgs.follows = "nixpkgs";
 
   outputs = { self, nixpkgs, routeromen, ... }@flakeInputs:
     routeromen.lib.mkFlakeForHostConfig "c3pbvm" "x86_64-linux" ./main.nix flakeInputs;
