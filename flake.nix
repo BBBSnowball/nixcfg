@@ -1,5 +1,5 @@
 {
-  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-20.09";
+  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-21.11";
   #inputs.flake-compat.url = "github:edolstra/flake-compat";
   #inputs.flake-compat.flake = false;
   inputs.flake-compat.follows = "routeromen/flake-compat";
@@ -12,7 +12,7 @@
   inputs.routeromen.inputs.private.follows = "private";
 
   outputs = { self, nixpkgs, routeromen, ... }@flakeInputs:
-  (routeromen.lib.mkFlakeForHostConfig "nixos" "x86_64-linux" ./main.nix flakeInputs) // {
+  (routeromen.lib.mkFlakeForHostConfig "nixosvm" "x86_64-linux" ./main.nix flakeInputs) // {
     nixosModules = {
       container-common = self.lib.withFlakeInputs ./container-common.nix;
     };
