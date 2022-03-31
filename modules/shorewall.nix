@@ -152,7 +152,9 @@ let
         dest   = "$FW";
         proto  = "icmp";
         iptype = "ipv6";
-        destPort = "1,2,3,4,136,137";  # various errors and mtu, neighbour-solicitation/adverticement
+        # https://www.iana.org/assignments/icmpv6-parameters/icmpv6-parameters.xhtml
+        # Telekom sends 134 (Router Advertisement), now.
+        destPort = "1,2,3,4,134,135,136,137,138";  # various errors and mtu, neighbour-solicitation/adverticement
       }
     ];
   };

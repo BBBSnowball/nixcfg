@@ -1,5 +1,5 @@
 {
-  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-20.09";
+  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-21.05";
   inputs.flake-compat.follows = "routeromen/flake-compat";
   inputs.private.url = "path:./private";
   inputs.private.flake = false;

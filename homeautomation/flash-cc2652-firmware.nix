@@ -1,12 +1,11 @@
 { stdenv, python3, fetchzip, fetchFromGitHub, which }:
 stdenv.mkDerivation {
   pname = "flash-cc2652-firmware";
-  version = "2.1-d31ce0";
+  version = "20210708";
   srcs = [
     (fetchzip {
-      url = "https://raw.githubusercontent.com/Koenkk/Z-Stack-firmware/f2a7aa17fba716c72dd46d4821328f7daeb1e238/coordinator/Z-Stack_3.x.0/bin/CC2652RB_20200925.zip";
-      #sha256 = "0v2abgnxkfg34h4l09mb8cx4jiszkdsirimvzra6lhf5nn3cm35z";  # for fetchurl
-      sha256 = "08cp8lrhy6an94d9kbskdgxkc7y2399kv43aawwswwz85zgh33ww";
+      url = "https://github.com/Koenkk/Z-Stack-firmware/raw/5862746778ad3837422dacd4ebc6706f27678778/coordinator/Z-Stack_3.x.0/bin/CC2652RB_coordinator_20210708.zip";
+      sha256 = "sha256-R6ZHtb6KRntqSFlWUOqV66h73wci+zNTZ7d/HnGGQRM=";
     })
     (fetchFromGitHub {
       owner = "JelmerT";
@@ -89,7 +88,7 @@ stdenv.mkDerivation {
     cat - $scriptPath >$out/bin/$pname <<EOF
     #!`which bash` -e
     PYTHON=`which python3`
-    FIRMWARE=''${srcs[0]}/znp_CC2652RB_LAUNCHXL_tirtos_ccs.hex
+    FIRMWARE=''${srcs[0]}/CC2652RB_coordinator_20210708.hex
     FLASHER=''${srcs[1]}/cc2538-bsl.py
     EOF
     bash -n $out/bin/$pname

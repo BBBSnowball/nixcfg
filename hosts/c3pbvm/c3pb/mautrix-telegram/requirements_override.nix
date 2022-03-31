@@ -14,6 +14,7 @@ self: super: {
     # We remove it as our Python should be new enough to not need it anyway.
     postPatch = ''
       find -type f -name "*.py" -exec sed '/^# -\*- coding: future_fstrings -\*-/ d' -i {} \+
+      sed -bi 's/content = {"username": self.localpart}/content = {"username": self.localpart, "type": "m.login.application_service"}/' mautrix_appservice/intent_api.py
     '';
   });
 }

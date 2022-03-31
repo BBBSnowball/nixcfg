@@ -28,6 +28,8 @@
     socat
     # not with programs.mosh.enable because we want to do firewall ourselves
     mosh
+
+    ripgrep lf
   ] ++ (if system == "x86_64-linux" then [
     cpufrequtils
     i7z config.boot.kernelPackages.cpupower config.boot.kernelPackages.turbostat powertop
@@ -43,5 +45,15 @@
     shopt -s histappend
     export HISTSIZE=300000
     export HISTFILESIZE=200000
+  '';
+
+  environment.etc."lf/lfrc".text = ''
+    set incsearch
+    #set globsearch  # breaks incsearch because matches the whole name
+    set scrolloff 3
+    map U !du -sh
+    map T $tig
+    set ifs "\n"
+    set shellopts '-eu'
   '';
 }

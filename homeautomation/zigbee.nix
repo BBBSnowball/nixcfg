@@ -21,8 +21,10 @@
     ];
 
     services.udev.extraRules = ''
-      ATTRS{interface}=="slae.sh cc2652rb stick - slaesh's iot stuff", SYMLINK+="ttyZigbee", GROUP="zigbee2mqtt"
+      ATTRS{interface}=="slae.sh cc2652rb stick - slaesh's iot stuff", SYMLINK+="ttyZigbee", GROUP="zigbee2mqtt", TAG+="systemd", ENV{SYSTEMD_WANTS}="zigbee2mqtt.service", ENV{SYSTEMD_ALIAS}="/sys/devices/ttyZigbee"
     '';
+    systemd.services.zigbee2mqtt.bindsTo = [ "sys-devices-ttyZigbee.device" ];
+    systemd.services.zigbee2mqtt.after   = [ "sys-devices-ttyZigbee.device" ];
 
     services.zigbee2mqtt.enable = true;
     services.zigbee2mqtt.settings = {
@@ -30,9 +32,16 @@
       mqtt.user = "!secret user";
       mqtt.password = "!secret password";
       advanced.network_key = "!secret network_key";
+      advanced.pan_id = 6759;
       advanced.log_level = "warn";  # "info" logs every MQTT message - way too verbose
+      #advanced.log_level = "info";  # but "warn" hides exceptions. oh, well...
+      #advanced.log_level = "debug";
       advanced.log_output = [ "console" ];  # don't log to file, as well
       permit_join = false;
+
+      frontend.port = 8086;  # default is 8080
+      #FIXME This does *NOT* work. It is used as the auth token! -> disable auth, for now; port is behind firewall anyway
+      #frontend.auth_token = "!secret auth_token";
     };
     systemd.services.zigbee2mqtt.path = with pkgs; [ utillinux ];
     systemd.services.zigbee2mqtt.preStart = ''
@@ -45,6 +54,7 @@
           echo "user: guest"
           echo "password: guest"
           echo "network_key: [$(dd if=/dev/urandom bs=1 count=16 status=none|hexdump -e '15/1 "%d, " 1/1 " %d"')]"
+          echo "auth_token: $(${pkgs.pwgen}/bin/pwgen -AB0 20 1)"
         ) > ${config.services.zigbee2mqtt.dataDir}/secret.yaml
         chmod 400 ${config.services.zigbee2mqtt.dataDir}/secret.yaml
         chown zigbee2mqtt ${config.services.zigbee2mqtt.dataDir}/secret.yaml

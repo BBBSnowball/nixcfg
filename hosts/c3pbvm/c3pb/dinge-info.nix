@@ -12,7 +12,7 @@ let
   }).send;
 in {
   users.users.dinge = {
-    isNormalUser = false;
+    isSystemUser = true;
     home = "/home/dinge";
   };
 

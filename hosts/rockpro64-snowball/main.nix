@@ -21,6 +21,7 @@ in {
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
   fileSystems."/debian".neededForBoot = true;
+  boot.tmpOnTmpfs = true;
 
   networking.hostName = "rockpro64-snowball";
 

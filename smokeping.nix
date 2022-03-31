@@ -1,12 +1,99 @@
 { config, pkgs, lib, ... }:
 let
   nameserver = builtins.head config.networking.nameservers;
+  fping = { name = ""; probe = null; key = ""; };
+  fping1k = { name = ", 1k packets"; probe = "FPing1k"; key = "1k"; };
+  fping_1k = fping1k // { key = "_1k"; };  # just different key to keep it as before
+  targetHosts = [
+    { host = "localhost"; key = "LocalMachine"; }
+    { name = "FritzBox"; host = "192.168.178.1"; probes = [ fping fping1k ]; }
+    { name = "Printer"; host = "192.168.178.21"; }
+    { name = "work"; host = "192.168.178.56"; probes = [ fping fping_1k ]; }
+    { key = "Google"; host = "google.de"; }
+    #rec { key = "DNS1"; name = "DNS 1 (${host})"; host = "176.95.16.219"; }
+    { name = "DNS 1"; host = "176.95.16.219"; }
+    { name = "DNS 2"; host = "176.95.16.251"; }
+    { host = "mail.bkoch.info"; probes = [ fping fping_1k ]; }
+    { host = "ping.online.net"; probes = [ fping fping_1k ]; }
+    { host = "c3pb.de"; probes = [ fping fping_1k ]; }
+    { host = "hackerspace.servers.c3pb.de"; name = "hackerspace"; }
+    { host = "verl.bbbsnowball.de"; name = "verl"; probes = [ fping fping_1k ]; }
+    { name = "gpd pocket"; host = "192.168.178.68"; probes = [ fping fping_1k ]; }
+    { name = "laptop lan"; key = "laptop_lan"; host = "192.168.178.59"; probes = [ fping fping_1k ]; }
+    { name = "laptop wifi"; key = "laptop_wifi"; host = "192.168.178.67"; probes = [ fping fping_1k ]; }
+    { host = "sslvpn4.beckhoff.com"; probes = [ fping fping_1k ]; }
+    { host = "sslvpn2.beckhoff.com"; probes = [ fping fping_1k ]; }
+
+    # Telekom (DTAG) is dropping *lots* of packets from France, even from large
+    # Tier 1 providers. Let's collect some stats about that.
+
+    # https://www.cogentco.com/en/looking-glass
+    { name = "Cogent, Paris";     host = "ism01.par01.atlas.cogentco.com"; }
+    { name = "Cogent, Marseille"; host = "ism01.mrs01.atlas.cogentco.com"; }
+    { name = "Cogent, Bordeaux";  host = "ism01.bod01.atlas.cogentco.com"; }
+    { name = "Cogent, Berlin";    host = "ism01.ber01.atlas.cogentco.com"; }
+    { name = "Cogent, London";    host = "ism01.lon13.atlas.cogentco.com"; }
+
+    # Level 3 / CenturyLink
+    # https://lookingglass.centurylink.com/
+    { name = "Level 3, Paris";     host = "lo-22.ear1.Paris1.Level3.net"; }
+    { name = "Level 3, Marseille"; host = "lo0.0.edge4.Marseille1.level3.net"; }
+    { name = "Level 3, London";    host = "lo-0.ear1.London1.Level3.net"; }
+
+    # Telia
+    # https://lg.twelve99.net/?type=ping&router=prs-b8&address=163.172.39.101
+    { name = "Telia, Paris 1"; host = "prs-b6.ip.twelve99.net"; }
+    { name = "Telia, Paris 2"; host = "prs-b8.ip.twelve99.net"; }
+    { name = "Telia, Paris 3"; host = "prs-b8.ip.twelve99.net"; }
+    { name = "Telia, London";  host = "slou-b1.ip.twelve99.net"; }
+  ];
+  completeHost = x: rec {
+    key    = x.key or (lib.strings.replaceChars ["." "," " "] ["_" "_" ""] name);
+    host   = x.host;
+    name   = x.name or x.host;
+    title  = x.title or (if host == name then name else "${name} (${host})");
+    probes = x.probes or [ fping ];
+  };
+  perProbe = x: probe: x // {
+    key = x.key + probe.key;
+    name = x.name + probe.name;
+    title = x.title + probe.name;
+    probe = probe.probe;
+  };
+  targetHostsPerProbe = lib.concatMap (x: let y = completeHost x; in map (perProbe y) y.probes) targetHosts;
+  renderProbe = with lib; p: replaceStrings ["\n\n\n" "\n\n"] ["\n" "\n"] ''
+    ++ ${p.key}
+    ${optionalString (p.probe != null) "probe = ${p.probe}"}
+    ${optionalString (p.title != p.host) "title = ${p.title}\nmenu = ${p.title}"}
+    host = ${p.host}
+  '';
+  targetHostsText = lib.concatMapStringsSep "" renderProbe targetHostsPerProbe;
+  # compare to previous: nixos-rebuild build && ( x="$(sed -En 's/^ExecStart=([^ ]*)( .*)?/\1/p' result/etc/systemd/system/smokeping.service)"; y="$(sed -En 's/.*--config=([^ ]*) .*/\1/p' "$x")"; diff /nix/store/mck2kz613hcs8d35mf0p0bm9pg8jpd2q-smokeping.conf "$y" -u )
+
+  speedtestPlugin = pkgs.fetchFromGitHub {
+    owner = "mad-ady";
+    repo  = "smokeping-speedtest";
+    rev   = "c0d4a60cc7eb8b18c5879797cbf0be81e18ce790";  # 2020-05-22
+    sha256 = "sha256-ribrGZgVDW5/aXY8obs9+ZRczWYZlC8vZ9FZvcY7zus=";
+  };
+  # speedtest values can be higher than 180
+  smokepingLargeValuesPatch = pkgs.fetchurl {
+    url = "https://github.com/oetiker/SmokePing/commit/60419834f224a0735094fd4ad0aac8eac3b15289.patch";
+    sha256 = "sha256-2Bu5RHkigLx7uE2F1GScawssg6sY+LDeOUxqtM4n8kc=";
+  };
 in
 {
   nixpkgs.overlays = [
     (self: super: {
       smokeping = super.smokeping.overrideAttrs (old: {
-        patches = (old.patches or []) ++ [./smokeping-drop-rsa1.patch];
+        patches = (old.patches or []) ++ [
+          ./smokeping-drop-rsa1.patch
+          smokepingLargeValuesPatch
+        ];
+        postInstall = (old.postInstall or "") + ''
+          # add speedtest plugin
+          cp ${speedtestPlugin}/*.pm $out/lib/Smokeping/probes/
+        '';
       });
     })
   ];
@@ -40,6 +127,18 @@ in
       + SSH
       binary = ${pkgs.openssh}/bin/ssh-keyscan
       offset = 60%
+
+      + speedtest
+      binary = ${pkgs.speedtest-cli}/bin/speedtest-cli
+      timeout = 300
+      forks = 1
+      step = 3600
+      offset = random
+      pings = 3
+      ++ speedtest-download
+      measurement = download
+      ++ speedtest-upload
+      measurement = upload
     '';
     targetConfig = ''
       probe = FPingNormal
@@ -48,78 +147,7 @@ in
       + Hosts
       menu = Hosts
       title = Local Network and Internet
-      ++ LocalMachine
-      host = localhost
-      ++ FritzBox
-      title = FritzBox (192.168.178.1)
-      host = 192.168.178.1
-      ++ FritzBox1k
-      probe = FPing1k
-      title = FritzBox (192.168.178.1), 1k packets
-      host = 192.168.178.1
-      ++ Printer
-      title = Printer (192.168.178.21)
-      host = 192.168.178.21
-      ++ work
-      title = work (192.168.178.56)
-      host = 192.168.178.56
-      ++ work_1k
-      probe = FPing1k
-      title = work (192.168.178.56), 1k packets
-      host = 192.168.178.56
-      ++ Google
-      host = google.de
-      ++ DNS1
-      title = DNS 1 (176.95.16.219)
-      host = 176.95.16.219
-      ++ DNS2
-      title = DNS 2 (176.95.16.251)
-      host = 176.95.16.251
-      ++ mail_bkoch_info
-      host = mail.bkoch.info
-      ++ mail_bkoch_info_1k
-      probe = FPing1k
-      title = mail.bkoch.info, 1k packets
-      host = mail.bkoch.info
-      ++ c3pb_de
-      host = c3pb.de
-      ++ c3pb_de_1k
-      probe = FPing1k
-      title = c3pb.de, 1k packets
-      host = c3pb.de
-      ++ hackerspace
-      host = hackerspace.servers.c3pb.de
-      ++ verl
-      host = verl.bbbsnowball.de
-      ++ verl_1k
-      probe = FPing1k
-      title = verl.bbbsnowball.de, 1k packets
-      host = verl.bbbsnowball.de
-      ++ gpdpocket
-      host = 192.168.178.68
-      ++ gpdpocket_1k
-      probe = FPing1k
-      title = gpd pocket 192.168.178.68, 1k packets
-      host = 192.168.178.68
-      ++ laptop_lan
-      host = 192.168.178.59
-      ++ laptop_lan_1k
-      probe = FPing1k
-      title = laptop lan 192.168.178.59, 1k packets
-      host = 192.168.178.59
-      ++ laptop_wifi
-      host = 192.168.178.67
-      ++ laptop_wifi_1k
-      probe = FPing1k
-      title = laptop wifi 192.168.178.67, 1k packets
-      host = 192.168.178.67
-      ++ sslvpn4_beckhoff_com
-      host = sslvpn4.beckhoff.com
-      ++ sslvpn4_beckhoff_com_1k
-      probe = FPing1k
-      title = sslvpn4.beckhoff.com, 1k packets
-      host = sslvpn4.beckhoff.com
-
+      ${targetHostsText}
       + Services
       menu = Services
       ++ DNS1
@@ -162,6 +190,33 @@ in
       title = ssh-keyscan bkoch.eu
       host = bkoch.eu
       port = 22761
+
+      + Speedtest
+      menu = Speedtest
+      title = Speedtest
+      ++ from_closest
+      title = from closest
+      menu = from closest
+      probe = speedtest-download
+      host = dummy.com
+      ++ to_closest
+      title = to closest
+      menu = to closest
+      probe = speedtest-upload
+      host = dummy.com
+      #NOTE We cannot use any servers that aren't offered to us. Meh.
+      #++ from_frace1
+      #title = from France
+      #menu = from France
+      #probe = speedtest-download
+      #server = 39765
+      #host = dummy.com
+      #++ to_france1
+      #title = to France
+      #menu = to France
+      #probe = speedtest-upload
+      #server = 39765
+      #host = dummy.com
     '';
   };
 }

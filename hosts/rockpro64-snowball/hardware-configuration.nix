@@ -28,7 +28,9 @@
       fsType = "ext4";
     };
 
-  swapDevices = [ ];
+  swapDevices =
+    [ { device = "/dev/disk/by-uuid/a2d20031-d197-4260-a2b8-58854d71058f"; }
+    ];
 
   powerManagement.cpuFreqGovernor = lib.mkDefault "ondemand";
 }

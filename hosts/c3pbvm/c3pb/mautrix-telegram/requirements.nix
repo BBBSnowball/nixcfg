@@ -5,21 +5,16 @@
 #   pypi2nix -r requirements.txt -E zlib -E libffi -e cryptg -e pytest-runner -e pytest -e pytest-asyncio -e pytest-mock -e olefile -e setuptools_scm
 #
 
-{ pkgs ? import <nixpkgs> {},
+{ pkgs ? import <nixpkgs> {}, lib ? pkgs.stdenv.lib,
   overrides ? ({ pkgs, python }: self: super: {})
 }:
 
 let
 
   inherit (pkgs) makeWrapper;
-  inherit (pkgs.stdenv.lib) fix' extends inNixShell;
+  inherit (lib) fix' extends inNixShell;
 
-  pythonPackages =
-  import "${toString pkgs.path}/pkgs/top-level/python-packages.nix" {
-    inherit pkgs;
-    inherit (pkgs) stdenv;
-    python = pkgs.python3;
-  };
+  pythonPackages = pkgs.python3Packages;
 
   commonBuildInputs = with pkgs; [ zlib libffi ];
   commonDoCheck = false;
@@ -92,7 +87,7 @@ let
         self."multidict"
         self."yarl"
       ];
-      meta = with pkgs.stdenv.lib; {
+      meta = with pkgs.lib; {
         homepage = "https://github.com/aio-libs/aiohttp";
         license = licenses.asl20;
         description = "Async http client/server framework (asyncio)";
@@ -114,7 +109,7 @@ let
         self."python-editor"
         self."sqlalchemy"
       ];
-      meta = with pkgs.stdenv.lib; {
+      meta = with pkgs.lib; {
         homepage = "https://alembic.sqlalchemy.org";
         license = licenses.mit;
         description = "A database migration tool for SQLAlchemy.";
@@ -131,7 +126,7 @@ let
       format = "setuptools";
       buildInputs = commonBuildInputs ++ [ ];
       propagatedBuildInputs = [ ];
-      meta = with pkgs.stdenv.lib; {
+      meta = with pkgs.lib; {
         homepage = "https://github.com/aio-libs/async_timeout/";
         license = licenses.asl20;
         description = "Timeout context manager for asyncio programs";
@@ -151,7 +146,7 @@ let
         self."wheel"
       ];
       propagatedBuildInputs = [ ];
-      meta = with pkgs.stdenv.lib; {
+      meta = with pkgs.lib; {
         homepage = "https://www.attrs.org/";
         license = licenses.mit;
         description = "Classes Without Boilerplate";
@@ -170,7 +165,7 @@ let
       propagatedBuildInputs = [
         self."pycparser"
       ];
-      meta = with pkgs.stdenv.lib; {
+      meta = with pkgs.lib; {
         homepage = "http://cffi.readthedocs.org";
         license = licenses.mit;
         description = "Foreign Function Interface for Python calling C code.";
@@ -187,7 +182,7 @@ let
       format = "setuptools";
       buildInputs = commonBuildInputs ++ [ ];
       propagatedBuildInputs = [ ];
-      meta = with pkgs.stdenv.lib; {
+      meta = with pkgs.lib; {
         homepage = "https://github.com/chardet/chardet";
         license = licenses.lgpl2;
         description = "Universal encoding detector for Python 2 and 3";
@@ -204,7 +199,7 @@ let
       format = "setuptools";
       buildInputs = commonBuildInputs ++ [ ];
       propagatedBuildInputs = [ ];
-      meta = with pkgs.stdenv.lib; {
+      meta = with pkgs.lib; {
         homepage = "https://github.com/rtfd/commonmark.py";
         license = licenses.bsdOriginal;
         description = "Python parser for the CommonMark Markdown spec";
@@ -224,7 +219,7 @@ let
         self."cffi"
         self."pycparser"
       ];
-      meta = with pkgs.stdenv.lib; {
+      meta = with pkgs.lib; {
         homepage = "https://github.com/cher-nov/cryptg";
         license = "License :: CC0 1.0 Universal (CC0 1.0) Public Domain Dedication";
         description = "Cryptographic utilities for Telegram.";
@@ -241,7 +236,7 @@ let
       format = "setuptools";
       buildInputs = commonBuildInputs ++ [ ];
       propagatedBuildInputs = [ ];
-      meta = with pkgs.stdenv.lib; {
+      meta = with pkgs.lib; {
         homepage = "https://github.com/asottile/future-fstrings";
         license = licenses.mit;
         description = "A backport of fstrings to python<3.6";
@@ -258,7 +253,7 @@ let
       format = "setuptools";
       buildInputs = commonBuildInputs ++ [ ];
       propagatedBuildInputs = [ ];
-      meta = with pkgs.stdenv.lib; {
+      meta = with pkgs.lib; {
         homepage = "https://github.com/kjd/idna";
         license = licenses.bsdOriginal;
         description = "Internationalized Domain Names in Applications (IDNA)";
@@ -281,7 +276,7 @@ let
       propagatedBuildInputs = [
         self."zipp"
       ];
-      meta = with pkgs.stdenv.lib; {
+      meta = with pkgs.lib; {
         homepage = "http://importlib-metadata.readthedocs.io/";
         license = licenses.asl20;
         description = "Read metadata from Python packages";
@@ -300,7 +295,7 @@ let
       propagatedBuildInputs = [
         self."markupsafe"
       ];
-      meta = with pkgs.stdenv.lib; {
+      meta = with pkgs.lib; {
         homepage = "https://www.makotemplates.org/";
         license = licenses.mit;
         description = "A super-fast templating language that borrows the  best ideas from the existing templating languages.";
@@ -317,7 +312,7 @@ let
       format = "setuptools";
       buildInputs = commonBuildInputs ++ [ ];
       propagatedBuildInputs = [ ];
-      meta = with pkgs.stdenv.lib; {
+      meta = with pkgs.lib; {
         homepage = "https://palletsprojects.com/p/markupsafe/";
         license = licenses.bsdOriginal;
         description = "Safely add untrusted strings to HTML/XML markup.";
@@ -337,7 +332,7 @@ let
         self."aiohttp"
         self."future-fstrings"
       ];
-      meta = with pkgs.stdenv.lib; {
+      meta = with pkgs.lib; {
         homepage = "https://github.com/tulir/mautrix-appservice-python";
         license = licenses.mit;
         description = "A Python 3 asyncio-based Matrix application service framework.";
@@ -354,7 +349,7 @@ let
       format = "pyproject";
       buildInputs = commonBuildInputs ++ [ ];
       propagatedBuildInputs = [ ];
-      meta = with pkgs.stdenv.lib; {
+      meta = with pkgs.lib; {
         homepage = "https://github.com/more-itertools/more-itertools";
         license = licenses.mit;
         description = "More routines for operating on iterables, beyond itertools";
@@ -375,7 +370,7 @@ let
         self."wheel"
       ];
       propagatedBuildInputs = [ ];
-      meta = with pkgs.stdenv.lib; {
+      meta = with pkgs.lib; {
         homepage = "https://github.com/aio-libs/multidict";
         license = licenses.asl20;
         description = "multidict implementation";
@@ -392,7 +387,7 @@ let
       format = "setuptools";
       buildInputs = commonBuildInputs ++ [ ];
       propagatedBuildInputs = [ ];
-      meta = with pkgs.stdenv.lib; {
+      meta = with pkgs.lib; {
         homepage = "https://www.decalage.info/python/olefileio";
         license = licenses.bsdOriginal;
         description = "Python package to parse, read and write Microsoft OLE2 files (Structured Storage or Compound Document, Microsoft Office)";
@@ -412,7 +407,7 @@ let
         self."pyparsing"
         self."six"
       ];
-      meta = with pkgs.stdenv.lib; {
+      meta = with pkgs.lib; {
         homepage = "https://github.com/pypa/packaging";
         license = licenses.asl20;
         description = "Core utilities for Python packages";
@@ -432,7 +427,7 @@ let
         self."wheel"
       ];
       propagatedBuildInputs = [ ];
-      meta = with pkgs.stdenv.lib; {
+      meta = with pkgs.lib; {
         homepage = "https://pip.pypa.io/";
         license = licenses.mit;
         description = "The PyPA recommended tool for installing Python packages.";
@@ -455,7 +450,7 @@ let
       propagatedBuildInputs = [
         self."importlib-metadata"
       ];
-      meta = with pkgs.stdenv.lib; {
+      meta = with pkgs.lib; {
         homepage = "https://github.com/pytest-dev/pluggy";
         license = licenses.mit;
         description = "plugin and hook calling mechanisms for python";
@@ -472,7 +467,7 @@ let
       format = "setuptools";
       buildInputs = commonBuildInputs ++ [ ];
       propagatedBuildInputs = [ ];
-      meta = with pkgs.stdenv.lib; {
+      meta = with pkgs.lib; {
         homepage = "http://py.readthedocs.io/";
         license = licenses.mit;
         description = "library with cross-python path, ini-parsing, io, code, log facilities";
@@ -489,7 +484,7 @@ let
       format = "setuptools";
       buildInputs = commonBuildInputs ++ [ ];
       propagatedBuildInputs = [ ];
-      meta = with pkgs.stdenv.lib; {
+      meta = with pkgs.lib; {
         homepage = "https://github.com/ricmoo/pyaes";
         license = licenses.mit;
         description = "Pure-Python Implementation of the AES block-cipher and common modes of operation";
@@ -506,7 +501,7 @@ let
       format = "setuptools";
       buildInputs = commonBuildInputs ++ [ ];
       propagatedBuildInputs = [ ];
-      meta = with pkgs.stdenv.lib; {
+      meta = with pkgs.lib; {
         homepage = "https://github.com/etingof/pyasn1";
         license = licenses.bsdOriginal;
         description = "ASN.1 types and codecs";
@@ -523,7 +518,7 @@ let
       format = "setuptools";
       buildInputs = commonBuildInputs ++ [ ];
       propagatedBuildInputs = [ ];
-      meta = with pkgs.stdenv.lib; {
+      meta = with pkgs.lib; {
         homepage = "https://github.com/eliben/pycparser";
         license = licenses.bsdOriginal;
         description = "C parser in Python";
@@ -540,7 +535,7 @@ let
       format = "setuptools";
       buildInputs = commonBuildInputs ++ [ ];
       propagatedBuildInputs = [ ];
-      meta = with pkgs.stdenv.lib; {
+      meta = with pkgs.lib; {
         homepage = "https://github.com/pyparsing/pyparsing/";
         license = licenses.mit;
         description = "Python parsing module";
@@ -569,7 +564,7 @@ let
         self."py"
         self."wcwidth"
       ];
-      meta = with pkgs.stdenv.lib; {
+      meta = with pkgs.lib; {
         homepage = "https://docs.pytest.org/en/latest/";
         license = licenses.mit;
         description = "pytest: simple powerful testing with Python";
@@ -588,7 +583,7 @@ let
       propagatedBuildInputs = [
         self."pytest"
       ];
-      meta = with pkgs.stdenv.lib; {
+      meta = with pkgs.lib; {
         homepage = "https://github.com/pytest-dev/pytest-asyncio";
         license = licenses.asl20;
         description = "Pytest support for asyncio.";
@@ -607,7 +602,7 @@ let
       propagatedBuildInputs = [
         self."pytest"
       ];
-      meta = with pkgs.stdenv.lib; {
+      meta = with pkgs.lib; {
         homepage = "https://github.com/pytest-dev/pytest-mock/";
         license = licenses.mit;
         description = "Thin-wrapper around the mock package for easier use with pytest";
@@ -628,7 +623,7 @@ let
         self."wheel"
       ];
       propagatedBuildInputs = [ ];
-      meta = with pkgs.stdenv.lib; {
+      meta = with pkgs.lib; {
         homepage = "https://github.com/pytest-dev/pytest-runner/";
         license = licenses.mit;
         description = "Invoke py.test as distutils command with dependency resolution";
@@ -651,7 +646,7 @@ let
       propagatedBuildInputs = [
         self."six"
       ];
-      meta = with pkgs.stdenv.lib; {
+      meta = with pkgs.lib; {
         homepage = "https://dateutil.readthedocs.io";
         license = licenses.bsdOriginal;
         description = "Extensions to the standard Python datetime module";
@@ -668,7 +663,7 @@ let
       format = "setuptools";
       buildInputs = commonBuildInputs ++ [ ];
       propagatedBuildInputs = [ ];
-      meta = with pkgs.stdenv.lib; {
+      meta = with pkgs.lib; {
         homepage = "https://github.com/fmoo/python-editor";
         license = licenses.asl20;
         description = "Programmatically open an editor, capture the result.";
@@ -685,7 +680,7 @@ let
       format = "setuptools";
       buildInputs = commonBuildInputs ++ [ ];
       propagatedBuildInputs = [ ];
-      meta = with pkgs.stdenv.lib; {
+      meta = with pkgs.lib; {
         homepage = "http://github.com/ahupp/python-magic";
         license = licenses.mit;
         description = "File type identification using libmagic";
@@ -704,7 +699,7 @@ let
       propagatedBuildInputs = [
         self."pyasn1"
       ];
-      meta = with pkgs.stdenv.lib; {
+      meta = with pkgs.lib; {
         homepage = "https://stuvel.eu/rsa";
         license = licenses.asl20;
         description = "Pure-Python RSA implementation";
@@ -721,7 +716,7 @@ let
       format = "setuptools";
       buildInputs = commonBuildInputs ++ [ ];
       propagatedBuildInputs = [ ];
-      meta = with pkgs.stdenv.lib; {
+      meta = with pkgs.lib; {
         homepage = "https://bitbucket.org/ruamel/yaml";
         license = licenses.mit;
         description = "ruamel.yaml is a YAML parser/emitter that supports roundtrip preservation of comments, seq/map flow style, and map key order";
@@ -738,7 +733,7 @@ let
       format = "setuptools";
       buildInputs = commonBuildInputs ++ [ ];
       propagatedBuildInputs = [ ];
-      meta = with pkgs.stdenv.lib; {
+      meta = with pkgs.lib; {
         homepage = "https://github.com/pypa/setuptools";
         license = licenses.mit;
         description = "Easily download, build, install, upgrade, and uninstall Python packages";
@@ -760,7 +755,7 @@ let
       propagatedBuildInputs = [
         self."setuptools"
       ];
-      meta = with pkgs.stdenv.lib; {
+      meta = with pkgs.lib; {
         homepage = "https://github.com/pypa/setuptools_scm/";
         license = licenses.mit;
         description = "the blessed package to manage your versions by scm tags";
@@ -777,7 +772,7 @@ let
       format = "setuptools";
       buildInputs = commonBuildInputs ++ [ ];
       propagatedBuildInputs = [ ];
-      meta = with pkgs.stdenv.lib; {
+      meta = with pkgs.lib; {
         homepage = "https://github.com/benjaminp/six";
         license = licenses.mit;
         description = "Python 2 and 3 compatibility utilities";
@@ -794,7 +789,7 @@ let
       format = "setuptools";
       buildInputs = commonBuildInputs ++ [ ];
       propagatedBuildInputs = [ ];
-      meta = with pkgs.stdenv.lib; {
+      meta = with pkgs.lib; {
         homepage = "http://www.sqlalchemy.org";
         license = licenses.mit;
         description = "Database Abstraction Library";
@@ -814,7 +809,7 @@ let
         self."pyaes"
         self."rsa"
       ];
-      meta = with pkgs.stdenv.lib; {
+      meta = with pkgs.lib; {
         homepage = "https://github.com/LonamiWebs/Telethon";
         license = licenses.mit;
         description = "Full-featured Telegram client library for Python 3";
@@ -833,7 +828,7 @@ let
       propagatedBuildInputs = [
         self."sqlalchemy"
       ];
-      meta = with pkgs.stdenv.lib; {
+      meta = with pkgs.lib; {
         homepage = "https://github.com/tulir/telethon-session-sqlalchemy";
         license = licenses.mit;
         description = "SQLAlchemy backend for Telethon session storage";
@@ -850,7 +845,7 @@ let
       format = "setuptools";
       buildInputs = commonBuildInputs ++ [ ];
       propagatedBuildInputs = [ ];
-      meta = with pkgs.stdenv.lib; {
+      meta = with pkgs.lib; {
         homepage = "https://github.com/uiri/toml";
         license = licenses.mit;
         description = "Python Library for Tom's Obvious, Minimal Language";
@@ -867,7 +862,7 @@ let
       format = "setuptools";
       buildInputs = commonBuildInputs ++ [ ];
       propagatedBuildInputs = [ ];
-      meta = with pkgs.stdenv.lib; {
+      meta = with pkgs.lib; {
         homepage = "https://github.com/jquast/wcwidth";
         license = licenses.mit;
         description = "Measures the displayed width of unicode strings in a terminal";
@@ -886,7 +881,7 @@ let
         self."setuptools"
       ];
       propagatedBuildInputs = [ ];
-      meta = with pkgs.stdenv.lib; {
+      meta = with pkgs.lib; {
         homepage = "https://github.com/pypa/wheel";
         license = licenses.mit;
         description = "A built-package format for Python";
@@ -906,7 +901,7 @@ let
         self."idna"
         self."multidict"
       ];
-      meta = with pkgs.stdenv.lib; {
+      meta = with pkgs.lib; {
         homepage = "https://github.com/aio-libs/yarl/";
         license = licenses.asl20;
         description = "Yet another URL library";
@@ -927,7 +922,7 @@ let
         self."wheel"
       ];
       propagatedBuildInputs = [ ];
-      meta = with pkgs.stdenv.lib; {
+      meta = with pkgs.lib; {
         homepage = "https://github.com/jaraco/zipp";
         license = licenses.mit;
         description = "Backport of pathlib-compatible object wrapper for zip files";
