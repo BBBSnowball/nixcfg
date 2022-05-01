@@ -43,6 +43,10 @@ in {
     address = "192.168.19.39";
     prefixLength = 25;
   } ];
+  networking.interfaces."tinc.a".ipv4.addresses = [ {
+    address = "192.168.83.39";
+    prefixLength = 25;
+  } ];
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget

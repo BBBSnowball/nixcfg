@@ -37,9 +37,7 @@
     },
     "nix-bundle": {
       "inputs": {
-        "nixpkgs": [
-          "nixpkgs"
-        ]
+        "nixpkgs": "nixpkgs_2"
       },
       "locked": {
         "lastModified": 1611019385,
@@ -87,10 +85,25 @@
         "type": "github"
       }
     },
+    "nixpkgs_2": {
+      "locked": {
+        "lastModified": 1620055814,
+        "narHash": "sha256-8LEHoYSJiL901bTMVatq+rf8y7QtWuZhwwpKE2fyaRY=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "1db42b7fe3878f3f5f7a4f2dc210772fd080e205",
+        "type": "github"
+      },
+      "original": {
+        "id": "nixpkgs",
+        "ref": "nixos-20.03-small",
+        "type": "indirect"
+      }
+    },
     "private": {
       "flake": false,
       "locked": {
-        "narHash": "sha256-q8W80GDsn9GTUv63etC4zAMjDvf8i0rmhL6BnBLzfzs=",
+        "narHash": "sha256-waZsG8LvoAgbkliaQLZUSU5zXimidq+Gf467kaMv6jw=",
         "path": "./private",
         "type": "path"
       },

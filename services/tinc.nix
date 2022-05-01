@@ -35,18 +35,36 @@ in
     '';
   };
 
+  services.tinc.networks.a = (tincCommon "a") // {
+    extraConfig = ''
+      AddressFamily=ipv4
+      Mode=switch
+      LocalDiscovery=no
+      Port=657
+
+      ClampMSS=yes
+      IndirectData=yes
+    '';
+  };
+
   networking.firewall.allowedPorts.tinc-tcp = { port = 655; type = "tcp"; };  # default port
   networking.firewall.allowedPorts.tinc-udp = { port = 655; type = "udp"; };  # default port
   networking.firewall.allowedPorts.tinc-tcp-door = { port = 656; type = "tcp"; };
   networking.firewall.allowedPorts.tinc-udp-door = { port = 656; type = "udp"; };
+  networking.firewall.allowedPorts.tinc-tcp-a = { port = 657; type = "tcp"; };
+  networking.firewall.allowedPorts.tinc-udp-a = { port = 657; type = "udp"; };
 
   # I want persistent tinc keys even in case of a complete rebuild.
   systemd.services."tinc.bbbsnowball".preStart = lib.mkBefore ''
-    mkdir -p mkdir -p /etc/tinc/bbbsnowball
+    mkdir -p /etc/tinc/bbbsnowball
     ( umask 077; cp -u /etc/nixos/secret/tinc-bbbsnowball-rsa_key.priv /etc/tinc/bbbsnowball/rsa_key.priv )
   '';
   systemd.services."tinc.door".preStart = lib.mkBefore ''
-    mkdir -p mkdir -p /etc/tinc/door
+    mkdir -p /etc/tinc/door
     ( umask 077; cp -u /etc/nixos/secret/tinc-door-rsa_key.priv /etc/tinc/door/rsa_key.priv )
+  '';
+  systemd.services."tinc.a".preStart = lib.mkBefore ''
+    mkdir -p /etc/tinc/a
+    ( umask 077; cp -u /etc/nixos/secret/tinc-a-rsa_key.priv /etc/tinc/a/rsa_key.priv )
   '';
 }
