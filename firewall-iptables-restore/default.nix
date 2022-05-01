@@ -14,12 +14,30 @@ let
   normalNatLocalCopy = import ./original/nat.nix { inherit config pkgs lib; };
   upstreamNatChanged = compare normalNatUpstream.config normalNatLocalCopy.config;
 
+  diff = if isNull upstreamFirewallChanged && isNull upstreamNatChanged then "/dev/null" else
+  pkgs.runCommand "save-diffs" {
+    a = builtins.toJSON (stripNonJson normalFirewallUpstream);
+    b = builtins.toJSON (stripNonJson normalFirewallLocalCopy);
+    c = builtins.toJSON (stripNonJson normalNatUpstream);
+    d = builtins.toJSON (stripNonJson normalNatLocalCopy);
+    passAsFile = [ "a" "b" "c" "d" ];
+    inherit (pkgs) jq;
+  } ''
+    mkdir $out
+    $jq/bin/jq <$aPath >$out/fw-upstream-new
+    $jq/bin/jq <$bPath >$out/fw-local-old
+    $jq/bin/jq <$cPath >$out/nat-upstream-new
+    $jq/bin/jq <$dPath >$out/nat-local-old
+    diff -u $out/fw-local-old $out/fw-upstream-new >$out/fw-diff || true
+    diff -u $out/nat-local-old $out/nat-upstream-new >$out/nat-diff || true
+  '';
+
   assertions =
     [ { assertion = isNull upstreamFirewallChanged;
-        message = "The upstream firewall module in NixOS has changed and this does affect your config so the iptables-restore module must be adapted: ${upstreamFirewallChanged}";
+        message = "The upstream firewall module in NixOS has changed and this does affect your config so the iptables-restore module must be adapted: ${upstreamFirewallChanged}, NixOS files are at ${modulesPath}/services/networking/firewall.nix, diff is at ${diff} (build with ${diff.drvPath})";
       }
       { assertion = isNull upstreamNatChanged;
-        message = "The upstream firewall module in NixOS has changed and this does affect your config so the iptables-restore module must be adapted: ${upstreamNatChanged}";
+        message = "The upstream firewall module in NixOS has changed and this does affect your config so the iptables-restore module must be adapted: ${upstreamNatChanged}, NixOS files are at ${modulesPath}/services/networking/nat.nix, diff is at ${diff} (build with ${diff.drvPath})";
       }
     ];
 

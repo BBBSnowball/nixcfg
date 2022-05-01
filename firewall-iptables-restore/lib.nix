@@ -44,4 +44,19 @@ rec {
     then "difference at ${path}"
     else null;
   compare = compareP "#";
+
+
+  stripNonJsonP = depth: a:
+    if depth > 30
+    then "<too deep>"
+    else if isAttrs a && a ? outPath
+    then { inherit (a) outPath; }
+    else if isAttrs a
+    then lib.mapAttrs (_: x: stripNonJsonP (depth+1) x) a
+    else if isFunction a
+    then "<function>"
+    else if isList a
+    then builtins.map (stripNonJsonP (depth+1)) a
+    else a;
+  stripNonJson = stripNonJsonP 0;
 }
