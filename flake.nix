@@ -11,6 +11,8 @@
   inputs.routeromen.inputs.nixpkgs.follows = "nixpkgs";
   inputs.routeromen.inputs.private.follows = "private";
 
+  inputs.nixpkgs-notes.url = "github:NixOS/nixpkgs/da7f4c4842520167f65c20ad75ecdbd14e27ae91";
+
   outputs = { self, nixpkgs, routeromen, ... }@flakeInputs:
   (routeromen.lib.mkFlakeForHostConfig "nixosvm" "x86_64-linux" ./main.nix flakeInputs) // {
     nixosModules = {

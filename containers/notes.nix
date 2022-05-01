@@ -1,4 +1,4 @@
-{ config, lib, modules, pkgs, nixpkgs, ... }:
+{ config, lib, modules, pkgs, nixpkgs, nixpkgs-notes, ... }:
 let
   inherit (pkgs) system;
   ports = config.networking.firewall.allowedPorts;
@@ -67,7 +67,7 @@ in {
         '';
       };
       # https://github.com/NixOS/nixpkgs/issues/88621
-      pkgs = import nixpkgs { overlays = [ overlay ]; inherit system; };
+      pkgs = import nixpkgs-notes { overlays = [ overlay ]; inherit system; };
     in {
       imports = [ modules.container-common ];
 
