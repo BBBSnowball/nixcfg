@@ -6,10 +6,11 @@ in {
   containers.notes = {
     autoStart = true;
     config = { config, pkgs, ... }: let
+      pkgs-notes = import nixpkgs-notes { overlays = [ overlay ]; inherit system; };
       overlay = self: super: {
         #TODO Install Python libraries to system, use overridePythonAttrs to adjust version (see esphome)
         #TODO upgrade to Python 3
-        magpiePython = self.python27.withPackages (ps: with ps; [
+        magpiePython = pkgs-notes.python27.withPackages (ps: with ps; [
           setuptools pip virtualenv
         ]);
         # I thought that fetchSubmodules was ignored but I was looking in the wrong place.
@@ -67,7 +68,7 @@ in {
         '';
       };
       # https://github.com/NixOS/nixpkgs/issues/88621
-      pkgs = import nixpkgs-notes { overlays = [ overlay ]; inherit system; };
+      pkgs = import nixpkgs { overlays = [ overlay ]; inherit system; };
     in {
       imports = [ modules.container-common ];
 
