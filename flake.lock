@@ -85,6 +85,22 @@
         "type": "github"
       }
     },
+    "nixpkgs-rss": {
+      "locked": {
+        "lastModified": 1617271991,
+        "narHash": "sha256-VdzjIQaT1FtycNid0iPSVr44Jrstoox6QRLrwCY1uG0=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "da7f4c4842520167f65c20ad75ecdbd14e27ae91",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "da7f4c4842520167f65c20ad75ecdbd14e27ae91",
+        "type": "github"
+      }
+    },
     "nixpkgs_2": {
       "locked": {
         "lastModified": 1620055814,
@@ -103,7 +119,7 @@
     "private": {
       "flake": false,
       "locked": {
-        "narHash": "sha256-waZsG8LvoAgbkliaQLZUSU5zXimidq+Gf467kaMv6jw=",
+        "narHash": "sha256-rGG+ZDsXAgZuDAY96E0UTLe8DaWba9ccducC/0vmqfo=",
         "path": "./private",
         "type": "path"
       },
@@ -156,6 +172,7 @@
         ],
         "nixpkgs": "nixpkgs",
         "nixpkgs-notes": "nixpkgs-notes",
+        "nixpkgs-rss": "nixpkgs-rss",
         "private": "private",
         "routeromen": "routeromen"
       }
