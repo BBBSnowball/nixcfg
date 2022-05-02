@@ -146,7 +146,9 @@ in
     isSystemUser = true;
     createHome = true;
     home = "/var/fhem";
+    group = "fhem";
   };
+  users.groups.fhem = {};
 
   networking.firewall.interfaces.br0.allowedTCPPorts = [ 8083 8084 8085 ];
 

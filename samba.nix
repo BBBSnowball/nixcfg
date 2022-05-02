@@ -32,7 +32,9 @@
     #NOTE Samba user must be added with `smbpasswd -a scans`. User shouldn't be able to login in Linux.
     #hashedPassword = "x";
     hashedPassword = null;
+    group = "scans";
   };
+  users.groups.scans = {};
 
   # stop annoying warning in syslog
   environment.etc.printcap.text = "";
