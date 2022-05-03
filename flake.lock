@@ -74,49 +74,18 @@
     "private": {
       "flake": false,
       "locked": {
-        "narHash": "sha256-Mqq0oWAPBPzMSOMVxM7xOL7sI6e/ak/kXH75ZIspixI=",
-        "path": "./private/data",
-        "type": "path"
+        "lastModified": 1617671808,
+        "narHash": "sha256-GrGsmvHq8Emd9c9OIRwus0PjbrkkUY3kNE1O6/MdCr8=",
+        "owner": "BBBSnowball",
+        "repo": "nixcfg",
+        "rev": "ab7ab3690bdb7f662bb386e554d953dc8200c977",
+        "type": "github"
       },
       "original": {
-        "path": "./private/data",
-        "type": "path"
-      }
-    },
-    "private-c3pbvm": {
-      "flake": false,
-      "locked": {
-        "narHash": "sha256-z8wCO0xpyEHoL0SD3F0XOCP9bCsrroJBmyvnFOQQZb0=",
-        "path": "./hosts/c3pbvm/private",
-        "type": "path"
-      },
-      "original": {
-        "path": "./hosts/c3pbvm/private",
-        "type": "path"
-      }
-    },
-    "private-gk3v-pb": {
-      "flake": false,
-      "locked": {
-        "narHash": "sha256-pQpattmS9VmO3ZIQUFn66az8GSmB4IvYhTTCFn6SUmo=",
-        "path": "./hosts/gk3v-pb/private",
-        "type": "path"
-      },
-      "original": {
-        "path": "./hosts/gk3v-pb/private",
-        "type": "path"
-      }
-    },
-    "private-nixosvm": {
-      "flake": false,
-      "locked": {
-        "narHash": "sha256-P2q6CUbnElb8QKAt7iiBlWMOw+E18rvotJzQL+gGUrg=",
-        "path": "./hosts/nixosvm/private",
-        "type": "path"
-      },
-      "original": {
-        "path": "./hosts/nixosvm/private",
-        "type": "path"
+        "owner": "BBBSnowball",
+        "ref": "dummy",
+        "repo": "nixcfg",
+        "type": "github"
       }
     },
     "root": {
@@ -125,10 +94,7 @@
         "jens-dotfiles": "jens-dotfiles",
         "nix-bundle": "nix-bundle",
         "nixpkgs": "nixpkgs",
-        "private": "private",
-        "private-c3pbvm": "private-c3pbvm",
-        "private-gk3v-pb": "private-gk3v-pb",
-        "private-nixosvm": "private-nixosvm"
+        "private": "private"
       }
     }
   },

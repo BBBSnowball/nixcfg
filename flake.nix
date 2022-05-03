@@ -10,17 +10,8 @@
   inputs.jens-dotfiles.url = "gitlab:jens/dotfiles/cbded47f57fa7c5819709f2a2e97ea29af9b321a?host=git.c3pb.de";
   inputs.jens-dotfiles.flake = false;
 
-  inputs.private.url = "path:./private/data";
+  inputs.private.url = "github:BBBSnowball/nixcfg/dummy";
   inputs.private.flake = false;
-
-  inputs.private-nixosvm.url = "path:./hosts/nixosvm/private";
-  inputs.private-nixosvm.flake = false;
-
-  inputs.private-c3pbvm.url = "path:./hosts/c3pbvm/private";
-  inputs.private-c3pbvm.flake = false;
-
-  inputs.private-gk3v-pb.url = "path:./hosts/gk3v-pb/private";
-  inputs.private-gk3v-pb.flake = false;
 
   #inputs.nix-bundle.url = "github:matthewbauer/nix-bundle";
   inputs.nix-bundle.url = "github:BBBSnowball/nix-bundle";
