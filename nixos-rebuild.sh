@@ -95,7 +95,7 @@ else
   overrideInput=()
 fi
 
-if [ $needSshToTarget -ne 0 ] ; then
+if [ $needSshToTarget -ne 0 -a "$targetHost" != "routeromen" ] ; then
   hosts=(--target-host "$targetHost" --build-host localhost)
 else
   # don't set --target-host if we only want to build because nixos-rebuild would try to connect to it
