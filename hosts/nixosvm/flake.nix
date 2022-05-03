@@ -3,17 +3,8 @@
   #inputs.flake-compat.url = "github:edolstra/flake-compat";
   #inputs.flake-compat.flake = false;
   inputs.flake-compat.follows = "routeromen/flake-compat";
-  inputs.private.url = "path:./private";
-  inputs.private.flake = false;
-  #inputs.routeromen.url = "gitlab:snowball/nixos-config-for-routeromen?host=git.c3pb.de";
-  #inputs.routeromen.url = "git+ssh://git@git.c3pb.de/snowball/nixos-config-for-routeromen.git";
   inputs.routeromen.url = "github:BBBSnowball/nixcfg";
   inputs.routeromen.inputs.nixpkgs.follows = "nixpkgs";
-
-  inputs.dummy.url = "github:BBBSnowball/nixcfg/dummy";
-  inputs.routeromen.inputs.private.follows = "dummy";
-  inputs.routeromen.inputs.private-nixosvm.follows = "dummy";
-  inputs.routeromen.inputs.private-c3pbvm.follows = "dummy";
 
   outputs = { self, nixpkgs, routeromen, ... }@flakeInputs:
   (routeromen.lib.mkFlakeForHostConfig "nixosvm" "x86_64-linux" ./main.nix flakeInputs) // {

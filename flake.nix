@@ -17,7 +17,7 @@
   inputs.nix-bundle.url = "github:BBBSnowball/nix-bundle";
   inputs.nix-bundle.inputs.nixpkgs.follows = "nixpkgs";
 
-  outputs = inputs1: let outputFunction = { self, nixpkgs, nix-bundle, flake-compat, ... }: (let
+  outputs = inputs1: let outputFunction = { self, nixpkgs, nix-bundle, flake-compat, private, ... }: (let
     nixosSystemModule = path: {
       imports =
         [ (self.lib.provideArgsToModule (self.inputs // { modules = self.nixosModules; inherit self; }) path)
@@ -34,11 +34,11 @@
     mkHostInSubflake = name: (import flake-compat {
       src = ./hosts + "/${name}";
       outputFunctionOverrides.routeromen = inputs: outputFunction (inputs1 // removeDummyFlakes inputs);
-      inputOverrides = if self.inputs ? "private-${name}" then { private = self.inputs."private-${name}"; } else {};
+      inputOverrides = { inherit private; };
     }).defaultNix.nixosConfigurations.${name};
     removeDummyFlakes = inputs1.nixpkgs.lib.attrsets.filterAttrs (key: x: key == "self" || !(x ? emptyDummyFlake));
   in {
-    lib = import ./lib.nix { pkgs = nixpkgs; };
+    lib = import ./lib.nix { pkgs = nixpkgs; routeromen = self; };
 
     nixosModules = import ./modules.nix { inherit self; } // {
       hosts-routeromen = nixosSystemModule hosts/routeromen;

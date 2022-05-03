@@ -11,11 +11,6 @@
 
   inputs.nixpkgs-unstable.url = "github:NixOS/nixpkgs";
 
-  inputs.dummy.url = "github:BBBSnowball/nixcfg/dummy";
-  inputs.routeromen.inputs.private.follows = "dummy";
-  inputs.routeromen.inputs.private-nixosvm.follows = "dummy";
-  inputs.routeromen.inputs.private-c3pbvm.follows = "dummy";
-
   outputs = { self, nixpkgs, routeromen, nixpkgs-unstable, ... }@flakeInputs:
     routeromen.lib.mkFlakeForHostConfig "rockpro64-snowball" "aarch64-linux" ./main.nix flakeInputs
     // {

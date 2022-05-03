@@ -1,7 +1,6 @@
-{ config, pkgs, lib, rockpro64Config, routeromen, withFlakeInputs, ... }@args:
+{ config, pkgs, lib, rockpro64Config, routeromen, withFlakeInputs, private, ... }@args:
 let                                                                                                 
   modules = args.modules or (import ./modules.nix {});
-  private = (args.private or ./private) + /data;
   hostSpecificValue = path: import "${private}/by-host/${config.networking.hostName}${path}";
 in
 {

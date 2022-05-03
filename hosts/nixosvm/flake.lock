@@ -1,29 +1,13 @@
 {
   "nodes": {
-    "dummy": {
-      "locked": {
-        "lastModified": 1617671808,
-        "narHash": "sha256-GrGsmvHq8Emd9c9OIRwus0PjbrkkUY3kNE1O6/MdCr8=",
-        "owner": "BBBSnowball",
-        "repo": "nixcfg",
-        "rev": "ab7ab3690bdb7f662bb386e554d953dc8200c977",
-        "type": "github"
-      },
-      "original": {
-        "owner": "BBBSnowball",
-        "ref": "dummy",
-        "repo": "nixcfg",
-        "type": "github"
-      }
-    },
     "flake-compat": {
       "flake": false,
       "locked": {
-        "lastModified": 1611465702,
-        "narHash": "sha256-Vcfqx3fNbzdS0uFx5ztaOv7hefZvl21LKVSTLqiD2CM=",
+        "lastModified": 1617671040,
+        "narHash": "sha256-kM5xZE67AkbXP0w9V/7tzhvxcC68mDybYFHkl3qpCxk=",
         "owner": "BBBSnowball",
         "repo": "flake-compat",
-        "rev": "70260a0ac22e79fde5ec51140c133725a92c9082",
+        "rev": "e299543e6d7a705212bb890475fa6f00efa2b290",
         "type": "github"
       },
       "original": {
@@ -54,6 +38,7 @@
     "nix-bundle": {
       "inputs": {
         "nixpkgs": [
+          "routeromen",
           "nixpkgs"
         ]
       },
@@ -90,24 +75,27 @@
     "private": {
       "flake": false,
       "locked": {
-        "narHash": "sha256-P2q6CUbnElb8QKAt7iiBlWMOw+E18rvotJzQL+gGUrg=",
-        "path": "./private",
-        "type": "path"
+        "lastModified": 1617671808,
+        "narHash": "sha256-GrGsmvHq8Emd9c9OIRwus0PjbrkkUY3kNE1O6/MdCr8=",
+        "owner": "BBBSnowball",
+        "repo": "nixcfg",
+        "rev": "ab7ab3690bdb7f662bb386e554d953dc8200c977",
+        "type": "github"
       },
       "original": {
-        "path": "./private",
-        "type": "path"
+        "owner": "BBBSnowball",
+        "ref": "dummy",
+        "repo": "nixcfg",
+        "type": "github"
       }
     },
     "root": {
       "inputs": {
-        "dummy": "dummy",
         "flake-compat": [
           "routeromen",
           "flake-compat"
         ],
         "nixpkgs": "nixpkgs",
-        "private": "private",
         "routeromen": "routeromen"
       }
     },
@@ -119,22 +107,14 @@
         "nixpkgs": [
           "nixpkgs"
         ],
-        "private": [
-          "dummy"
-        ],
-        "private-c3pbvm": [
-          "dummy"
-        ],
-        "private-nixosvm": [
-          "dummy"
-        ]
+        "private": "private"
       },
       "locked": {
-        "lastModified": 1617667987,
-        "narHash": "sha256-hhsztyLlDm3ggRXJ906+IILJf+mh8JFo8WzXCXtcNVo=",
+        "lastModified": 1651540367,
+        "narHash": "sha256-8lTJxhL3utGnIHh1LmnRYp9CtCm5PIoPDomWpy/n7zU=",
         "owner": "BBBSnowball",
         "repo": "nixcfg",
-        "rev": "794ea0dec237674351d474394a3b316cc1ea38e9",
+        "rev": "4792f024f64ea9e6cc0689fda1724699159d4141",
         "type": "github"
       },
       "original": {

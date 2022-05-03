@@ -8,12 +8,6 @@
 
   #inputs.nixpkgs-unstable.url = "github:NixOS/nixpkgs";
 
-  inputs.dummy.url = "github:BBBSnowball/nixcfg/dummy";
-  inputs.routeromen.inputs.private.follows = "dummy";
-  inputs.routeromen.inputs.private-nixosvm.follows = "dummy";
-  inputs.routeromen.inputs.private-c3pbvm.follows = "dummy";
-  inputs.private.follows = "dummy";
-
-  outputs = { self, nixpkgs, routeromen, private, ... }@flakeInputs:
+  outputs = { self, nixpkgs, routeromen, ... }@flakeInputs:
     routeromen.lib.mkFlakeForHostConfig "gk3v-pb" "x86_64-linux" ./main.nix flakeInputs;
 }

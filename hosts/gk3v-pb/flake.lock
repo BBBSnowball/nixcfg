@@ -1,21 +1,5 @@
 {
   "nodes": {
-    "dummy": {
-      "locked": {
-        "lastModified": 1617671808,
-        "narHash": "sha256-GrGsmvHq8Emd9c9OIRwus0PjbrkkUY3kNE1O6/MdCr8=",
-        "owner": "BBBSnowball",
-        "repo": "nixcfg",
-        "rev": "ab7ab3690bdb7f662bb386e554d953dc8200c977",
-        "type": "github"
-      },
-      "original": {
-        "owner": "BBBSnowball",
-        "ref": "dummy",
-        "repo": "nixcfg",
-        "type": "github"
-      }
-    },
     "flake-compat": {
       "flake": false,
       "locked": {
@@ -70,6 +54,7 @@
     "nix-bundle": {
       "inputs": {
         "nixpkgs": [
+          "routeromen",
           "nixpkgs"
         ]
       },
@@ -103,14 +88,27 @@
         "type": "github"
       }
     },
+    "private": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1617671808,
+        "narHash": "sha256-GrGsmvHq8Emd9c9OIRwus0PjbrkkUY3kNE1O6/MdCr8=",
+        "owner": "BBBSnowball",
+        "repo": "nixcfg",
+        "rev": "ab7ab3690bdb7f662bb386e554d953dc8200c977",
+        "type": "github"
+      },
+      "original": {
+        "owner": "BBBSnowball",
+        "ref": "dummy",
+        "repo": "nixcfg",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
-        "dummy": "dummy",
         "flake-registry": "flake-registry",
         "nixpkgs": "nixpkgs",
-        "private": [
-          "dummy"
-        ],
         "routeromen": "routeromen"
       }
     },
@@ -122,22 +120,14 @@
         "nixpkgs": [
           "nixpkgs"
         ],
-        "private": [
-          "dummy"
-        ],
-        "private-c3pbvm": [
-          "dummy"
-        ],
-        "private-nixosvm": [
-          "dummy"
-        ]
+        "private": "private"
       },
       "locked": {
-        "lastModified": 1630278823,
-        "narHash": "sha256-VHOdkfe86TmDodNwqLsY9nc7/QIpr/4clcpMLinggLM=",
+        "lastModified": 1651540367,
+        "narHash": "sha256-8lTJxhL3utGnIHh1LmnRYp9CtCm5PIoPDomWpy/n7zU=",
         "owner": "BBBSnowball",
         "repo": "nixcfg",
-        "rev": "6fa8b3bec5dfa072eb854ea3d8e330585379505e",
+        "rev": "4792f024f64ea9e6cc0689fda1724699159d4141",
         "type": "github"
       },
       "original": {
