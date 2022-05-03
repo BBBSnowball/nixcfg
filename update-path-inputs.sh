@@ -1,6 +1,6 @@
 #!/usr/bin/env nix-shell
 #!nix-shell -i bash -p jq nixUnstable
-set -e
+set -ex
 if [ "$1" == "--help" -o $# -gt 1 ] ; then
   echo "Usage: $0 [hostname]" >&2
   exit 1
@@ -9,24 +9,17 @@ hostname="$1"
 
 NIX=(nix --experimental-features 'nix-command flakes')
 
-if nix flake lock --help &>/dev/null ; then
-  update_cmd=lock
-elif nix flake update --help &>/dev/null ; then
-  update_cmd=update
-else
-  update_cmd=
-fi
+update_them() {
+  # We used `nix flake lock --update-input private` but that tries to find the path in the flake, now.
+  jq <flake.lock '.nodes|to_entries|.[]|if .value.locked.type == "path" then [.key, "path:" + .value.original.path] else null end|select(.)|.[]' -r | xargs -rn2 -t $NIX flake lock --override-input
+}
 
-if [ -n "$update_cmd" ] ; then
-  echo "+ cd $PWD"
-  jq <flake.lock '.nodes|to_entries|.[]|if .value.locked.type == "path" then .key else null end|select(.)' -r | xargs -rn1 -t $NIX flake $update_cmd --update-input
+echo "+ cd $PWD"
+update_them
+echo ""
+if [ -n "$hostname" -a -e "hosts/$hostname/flake.lock" ] ; then
+  echo "+ cd $PWD/hosts/$hostname"
+  ( cd "hosts/$hostname" && update_them )
   echo ""
-  if [ -n "$hostname" -a -e "hosts/$hostname/flake.lock" ] ; then
-    echo "+ cd $PWD/hosts/$hostname"
-    ( cd "hosts/$hostname" && jq <flake.lock '.nodes|to_entries|.[]|if .value.locked.type == "path" then .key else null end|select(.)' -r | xargs -rn1 -t $NIX flake $update_cmd --update-input )
-    echo ""
-  fi
-else
-  echo "WARN: Modern nix tooling not available -> not updating path:... in lock file." >&2
 fi
 
