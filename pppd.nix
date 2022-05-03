@@ -69,7 +69,6 @@ in
     ";
   };
 
-  # This doesn't work - for whatever reason.
   environment.etc."ppp/ip-up".source = ipUpScript;
   #environment.etc."ppp/ipv6-up".source = ipv6UpScript;
 
