@@ -1,6 +1,6 @@
 #!/usr/bin/env nix-shell
 #!nix-shell -i bash -p jq nixUnstable
-set -ex
+set -e
 if [ "$1" == "--help" -o $# -gt 1 ] ; then
   echo "Usage: $0 [hostname]" >&2
   exit 1

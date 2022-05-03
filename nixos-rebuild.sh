@@ -5,17 +5,20 @@ shopt -s inherit_errexit
 
 if [ $# -lt 2 -o "$1" == "--help" ] ; then
   echo "Usage: $0 hostname action [nix-build opts]" >&2
-  echo "  action: test switch boot build dry-build dry-activate"
-  echo "  actions not supported by nixos-rebuild: reboot build-drv diff-drv diff-cl/diff-closures"
+  echo "  action (like nixos-rebuild): test switch boot build dry-build dry-activate"
+  echo "  more actions: reboot build-drv diff-drv diff-cl/diff-closures"
   exit 1
 fi
 targetHost="$1"
 action="$2"
 shift; shift
 
+#cd "$(dirname "$(realpath "$0")")"
 cd "$(dirname "$0")"
 
-./update-path-inputs.sh "$targetHost"
+# doesn't work without an absolute path because bash would get ENOENT with a relative path. Why?!
+# -> still doesn't work because the script would run in / instead of the current directory
+#"$PWD/update-path-inputs.sh" "$targetHost"
 
 targetHostCmd() {
     if [ -z "$targetHost" ]; then
@@ -28,17 +31,27 @@ targetHostCmd() {
     fi
 }
 
+# nixos-rebuild will resolve the symlink but only if we don't pass explicit --flake
+# so we resolve it ourselves.
+flake="$(dirname "$(realpath ./flake.nix)")"
+
 post_cmd=
 #extraBuildFlags=(-o "result-$targetHost")
 extraBuildFlags=()
+needSshToTarget=0
 case "$action" in
+  test|dry-activate)
+    needSshToTarget=1
+    ;;
   switch|boot)
     #extraBuildFlags=()
+    needSshToTarget=1
     ;;
   reboot)
     post_cmd="$action"
     action=boot
     #extraBuildFlags=()
+    needSshToTarget=1
     ;;
   build-drv)
     if [ -z "$targetHost" ] ; then
@@ -47,7 +60,7 @@ case "$action" in
       hostname="$targetHost"
     fi
     exec nix --experimental-features 'nix-command flakes' --log-format bar-with-logs \
-      eval --raw .#nixosConfigurations."$hostname".config.system.build.toplevel.drvPath "$@"
+      eval --raw "$flake#nixosConfigurations.$hostname.config.system.build.toplevel.drvPath" "$@"
     ;;
   diff-drv)
     if [ -z "$targetHost" ] ; then
@@ -57,7 +70,7 @@ case "$action" in
     fi
     currentDrv="$(targetHostCmd 'nix-store --query --deriver $(readlink -f /run/current-system)')"
     newDrv="$(nix --experimental-features 'nix-command flakes' --log-format bar-with-logs \
-      eval --raw ".#nixosConfigurations.$hostname.config.system.build.toplevel.drvPath" "$@")"
+      eval --raw "$flake#nixosConfigurations.$hostname.config.system.build.toplevel.drvPath" "$@")"
     if [ -e "$currentDrv" -o -z "$targetHost" ] ; then
       nix-shell -p nix-diff --run "nix-diff $currentDrv $newDrv"
     else
@@ -72,12 +85,29 @@ case "$action" in
     ;;
 esac
 
+
+if [ -e "./hosts/$targetHost/private/data" ] ; then
+  overrideInput=(--override-input private "path:./hosts/$targetHost/private/data")
+elif [ -e "./hosts/$targetHost/private" ] ; then
+  # This will copy .git if present so use a data subdir if possible.
+  overrideInput=(--override-input private "path:./hosts/$targetHost/private")
+else
+  overrideInput=()
+fi
+
+if [ $needSshToTarget -ne 0 ] ; then
+  hosts=(--target-host "$targetHost" --build-host localhost)
+else
+  # don't set --target-host if we only want to build because nixos-rebuild would try to connect to it
+  hosts=()
+fi
+
 # We have to pass `--flake` because nixos-rebuild would use the hostname of the current host.
 # `nixos-rebuild` doesn't pass through `--log-format bar-with-logs` or `--print-build-logs` but `-L` works.
 # Explicit build-host is required to work around a bug in nixos-rebuild: It would set buildHost=targetHost,
 # build on the local host anyway, omit copying to target.
 set -x
-nixos-rebuild --target-host "$targetHost" --build-host localhost --flake ".#$targetHost" "$action" -L "${extraBuildFlags[@]}" "$@"
+nixos-rebuild ${hosts[@]} --flake "$flake#$targetHost" "$action" -L ${overrideInput[@]} "${extraBuildFlags[@]}" "$@"
 set +x
 
 case "$action" in
