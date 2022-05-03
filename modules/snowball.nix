@@ -10,9 +10,4 @@
   i18n.defaultLocale = "en_US.UTF-8";
 
   time.timeZone = "Europe/Berlin";
-
-  # https://github.com/NixOS/nixpkgs/pull/156750
-  # https://www.bleepingcomputer.com/news/security/linux-system-service-bug-gives-root-on-all-major-distros-exploit-released/
-  # Not that I really need too many reasons to not enable polkit unless there is a good reason for it but this is plenty ^^
-  security.polkit.enable = false; # !!!!!
 }
