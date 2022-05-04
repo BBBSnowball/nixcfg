@@ -7,6 +7,7 @@ if [ $# -lt 2 -o "$1" == "--help" ] ; then
   echo "Usage: $0 hostname action [nix-build opts]" >&2
   echo "  action (like nixos-rebuild): test switch boot build dry-build dry-activate"
   echo "  more actions: reboot build-drv diff-drv diff-cl/diff-closures"
+  echo "  set hostname to \"\" to build for the current host"
   exit 1
 fi
 targetHost="$1"
@@ -35,6 +36,12 @@ targetHostCmd() {
 # so we resolve it ourselves.
 flake="$(dirname "$(realpath ./flake.nix)")"
 
+if [ -z "$targetHost" ] ; then
+  read -r hostname < /proc/sys/kernel/hostname
+else
+  hostname="$targetHost"
+fi
+
 post_cmd=
 #extraBuildFlags=(-o "result-$targetHost")
 extraBuildFlags=()
@@ -54,20 +61,10 @@ case "$action" in
     needSshToTarget=1
     ;;
   build-drv)
-    if [ -z "$targetHost" ] ; then
-      read -r hostname < /proc/sys/kernel/hostname
-    else
-      hostname="$targetHost"
-    fi
     exec nix --experimental-features 'nix-command flakes' --log-format bar-with-logs \
       eval --raw "$flake#nixosConfigurations.$hostname.config.system.build.toplevel.drvPath" "$@"
     ;;
   diff-drv)
-    if [ -z "$targetHost" ] ; then
-      read -r hostname < /proc/sys/kernel/hostname
-    else
-      hostname="$targetHost"
-    fi
     currentDrv="$(targetHostCmd 'nix-store --query --deriver $(readlink -f /run/current-system)')"
     newDrv="$(nix --experimental-features 'nix-command flakes' --log-format bar-with-logs \
       eval --raw "$flake#nixosConfigurations.$hostname.config.system.build.toplevel.drvPath" "$@")"
@@ -85,17 +82,18 @@ case "$action" in
     ;;
 esac
 
+echo "hostname: $hostname"
 
-if [ -e "./hosts/$targetHost/private/data" ] ; then
-  overrideInput=(--override-input private "path:./hosts/$targetHost/private/data")
-elif [ -e "./hosts/$targetHost/private" ] ; then
+if [ -e "./hosts/$hostname/private/data" ] ; then
+  overrideInput=(--override-input private "path:./hosts/$hostname/private/data")
+elif [ -e "./hosts/$hostname/private" ] ; then
   # This will copy .git if present so use a data subdir if possible.
-  overrideInput=(--override-input private "path:./hosts/$targetHost/private")
+  overrideInput=(--override-input private "path:./hosts/$hostname/private")
 else
   overrideInput=()
 fi
 
-if [ $needSshToTarget -ne 0 -a "$targetHost" != "routeromen" ] ; then
+if [ $needSshToTarget -ne 0 -a -n "$targetHost" ] ; then
   hosts=(--target-host "$targetHost" --build-host localhost)
 else
   # don't set --target-host if we only want to build because nixos-rebuild would try to connect to it
@@ -106,6 +104,8 @@ fi
 # `nixos-rebuild` doesn't pass through `--log-format bar-with-logs` or `--print-build-logs` but `-L` works.
 # Explicit build-host is required to work around a bug in nixos-rebuild: It would set buildHost=targetHost,
 # build on the local host anyway, omit copying to target.
+#NOTE If this fails because we don't have a nix with flake support (Nix 2.3), run it in a shell with nixFlakes
+#     and set _NIXOS_REBUILD_REEXEC=1 so it doesn't force use of its internal version.
 set -x
 nixos-rebuild ${hosts[@]} --flake "$flake#$targetHost" "$action" -L ${overrideInput[@]} "${extraBuildFlags[@]}" "$@"
 set +x
