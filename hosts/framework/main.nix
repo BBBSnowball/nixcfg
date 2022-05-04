@@ -27,17 +27,10 @@ in
 
   networking.useDHCP = false;
 
-  networking.interfaces."tinc.bbbsnowbal".ipv4.addresses = [ {
-    address = "192.168.84.55";
-    prefixLength = 24;
-  } ];
-
   users.users.user = {
     isNormalUser = true;
     passwordFile = "/etc/nixos/secret/rootpw";
-    # lp: I couldn't get the Brother QL-500 to work through cups and the
-    # web interface can only do text so we have to access it directly.
-    extraGroups = [ "dialout" "wheel" "lp" ];
+    extraGroups = [ "dialout" "wheel" ];
     openssh.authorizedKeys.keyFiles = [ "${private}/ssh-laptop.pub" ];
 
     packages = with pkgs; [
