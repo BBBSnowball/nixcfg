@@ -59,6 +59,8 @@
     nixosConfigurations.c3pbvm = mkHostInSubflake "c3pbvm";
     nixosConfigurations.gk3v-pb = mkHostInSubflake "gk3v-pb";
     nixosConfigurations.hetzner-temp = mkHostInSubflake "hetzner-temp";
+    nixosConfigurations.framework = self.nixosConfigurations.fw;
+    nixosConfigurations.fw = mkHostInSubflake "fw";
   } // (let
     supportedSystems = [ "x86_64-linux" "i686-linux" "aarch64-linux" ];
     forAllSystems = nixpkgs.lib.genAttrs supportedSystems;
