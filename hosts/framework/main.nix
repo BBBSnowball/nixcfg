@@ -10,6 +10,7 @@ in
       snowball-desktop
       network-manager
       desktop-base
+      vscode
     ] ++
     [ ./hardware-configuration.nix
     ];
