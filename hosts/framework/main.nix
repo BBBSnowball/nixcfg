@@ -47,6 +47,7 @@ in
       kupfer
       #(git.override { guiSupport = true; })
       gnome.gnome-screenshot
+      gnome.gnome-tweaks
     ];
   };
   users.users.root = {
