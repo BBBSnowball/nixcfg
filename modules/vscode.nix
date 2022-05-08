@@ -23,7 +23,7 @@
       "stdenv.cc.cc.lib"
       "musl"
       "libkrb5"
-      "lttng-ust"
+      "lttng-ust"  # cpptools wants liblttng-ust.so.0 but this has liblttng-ust.so.1
     ];
     missingPioLibs = lib.lists.filter (name: !lib.attrsets.hasAttrByPath (lib.strings.splitString "." name) pkgs) pioLibs;
     pioLibsForNixShell =
