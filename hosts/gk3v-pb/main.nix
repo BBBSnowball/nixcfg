@@ -12,6 +12,7 @@ in
       network-manager
       desktop-base
       tinc-client
+      tinc-client-a
       vscode
     ] ++
     [ ./hardware-configuration.nix
@@ -35,6 +36,10 @@ in
 
   networking.interfaces."tinc.bbbsnowbal".ipv4.addresses = [ {
     address = "192.168.84.55";
+    prefixLength = 24;
+  } ];
+  networking.interfaces."tinc.a".ipv4.addresses = [ {
+    address = "192.168.83.55";
     prefixLength = 24;
   } ];
 
@@ -85,7 +90,10 @@ in
     password=ask
     ip=127.0.0.1
   '';
-  networking.firewall.allowedTCPPorts = [ config.services.xrdp.port ];
+  networking.firewall.allowedTCPPorts = [ config.services.xrdp.port
+    657 # Tinc
+  ];
+  networking.firewall.allowedUDPPorts = [ 657 ];  # Tinc
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
