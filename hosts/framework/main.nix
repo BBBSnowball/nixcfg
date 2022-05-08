@@ -10,6 +10,7 @@ in
       snowball-desktop
       network-manager
       desktop-base
+      tinc-client-a
       vscode
     ] ++
     [ ./hardware-configuration.nix
@@ -27,6 +28,11 @@ in
   ];
 
   networking.useDHCP = false;
+
+  networking.interfaces."tinc.a".ipv4.addresses = [ {
+    address = "192.168.83.139";
+    prefixLength = 24;
+  } ];
 
   users.users.user = {
     isNormalUser = true;
