@@ -13,5 +13,16 @@
     ACTION=="add", SUBSYSTEMS=="usb", KERNEL=="ttyUSB*", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6011", ENV{.LOCAL_ifNum}=="03", SYMLINK+="ttyUSB-FT4d"
     ACTION=="add", SUBSYSTEMS=="usb", KERNEL=="ttyUSB*", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6010", ENV{.LOCAL_ifNum}=="00", SYMLINK+="ttyUSB-FT2a", SYMLINK+="ttyUSB-GD32VF-jtag"
     ACTION=="add", SUBSYSTEMS=="usb", KERNEL=="ttyUSB*", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6010", ENV{.LOCAL_ifNum}=="01", SYMLINK+="ttyUSB-FT2b", SYMLINK+="ttyUSB-GD32VF-serial"
+
+    # ESP32-C3
+    ACTION=="add", SUBSYSTEMS=="usb", KERNEL=="ttyACM*", ATTRS{idVendor}=="303a", ATTRS{idProduct}=="1001", SYMLINK+="ttyACM-ESP", SYMLINK+="ttyUSB-GD32VF-serial"
+
+    # Pixel 5, fastboot
+    ACTION=="add", SUBSYSTEMS=="usb", ATTRS{idVendor}=="18d1", ATTRS{idProduct}=="4ee0", GROUP="flash-android", MODE="0660"
+    # Pixel 5, adb
+    ACTION=="add", SUBSYSTEMS=="usb", ATTRS{idVendor}=="18d1", ATTRS{idProduct}=="4ee7", GROUP="flash-android", MODE="0660"
   '';
+
+  users.groups.flash-android = {};
+  users.users.user.extraGroups = [ "flash-android" ];
 }

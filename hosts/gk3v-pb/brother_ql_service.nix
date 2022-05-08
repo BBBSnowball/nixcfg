@@ -6,6 +6,8 @@
     isSystemUser = true;
     extraGroups = [ "lp" ];
   };
+  users.users.brother-ql.group = "brother-ql";
+  users.groups.brother-ql = {};
 
   systemd.services.brother-ql = {
     serviceConfig.User = "brother-ql";

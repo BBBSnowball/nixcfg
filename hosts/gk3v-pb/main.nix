@@ -63,6 +63,8 @@ in
       kupfer
       (git.override { guiSupport = true; })
       gnome.gnome-screenshot
+      nfs-utils
+      printrun # pronterface
     ];
   };
   users.users.root = {
@@ -76,9 +78,35 @@ in
     "vscode"
   ];
 
-  environment.interactiveShellInit = ''
+  environment.interactiveShellInit = let
+    pioLibs = [
+      "autoPatchelfHook"
+      "udev"
+      "zlib"
+      "ncurses5"
+      "expat"
+      "mpfr"
+      "libftdi"
+      "libusb1"
+      "hidapi"
+      "libusb-compat-0_1"
+      "xorg.libxcb"
+      "freetype"
+      "fontconfig"
+      "python2"
+      "stdenv.cc.cc.lib"
+      "musl"
+      "libkrb5"
+      "lttng-ust"
+    ];
+    missingPioLibs = lib.lists.filter (name: !lib.attrsets.hasAttrByPath (lib.strings.splitString "." name) pkgs) pioLibs;
+    pioLibsForNixShell =
+      if missingPioLibs != []
+      then builtins.abort "Missing packages for pioFix: ${builtins.toString missingPioLibs}"
+      else lib.strings.concatMapStringsSep " " (name: "-p ${name}") pioLibs;
+  in ''
     # works for AVR and ESP32-C3
-    alias pioFix='nix-shell -p autoPatchelfHook -p udev -p zlib -p ncurses5 -p expat -p mpfr -p libftdi -p libusb1 -p hidapi -p libusb-compat-0_1 -p xorg.libxcb -p freetype -p fontconfig -p python2 --run "patchShebangs /home/user/.platformio/packages/tool-avrdude/avrdude && autoPatchelf ~/.platformio/packages/ ~/.vscode/extensions"'
+    alias pioFix='nix-shell ${pioLibsForNixShell} --run "patchShebangs /home/user/.platformio/packages/tool-avrdude/avrdude && autoPatchelf ~/.platformio/packages/ ~/.vscode/extensions"'
     alias fixPlatformIO=pioFix
   '';
 
@@ -255,6 +283,8 @@ in
   in [ ql500b ];
 
   services.printing.extraConf = "LogLevel debug2";
+
+  services.rpcbind.enable = true;  # for NFS client
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions

@@ -25,7 +25,8 @@
     # However, the emacs server socket actually should be in $XDG_RUNTIME_DIR so let's always
     # put it there. Unfortunately, EMACS_SERVER_FILE is for TCP connections so we have to use
     # a non-standard variable and pass it to emacsclient - see above.
-    EMACS_SERVER_SOCKET="$XDG_RUNTIME_DIR/emacs$UID/server"
+    #EMACS_SERVER_SOCKET="$XDG_RUNTIME_DIR/emacs$UID/server"
+    EMACS_SERVER_SOCKET="$XDG_RUNTIME_DIR/emacs/server"
 
     alias e='emacsclient --create-frame --tty -s $EMACS_SERVER_SOCKET --alternate-editor=\"\"'
     export EDITOR="emacsclient -t -s $EMACS_SERVER_SOCKET"
