@@ -79,6 +79,7 @@ in
     sway alacritty kitty foot dmenu kupfer
     i3status i3status-rust termite rofi light
   ];
+  environment.etc."sway/config".source = ./sway-config;
   hardware.opengl.enable = true;
 
   # for Framework laptop

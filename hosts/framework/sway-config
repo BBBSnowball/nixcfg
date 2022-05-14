@@ -18,12 +18,16 @@ set $term alacritty
 # Your preferred application launcher
 # Note: pass the final command to swaymsg so that the resulting window can be opened
 # on the original workspace that the command was run on.
-set $menu dmenu_path | dmenu | xargs swaymsg exec --
+#set $menu dmenu_path | dmenu | xargs swaymsg exec --
+set $menu kupfer
 
 ### Output configuration
 #
 # Default wallpaper
 #output * bg ~/.config/sway/backgrounds/Sway_Wallpaper_Blue_1920x1080.png fill
+output eDP-1 position 0,0
+output DP-3 position 2256,0
+output DP-1 position 4816,0
 #
 # Example configuration:
 #
@@ -35,10 +39,10 @@ set $menu dmenu_path | dmenu | xargs swaymsg exec --
 #
 # Example configuration:
 #
-# exec swayidle -w \
-#          timeout 300 'swaylock -f -c 000000' \
-#          timeout 600 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"' \
-#          before-sleep 'swaylock -f -c 000000'
+exec swayidle -w \
+         timeout 300 'swaylock -f -c 000000' \
+         timeout 600 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"' \
+         before-sleep 'swaylock -f -c 000000'
 #
 # This will lock your screen after 300 seconds of inactivity, then turn off
 # your displays after another 300 seconds, and turn your screens back on when
@@ -48,12 +52,12 @@ set $menu dmenu_path | dmenu | xargs swaymsg exec --
 #
 # Example configuration:
 #
-#   input "2:14:SynPS/2_Synaptics_TouchPad" {
-#       dwt enabled
-#       tap enabled
-#       natural_scroll enabled
-#       middle_emulation enabled
-#   }
+  input "2362:628:PIXA3854:00_093A:0274_Touchpad" {
+      dwt enabled
+      #tap enabled
+      #natural_scroll enabled
+      middle_emulation enabled
+  }
 #
 # You can get the names of your inputs by running: swaymsg -t get_inputs
 # Read `man 5 sway-input` for more information about this section.
@@ -70,6 +74,7 @@ set $menu dmenu_path | dmenu | xargs swaymsg exec --
 
     # Start your launcher
     bindsym $mod+d exec $menu
+    bindsym $mod+r exec $menu
 
     # Drag floating windows by holding down $mod and left mouse button.
     # Resize them with right mouse button + $mod.
@@ -107,6 +112,9 @@ set $menu dmenu_path | dmenu | xargs swaymsg exec --
     bindsym $mod+Shift+Down move down
     bindsym $mod+Shift+Up move up
     bindsym $mod+Shift+Right move right
+
+    bindsym $mod+ctrl+alt+Left move workspace to output left
+    bindsym $mod+ctrl+alt+Right move workspace to output right
 #
 # Workspaces:
 #
@@ -194,7 +202,8 @@ mode "resize" {
     bindsym Return mode "default"
     bindsym Escape mode "default"
 }
-bindsym $mod+r mode "resize"
+#bindsym $mod+r mode "resize"
+bindsym $mod+shift+r mode "resize"
 
 #
 # Status Bar:
@@ -205,7 +214,8 @@ bar {
 
     # When the status_command prints a new line to stdout, swaybar updates.
     # The default just shows the current date and time.
-    status_command while date +'%Y-%m-%d %l:%M:%S %p'; do sleep 1; done
+    #status_command while date +'%Y-%m-%d %l:%M:%S %p'; do sleep 1; done
+    status_command i3status
 
     colors {
         statusline #ffffff
