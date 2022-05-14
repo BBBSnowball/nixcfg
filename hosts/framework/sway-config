@@ -58,6 +58,12 @@ exec swayidle -w \
       #natural_scroll enabled
       middle_emulation enabled
   }
+
+  input * {
+    xkb_layout us
+    xkb_variant "altgr-intl"
+    xkb_options "eurosign:e"
+  }
 #
 # You can get the names of your inputs by running: swaymsg -t get_inputs
 # Read `man 5 sway-input` for more information about this section.

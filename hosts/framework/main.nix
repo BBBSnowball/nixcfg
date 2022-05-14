@@ -81,6 +81,9 @@ in
   ];
   environment.etc."sway/config".source = ./sway-config;
   hardware.opengl.enable = true;
+  # create /etc/X11/xkb for `localectl list-x11-keymap-options`
+  # https://github.com/NixOS/nixpkgs/issues/19629#issuecomment-368051434
+  services.xserver.exportConfiguration = true;
 
   # for Framework laptop
   # see http://kvark.github.io/linux/framework/2021/10/17/framework-nixos.html
