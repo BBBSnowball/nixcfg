@@ -1,5 +1,5 @@
 { config, pkgs, lib, rockpro64Config, routeromen, withFlakeInputs, private, ... }@args:
-let                                                                                                 
+let
   modules = args.modules or (import ./modules.nix {});
   hostSpecificValue = path: import "${private}/by-host/${config.networking.hostName}${path}";
 in
@@ -65,11 +65,21 @@ in
 
   nix.registry.routeromen.flake = routeromen;
 
+  boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
+
   # desktop stuff
   #services.xserver.displayManager.lightdm.enable = true;
   #services.xserver.desktopManager.xfce.enable = true;
   services.xserver.displayManager.gdm.enable = true;
   services.xserver.desktopManager.gnome.enable = true;
+
+  programs.sway.enable = true;
+  programs.sway.wrapperFeatures.gtk = true;
+  programs.sway.extraPackages = with pkgs; [
+    sway alacritty kitty foot dmenu kupfer
+    i3status i3status-rust termite rofi light
+  ];
+  hardware.opengl.enable = true;
 
   # for Framework laptop
   # see http://kvark.github.io/linux/framework/2021/10/17/framework-nixos.html
