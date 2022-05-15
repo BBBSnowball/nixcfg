@@ -111,6 +111,8 @@ in
     i3status i3status-rust termite rofi light
   ];
   environment.etc."sway/config".source = ./sway-config;
+  #environment.etc."i3status.conf".source = ./i3status.conf;
+  environment.etc."xdg/i3status/config".source = ./i3status.conf;
   hardware.opengl.enable = true;
   # create /etc/X11/xkb for `localectl list-x11-keymap-options`
   # https://github.com/NixOS/nixpkgs/issues/19629#issuecomment-368051434
