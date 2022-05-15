@@ -221,7 +221,11 @@ bar {
     # When the status_command prints a new line to stdout, swaybar updates.
     # The default just shows the current date and time.
     #status_command while date +'%Y-%m-%d %l:%M:%S %p'; do sleep 1; done
-    status_command i3status
+    #
+    # For some reason, i3status only looks in /etc when running from a terminal
+    # (the other places according to strace are not useful) so we pass it an
+    # explicit path to its config.
+    status_command i3status -c /etc/xdg/i3status/config;
 
     colors {
         statusline #ffffff
