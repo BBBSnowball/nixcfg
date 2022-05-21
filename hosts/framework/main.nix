@@ -15,6 +15,7 @@ in
       vscode
     ] ++
     [ ./hardware-configuration.nix
+      ./pipewire.nix
     ];
 
   networking.hostName = "fw";
