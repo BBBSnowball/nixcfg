@@ -9,6 +9,7 @@ let
     overlays = [ fixUnnecessaryTargetDepsOverlay overlay ];
   };
   rppico-arch = p1.lib.systems.examples.arm-embedded // {
+    #FIXME This probably must be outside of platform!
     platform = {
       gcc.cpu = "cortex-m0plus";
       gcc.extraFlags = ["-mthumb"];
