@@ -13,9 +13,11 @@ in
       desktop-base
       tinc-client-a
       vscode
+      ssh-github
     ] ++
     [ ./hardware-configuration.nix
       ./pipewire.nix
+      ./mcu-dev.nix
     ];
 
   networking.hostName = "fw";
