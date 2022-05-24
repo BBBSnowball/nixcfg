@@ -113,6 +113,7 @@ in
     sway alacritty kitty foot dmenu kupfer
     i3status i3status-rust termite rofi light
     swaylock
+    wdisplays
   ];
   environment.etc."sway/config".source = ./sway-config;
   #environment.etc."i3status.conf".source = ./i3status.conf;
