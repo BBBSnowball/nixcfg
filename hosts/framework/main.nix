@@ -18,6 +18,7 @@ in
     [ ./hardware-configuration.nix
       ./pipewire.nix
       ./mcu-dev.nix
+      (import ./users.nix { inherit pkgs private; })
     ];
 
   networking.hostName = "fw";
@@ -66,35 +67,6 @@ in
       ${pkgs.nettools}/bin/ifconfig $INTERFACE down
     '';
     mode = "755";
-  };
-
-  users.users.user = {
-    isNormalUser = true;
-    passwordFile = "/etc/nixos/secret/rootpw";
-    extraGroups = [ "dialout" "wheel" ];
-    openssh.authorizedKeys.keyFiles = [ "${private}/ssh-laptop.pub" ];
-
-    packages = with pkgs; [
-      firefox pavucontrol chromium
-      mplayer mpv
-      speedcrunch
-      libreoffice gimp
-      gnome.eog gnome.evince
-      x11vnc
-      vscode  # We need MS C++ Extension for PlatformIO.
-      python3 # for PlatformIO
-      w3m
-      kupfer
-      #(git.override { guiSupport = true; })
-      gnome.gnome-screenshot
-      gnome.gnome-tweaks
-    ];
-  };
-  users.users.root = {
-    # generate contents with `mkpasswd -m sha-512`
-    passwordFile = "/etc/nixos/secret/rootpw";
-
-    openssh.authorizedKeys.keyFiles = [ "${private}/ssh-laptop.pub" ];
   };
 
   nix.registry.routeromen.flake = routeromen;
