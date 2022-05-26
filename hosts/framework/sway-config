@@ -27,8 +27,9 @@ set $menu kupfer
 #output * bg ~/.config/sway/backgrounds/Sway_Wallpaper_Blue_1920x1080.png fill
 output eDP-1 position 0,0
 #output DP-3 position 2256,0
-output DP-8 position 2256,0
-output DP-1 position 4816,0
+output DP-8 position 2256 0 enable mode 2560x1440@59.951hz
+output DP-7 position 2256 0 enable mode 2560x1440@59.951hz
+output DP-1 position 4816 0 enable
 #
 # Example configuration:
 #
