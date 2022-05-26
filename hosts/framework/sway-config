@@ -240,3 +240,7 @@ bar {
 # dbus-send --print-reply=literal --dest=net.sourceforge.mumble.mumble --type=method_call / net.sourceforge.mumble.Mumble.getTalkingUsers|tail -n+2|sed 's/^\s*//; s/[ \t\]]*$//'
 bindsym Shift+F12 exec dbus-send --dest=net.sourceforge.mumble.mumble --type=method_call / net.sourceforge.mumble.Mumble.setSelfMuted boolean:false
 bindsym F12       exec dbus-send --dest=net.sourceforge.mumble.mumble --type=method_call / net.sourceforge.mumble.Mumble.setSelfMuted boolean:true
+
+# include config.d, which contains nixos.conf that forwards env variables to the session bus
+include /etc/sway/config.d/*
+
