@@ -16,6 +16,7 @@ let
     { host = "mail.bkoch.info"; probes = [ fping fping_1k ]; }
     { host = "ping.online.net"; probes = [ fping fping_1k ]; }
     { host = "c3pb.de"; probes = [ fping fping_1k ]; }
+    { host = "94.79.177.225"; name = "hackerspace-fritzbox"; }  # IP of hackerspace minus 1
     { host = "hackerspace.servers.c3pb.de"; name = "hackerspace"; }
     { host = "verl.bbbsnowball.de"; name = "verl"; probes = [ fping fping_1k ]; }
     { name = "gpd pocket"; host = "192.168.178.68"; probes = [ fping fping_1k ]; }
