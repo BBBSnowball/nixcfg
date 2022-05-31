@@ -29,6 +29,7 @@ in {
       (withFlakeInputs ./containers/rss.nix)
       (withFlakeInputs ./containers/php.nix)
       (withFlakeInputs ./containers/janina-wordpress.nix)
+      (withFlakeInputs ./containers/janina-komm-wordpress.nix)
       ./firewall-iptables-restore
     ];
 
