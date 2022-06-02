@@ -5,6 +5,16 @@ let
   name = "janina-komm";
   url1 = lib.fileContents "${private}/janina/url3.txt";
   url2 = lib.fileContents "${private}/janina/url4.txt";
+
+  fetchTheme = { url, hash }: let
+    nameParts = with builtins; match "(.*/)?([^.]+)[.]([0-9.]+)[.][a-z]+" url;
+  in pkgs.stdenv.mkDerivation {
+    name = builtins.elemAt nameParts 1;
+    version = builtins.elemAt nameParts 2;
+    src = pkgs.fetchzip { inherit url hash; };
+    nativeBuildInputs = [ pkgs.pkgsBuildHost.unzip ];
+    installPhase = ''mkdir -p $out; cp -R * $out/'';
+  };
 in {
   containers.janina-komm-wordpress = {
     autoStart = true;
@@ -32,7 +42,12 @@ in {
           if (strpos($_SERVER['HTTP_X_FORWARDED_PROTO'], 'https') !== false)
             $_SERVER['HTTPS']='on';
         '';
-        #themes = [ responsiveTheme ];
+        themes = [
+          (fetchTheme { url = "https://downloads.wordpress.org/theme/oceanwp.3.3.2.zip";       hash = "sha256-7ZjK+6p9C7QaRr/Hp6dECy4OjB0E8z/RK+rv2nVK80M="; })
+          (fetchTheme { url = "https://downloads.wordpress.org/theme/neve.3.2.5.zip";          hash = "sha256-pMRwBN6B6eA3zmdhLnw2zSoGR6nKJikE+1axrzINQw8="; })
+          (fetchTheme { url = "https://downloads.wordpress.org/theme/ashe.2.198.zip";          hash = "sha256-b/Tsf4wXff3HT9DNbWyujsWDZd/knePNdMIBnUwZhQ8="; })
+          (fetchTheme { url = "https://downloads.wordpress.org/theme/twentyseventeen.3.0.zip"; hash = "sha256-QHEkvpc2CLjSopAIZRCelJnJvICQUYZfjTJYhTAbJuo="; })
+        ];
         plugins = [ ];
         virtualHost = {
           adminAddr = "postmaster@${url1}";
