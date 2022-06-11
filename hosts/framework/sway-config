@@ -25,8 +25,8 @@ set $menu kupfer
 #
 # Default wallpaper
 #output * bg ~/.config/sway/backgrounds/Sway_Wallpaper_Blue_1920x1080.png fill
-output eDP-1 position 0,0
-#output DP-3 position 2256,0
+output eDP-1 position 0 0 scale 1.25
+#output DP-3 position 2256 0
 output DP-8 position 2256 0 enable mode 2560x1440@59.951hz
 output DP-7 position 2256 0 enable mode 2560x1440@59.951hz
 output DP-1 position 4816 0 enable
@@ -45,6 +45,8 @@ exec swayidle -w \
          timeout 300 'swaylock -f -c 000000' \
          timeout 600 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"' \
          before-sleep 'swaylock -f -c 000000'
+
+bindsym ctrl+alt+l exec swaylock -f -c 000000
 #
 # This will lock your screen after 300 seconds of inactivity, then turn off
 # your displays after another 300 seconds, and turn your screens back on when
@@ -240,6 +242,9 @@ bar {
 # dbus-send --print-reply=literal --dest=net.sourceforge.mumble.mumble --type=method_call / net.sourceforge.mumble.Mumble.getTalkingUsers|tail -n+2|sed 's/^\s*//; s/[ \t\]]*$//'
 bindsym Shift+F12 exec dbus-send --dest=net.sourceforge.mumble.mumble --type=method_call / net.sourceforge.mumble.Mumble.setSelfMuted boolean:false
 bindsym F12       exec dbus-send --dest=net.sourceforge.mumble.mumble --type=method_call / net.sourceforge.mumble.Mumble.setSelfMuted boolean:true
+
+bindsym XF86MonBrightnessDown exec brightnessctl s 5%- -n 1
+bindsym XF86MonBrightnessUp   exec brightnessctl s 5%+ -n 1
 
 # include config.d, which contains nixos.conf that forwards env variables to the session bus
 include /etc/sway/config.d/*

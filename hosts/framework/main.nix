@@ -86,6 +86,7 @@ in
     i3status i3status-rust termite rofi light
     swaylock
     wdisplays
+    brightnessctl  # uses logind so doesn't need root
   ];
   environment.etc."sway/config".source = ./sway-config;
   #environment.etc."i3status.conf".source = ./i3status.conf;
