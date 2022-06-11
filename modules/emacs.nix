@@ -2,7 +2,7 @@
 {
   config.services.emacs.enable = true;
   #config.services.emacs.package = pkgs.emacs-nox;
-  config.services.emacs.package = ((pkgs.emacsPackagesNgGen pkgs.emacs-nox).emacsWithPackages (epkgs: [
+  config.services.emacs.package = (((pkgs.emacsPackagesFor or pkgs.emacsPackagesNgGen) pkgs.emacs-nox).emacsWithPackages (epkgs: [
     #epkgs.emacs-libvterm
     epkgs.vterm
   ]));

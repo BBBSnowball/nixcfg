@@ -36,12 +36,12 @@ in
   options = {
     users.defaultLinger = mkEnableOption "lingering for normal users (can be overridden per user)";
     users.users = mkOption {
-      options = [{
-        linger = mkEnableOption "lingering for the user" // {
-          type = lib.types.nullOr lib.types.bool;
+      type = with types; attrsOf (submodule {
+        options.linger = mkEnableOption "lingering for the user" // {
+          type = nullOr bool;
           default = null;
         };
-      }];
+      });
     };
   };
 

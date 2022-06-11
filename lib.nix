@@ -1,6 +1,9 @@
 { pkgs, routeromen, ... }:
 rec {
+  applyIfFunction = pkgs.lib.applyIfFunction or pkgs.lib.applyModuleArgsIfFunction;
+
   provideArgsToModule = args: m: args2@{ ... }: with pkgs.lib;
+    # see https://github.com/NixOS/nixpkgs/blob/c45ccae27bb29fd398261c3c915d5a94e422ffef/lib/modules.nix#L377
     if isFunction m || isAttrs m
       then unifyModuleSyntax "<unknown-file>" "" (applyIfFunction "" m (args // args2))
       else unifyModuleSyntax (toString m) (toString m) (applyIfFunction (toString m) (import m) (args // args2));
