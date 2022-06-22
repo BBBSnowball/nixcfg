@@ -31,7 +31,7 @@ in
   users.users.root = rootUser;
 
   users.users.user = guiUser // {
-    extraGroups = [ "dialout" "wheel" ];
+    extraGroups = [ "dialout" "wheel" "wireshark" ];
   };
 
   users.users.user2 = guiUser // {
