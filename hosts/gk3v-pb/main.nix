@@ -14,6 +14,7 @@ in
       tinc-client
       tinc-client-a
       vscode
+      omada-controller
     ] ++
     [ ./hardware-configuration.nix
       ./rust.nix
