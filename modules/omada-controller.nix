@@ -68,7 +68,7 @@ in {
       else
         # looks like OmadaBootstrap is too "intelligent" when looking for the keystore so let's copy stuff...
         # It would be so much easier if they just used the environment variables that they setup in their control.sh script.
-        chmod -R u+w $OMADA_HOME/lib
+        chmod -R u+w $OMADA_HOME/lib || true
         rm -rf $OMADA_HOME/lib
         cp -r $OMADA_PKG/lib $OMADA_HOME/lib
         ln -sfT $OMADA_PKG/bin $OMADA_HOME/bin
