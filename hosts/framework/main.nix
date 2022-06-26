@@ -19,6 +19,7 @@ in
       ./pipewire.nix
       ./mcu-dev.nix
       (import ./users.nix { inherit pkgs private; })
+      ./bluetooth.nix
     ];
 
   networking.hostName = "fw";
