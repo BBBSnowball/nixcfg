@@ -105,11 +105,9 @@ in
   programs.wireshark.enable = true;
 
   environment.systemPackages = with pkgs; [
-    brlaser
     mumble
     picocom
   ];
-  hardware.sane.brscan5.enable = true;
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
