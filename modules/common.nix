@@ -21,6 +21,7 @@
     utillinux parted
     lsof
     stress-ng
+    inxi
 
     neovim neovim-remote fzf ctags
     # only in nixos unstable: page
