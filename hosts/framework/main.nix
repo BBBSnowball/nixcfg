@@ -107,6 +107,7 @@ in
   environment.systemPackages = with pkgs; [
     mumble
     picocom
+    wireshark
   ];
 
   # This value determines the NixOS release from which the default

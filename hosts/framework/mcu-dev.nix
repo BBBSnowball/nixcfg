@@ -24,6 +24,9 @@ in
     ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="0483", ATTR{idProduct}=="3748", GROUP="dialout"
     # DAPLink
     ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="0d28", ATTR{idProduct}=="0204", GROUP="dialout"
+
+    # Android Bootloader
+    ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="18d1", ATTR{idProduct}=="d00d", GROUP="dialout"
   '';
 
   services.udev.packages = [ openfpgaloaderRules ];
