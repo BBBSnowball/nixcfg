@@ -31,6 +31,7 @@ in
   nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
     "memtest86-efi"
     "vscode"
+    "mfc9142cdnlpr"
   ];
 
   networking.useDHCP = false;
@@ -109,6 +110,11 @@ in
     picocom
     wireshark
   ];
+
+  services.printing.drivers = [
+    (pkgs.callPackage ../../pkgs/mfc9142cdncupswrapper.nix { mfc9142cdnlpr = pkgs.callPackage ../../pkgs/mfc9142cdnlpr.nix {}; })
+  ];
+  #services.printing.extraConf = "LogLevel debug2";
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
