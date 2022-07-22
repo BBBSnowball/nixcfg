@@ -14,6 +14,7 @@ in
       tinc-client
       tinc-client-a
       vscode
+      omada-controller
     ] ++
     [ ./hardware-configuration.nix
       ./rust.nix
@@ -21,6 +22,7 @@ in
       ./3dprint.nix
       ./xrdp.nix
       ./brother_ql_service.nix
+      ./iperf3.nix
     ];
 
   disabledModules = [ "services/networking/xrdp.nix" ];
