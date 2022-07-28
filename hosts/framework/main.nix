@@ -84,7 +84,7 @@ in
   programs.sway.enable = true;
   programs.sway.wrapperFeatures.gtk = true;
   programs.sway.extraPackages = with pkgs; [
-    sway alacritty kitty foot dmenu kupfer
+    alacritty kitty foot dmenu kupfer
     i3status i3status-rust termite rofi light
     swaylock
     wdisplays
@@ -104,11 +104,12 @@ in
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
   programs.wireshark.enable = true;
+  programs.wireshark.package = pkgs.wireshark;  # wireshark-qt instead of wireshark-cli
 
   environment.systemPackages = with pkgs; [
     mumble
     picocom
-    wireshark
+    #wireshark
   ];
 
   services.printing.drivers = [
