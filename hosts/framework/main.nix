@@ -110,6 +110,7 @@ in
     mumble
     picocom
     #wireshark
+    zeal
   ];
 
   services.printing.drivers = [
