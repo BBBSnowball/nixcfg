@@ -111,6 +111,7 @@ in
     picocom
     #wireshark
     zeal
+    lazygit
   ];
 
   services.printing.drivers = [
