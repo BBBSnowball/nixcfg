@@ -19,6 +19,7 @@ in
       ./pipewire.nix
       ./mcu-dev.nix
       (import ./users.nix { inherit pkgs private; })
+      ./bluetooth.nix
     ];
 
   networking.hostName = "fw";
@@ -30,6 +31,7 @@ in
   nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
     "memtest86-efi"
     "vscode"
+    "mfc9142cdnlpr"
   ];
 
   networking.useDHCP = false;
@@ -82,7 +84,7 @@ in
   programs.sway.enable = true;
   programs.sway.wrapperFeatures.gtk = true;
   programs.sway.extraPackages = with pkgs; [
-    sway alacritty kitty foot dmenu kupfer
+    alacritty kitty foot dmenu kupfer
     i3status i3status-rust termite rofi light
     swaylock
     wdisplays
@@ -102,6 +104,19 @@ in
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
   programs.wireshark.enable = true;
+  programs.wireshark.package = pkgs.wireshark;  # wireshark-qt instead of wireshark-cli
+
+  environment.systemPackages = with pkgs; [
+    mumble
+    picocom
+    #wireshark
+    zeal
+  ];
+
+  services.printing.drivers = [
+    (pkgs.callPackage ../../pkgs/mfc9142cdncupswrapper.nix { mfc9142cdnlpr = pkgs.callPackage ../../pkgs/mfc9142cdnlpr.nix {}; })
+  ];
+  #services.printing.extraConf = "LogLevel debug2";
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
