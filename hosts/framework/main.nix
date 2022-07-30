@@ -112,6 +112,7 @@ in
     #wireshark
     zeal
     lazygit
+    clementine
   ];
 
   services.printing.drivers = [
