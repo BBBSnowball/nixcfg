@@ -1,4 +1,4 @@
-{ config, pkgs, lib, rockpro64Config, routeromen, withFlakeInputs, private, ... }@args:
+{ config, pkgs, lib, rockpro64Config, routeromen, withFlakeInputs, private, nixos-hardware, ... }@args:
 let
   modules = args.modules or (import ./modules.nix {});
   hostSpecificValue = path: import "${private}/by-host/${config.networking.hostName}${path}";
@@ -21,6 +21,7 @@ in
       ./mcu-dev.nix
       (import ./users.nix { inherit pkgs private; })
       ./bluetooth.nix
+      nixos-hardware.nixosModules.framework
     ];
 
   networking.hostName = "fw";
@@ -99,11 +100,6 @@ in
   # create /etc/X11/xkb for `localectl list-x11-keymap-options`
   # https://github.com/NixOS/nixpkgs/issues/19629#issuecomment-368051434
   services.xserver.exportConfiguration = true;
-
-  # for Framework laptop
-  # see http://kvark.github.io/linux/framework/2021/10/17/framework-nixos.html
-  boot.kernelParams = [ "mem_sleep_default=deep" ];
-  boot.kernelPackages = pkgs.linuxPackages_latest;
 
   programs.wireshark.enable = true;
   programs.wireshark.package = pkgs.wireshark;  # wireshark-qt instead of wireshark-cli
