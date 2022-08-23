@@ -118,6 +118,26 @@ in
   ];
   #services.printing.extraConf = "LogLevel debug2";
 
+  services.fwupd.enable = true;
+  environment.etc."fwupd/remotes.d/lvfs-testing.conf".enable = false;
+  environment.etc."fwupd/remotes.d/lvfs-testing.conf2" = {
+    source = pkgs.runCommand "lvfs-testing.conf" {} ''
+      sed 's/Enabled=false/Enabled=true/' <${config.environment.etc."fwupd/remotes.d/lvfs-testing.conf".source} >$out
+    '';
+    target = "fwupd/remotes.d/lvfs-testing.conf";
+  };
+  environment.etc."fwupd/uefi_capsule.conf".enable = false;
+  environment.etc."fwupd/uefi_capsule.conf2" = {
+    source = pkgs.runCommand "uefi_capsule.conf" {} ''
+      cat <${config.environment.etc."fwupd/uefi_capsule.conf".source} >$out
+      echo "" >>$out
+      echo '# description says that we should do this:' >>$out
+      echo '# https://fwupd.org/lvfs/devices/work.frame.Laptop.TGL.BIOS.firmware' >>$out
+      echo 'DisableCapsuleUpdateOnDisk=true' >>$out
+    '';
+    target = "fwupd/uefi_capsule.conf";
+  };
+
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
   # on your system were taken. It‘s perfectly fine and recommended to leave
