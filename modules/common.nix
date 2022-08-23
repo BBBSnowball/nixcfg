@@ -22,6 +22,7 @@
     lsof
     stress-ng
     inxi
+    progress
 
     neovim neovim-remote fzf ctags
     # only in nixos unstable: page

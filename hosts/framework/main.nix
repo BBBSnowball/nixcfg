@@ -14,6 +14,7 @@ in
       tinc-client-a
       vscode
       ssh-github
+      xonsh
     ] ++
     [ ./hardware-configuration.nix
       ./pipewire.nix
@@ -91,6 +92,7 @@ in
     brightnessctl  # uses logind so doesn't need root
   ];
   environment.etc."sway/config".source = ./sway-config;
+  environment.etc."alacritty.yml".source = ./alacritty.yml;
   #environment.etc."i3status.conf".source = ./i3status.conf;
   environment.etc."xdg/i3status/config".source = ./i3status.conf;
   hardware.opengl.enable = true;
