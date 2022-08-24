@@ -111,6 +111,7 @@ in
     zeal
     lazygit
     clementine
+    entr
   ];
 
   services.printing.drivers = [
