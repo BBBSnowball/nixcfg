@@ -139,6 +139,9 @@ in
     target = "fwupd/uefi_capsule.conf";
   };
 
+  # enabled by nixos-hardware but causes multi-second delays for login manager and swaylock
+  services.fprintd.enable = false;
+
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
   # on your system were taken. It‘s perfectly fine and recommended to leave
