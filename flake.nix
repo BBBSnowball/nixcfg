@@ -61,6 +61,7 @@
     nixosConfigurations.hetzner-temp = mkHostInSubflake "hetzner-temp";
     nixosConfigurations.framework = self.nixosConfigurations.fw;
     nixosConfigurations.fw = mkHostInSubflake "fw";
+    nixosConfigurations.orangepi-remoteadmin = mkHostInSubflake "orangepi-remoteadmin";
   } // (let
     supportedSystems = [ "x86_64-linux" "i686-linux" "aarch64-linux" ];
     forAllSystems = nixpkgs.lib.genAttrs supportedSystems;

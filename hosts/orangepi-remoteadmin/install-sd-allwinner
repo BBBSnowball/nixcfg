@@ -1,57 +1,66 @@
-#!/usr/bin/env zsh
+#! /usr/bin/env nix-shell
+#! nix-shell -i zsh -p zsh parted vboot_reference util-linux
 
-set -e
-set -u
-set -x
-set -o pipefail
+# based on https://git.c3pb.de/jens/dotfiles/-/blob/master/bin/install-sd-allwinner
 
-source $DOTFILES_PATH/bin/lib/util.zsh
+set -euo pipefail
 
-cmdname=$(basename $0)
-usage() {
-  print "Usage: $cmdname <machine>" >&2
-}
-readonly machine="$1"
+readonly mount_point=/mnt/mnt
 
-# Update nar-hash of dotfiles repository
-nix flake lock --update-input dotfiles "path:$MACHINES_PATH"
-
-readonly nix=(nix --log-format bar-with-logs)
-
-# Installables
-readonly uboot_installable="path:$MACHINES_PATH#nixosConfigurations.$machine.config.system.build.u-boot"
-readonly system_installable="path:$MACHINES_PATH#nixosConfigurations.$machine.config.system.build.toplevel"
-
-# Build once to catch errors
-$nix build --no-link $uboot_installable
-$nix build --keep-going --no-link $system_installable
+readonly infofile="$(dirname $0)/info.zsh"
+if [ -e "$infofile" ] ; then
+  source "$infofile"
+  readonly machine="${info[hostName]}"
+  readonly fixedMachine=1
+elif [[ -v 1 ]] ; then
+  readonly machine="$1"
+  shift
+  readonly fixedMachine=0
+  source "$(nix build -L --print-out-paths .#nixosConfigurations.$machine.config.system.build.orangepi-installer)/info.zsh"
+else
+  readonly machine=""
+  readonly fixedMachine=0
+fi
 
 
-# Use cached build to get output path
-readonly nixos_config_path=$($nix build --json --no-link $system_installable | jq --raw-output ".[0].outputs.out")
+if [[ -z "$machine" || ! -v 1 || "$1" != "--wipe-this-disk" || ! -v 2 ]] ; then
+  if [[ $fixedMachine == 1 ]] ; then
+    echo "Usage: $0 --wipe-this-disk /dev/thesdcard" >&2
+    echo "(machine is $machine)" >&2
+  else
+    echo "Usage: $0 <machine> --wipe-this-disk /dev/thesdcard" >&2
+  fi
 
+  echo "" >&2
+  echo "The target partition will be mounted to $mount_point, which must already exist." >&2
 
-# NOTE: Update if required
-readonly target_disk="/dev/disk/by-id/usb-Generic_MassStorageClass_000000001538-0:1"
+  if [[ -n "$machine" && -e "/dev/disk/by-uuid/${info[rootfsUUID]}" ]] ; then
+    echo "" >&2
+    echo "Hint: Existing root partition with the correct UUID is here so maybe you" >&2
+    echo "want the disk of that partition (or you want to use a different UUID!):" >&2
+    echo "  $(realpath "/dev/disk/by-uuid/${info[rootfsUUID]}")" >&2
+  fi
+  exit 1
+fi
+readonly target_disk="$2"
 
-# NOTE: Update for each new installation
-readonly root_partition_uuid="184a74e1-894b-4319-b9c9-9b0f972a30f8"
-
-# NOTE: Update for each new installation
-readonly root_uuid="dec6d7a8-6f97-4f4e-aaeb-98fd1e6bda27"
-
+readonly nixos_config_path="${info[toplevel]}"
+readonly uboot="${info[u-boot]}"
+readonly root_partition_uuid="${info[rootPartitionUUID]}"
+readonly root_uuid="${info[rootfsUUID]}"
 
 # Derived paths
 readonly root_partition="/dev/disk/by-partuuid/$root_partition_uuid"
 
+set -x
 
-sudo wipefs -a $target_disk
+wipefs -a $target_disk
 
 # 2MB header hole
-sudo nix shell nixpkgs#vboot_reference -c cgpt create -p 4096 $(realpath $target_disk)
-sudo nix shell nixpkgs#vboot_reference -c cgpt boot -p $(realpath $target_disk)
+cgpt create -p 4096 $(realpath $target_disk)
+cgpt boot -p $(realpath $target_disk)
 
-sudo nix shell nixpkgs#util-linux -c sfdisk $target_disk --append <<EOF
+sfdisk $target_disk --append <<EOF
   unit: sectors
   sector-size: 512
 
@@ -59,48 +68,48 @@ sudo nix shell nixpkgs#util-linux -c sfdisk $target_disk --append <<EOF
 EOF
 
 
-nix shell nixpkgs#busybox -c partprobe
+partprobe $target_disk
 
-# Use cached build to get u-boot output path
-readonly uboot=$($nix build --json --no-link $uboot_installable | jq --raw-output ".[0].outputs.out")
-
-#sudo dd if=$uboot/u-boot-sunxi-with-spl.bin of=$uboot_partition bs=16M conv=fsync oflag=direct status=progress
-sudo dd if=$uboot/u-boot-sunxi-with-spl.bin of=$target_disk bs=1024 seek=8 conv=fsync status=progress
-
-
-sleep 2s
-
-sudo wipefs -a $root_partition
+#dd if=$uboot/u-boot-sunxi-with-spl.bin of=$uboot_partition bs=16M conv=fsync oflag=direct status=progress
+dd if=$uboot/u-boot-sunxi-with-spl.bin of=$target_disk bs=1024 seek=8 conv=fsync status=progress
 
 # partprobe doesn't seem to be enough for symlinks to appear?
 while [[ ! -b $root_partition ]] {
   print "Waiting for $root_partition"
   sleep 1s
 }
-sudo mkfs.ext4 -U $root_uuid -L root_$machine $root_partition
+wipefs -a $root_partition
+mkfs.ext4 -U $root_uuid -L root_$machine $root_partition
 
-mount_point=/mnt/mnt
-sudo mount $root_partition $mount_point
+mount -t ext4 $root_partition $mount_point
 
-sudo $nix copy --no-check-sigs --to "$mount_point" $nixos_config_path
+nix -L copy --no-check-sigs --to "$mount_point" $nixos_config_path
 
 print "Setting system profile"
-sudo nix-env --store $mount_point --profile $mount_point/nix/var/nix/profiles/system --set $nixos_config_path
+nix-env --store $mount_point --profile $mount_point/nix/var/nix/profiles/system --set $nixos_config_path
 
 print "Creating /etc/NIXOS"
-sudo mkdir -m 0755 -p "$mount_point/etc"
-sudo touch "$mount_point/etc/NIXOS"
+mkdir -m 0755 -p "$mount_point/etc"
+touch "$mount_point/etc/NIXOS"
 
-# Bootloader installation: broken when installing across architectures
-#sudo nixos-enter --root $mount_point -c "NIXOS_INSTALL_BOOTLOADER=1 $nixos_config_path/bin/switch-to-configuration boot"
+if [[ -e "/etc/nixos/hosts/${machine}" ]] ; then
+  print "Copy files for host to target"
+  mkdir -m 0700 -p "$mount_point/etc/nixos/hosts"
+  cp -a "/etc/nixos/hosts/${machine}" "$mount_point/etc/nixos/hosts/${machine}"
+  ls -1 "/etc/nixos/hosts/${machine}" | while read x ; do
+    ln -s "hosts/${machine}/$x" "$mount_point/etc/nixos/$x"
+  done
+fi
 
-# Manual steps:
-# - open switch-to-configuration script
-# - look for "Install or update the bootloader."
-# - run extlinux-conf-builder.sh:
-#   /nix/store/[...]-extlinux-conf-builder.sh -d /mnt/mnt/boot -c $nixos_config_path -t 5
-print "Manual bootloader installation required"
-print "- Find bootloader installation in: $nixos_config_path/bin/switch-to-configuration"
-print "- Then run extlinux-builder: sudo /nix/store/[...]-extlinux-conf-builder.sh -d $mount_point/boot -c $nixos_config_path -t 5"
+# Install bootloader with zero generations (except the default one that we pass here)
+# because it would pick up those generations from the build host. We could use nixos-enter
+# to run extlinux in the target directory but nixos-enter fails (probably because the
+# target has a different architecture and binfmt doesn't work in the new environment).
+${(z)info[extlinuxPopulateCmd]} -d $mount_point/boot -c $nixos_config_path -g 0
+
+umount "$mount_point"
 
 sync
+
+echo done.
+

@@ -41,10 +41,10 @@ let
       mbyte2 = mbyte+mbyte;
       mbyte4 = mbyte2+mbyte2;
       mbyte6 = mbyte4+mbyte2;
-      parsed = match "${mbyte4}-${mbyte2}-${mbyte2}-${mbyte2}-${mbyte6}" x;
+      parsed = match "${mbyte4}-${mbyte2}-${mbyte2}-${mbyte2}-${mbyte6}[ \t\r\n]*" x;
       bytes = map fromHex2 parsed;
     in if parsed == null
-    then throw "invalid UUID: " + toString x
+    then throw "invalid UUID: ${toString x}"
     else bytes;
 
   toUUID = x:
@@ -53,9 +53,9 @@ let
         then x
         else if isAttrs x && x ? bytes && isList x.bytes && length x.bytes == 16
         then x.bytes
-        else if isString x && stringLength x == stringLength nilUUID.outPath
+        else if isString x  # && stringLength x == stringLength nilUUID.outPath
         then parseUUID x
-        else throw "invalid UUID: " + toString x;
+        else throw "invalid UUID: ${toString x}";
       variantNibble = (elemAt bytes 8) / 16;
       variant = if variantNibble < 8 then 0
         else if variantNibble < 12 then 1
