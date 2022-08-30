@@ -1,5 +1,9 @@
-{ lib, config, ... }:
+{ lib, config, modules, ... }:
 {
+  imports = [
+    modules.common
+  ];
+
   services.openssh.enable = true;
 
   # https://github.com/NixOS/nixpkgs/pull/156750

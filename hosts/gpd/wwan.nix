@@ -9,8 +9,8 @@ in
   nixpkgs.overlays = [
     (import ./switch-E3531-to-tty.nix)
     (self: super: {
-      libmm = import ./libmm.nix { inherit (self) stdenv fetchurl; };
-      smstools = import ./smstools.nix { inherit (self) stdenv fetchurl libmm; };
+      libmm = self.callPackage ./libmm.nix {};
+      smstools = self.callPackage ./smstools.nix {};
     })
   ];
 
@@ -76,12 +76,13 @@ in
 
   services.logrotate = {
     enable = true;
-    paths.smsd = {
-      path = "/var/log/sms/smsd.log";
-      user = "smsd";
-      group = "sms";
+    settings.smsd = {
+      files = [ "/var/log/sms/smsd.log" ];
+      su = "smsd sms";
+      daily = true;
+      rotate = 20;
       extraConfig = ''
-        postrotate
+      postrotate
           # It doesn't support SIGHUP and we don't want it to continue logging to the moved file.
           systemctl restart system-smsd.slice
         endscript
