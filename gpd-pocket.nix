@@ -6,8 +6,9 @@
     ./nixos-gpd-pocket/firmware.nix
     ./nixos-gpd-pocket/xserver.nix
     ./nixos-gpd-pocket/bluetooth.nix
-    ./nixos-gpd-pocket/touch.nix
+    ./nixos-gpd-pocket/suspend.nix
     ./nixos-gpd-pocket/power.nix
+    #./nixos-gpd-pocket/scrolling.nix
   ];
 
   #boot.kernelPackages = pkgs.linuxPackagesFor pkgs.linux_gpd_pocket;
@@ -32,4 +33,7 @@
   };
 
   environment.systemPackages = with pkgs; [ libva-utils ];
+
+  # downgrade kernel because of audio problems (very loud noise)
+  boot.kernelPackages = let pkgs = import /nix/var/nix/profiles/per-user/root/channels-12-link/nixos {}; in pkgs.linuxPackages;
 }

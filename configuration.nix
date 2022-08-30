@@ -42,7 +42,7 @@
   # Per-interface useDHCP will be mandatory in the future, so this generated config
   # replicates the default behaviour.
   networking.useDHCP = false;
-  networking.interfaces.wlp1s0.useDHCP = true;
+  #networking.interfaces.wlp1s0.useDHCP = true;
 
   # Configure network proxy if necessary
   # networking.proxy.default = "http://user:password@proxy:port/";
@@ -90,6 +90,10 @@
     iw wirelesstools
     pavucontrol
     i2c-tools
+    mumble
+    freecad
+    picocom
+    ghidra-bin
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
@@ -154,8 +158,18 @@
     builders-use-substitutes = true
   '';
 
+  services.geoclue2 = {
+    enable = true;
+  };
+
   #FIXME disabled because it conflicts with tlp but would it be better?
   services.power-profiles-daemon.enable = false;
+
+  services.udev.extraRules = ''
+    # GD32V bootloader
+    ATTRS{idVendor}=="28e9", ATTRS{idProduct}=="0189", GROUP="users", MODE="0660"
+  '';
+
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
