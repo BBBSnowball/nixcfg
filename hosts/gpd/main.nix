@@ -2,13 +2,13 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, ... }:
+{ config, pkgs, ... }@args:
 
 {
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
-      ./gpd-pocket.nix
+      (import ./gpd-pocket.nix args)
       ./wwan.nix
     ];
 
@@ -31,9 +31,6 @@
 
   #boot.loader.grub.gfxmodeEfi = "1200x1920x32";
   boot.loader.grub.gfxmodeEfi = "1920x1200x32";
-
-  networking.hostName = "snowball-gpd"; # Define your hostname.
-  # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
   # Set your time zone.
   time.timeZone = "Europe/Berlin";

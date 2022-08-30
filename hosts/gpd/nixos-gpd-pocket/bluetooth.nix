@@ -2,7 +2,7 @@
 {
   hardware.bluetooth.enable = true;
   boot.kernelModules = [ "btusb" ];
-  hardware.pulseaudio.extraModules = [ pkgs.pulseaudio-modules-bt ];
+  #hardware.pulseaudio.extraModules = [ pkgs.pulseaudio-modules-bt ];
   hardware.pulseaudio.package = pkgs.pulseaudioFull;
 
   services.udev.extraRules = ''

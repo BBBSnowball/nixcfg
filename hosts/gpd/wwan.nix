@@ -9,8 +9,8 @@ in
   nixpkgs.overlays = [
     (import ./switch-E3531-to-tty.nix)
     (self: super: {
-      libmm = import ./libmm.nix {};
-      smstools = import ./smstools.nix {};
+      libmm = import ./libmm.nix { inherit (self) stdenv fetchurl; };
+      smstools = import ./smstools.nix { inherit (self) stdenv fetchurl libmm; };
     })
   ];
 
@@ -91,6 +91,7 @@ in
 
   users.users.smsd = {
     isSystemUser = true;
+    group = "sms";
   };
   users.groups.sms = {};
 

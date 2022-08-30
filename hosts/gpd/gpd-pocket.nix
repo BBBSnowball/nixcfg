@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, nixpkgs-old, ... }:
 {
   imports = [
     ./nixos-gpd-pocket/hardware.nix
@@ -35,5 +35,5 @@
   environment.systemPackages = with pkgs; [ libva-utils ];
 
   # downgrade kernel because of audio problems (very loud noise)
-  boot.kernelPackages = let pkgs = import /nix/var/nix/profiles/per-user/root/channels-12-link/nixos {}; in pkgs.linuxPackages;
+  boot.kernelPackages = nixpkgs-old.legacyPackages.${pkgs.system}.linuxPackages;
 }
