@@ -1,0 +1,11 @@
+--- a/src/Makefile	2017-05-03 23:05:45.000000000 +0200
++++ b/src/Makefile	2020-11-10 00:49:25.247169882 +0100
+@@ -9,7 +9,7 @@
+ # CC=gcc
+ 
+ # Comment this out, to enable statistics
+-CFLAGS += -D NOSTATS
++#CFLAGS += -D NOSTATS
+ 
+ # Uncomment this to disable usage of inotify
+ #CFLAGS += -D DISABLE_INOTIFY

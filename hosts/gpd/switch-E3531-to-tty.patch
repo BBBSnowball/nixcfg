@@ -1,0 +1,14 @@
+diff -Naur a/usb_modeswitch.d/12d1:1f01 b/usb_modeswitch.d/12d1:1f01
+--- a/usb_modeswitch.d/12d1:1f01	2016-08-02 20:00:40.000000000 +0200
++++ b/usb_modeswitch.d/12d1:1f01	2020-11-22 01:42:36.683690701 +0100
+@@ -1,6 +1,6 @@
+ # Huawei E353 (3.se) and others
++# select USB tty mode instead of cdc_ether
++# see https://www.instructables.com/Giving-the-Raspberry-Pi-a-Serial-Modem-Using-the-H/
+ TargetVendor=0x12d1
+-TargetProductList="14db,14dc"
+-HuaweiNewMode=1
+-
+-
++TargetProduct=0x1001
++MessageContent="55534243123456780000000000000011062000000100000000000000000000"
