@@ -1,4 +1,4 @@
-{ config, pkgs, routeromen, ... }@args:
+{ config, pkgs, routeromen, private, ... }@args:
 
 {
   imports =
@@ -43,9 +43,9 @@
   users.users.user = {
     isNormalUser = true;
     extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
-    openssh.authorizedKeys.keyFiles = [ ./sshkeys.txt ];
+    openssh.authorizedKeys.keyFiles = [ ./sshkeys.txt "${private}/ssh-framework-root.pub" ];
   };
-  users.users.root.openssh.authorizedKeys.keyFiles = [ ./sshkeys.txt ];
+  users.users.root.openssh.authorizedKeys.keyFiles = [ ./sshkeys.txt "${private}/ssh-framework-root.pub" ];
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
