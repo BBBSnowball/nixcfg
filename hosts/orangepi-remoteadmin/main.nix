@@ -1,4 +1,4 @@
-{ config, pkgs, lib, rockpro64Config, routeromen, withFlakeInputs, private, ... }:
+{ config, pkgs, lib, routeromen, withFlakeInputs, private, ... }:
 let
   basicUser = {
     # generate contents with `mkpasswd -m sha-512`
@@ -21,9 +21,12 @@ let
   };
 in {
   imports =
+    with routeromen.nixosModules; [
+      snowball-headless
+      network-manager
+      #tinc-client-a
+    ] ++
     [ ./orangpi-pc2.nix
-      #routeromen.nixosModules.snowball-headless-big
-      routeromen.nixosModules.snowball-headless
       ./orangpi-installer.nix
       ./wwan.nix
     ];
