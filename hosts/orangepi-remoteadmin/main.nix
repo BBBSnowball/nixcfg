@@ -25,6 +25,7 @@ in {
       #routeromen.nixosModules.snowball-headless-big
       routeromen.nixosModules.snowball-headless
       ./orangpi-installer.nix
+      ./wwan.nix
     ];
 
   #boot.kernelPackages = pkgs.linuxPackages_latest;
