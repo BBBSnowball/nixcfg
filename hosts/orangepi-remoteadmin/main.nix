@@ -6,7 +6,8 @@ let
 
     openssh.authorizedKeys.keyFiles = [
       "${private}/ssh-laptop.pub"
-      "${private}/ssh-framework.pub"
+      "${private}/ssh-framework-user.pub"
+      "${private}/ssh-framework-root.pub"
     ];
   };
   rootUser = basicUser;
