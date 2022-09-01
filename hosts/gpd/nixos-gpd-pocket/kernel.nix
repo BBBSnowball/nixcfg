@@ -205,6 +205,8 @@ let
 
       #FIXME: error: unused option: INTEL_PMC_IPC
     '';
+
+    #FIXME not supported in this kernel version, it seems: FW_LOADER_COMPRESS_XZ y
   };
 
   # list of modules for boot.initrd.kernelModules
