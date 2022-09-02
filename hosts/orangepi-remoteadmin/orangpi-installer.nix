@@ -38,21 +38,25 @@ in
       defaultText = "namespacedUUIDNonStandard system.baseUUID networking.hostName";
       default = namespacedUUIDNonStandard config.system.baseUUID config.networking.hostName;
     };
+    system.uuidForSystemPart = mkOption {
+      type = anything;
+      default = name: namespacedUUIDNonStandard config.system.systemUUID name;
+    };
     system.rootfsUUID = mkOption {
       description = ''
         UUID of root file system
       '';
       type = uuidType;
-      defaultText = "namespacedUUIDNonStandard system.systemUUID \"rootfs\"";
-      default = namespacedUUIDNonStandard config.system.systemUUID "rootfs";
+      defaultText = "config.system.uuidForSystemPart \"rootfs\"";
+      default = config.system.uuidForSystemPart "rootfs";
     };
     system.rootPartitionUUID = mkOption {
       description = ''
         UUID of root partition
       '';
       type = uuidType;
-      defaultText = "namespacedUUIDNonStandard system.systemUUID \"rootPartition\"";
-      default = namespacedUUIDNonStandard config.system.systemUUID "rootPartition";
+      defaultText = "config.system.uuidForSystemPart \"rootPartition\"";
+      default = config.system.uuidForSystemPart "rootPartition";
     };
   };
 

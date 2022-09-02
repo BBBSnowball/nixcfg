@@ -29,6 +29,7 @@ in {
     [ ./orangpi-pc2.nix
       ./orangpi-installer.nix
       ./wwan.nix
+      ./usbnet.nix
     ];
 
   #boot.kernelPackages = pkgs.linuxPackages_latest;
