@@ -11,8 +11,8 @@ in stdenv.mkDerivation rec {
   src = fetchFromGitHub {
     owner = "McMCCRU";
     repo = "rtl8188gu";
-    rev = "0b2333f01a856b70f5686cd826e31a236c2a14a5";
-    sha256 = "10xwivhf89ifazvbqacf5zy9qr8qmipgx4g9bq1ssp8y5bbcikjx";
+    rev = "bb3292dbb72ba6675b5465245eee0e69912f6e76";
+    hash = "sha256-ixu8v3ikTdqlNBEp6YrvuoDWKyi0RxjySXr+fTuO77Q=";
   };
 
   hardeningDisable = [ "pic" ];

@@ -71,8 +71,7 @@
   hardware.enableRedistributableFirmware = true;
 
   boot.extraModulePackages = [
-    #FIXME
-    #(config.boot.kernelPackages.callPackage ./rtl8188gu.nix {})
+    (config.boot.kernelPackages.callPackage ./rtl8188gu.nix {})
   ];
   #boot.kernelModules = [ "8188eu" ];
 
