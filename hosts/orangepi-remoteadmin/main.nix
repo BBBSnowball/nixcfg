@@ -33,6 +33,9 @@ in {
 
   #boot.kernelPackages = pkgs.linuxPackages_latest;
   boot.kernelPackages = pkgs.linuxPackages;
+  boot.extraModulePackages = [
+    (config.boot.kernelPackages.callPackage ../gpd/rtl8188gu.nix {})
+  ];
 
   boot.tmpOnTmpfs = true;
 

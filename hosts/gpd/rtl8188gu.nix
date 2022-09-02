@@ -27,6 +27,8 @@ in stdenv.mkDerivation rec {
     # try to make it work for v5.8 - but update_mgmt_frame_registrations is too different
     #find -type f -exec sed -i 's/sha256_/rtl_sha256_/g ; s/timespec/timespec64/ ; s/getboottime/getboottime64/ ; s/mgmt_frame_register/update_mgmt_frame_registrations/g' {} \+
     find -type f -exec sed -i 's/timespec/timespec64/ ; s/getboottime/getboottime64/ ; s/entry = proc_create_data.*/entry = NULL;/' {} \+
+  '' + lib.optionalString stdenv.hostPlatform.isAarch64 ''
+    makeFlagsArray+=("ARCH=arm64")
   '';
 
   enableParallelBuilding = true;
