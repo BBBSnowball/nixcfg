@@ -204,9 +204,15 @@ let
       SERIAL_DEV_BUS y
 
       #FIXME: error: unused option: INTEL_PMC_IPC
+      
+      FW_LOADER y
+      FW_LOADER_COMPRESS y
+      FW_LOADER_PAGED_BUF y
+      XZ_DEC y
+      # This should be supported but I can't make it work :-(
+      # https://www.kernelconfig.io/config_fw_loader_compress_xz?q=&kernelversion=5.15.63&arch=arm64
+      #FW_LOADER_COMPRESS_XZ y
     '';
-
-    #FIXME not supported in this kernel version, it seems: FW_LOADER_COMPRESS_XZ y
   };
 
   # list of modules for boot.initrd.kernelModules

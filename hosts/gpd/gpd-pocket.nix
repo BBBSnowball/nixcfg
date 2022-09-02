@@ -1,4 +1,4 @@
-{ pkgs, nixpkgs-old, lib, ... }:
+{ pkgs, lib, ... }:
 {
   imports = [
     ./nixos-gpd-pocket/hardware.nix
@@ -33,10 +33,4 @@
   };
 
   environment.systemPackages = with pkgs; [ libva-utils ];
-
-  # downgrade kernel because of audio problems (very loud noise)
-  boot.kernelPackages = nixpkgs-old.legacyPackages.${pkgs.system}.linuxPackages;
-
-  # nixpkgs thinks that any kernel after 5.3 supports this but our kernel doesn't seem to know the option FW_LOADER_COMPRESS_XZ.
-  nixpkgs.overlays = [ (self: super: { compressFirmwareXz = lib.id; }) ];
 }
