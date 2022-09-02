@@ -11,7 +11,6 @@
     #./nixos-gpd-pocket/scrolling.nix
   ];
 
-  #boot.kernelPackages = pkgs.linuxPackagesFor pkgs.linux_gpd_pocket;
   boot.kernelPatches = [ pkgs.linux_gpd_pocket_patches ];
   boot.initrd.kernelModules = pkgs.linux_gpd_pocket_modules;
 
