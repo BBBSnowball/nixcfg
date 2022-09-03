@@ -47,6 +47,8 @@ in
     # tincd chroots into /etc/tinc/${name} so we cannot put the file into /run, as we usually would.
     # Furthermore, tincd needs write access to the directory so we make a subdir.
     GraphDumpFile = status/graph.dot
+
+    ConnectTo=orangepi_remoteadmin
   '';
   systemd.services."tinc.a" = let name = "a"; in {
     preStart = ''
@@ -112,6 +114,7 @@ in
     lazygit
     clementine
     entr
+    zgrviewer graphviz
   ];
 
   services.printing.drivers = [

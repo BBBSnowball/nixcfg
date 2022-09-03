@@ -30,6 +30,7 @@ in {
       ./orangpi-installer.nix
       ./wwan.nix
       ./usbnet.nix
+      (withFlakeInputs ./tincs.nix)
     ];
 
   #boot.kernelPackages = pkgs.linuxPackages_latest;
