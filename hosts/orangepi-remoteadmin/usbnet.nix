@@ -159,6 +159,7 @@ in {
     };
     networking.firewall.interfaces = let
       fw = {
+        allowedTCPPorts = [ config.services.iperf3.port ];
         allowedUDPPorts = [ 67 config.services.iperf3.port ];
       };
     in { usb0 = fw; usb1 = fw; "usb0.2" = fw; "usb1.2" = fw; };

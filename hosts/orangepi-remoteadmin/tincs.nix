@@ -35,8 +35,6 @@ in
       cp -r $base $out
     '';
   in {
-    environment.systemPackages = [ pkgs.tinc ];
-
     networking.firewall.allowedTCPPorts = [ settings.main.port ];
 
     services.tinc.networks.${name} = {
@@ -109,5 +107,22 @@ in
       '';
       mode = "755";
     };
+    
+    users.users."tinc.${name}".packages = [ pkgs.python3Packages.speedtest-cli pkgs.curl ];
+
+    environment.systemPackages = let
+      speedtestForUser = name: user: pkgs.writeShellScriptBin name ''
+        su ${user} -s /bin/sh -c "exec speedtest-cli $*"
+      '';
+      ipForUser = name: user: pkgs.writeShellScriptBin name ''
+        su ${user} -s /bin/sh -c "exec curl ifconfig.me"
+      '';
+    in [
+      config.services.tinc.networks.${name}.package
+      (speedtestForUser "speedtest-${part}" "tinc.${name}")
+      (ipForUser "whatismyip-${part}" "tinc.${name}")
+      (ipForUser "ip-${part}" "tinc.${name}")
+    ];
+
   }) parts);
 }

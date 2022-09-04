@@ -53,6 +53,7 @@ in {
 
   environment.systemPackages = with pkgs; [
     mosh
+    tcpdump
   ];
 
   # for mosh
@@ -109,6 +110,7 @@ in {
     ip46tables -A FORWARD -i usb1.2 -o wwan0 -j ACCEPT
     ip46tables -A FORWARD -i wlan0 -o wwan0 -j ACCEPT
     ip46tables -A FORWARD -i eth0 -o wwan0 -j ACCEPT
+    #NOTE Default limit is 3/hour with limit-burst=5. We keep that, for now.
     ip46tables -A FORWARD -j LOG --log-prefix "refused forward: " --log-level 6
     ip46tables -A FORWARD -i wwan0 -j DROP
     ip46tables -A FORWARD -j REJECT
@@ -121,6 +123,7 @@ in {
 
     #ip46tables -A OUTPUT -m owner --uid-owner tinc.a-modem -j MARK --set-mark 3
     # https://superuser.com/a/1453850
+    # -> This is after routing (but probably "mangle" triggers routing again).
     ip46tables -t mangle -A OUTPUT -m owner --uid-owner tinc.a-modem -j MARK --set-mark 3
     # Further rules for fwmark are in networking.nat.extraCommands - see above.
 
