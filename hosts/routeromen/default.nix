@@ -254,6 +254,12 @@ in {
 
   nix.registry = lib.mkIf (args ? self) { routeromen.flake = args.self; };
 
+  services.prometheus.exporters.node.enable = true;
+  services.prometheus.exporters.node.enabledCollectors = [ "ethtool" "qdisc" "systemd" "wifi"
+    #"perf"
+  ];
+  services.prometheus.pushgateway.enable = true;
+
   # This value determines the NixOS release with which your system is to be
   # compatible, in order to avoid breaking some software such as database
   # servers. You should change this only after NixOS release notes say you
