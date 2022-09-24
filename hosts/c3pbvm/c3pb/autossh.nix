@@ -21,7 +21,6 @@
   programs.ssh.knownHosts = import "${private}/autossh-knownhosts.nix";
 
   users.users.autossh = {
-    isSystemUser = true;
     #home = "/home/autossh";
     # Shell is required because ssh must be able to spawn a child for ProxyJump and it is using a shell for that.
     shell = pkgs.bash;
