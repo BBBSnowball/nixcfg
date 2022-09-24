@@ -5,7 +5,7 @@
 #   pypi2nix -r requirements.txt -E zlib -E libffi -e cryptg -e pytest-runner -e pytest -e pytest-asyncio -e pytest-mock -e olefile -e setuptools_scm
 #
 
-{ pkgs ? import <nixpkgs> {}, lib ? pkgs.stdenv.lib,
+{ pkgs ? import <nixpkgs> {}, lib ? pkgs.lib,
   overrides ? ({ pkgs, python }: self: super: {})
 }:
 

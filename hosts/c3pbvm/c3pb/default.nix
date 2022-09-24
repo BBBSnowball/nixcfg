@@ -5,8 +5,8 @@
     #(withFlakeInputs ./mumbleweb.nix)
     (withFlakeInputs ./dinge-info.nix)
     (withFlakeInputs ./matrix-synapse.nix)
-    (withFlakeInputs ./mautrix-telegram)
-    #(withFlakeInputs ./matrix-edi.nix)  # replaced by newer bot
+    #(withFlakeInputs ./mautrix-telegram) # moved to revreso
+    #(withFlakeInputs ./matrix-edi.nix)   # replaced by newer bot
     (withFlakeInputs ./webmumble.nix)
     (withFlakeInputs ./letsmeet)
   ];

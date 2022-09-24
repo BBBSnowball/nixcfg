@@ -71,7 +71,9 @@ let
 in {
   users.users."${name}" = {
     isSystemUser = true;
+    group = name;
   };
+  users.groups."${name}" = {};
 
   systemd.services."${name}" = {
     after = ["network.target" "matrix-synapse.service"];
