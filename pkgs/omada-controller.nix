@@ -2,11 +2,11 @@
 { stdenv, fetchzip, openjdk, mongodb }:
 stdenv.mkDerivation {
   pname = "omada-controller";
-  version = "5.4.6";
+  version = "5.5.6";
 
   src = fetchzip {
-    url = "https://static.tp-link.com/upload/software/2022/202207/20220729/Omada_SDN_Controller_v5.4.6_Linux_x64.tar.gz";
-    hash = "sha256-PR+IFO0mnVZoVOZ+qt2Ro6VozDCoXH/3TmNx98+/7rQ=";
+    url = "https://static.tp-link.com/upload/software/2022/202208/20220822/Omada_SDN_Controller_v5.5.6_Linux_x64.tar.gz";
+    hash = "sha256-HCVPSSv01xo3wM23tGpc/bLbDRy/lG9K+8c/MbAavj4=";
   };
 
   buildInputs = [ openjdk mongodb ];
