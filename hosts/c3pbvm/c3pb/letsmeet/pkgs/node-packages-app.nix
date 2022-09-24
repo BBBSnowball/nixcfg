@@ -6984,7 +6984,7 @@ let
       packageName = "http-node";
       version = "1.2.0";
       src = fetchgit {
-        url = "git://github.com/feross/http-node";
+        url = "https://github.com/feross/http-node";
         rev = "342ef8624495343ffd050bd0808b3750cf0e3974";
         sha256 = "d7408d01b05fcbd5bb4fb44fd3d7d71463bafd5124d7e69c6f3e97cef8c65368";
       };
