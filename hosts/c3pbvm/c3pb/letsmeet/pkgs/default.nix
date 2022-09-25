@@ -1,6 +1,6 @@
 {pkgs ? import <nixpkgs> {
     inherit system;
-  }, system ? builtins.currentSystem, nodejs ? pkgs."nodejs-14_x"}:
+  }, system ? builtins.currentSystem, nodejs ? pkgs."nodejs-16_x"}:
 
 let
   nodeEnv = pkgs.callPackage ./node-env.nix {
@@ -8,13 +8,12 @@ let
     inherit nodejs;
     libtool = if pkgs.stdenv.isDarwin then pkgs.darwin.cctools else null;
   };
-  version = "3.4";
+  version = "3.5.3";
   edumeetSrc = pkgs.fetchFromGitHub {
     owner = "edumeet";
     repo  = "edumeet";
-    # This isn't tagged 3.4 (probably not released, yet) but the commit message says "3.4".
-    rev = "a83a27b72c4a812f5e008320f927f56092978b5b";
-    sha256 = "1wm05wqmhymz5wslb2xqdk2v4s0hwr95bqlyymypxhihsmf82b70";
+    rev = "3.5.3";  # 5de2d1bf99456497ff8c33e7d024cd7ad9f33946
+    sha256 = "sha256-m1mlBccAoTLFRFBVguY8D0rb0DGfQmhy3B+LCWi8xLE=";
   };
   nodePackages = pkgs.nodePackages.override { inherit nodejs; };
   nodeEnvWithGyp = nodeEnv // {
