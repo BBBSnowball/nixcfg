@@ -31,5 +31,9 @@ in
   server = pkgs.callPackage ./node-packages-server.nix {
     nodeEnv = nodeEnvWithGyp;
     inherit edumeetSrc;
+    globalBuildInputs = with pkgs; [
+      (python3.withPackages (p: [ p.pip p.setuptools p.meson ]))
+      #meson ninja
+    ];
   };
 }
