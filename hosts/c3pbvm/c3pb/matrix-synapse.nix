@@ -35,7 +35,8 @@ in {
       url_preview_enabled = true;
 
       dataDir = lib.mkIf (!isTestInstance) "/var/data/matrix-synapse";
-      database_type = "sqlite3";
+      #database_type = "sqlite3";
+      database_type = "psycopg2";
 
       server_name = "${domainTestPrefix}${domain}";
       public_baseurl = "https://${config.services.matrix-synapse.server_name}/";
@@ -83,5 +84,33 @@ in {
     };
 
     systemd.services.matrix-synapse.restartTriggers = with config.services.matrix-synapse; extraConfigFiles ++ app_service_config_files;
+
+    #NOTE This should keep it from being started but it doesn't.
+    #systemd.services.matrix-synapse.wantedBy = lib.mkForce [];
+
+    # Convert from sqlite to postgres:
+    # 1. enable postgres in the config
+    # 2. deploy it - ideally without trying to start the server
+    # 3. get path of homeserver.yaml from `systemctl cat matrix-synapse`
+    # 4. convert:
+    #    su matrix-synapse -c 'synapse_port_db --sqlite-database /var/data/matrix-synapse/homeserver.db --postgres-config /nix/store/ilws5b4l7hxnj1fi17fp50rvggv71mk6-homeserver.yaml --curses'
+
+    services.postgresql = {
+      enable = true;
+      enableTCPIP = false;
+      initialScript = pkgs.writeText "synapse-init.sql" ''
+        CREATE ROLE "matrix-synapse" WITH LOGIN PASSWORD NULL;
+        CREATE DATABASE "matrix-synapse" WITH OWNER "matrix-synapse"
+          TEMPLATE template0
+          LC_COLLATE = "C"
+          LC_CTYPE = "C"
+          ENCODING = "UTF8";
+      '';
+    };
+
+    fileSystems."/var/lib/postgresql" = {
+      device = "/var/data/postgresql";
+      options = [ "bind" ];
+    };
   };
 }
