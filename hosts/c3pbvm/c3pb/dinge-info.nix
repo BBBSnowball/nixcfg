@@ -5,9 +5,9 @@ let
     rev = "f230b875d70eafe8318f249059dda87f348884f6";
     sha256 = "0higbr624n2hshgp7h33dgm51w6ml556jfna4m0rq0hm7zlscqd1";
   };
+  nodejs = pkgs."nodejs-14_x";
   nodeDeps = (import ./dinge-info-dependencies {
-    inherit pkgs;
-    inherit (pkgs) nodejs;
+    inherit pkgs nodejs;
     inherit (config) system;
   }).send;
 in {
@@ -25,7 +25,7 @@ in {
     environment.NODE_PATH = "${nodeDeps}/lib/node_modules";
     serviceConfig = {
       Type = "simple";
-      ExecStart = "${pkgs.nodejs}/bin/node dinge.js";
+      ExecStart = "${nodejs}/bin/node dinge.js";
       WorkingDirectory = "${dingeSrc}";
       User = "dinge";
       Restart = "always";

@@ -30,20 +30,20 @@ in {
     services.matrix-synapse = {
       enable = true;
 
-      allow_guest_access  = false;
-      enable_registration = false;
-      url_preview_enabled = true;
+      settings.allow_guest_access  = false;
+      settings.enable_registration = false;
+      settings.url_preview_enabled = true;
 
       dataDir = lib.mkIf (!isTestInstance) "/var/data/matrix-synapse";
-      #database_type = "sqlite3";
-      database_type = "psycopg2";
+      #settings.database_type = "sqlite3";
+      settings.database_type = "psycopg2";
 
-      server_name = "${domainTestPrefix}${domain}";
-      public_baseurl = "https://${config.services.matrix-synapse.server_name}/";
+      settings.server_name = "${domainTestPrefix}${domain}";
+      settings.public_baseurl = "https://${config.services.matrix-synapse.settings.server_name}/";
       localPort = 8008+portOffset;
-      listeners = [
+      settings.listeners = [
         {
-          bind_address = "";
+          bind_addresses = [ "::" "0.0.0.0" ];
           port = 8008+portOffset;
           tls = false;
           type = "http";
@@ -59,23 +59,27 @@ in {
             }
           ];
         }
-        { bind_address = "127.0.0.1"; port = 9000+portOffset; type = "manhole"; resources = []; }
+        { bind_addresses = [ "127.0.0.1" ]; port = 9000+portOffset; type = "manhole"; resources = []; }
       ];
-      no_tls = true;
+      settings.no_tls = true;
 
 
-      extraConfig = ''
-        use_presence: true
-        enable_group_creation: true
-        group_creation_prefix: "unofficial/"
-        acme:
-          enabled: false
-      '';
+      #extraConfig = ''
+      #  use_presence: true
+      #  enable_group_creation: true
+      #  group_creation_prefix: "unofficial/"
+      #  acme:
+      #    enabled: false
+      #'';
+      settings.use_presence = true;
+      settings.enable_group_creation = true;
+      settings.group_creation_prefix = "unofficial/";
+      settings.acme.enabled = false;
       extraConfigFiles = [
         "/etc/nixos/secret/matrix-synapse/homeserver-secret.yaml"
         "/etc/nixos/secret/matrix-synapse/oidc-config.yaml"
       ];
-      app_service_config_files = [
+      settings.app_service_config_files = [
         #"/etc/matrix-synapse/matrix_irc_hackint.yaml"
         (if isTestInstance
           then "/etc/nixos/secret/matrix-synapse/mautrix-telegram-test.yaml"
@@ -83,7 +87,7 @@ in {
       ];
     };
 
-    systemd.services.matrix-synapse.restartTriggers = with config.services.matrix-synapse; extraConfigFiles ++ app_service_config_files;
+    systemd.services.matrix-synapse.restartTriggers = with config.services.matrix-synapse; extraConfigFiles ++ settings.app_service_config_files;
 
     #NOTE This should keep it from being started but it doesn't.
     #systemd.services.matrix-synapse.wantedBy = lib.mkForce [];

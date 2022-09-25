@@ -9,7 +9,7 @@ in {
   networking.firewall.allowedTCPPorts = [ 8030 ];
   networking.firewall.allowedUDPPortRanges = [ { from = 40000; to = 40999; } ];
 
-  services.redis = {
+  services.redis.servers."" = {
     enable = true;
     bind = "127.0.0.1";
     port = 0;

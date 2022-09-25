@@ -9,7 +9,7 @@ let
   webclientConfig = pkgs.writeText "riot-config.json" (lib.generators.toJSON {} {
     default_server_config."m.homeserver" = {
       base_url    = config.services.matrix-synapse.public_baseurl;
-      server_name = config.services.matrix-synapse.server_name;
+      server_name = config.services.matrix-synapse.settings.server_name;
     };
   });
   webclientWithConfig = pkgs.runCommand "riot" {} ''
@@ -27,8 +27,8 @@ in {
 
       database_type = "sqlite3";
 
-      server_name = "matrix-dev";
-      public_baseurl = "http://${config.services.matrix-synapse.server_name}:${toString port}/";
+      settings.server_name = "matrix-dev";
+      public_baseurl = "http://${config.services.matrix-synapse.settings.server_name}:${toString port}/";
       listeners = [
         {
           bind_address = "";

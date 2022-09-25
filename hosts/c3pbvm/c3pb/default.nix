@@ -8,7 +8,7 @@
     #(withFlakeInputs ./mautrix-telegram) # moved to revreso
     #(withFlakeInputs ./matrix-edi.nix)   # replaced by newer bot
     (withFlakeInputs ./webmumble.nix)
-    (withFlakeInputs ./letsmeet)
+    #(withFlakeInputs ./letsmeet)  #FIXME!!
   ];
 
   services.matrix-synapse.isTestInstance = false;
