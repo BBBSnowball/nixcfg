@@ -3,8 +3,8 @@
   }, system ? builtins.currentSystem, nodejs ? pkgs."nodejs-14_x"}:
 
 let
-  nodeEnv = import ./node-env.nix {
-    inherit (pkgs) stdenv python2 utillinux runCommand writeTextFile lib;
+  nodeEnv = pkgs.callPackage ./node-env.nix {
+    #inherit nodejs pkgs;
     inherit nodejs;
     libtool = if pkgs.stdenv.isDarwin then pkgs.darwin.cctools else null;
   };
@@ -25,13 +25,11 @@ in
 {
   src = edumeetSrc;
   inherit version nodejs;
-  app = import ./node-packages-app.nix {
-    inherit (pkgs) fetchurl fetchgit;
+  app = pkgs.callPackage ./node-packages-app.nix {
     inherit nodeEnv;
     inherit edumeetSrc;
   };
-  server = import ./node-packages-server.nix {
-    inherit (pkgs) fetchurl fetchgit runCommand;
+  server = pkgs.callPackage ./node-packages-server.nix {
     nodeEnv = nodeEnvWithGyp;
     inherit edumeetSrc;
   };
