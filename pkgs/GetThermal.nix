@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, libusb1, cmake, pkg-config, ignoreLibuvcMismatch ? false
+{ lib, stdenv, fetchFromGitHub, libusb1, cmake, pkg-config
 , qmake, qtbase, qtquickcontrols2, qtmultimedia, wrapQtAppsHook }:
 let
   libuvc = stdenv.mkDerivation {
@@ -33,8 +33,6 @@ in
 
     passthru.libuvc = libuvc;
 
-    #buildInputs = with libsForQt5; [ libuvc libusb1 qtbase qtquickcontrols2 qtmultimedia ];
-    #nativeBuildInputs = with libsForQt5; [ pkg-config qmake qtbase wrapQtAppsHook ];
     nativeBuildInputs = [ pkg-config qmake qtbase wrapQtAppsHook ];
     buildInputs = [ libuvc libusb1 qtquickcontrols2 qtmultimedia ];
 
@@ -44,11 +42,6 @@ in
       cd build
       qmakeFlags+=(../GetThermal.pro)
     '';
-
-    # I would like to check that libuvc.src.rev is equal to what GetThermal has in its repo but we don't have this information here.
-    #postPatch = lib.optionalString ignoreLibuvcMismatch ''
-    #  TODO
-    #'';
 
     installPhase = ''
       mkdir $out/bin -p
