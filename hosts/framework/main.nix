@@ -93,6 +93,7 @@ in
     swaylock
     wdisplays
     brightnessctl  # uses logind so doesn't need root
+    sway-contrib.grimshot
   ];
   environment.etc."sway/config".source = ./sway-config;
   environment.etc."alacritty.yml".source = ./alacritty.yml;
