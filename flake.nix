@@ -1,4 +1,5 @@
 # nix build . -L -o nix-deck && tar -cf nix-deck.tar nix-deck/* && rsync nix-deck.tar deck2: && ssh -t deck2 "sudo tar -xf ~deck/nix-deck.tar -C ~root && sudo portablectl attach ~root/nix-deck/nix -p trusted --enable && sudo systemctl start nix-deck.service"
+# ssh deck2 nix-shell -p nix-info --run nix-info  # This needs download and local build to work so it is a good test.
 # (We are not using `--now` for portablectl because that seems to start all services.)
 # If you want to use it in existing shells, run this in each shell:
 #   . ~/.nix-profile/etc/profile.d/nix.sh
@@ -12,8 +13,7 @@
 # Uninstall:
 #   systemctl disable --now nix-deck.service
 #   portablectl detach ~root/nix-deck/nix*
-#   rm /opt/nix /etc/nix /etc/systemd/system/nix.mount ~root/nix-deck {~root,~deck}/{.nix-channels,.nix-defexpr,.nix-profile} -rf
-#   remove nix.sh from your shell profile for users root and deck
+#   rm /opt/nix /etc/nix /etc/systemd/system/nix.mount /etc/profile.d/nix.sh ~root/nix-deck {~root,~deck}/{.nix-channels,.nix-defexpr,.nix-profile} -rf
 #
 #FIXME It would be nice if all/most of the files in the host point to /opt/nix/var/nix/profiles/nix-deck/... so we have a good way to update them. We don't have any suitable derivation in the portable service's Nix store yet and we cannot reattach the portable service to the new location from within the service (or while the service is running). We could have a nearly identical copy in the Nix store and then use a temporary service to do the reattaching (in /nix/store because that will be available without the portable service).
 #FIXME Split this file. Make our own fork of nixpkgs' portableServices with support for extraCommands and different output formats rather than monkey-patching.
@@ -87,6 +87,16 @@
               cp -dRLT /etc/nix /real-root/etc/nix
             fi
 
+            # Add profile script to shell profile.
+            if [ ! -e /real-root/etc/profile.d/nix.sh ] ; then
+              #FIXME This should also be a symlink.
+              cat >/real-root/etc/profile.d/nix.sh <<"EOF"
+              # added by nix-deck portable service
+              export NIX_REMOTE=daemon
+              if [ -r "$HOME/.nix-profile/etc/profile.d/nix.sh" ]; then . "$HOME/.nix-profile/etc/profile.d/nix.sh"; fi
+              EOF
+            fi
+
             # Trick 1: A mount in the service would only be visible to us but we can tell systemd to do the mount for us.
             cat >/real-root/opt/nix/nix.mount <<"EOF"
             [Unit]
@@ -136,58 +146,6 @@
           after = [ "nix-prepare.service" "nix-daemon.socket" ];
           wantedBy = [ "multi-user.target" ];
 
-          environment.ADD_NIX_TO_PROFILE = pkgs.writeShellScript "add-nix-to-profile" ''
-            # copied from: https://github.com/NixOS/nix/blob/88a45d6149c0e304f6eb2efcc2d7a4d0d569f8af/scripts/install-nix-from-closure.sh#L213
-            # (which some changes: add NIX_REMOTE, change comment, escape for use in Nix' double-single-quotes)
-            #NOTE There is no way to set NIX_INSTALLER_NO_MODIFY_PROFILE here. However, the script will only look for the name of
-            #     the profile script so you can move the line or comment it out and will not be added again.
-
-            p_sh=$HOME/.nix-profile/etc/profile.d/nix.sh
-            p_fish=$HOME/.nix-profile/etc/profile.d/nix.fish
-            if [ -z "$NIX_INSTALLER_NO_MODIFY_PROFILE" ]; then
-                # Make the shell source nix.sh during login.
-                for i in .bash_profile .bash_login .profile; do
-                    fn="$HOME/$i"
-                    if [ -w "$fn" ]; then
-                        if ! grep -q "$p_sh" "$fn"; then
-                            echo "modifying $fn..." >&2
-                            printf '\nif [ -e %s ]; then . %s; export NIX_REMOTE=daemon; fi # added by nix-deck\n' "$p_sh" "$p_sh" >> "$fn"
-                        fi
-                        added=1
-                        p=''${p_sh}
-                        break
-                    fi
-                done
-                for i in .zshenv .zshrc; do
-                    fn="$HOME/$i"
-                    if [ -w "$fn" ]; then
-                        if ! grep -q "$p_sh" "$fn"; then
-                            echo "modifying $fn..." >&2
-                            printf '\nif [ -e %s ]; then . %s; export NIX_REMOTE=daemon; fi # added by nix-deck\n' "$p_sh" "$p_sh" >> "$fn"
-                        fi
-                        added=1
-                        p=''${p_sh}
-                        break
-                    fi
-                done
-            
-                if [ -d "$HOME/.config/fish" ]; then
-                    fishdir=$HOME/.config/fish/conf.d
-                    if [ ! -d "$fishdir" ]; then
-                        mkdir -p "$fishdir"
-                    fi
-            
-                    fn="$fishdir/nix.fish"
-                    echo "placing $fn..." >&2
-                    printf '\nif test -e %s; . %s; export NIX_REMOTE=daemon; end # added by nix-deck\n' "$p_fish" "$p_fish" > "$fn"
-                    added=1
-                    p=''${p_fish}
-                fi
-            else
-                p=''${p_sh}
-            fi
-          '';
-
           script = ''
             # This needs nix-daemon so we cannot do it in nix-prepare.service.
             set -x
@@ -202,11 +160,6 @@
             if [ ! -e ~deck/.nix-profile ] ; then
               chroot /real-root /usr/bin/su deck -c "$(which nix-env) -iA nixpkgs.nix"
             fi
-
-            # Add profile script to shell profile for users deck and root.
-            # (won't be used for root unless the user actually creates a profile for root)
-            chroot /real-root /usr/bin/su deck -c "$ADD_NIX_TO_PROFILE"
-            HOME=/root chroot /real-root "$ADD_NIX_TO_PROFILE"
           '';
         };
 
