@@ -22,14 +22,15 @@
           description = "Create and mount /nix on Steam Deck";
           serviceConfig.BindPaths = "/:/real-root";
           path = [ pkgs.which config.nix.package pkgs.nix-info ];
+          serviceConfig.Type = "oneshot";
           script = ''
             set -eo pipefail
-            set -x
+            #set -x
 
-            if [ -e /real-root/opt/nix/nix.mount -a -e /real-root/nix/nix.mount ] ; then
-              echo "/nix is already mounted"
-              exit 0
-            fi
+            #if [ -e /real-root/opt/nix/nix.mount -a -e /real-root/nix/nix.mount ] ; then
+            #  echo "/nix is already mounted"
+            #  exit 0
+            #fi
 
             # see https://github.com/NixOS/nix/blob/88a45d6149c0e304f6eb2efcc2d7a4d0d569f8af/scripts/install-multi-user.sh
             install -dv -m 0755 /real-root/opt/nix /real-root/opt/nix/var /real-root/opt/nix/var/log /real-root/opt/nix/var/log/nix /real-root/opt/nix/var/log/nix/drvs /real-root/opt/nix/var/nix{,/db,/gcroots,/profiles,/temproots,/userpool,/daemon-socket} /real-root/opt/nix/var/nix/{gcroots,profiles}/per-user
@@ -85,7 +86,7 @@
             EOF
             # I think this is ignored by systemd because the symlink is broken when it reads the files (because /opt isn't mounted at that time).
             #ln -sfT /opt/nix/nix.mount /real-root/etc/systemd/system/nix.mount
-            cp /opt/nix/nix.mount /real-root/etc/systemd/system/nix.mount
+            cp /real-root/opt/nix/nix.mount /real-root/etc/systemd/system/nix.mount
 
             # Trick 2: systemctl will refuse to work in chroot - unless that chroot is identical to the main root fs.
             chroot /real-root /usr/bin/systemctl daemon-reload
@@ -113,12 +114,19 @@
         systemd.services.nix-gc.after = [ "nix-prepare.service" ];
         systemd.services.nix-optimise.requires = [ "nix-prepare.service" ];
         systemd.services.nix-optimise.after = [ "nix-prepare.service" ];
+        systemd.services.nix-daemon.serviceConfig.BindPaths = [ "/nix" ];
         systemd.services.nix-gc.serviceConfig.BindPaths = [ "/nix" ];
         systemd.services.nix-optimise.serviceConfig.BindPaths = [ "/nix" ];
         # This is supposed to be set by the profile and it is - but it doesn't work.
         #systemd.services.nix-daemon.serviceConfig.BindReadOnlyPaths = [ "/etc/machine-id" "/etc/resolv.conf" ];
         # -> Adding it to r/w path works but that really isn't the correct solution...
-        systemd.services.nix-daemon.serviceConfig.BindPaths = [ "/nix" "/etc/machine-id" "/etc/resolv.conf" ];
+        #systemd.services.nix-daemon.serviceConfig.BindPaths = [ "/nix" "/etc/machine-id" "/etc/resolv.conf" ];
+        systemd.services.nix-daemon.serviceConfig.BindReadOnlyPaths = [ "/etc/resolv.conf:/etc/resolv.conf2" ];
+        systemd.services.nix-daemon.preStart = ''
+          umount /etc/resolv.conf || true
+          umount /etc/resolv.conf || true
+          cp /etc/resolv.conf2 /etc/resolv.conf
+        '';
       }) ];
     };
 
