@@ -126,6 +126,7 @@
           umount /etc/resolv.conf || true
           umount /etc/resolv.conf || true
           cp /etc/resolv.conf2 /etc/resolv.conf
+          ( ${pkgs.entr}/bin/entr -n <<<"/etc/resolv.conf2" cp /etc/resolv.conf2 /etc/resolv.conf & )
         '';
       }) ];
     };
