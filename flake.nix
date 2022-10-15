@@ -1,11 +1,14 @@
-# nix build . -L && tar -cf x result/nix_2.11.0 && rsync x deck2: && ssh deck2 sudo tar -xf ~user/x && sudo portablectl reattach ~root/result/nix_* -p trusted && sudo systemctl start nix-daemon.socket
+# nix build . -L && tar -cf x result/nix_2.11.0 && rsync x deck2: && ssh deck2 sudo tar -xf ~user/x && sudo portablectl reattach ~root/result/nix_* -p trusted && sudo systemctl start nix-prepare.service && sudo systemctl start nix-daemon.socket
+# Then, find nix-channel and nix-env in /nix/store, add a channel (probably as root), `nix-env -iA nixpkgs.nix` (as user), add this to .bashrc:
+#   . ~/.nix-profile/etc/profile.d/nix.sh
+# The root user tries to build without the daemon (which won't work) so you have to force it with NIX_REMOTE=daemon.
 {
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
   outputs = { self, nixpkgs }: {
     nixosConfigurations.deck = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
-      modules = [ ({ config, pkgs, ... }: {
+      modules = [ ({ config, pkgs, lib, ... }: {
         networking.hostName = "deck";
         documentation.man.enable = false;
         #systemd.package = pkgs.systemdMinimal;
@@ -66,7 +69,7 @@
             fi
 
             # Trick 1: A mount in the service would only be visible to us but we can tell systemd to do the mount for us.
-            cat >>/real-root/opt/nix/nix.mount <<"EOF"
+            cat >/real-root/opt/nix/nix.mount <<"EOF"
             [Unit]
             Description=Nix Store
             Before=nix-daemon.service nix-gc.service nix-optimise.service
@@ -76,8 +79,13 @@
             What=/opt/nix
             Type=none
             Options=bind
+
+            #[Install]
+            #WantedBy=local-fs.target
             EOF
-            ln -sfT /opt/nix/nix.mount /real-root/etc/systemd/system/nix.mount
+            # I think this is ignored by systemd because the symlink is broken when it reads the files (because /opt isn't mounted at that time).
+            #ln -sfT /opt/nix/nix.mount /real-root/etc/systemd/system/nix.mount
+            cp /opt/nix/nix.mount /real-root/etc/systemd/system/nix.mount
 
             # Trick 2: systemctl will refuse to work in chroot - unless that chroot is identical to the main root fs.
             chroot /real-root /usr/bin/systemctl daemon-reload
@@ -94,8 +102,13 @@
           script = ''sleep inf 123'';
         };
 
+        systemd.sockets.nix-daemon.requires = [ "nix-prepare.service" ];
+        #systemd.sockets.nix-daemon.after = [ "nix-prepare.service" "nix.mount" ];
+        systemd.sockets.nix-daemon.wants = [ "nix.mount" ];
         systemd.services.nix-daemon.requires = [ "nix-prepare.service" ];
-        systemd.services.nix-daemon.after = [ "nix-prepare.service" ];
+        systemd.services.nix-daemon.after = [ "nix-prepare.service" "nix.mount" ];
+        systemd.services.nix-daemon.wants = [ "nix.mount" ];
+        systemd.services.nix-daemon.unitConfig.RequiresMountsFor = lib.mkForce [ "/nix" "/nix/store" ];
         systemd.services.nix-gc.requires = [ "nix-prepare.service" ];
         systemd.services.nix-gc.after = [ "nix-prepare.service" ];
         systemd.services.nix-optimise.requires = [ "nix-prepare.service" ];
