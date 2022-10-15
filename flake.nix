@@ -1,7 +1,22 @@
-# nix build . -L && tar -cf x result/nix_2.11.0 && rsync x deck2: && ssh deck2 sudo tar -xf ~user/x && sudo portablectl reattach ~root/result/nix_* -p trusted && sudo systemctl start nix-prepare.service && sudo systemctl start nix-daemon.socket
-# Then, find nix-channel and nix-env in /nix/store, add a channel (probably as root), `nix-env -iA nixpkgs.nix` (as user), add this to .bashrc:
+# nix build . -L -o nix-deck && tar -cf nix-deck.tar nix-deck/* && rsync nix-deck.tar deck2: && ssh -t deck2 "sudo tar -xf ~deck/nix-deck.tar -C ~root && sudo portablectl attach ~root/nix-deck/nix -p trusted --enable && sudo systemctl start nix-deck.service"
+# (We are not using `--now` for portablectl because that seems to start all services.)
+# If you want to use it in existing shells, run this in each shell:
 #   . ~/.nix-profile/etc/profile.d/nix.sh
-# The root user tries to build without the daemon (which won't work) so you have to force it with NIX_REMOTE=daemon.
+# The root user tries to build without the daemon (which won't work) so we have to force it with NIX_REMOTE=daemon.
+#
+# also useful:
+# - set a password with passwd to use sudo
+# - systemctl enable --now sshd
+# - systemd-inhibit --who=me --why=because_I_say_so --mode=block sleep inf
+#
+# Uninstall:
+#   systemctl disable --now nix-deck.service
+#   portablectl detach ~root/nix-deck/nix*
+#   rm /opt/nix /etc/nix /etc/systemd/system/nix.mount ~root/nix-deck {~root,~deck}/{.nix-channels,.nix-defexpr,.nix-profile} -rf
+#   remove nix.sh from your shell profile for users root and deck
+#
+#FIXME It would be nice if all/most of the files in the host point to /opt/nix/var/nix/profiles/nix-deck/... so we have a good way to update them. We don't have any suitable derivation in the portable service's Nix store yet and we cannot reattach the portable service to the new location from within the service (or while the service is running). We could have a nearly identical copy in the Nix store and then use a temporary service to do the reattaching (in /nix/store because that will be available without the portable service).
+#FIXME Split this file. Make our own fork of nixpkgs' portableServices with support for extraCommands and different output formats rather than monkey-patching.
 {
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
@@ -17,6 +32,12 @@
           #util-linux = super.util-linux.override { systemdSupport = false; systemd = null; };
         }) ];
         #nix.package = pkgs.pkgsStatic.nix.override { enableDocumentation = false; withAWS = false; };
+
+        # We want flakes!
+        #nix.package = pkgs.nixFlakes;
+        nix.extraOptions = ''
+          experimental-features = nix-command flakes
+        '';
 
         systemd.services.nix-prepare = {
           description = "Create and mount /nix on Steam Deck";
@@ -53,14 +74,11 @@
               fi
             done
 
-            if [ ! -e /real-root/opt/nix/var/nix/db/db.sqlite ] ; then
-              chroot /real-root $(which nix-store) --verify
-            fi
-
             # We need the group nixbld outside of our service, e.g. nix-channel needs it.
             #FIXME This will replace /etc/group with a file in the overlay, i.e. we will miss future changes in the base image!
             #      -> Try to use a dynamic user+group.
-            chroot /real-root /usr/bin/groupadd -g 30000 nixbld || true
+            #      -> Doesn't seem to be required if we force root to use the daemon (which we want to do anyway).
+            #chroot /real-root /usr/bin/groupadd -g 30000 nixbld || true
 
             #FIXME We would like to make a profile that points to the rootfs of the portable service in our nix store but that would
             #      be a circular dependency. Maybe we want a host config without the nix-prepare service and then use that..?
@@ -92,6 +110,11 @@
             chroot /real-root /usr/bin/systemctl daemon-reload
             chroot /real-root /usr/bin/systemctl start nix.mount
 
+            # This cannot work yet because /nix is not mounted in /real-root, yet - if we are on a fresh install. It isn't necessary anyway.
+            #if [ ! -e /real-root/opt/nix/var/nix/db/db.sqlite ] ; then
+            #  chroot /real-root $(which nix-store) --verify
+            #fi
+
             set +x
           '';
         };
@@ -100,11 +123,95 @@
           description = "Run `sleep inf` so the user can use attach with nsenter";
           serviceConfig.BindPaths = "/:/real-root";
           inherit (config.systemd.services.nix-prepare) path;
-          script = ''sleep inf 123'';
+          script = ''sleep inf'';
+        };
+
+        systemd.services.nix-deck = {
+          description = "Initial setup for Nix on Steam Deck";
+          serviceConfig.BindPaths = [ "/:/real-root" "/tmp" "/nix" ];
+          path = [ pkgs.which config.nix.package pkgs.nix-info ];
+          serviceConfig.Type = "oneshot";
+          requires = [ "nix-daemon.service" ];  #FIXME Can we make it work with the socket? This has caused circular dependencies before so maybe not.
+          #requires = [ "nix-prepare.service" "nix-daemon.socket" ];
+          after = [ "nix-prepare.service" "nix-daemon.socket" ];
+          wantedBy = [ "multi-user.target" ];
+
+          environment.ADD_NIX_TO_PROFILE = pkgs.writeShellScript "add-nix-to-profile" ''
+            # copied from: https://github.com/NixOS/nix/blob/88a45d6149c0e304f6eb2efcc2d7a4d0d569f8af/scripts/install-nix-from-closure.sh#L213
+            # (which some changes: add NIX_REMOTE, change comment, escape for use in Nix' double-single-quotes)
+            #NOTE There is no way to set NIX_INSTALLER_NO_MODIFY_PROFILE here. However, the script will only look for the name of
+            #     the profile script so you can move the line or comment it out and will not be added again.
+
+            p_sh=$HOME/.nix-profile/etc/profile.d/nix.sh
+            p_fish=$HOME/.nix-profile/etc/profile.d/nix.fish
+            if [ -z "$NIX_INSTALLER_NO_MODIFY_PROFILE" ]; then
+                # Make the shell source nix.sh during login.
+                for i in .bash_profile .bash_login .profile; do
+                    fn="$HOME/$i"
+                    if [ -w "$fn" ]; then
+                        if ! grep -q "$p_sh" "$fn"; then
+                            echo "modifying $fn..." >&2
+                            printf '\nif [ -e %s ]; then . %s; export NIX_REMOTE=daemon; fi # added by nix-deck\n' "$p_sh" "$p_sh" >> "$fn"
+                        fi
+                        added=1
+                        p=''${p_sh}
+                        break
+                    fi
+                done
+                for i in .zshenv .zshrc; do
+                    fn="$HOME/$i"
+                    if [ -w "$fn" ]; then
+                        if ! grep -q "$p_sh" "$fn"; then
+                            echo "modifying $fn..." >&2
+                            printf '\nif [ -e %s ]; then . %s; export NIX_REMOTE=daemon; fi # added by nix-deck\n' "$p_sh" "$p_sh" >> "$fn"
+                        fi
+                        added=1
+                        p=''${p_sh}
+                        break
+                    fi
+                done
+            
+                if [ -d "$HOME/.config/fish" ]; then
+                    fishdir=$HOME/.config/fish/conf.d
+                    if [ ! -d "$fishdir" ]; then
+                        mkdir -p "$fishdir"
+                    fi
+            
+                    fn="$fishdir/nix.fish"
+                    echo "placing $fn..." >&2
+                    printf '\nif test -e %s; . %s; export NIX_REMOTE=daemon; end # added by nix-deck\n' "$p_fish" "$p_fish" > "$fn"
+                    added=1
+                    p=''${p_fish}
+                fi
+            else
+                p=''${p_sh}
+            fi
+          '';
+
+          script = ''
+            # This needs nix-daemon so we cannot do it in nix-prepare.service.
+            set -x
+
+            # Update channels for root.
+            if [ -e /real-root/root/.nix-channels -a ! -e /real-root/nix/var/nix/profiles/per-user/root/channels ] ; then
+              NIX_REMOTE=daemon chroot /real-root $(which nix-channel) --update \
+                || ( sleep 5 && NIX_REMOTE=daemon chroot /real-root $(which nix-channel) --update )
+            fi
+
+            # Create a profile for the user deck.
+            if [ ! -e ~deck/.nix-profile ] ; then
+              chroot /real-root /usr/bin/su deck -c "$(which nix-env) -iA nixpkgs.nix"
+            fi
+
+            # Add profile script to shell profile for users deck and root.
+            # (won't be used for root unless the user actually creates a profile for root)
+            chroot /real-root /usr/bin/su deck -c "$ADD_NIX_TO_PROFILE"
+            HOME=/root chroot /real-root "$ADD_NIX_TO_PROFILE"
+          '';
         };
 
         systemd.sockets.nix-daemon.requires = [ "nix-prepare.service" ];
-        #systemd.sockets.nix-daemon.after = [ "nix-prepare.service" "nix.mount" ];
+        systemd.sockets.nix-daemon.after = [ "nix-prepare.service" "nix.mount" ];
         systemd.sockets.nix-daemon.wants = [ "nix.mount" ];
         systemd.services.nix-daemon.requires = [ "nix-prepare.service" ];
         systemd.services.nix-daemon.after = [ "nix-prepare.service" "nix.mount" ];
@@ -114,7 +221,8 @@
         systemd.services.nix-gc.after = [ "nix-prepare.service" ];
         systemd.services.nix-optimise.requires = [ "nix-prepare.service" ];
         systemd.services.nix-optimise.after = [ "nix-prepare.service" ];
-        systemd.services.nix-daemon.serviceConfig.BindPaths = [ "/nix" ];
+        # nix-channels seems to get its reply in /tmp in some cases, e.g. when called from nix-deck.service.
+        systemd.services.nix-daemon.serviceConfig.BindPaths = [ "/nix" "/tmp" ];
         systemd.services.nix-gc.serviceConfig.BindPaths = [ "/nix" ];
         systemd.services.nix-optimise.serviceConfig.BindPaths = [ "/nix" ];
         # This is supposed to be set by the profile and it is - but it doesn't work.
@@ -128,6 +236,10 @@
           cp /etc/resolv.conf2 /etc/resolv.conf
           ( ${pkgs.entr}/bin/entr -n <<<"/etc/resolv.conf2" cp /etc/resolv.conf2 /etc/resolv.conf & )
         '';
+
+        # don't enable nix-daemon by default because we enable our nix-deck service instead
+        systemd.sockets.nix-daemon.wantedBy = lib.mkForce [];
+        systemd.services.nix-daemon.wantedBy = lib.mkForce [];
       }) ];
     };
 
@@ -146,6 +258,26 @@
         for x in /etc/ssl /etc/nix ; do
           cp -dRTL ${etc}$x $out$x
         done
+
+        # NixOS doesn't populate the [Install] section and creates bla.target.wants symlinks instead.
+        # This is good for stateless configuration but not useful for our portable service.
+        #
+        # First, remove existing [Install] sections that might be present for units that have been
+        # copied from a package rather than generated by NixOS.
+        grep -lri '\[Install\]' $out/etc/systemd/system/ | while read x ; do
+          sed -bi '/^\[Install\]/,/^\[/ { /^\[Install\]/ d; /^[^\[]/ d }' "$x"
+        done
+
+        # Now, find relevant symlinks and add [Install] info for them.
+        for x in ${etc}/etc/systemd/system/*.wants/"${name}"* ; do
+          unit="''${x##*/}"
+          x2="''${x%.wants/*}"
+          target="''${x2##*/}"
+          chmod +w $out/etc/systemd/system/"$unit"
+          echo '[Install]' >>$out/etc/systemd/system/"$unit"
+          echo "# from $x" >>$out/etc/systemd/system/"$unit"
+          echo "WantedBy=$target" >>$out/etc/systemd/system/"$unit"
+        done
       '';
       portableServiceAsDir = pname: etc: drv: pkgs.stdenv.mkDerivation rec {
         inherit pname;
@@ -157,15 +289,17 @@
         rootFsScaffold = (drv.closureInfo.overrideAttrs (x: { passthru.rootFsScaffold = builtins.elemAt x.exportReferencesGraph.closure 0; })).rootFsScaffold;
 
         buildCommand = ''
-          mkdir -p "$out/${pname}_${version}"
-          cd "$out/${pname}_${version}"
+          #mkdir -p "$out/${pname}_${version}"
+          #cd "$out/${pname}_${version}"
+          mkdir -p "$out/${pname}"
+          cd "$out/${pname}"
           mkdir -p nix/store
           for i in $(< $closureInfo/store-paths); do
             cp -a "$i" "''${i:1}"
           done
           cp -r $rootFsScaffold/* .
 
-          mkdir $out/real-root
+          mkdir ./real-root
 
           #FIXME do this in a way that also works for the squashfs version!
           #mkdir -p ./etc/systemd/system
@@ -207,8 +341,11 @@
           { object = "${filterEtc etc "nix"}/etc/systemd"; symlink = "/etc/systemd2"; }
           { object = "${filterEtc etc "nix"}/etc/ssl"; symlink = "/etc/ssl"; }
           { object = "${filterEtc etc "nix"}/etc/nix"; symlink = "/etc/nix"; }
+          #NOTE This should have an entry for all users that are expected to use nix. Otherwise, their profile directory
+          #     will be named with the uid rather than the user name. I'm not sure whether this has any non-cosmetic consequences.
           { symlink = "/etc/passwd"; object = pkgs.writeText "passwd" ''
             root:x:0:0:System administrator:/root:/run/current-system/sw/bin/bash
+            deck:x:1000:1000:Steam Deck User:/home/deck:/bin/bash
             nixbld1:x:30001:30000:Nix build user 1:/var/empty:/run/current-system/sw/bin/nologin
             nixbld2:x:30002:30000:Nix build user 2:/var/empty:/run/current-system/sw/bin/nologin
             nixbld3:x:30003:30000:Nix build user 3:/var/empty:/run/current-system/sw/bin/nologin
