@@ -14,7 +14,7 @@ let
     overridePortableServiceNixOS = f: import ./portable-service-nixos.nix args1 (f args2);
   };
 
-  pname = args2.pname or nixosConfiguration.config.networking.hostName;
+  pname = args2.pname or nixosConfiguration.config.system.name;
   etc = nixosConfiguration.config.system.build.etc;
 
   etcForService = pkgs.runCommand "${pname}-etc" { inherit pname etc; } ''
@@ -67,8 +67,6 @@ let
       fi
     done
   '';
-
-  #FIXME add these files from the host derivation to the generated derivation via extraInstallCommands: configuration-name? nixos-version system
 in
   withOverrides (portableService ((builtins.removeAttrs args2 [ "nixosConfiguration" "keepEtcNames" ]) // {
     inherit pname;
@@ -76,6 +74,14 @@ in
 
     # portableService requires a value for units but we usually handle this in makeContents, i.e. an empty list is fine.
     units = args2.units or [];
+
+    extraInstallCommands = ''
+      # add some info about the host config, similar to what nixpkgs would do for the toplevel
+      # https://github.com/NixOS/nixpkgs/blob/45b92369d6fafcf9e462789e98fbc735f23b5f64/nixos/modules/system/activation/top-level.nix#L75
+      echo -n "${nixosConfiguration.config.boot.loader.grub.configurationName}" > $out/configuration-name
+      echo -n "${nixosConfiguration.config.system.nixos.label}" > $out/nixos-version
+      echo -n "${nixosConfiguration.config.boot.kernelPackages.stdenv.hostPlatform.system}" > $out/system
+    '';
 
     passthru = {
       inherit etc nixosConfiguration etcForService;
