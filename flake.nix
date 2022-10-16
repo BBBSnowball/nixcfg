@@ -1,8 +1,8 @@
-# nix build . -L -o nix-deck && tar -cf nix-deck.tar nix-deck/* && rsync nix-deck.tar deck2: && ssh -t deck2 "sudo tar -xf ~deck/nix-deck.tar -C ~root && sudo portablectl attach ~root/nix-deck/nix -p trusted --enable && sudo systemctl start nix-deck.service"
+# nix build . -L -o nix-deck && tar -cf nix-deck.tar nix-deck/* && rsync nix-deck.tar deck2: && ssh -t deck2 "sudo tar -xf ~deck/nix-deck.tar -C ~root && sudo portablectl attach ~root/nix-deck/nix -p trusted && sudo systemctl enable --now nix-deck.service"
 # ssh deck2 nix-shell -p nix-info --run nix-info  # This needs download and local build to work so it is a good test.
 # (We are not using `--now` for portablectl because that seems to start all services.)
 # If you want to use it in existing shells, run this in each shell:
-#   . ~/.nix-profile/etc/profile.d/nix.sh
+#   . /etc/profile.d/nix.sh
 # The root user tries to build without the daemon (which won't work) so we have to force it with NIX_REMOTE=daemon.
 #
 # also useful:
@@ -12,11 +12,10 @@
 #
 # Uninstall:
 #   systemctl disable --now nix-deck.service
-#   portablectl detach ~root/nix-deck/nix*
+#   portablectl detach nix
 #   rm /opt/nix /etc/nix /etc/systemd/system/nix.mount /etc/profile.d/nix.sh ~root/nix-deck {~root,~deck}/{.nix-channels,.nix-defexpr,.nix-profile} -rf
 #
 #FIXME It would be nice if all/most of the files in the host point to /opt/nix/var/nix/profiles/nix-deck/... so we have a good way to update them. We don't have any suitable derivation in the portable service's Nix store yet and we cannot reattach the portable service to the new location from within the service (or while the service is running). We could have a nearly identical copy in the Nix store and then use a temporary service to do the reattaching (in /nix/store because that will be available without the portable service).
-#FIXME Split this file. Make our own fork of nixpkgs' portableServices with support for extraCommands and different output formats rather than monkey-patching.
 {
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
@@ -82,13 +81,23 @@
         # same error if we do `touch /tmp/a; mount --bind /etc/resolv.conf /tmp/a`. Therefore, we mount it to a
         # different path and then copy it over.
         #FIXME This requires that the portable service is writable, which we would like to avoid if possible.
-        #FIXME Terminate entr when the service terminates.
         systemd.services.nix-daemon.serviceConfig.BindReadOnlyPaths = [ "/etc/resolv.conf:/etc/resolv.conf2" ];
         systemd.services.nix-daemon.preStart = ''
           umount /etc/resolv.conf || true
           umount /etc/resolv.conf || true
           cp /etc/resolv.conf2 /etc/resolv.conf
+        '';
+        systemd.services.nix-daemon.postStart = ''
           ( ${pkgs.entr}/bin/entr -n <<<"/etc/resolv.conf2" cp /etc/resolv.conf2 /etc/resolv.conf & )
+        '';
+        systemd.services.nix-daemon.postStop = ''
+          for pid in $(${pkgs.procps}/bin/pgrep entr) ; do
+            if ${pkgs.diffutils}/bin/cmp /proc/$$/cgroup /proc/$pid/cgroup >/dev/null ; then
+              kill $pid
+            else
+              echo "ignoring entr process $pid that has a different cgroup"
+            fi
+          done
         '';
       })
       ({ lib, ... }: {

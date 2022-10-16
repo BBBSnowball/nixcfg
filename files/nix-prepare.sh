@@ -27,12 +27,6 @@ for src in /nix/store/* ; do
   fi
 done
 
-# We need the group nixbld outside of our service, e.g. nix-channel needs it.
-#FIXME This will replace /etc/group with a file in the overlay, i.e. we will miss future changes in the base image!
-#      -> Try to use a dynamic user+group.
-#      -> Doesn't seem to be required if we force root to use the daemon (which we want to do anyway).
-#chroot /real-root /usr/bin/groupadd -g 30000 nixbld || true
-
 #FIXME We would like to make a profile that points to the rootfs of the portable service in our nix store but that would
 #      be a circular dependency. Maybe we want a host config without the nix-prepare service and then use that..?
 #chroot /real-root $(which nix-env) -p /nix/var/nix/profiles/nix-service --set ...
