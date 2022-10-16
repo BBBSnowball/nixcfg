@@ -2,7 +2,7 @@
 # with local changes
 
 
-{ pkgs, lib, stdenv }:
+{ pkgs, lib ? pkgs.lib, stdenv ? pkgs.stdenv }@args1:
 /*
   Create a systemd portable service image
   https://systemd.io/PORTABLE_SERVICES/
@@ -37,11 +37,26 @@
   # A list of additional derivations to be included in the image as-is.
 , contents ? [ ]
 
+  # A list of additional derivations to be copied into the root filesystem.
+, rootFsContents ? [ ]
+
+  # Extra commands to run in the generated service directory.
+, extraCommands ? ""
+
+  # Extra commands to run after packing the image.
+, extraInstallCommands ? ""
+
+  # Format for the generated image: "squashfs" or "directory"
+, format ? "squashfs"
+
   # mksquashfs options
 , squashfsTools ? pkgs.squashfsTools
 , squash-compression ? "xz -Xdict-size 100%"
 , squash-block-size ? "1M"
-}:
+
+  # passed to stdenv
+, passthru
+}@args2:
 
 let
   filterNull = lib.filterAttrs (_: v: v != null);
@@ -86,30 +101,68 @@ let
         symlinks)
       ;
     };
+
+  rootFsParts = [ rootFsScaffold ] ++ rootFsContents;
+
+  withOverrides = drv: drv // rec {
+    overridePortableService = f: import ./portable-service.nix args1 (args2 // f args2);
+    asSquashfs = overridePortableService (_: { format = "squashfs"; });
+    asDirectory = overridePortableService (_: { format = "directory"; });
+    withImageNameWithoutVersion = withOverrides (drv.overrideAttrs (_: { imageName = pname; }));
+  };
 in
 
 assert lib.assertMsg (lib.all (u: lib.hasPrefix pname u.name) units) "Unit names must be prefixed with the service name";
 
-stdenv.mkDerivation {
+withOverrides (stdenv.mkDerivation {
   pname = "${pname}-img";
   inherit version;
 
   nativeBuildInputs = [ squashfsTools ];
-  closureInfo = pkgs.closureInfo { rootPaths = [ rootFsScaffold ] ++ contents; };
+  closureInfo = pkgs.closureInfo { rootPaths = rootFsParts ++ contents; };
 
-  buildCommand = ''
+  imageName = "${pname}_${version}";
+
+  inherit passthru;
+
+  buildCommand = if format == "squashfs" then ''
     mkdir -p nix/store
     for i in $(< $closureInfo/store-paths); do
       cp -a "$i" "''${i:1}"
     done
 
+    ${extraCommands}
+
     mkdir -p $out
     # the '.raw' suffix is mandatory by the portable service spec
-    mksquashfs nix ${rootFsScaffold}/* $out/"${pname}_${version}.raw" \
+    mksquashfs nix ${lib.concatMapStringsSep " " (x: "${x}/*") rootFsParts} $out/"$imageName.raw" \
       -quiet -noappend \
       -exit-on-error \
       -keep-as-directory \
       -all-root -root-mode 755 \
       -b ${squash-block-size} -comp ${squash-compression}
-  '';
-}
+
+    ${extraInstallCommands}
+  '' else if format == "directory" then ''
+    # build in subdir to avoid adding existing files, e.g. env-var
+    mkdir x
+    cd x
+
+    mkdir -p nix/store
+    for i in $(< $closureInfo/store-paths); do
+      cp -a "$i" "''${i:1}"
+    done
+
+    for i in ${toString rootFsParts} ; do
+      cp -r $i/* .
+      chmod -R +w .
+    done
+
+    ${extraCommands}
+
+    mkdir -p "$out/$imageName"
+    cp -a --reflink=auto * "$out/$imageName/"
+
+    ${extraInstallCommands}
+  '' else throw "invalid format: ${format}";
+})
