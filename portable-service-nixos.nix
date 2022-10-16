@@ -1,9 +1,6 @@
 { pkgs, lib ? pkgs.lib, stdenv ? pkgs.stdenv }@args1: {
   # NixOS configuration, usually created with: nixpkgs.lib.nixosSystem { system = ...; modules = ...; }
   nixosConfiguration
-  # Copy extra paths paths from /etc of the configuration.
-  #FIXME We might want to copy everything by default and have a list of things not to copy (e.g. unrelated services to avoid adding their dependencies).
-, keepEtcNames
   # Other arguments will be passed to portableService.
 , ...
 }@args2:
@@ -18,19 +15,16 @@ let
   etc = nixosConfiguration.config.system.build.etc;
 
   etcForService = pkgs.runCommand "${pname}-etc" { inherit pname etc; } ''
+    mkdir $out
+    cp -dRT $etc/etc $out/etc
+    chmod -R +w $out/etc
+    rm -r $out/etc/{systemd,os-release}
+
     mkdir -p $out/etc/systemd/system
     # We copy with `-L` because systemd will read the files outside of the portable service
     # environment, i.e. symlinks with absolute paths won't work.
     cp -dRL $etc/etc/systemd/system/"$pname"* $out/etc/systemd/system/
     chmod -R +w $out/etc
-
-    for x in ${lib.escapeShellArgs keepEtcNames} ; do
-      x2="/etc/$x"
-      mkdir -p "$out''${x2%/*}"
-      #FIXME Our nix-prepare service needs these to not be symlinks so we copy with `-L` but this is probably not a good default in general.
-      cp -dRTL "$etc$x2" "$out$x2"
-      chmod -R +w "$out$x2"
-    done
 
     # NixOS doesn't populate the [Install] section and creates bla.target.wants symlinks instead.
     # This is good for stateless configuration but not useful for our portable service.
@@ -68,7 +62,7 @@ let
     done
   '';
 in
-  withOverrides (portableService ((builtins.removeAttrs args2 [ "nixosConfiguration" "keepEtcNames" ]) // {
+  withOverrides (portableService ((builtins.removeAttrs args2 [ "nixosConfiguration" ]) // {
     inherit pname;
     rootFsContents = [ etcForService ] ++ (args2.rootFsContents or []);
 

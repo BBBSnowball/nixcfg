@@ -126,7 +126,7 @@
         version = pkgs.nix.version;
         description = "Nix packaged as a portable service for Steam Deck";
         nixosConfiguration = self.nixosConfigurations.deck;
-        keepEtcNames = [ "nix" "ssl" ];
+        #keepEtcNames = [ "nix" "ssl" ];
 
         extraCommands = ''
           mkdir ./real-root
