@@ -125,25 +125,9 @@ withOverrides (stdenv.mkDerivation {
 
   inherit passthru;
 
-  buildCommand = if format == "squashfs" then ''
-    mkdir -p nix/store
-    for i in $(< $closureInfo/store-paths); do
-      cp -a "$i" "''${i:1}"
-    done
-
-    ${extraCommands}
-
-    mkdir -p $out
-    # the '.raw' suffix is mandatory by the portable service spec
-    mksquashfs nix ${lib.concatMapStringsSep " " (x: "${x}/*") rootFsParts} $out/"$imageName.raw" \
-      -quiet -noappend \
-      -exit-on-error \
-      -keep-as-directory \
-      -all-root -root-mode 755 \
-      -b ${squash-block-size} -comp ${squash-compression}
-
-    ${extraInstallCommands}
-  '' else if format == "directory" then ''
+  #NOTE We used to pass multiple paths to mksquashfs but mksquashfs doesn't merge directories
+  #     so this won't work if more than one source is adding files to /etc.
+  buildCommand = ''
     # build in subdir to avoid adding existing files, e.g. env-var
     mkdir x
     cd x
@@ -160,9 +144,20 @@ withOverrides (stdenv.mkDerivation {
 
     ${extraCommands}
 
+  '' + (if format == "squashfs" then ''
+    mkdir -p $out
+    # the '.raw' suffix is mandatory by the portable service spec
+    mksquashfs * $out/"$imageName.raw" \
+      -quiet -noappend \
+      -exit-on-error \
+      -keep-as-directory \
+      -all-root -root-mode 755 \
+      -b ${squash-block-size} -comp ${squash-compression}
+  '' else if format == "directory" then ''
     mkdir -p "$out/$imageName"
     cp -a --reflink=auto * "$out/$imageName/"
-
+  '' else throw "invalid format: ${format}")
+  + ''
     ${extraInstallCommands}
-  '' else throw "invalid format: ${format}";
+  '';
 })

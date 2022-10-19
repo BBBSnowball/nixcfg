@@ -160,6 +160,20 @@
         ];
       };
       default = serviceSquashfs.asDirectory.withImageNameWithoutVersion;
+
+      hedgedoc = (portableServiceNixOS {
+        version = pkgs.hedgedoc.version;
+        description = "Hedgedoc packaged as a portable service";
+
+        extraCommands = ''
+          mkdir -p ./var/lib/hedgedoc
+        '';
+
+        nixosConfiguration = nixpkgs.lib.nixosSystem {
+          system = "x86_64-linux";
+          modules = [ ./hedgedoc.nix ];
+        };
+      }).withImageNameWithoutVersion;
     };
   };
 }
