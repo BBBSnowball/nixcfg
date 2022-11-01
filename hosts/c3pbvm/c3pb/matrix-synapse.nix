@@ -102,7 +102,13 @@ in {
     services.postgresql = {
       enable = true;
       enableTCPIP = false;
-      initialScript = pkgs.writeText "synapse-init.sql" ''
+      # If the database starts empty after a Postgres update, synapse will re-init it and
+      # generate a new key. This will cause lots of trouble so let's avoid that by not
+      # creating the database by default, i.e. only enable this when starting the server
+      # for the first time and thereafter disable it (before you upgrade stateVersion
+      # the next time).
+      initialScript = if true then null
+        else pkgs.writeText "synapse-init.sql" ''
         CREATE ROLE "matrix-synapse" WITH LOGIN PASSWORD NULL;
         CREATE DATABASE "matrix-synapse" WITH OWNER "matrix-synapse"
           TEMPLATE template0
