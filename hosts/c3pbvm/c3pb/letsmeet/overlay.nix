@@ -1,17 +1,19 @@
 private: self: super:
 let
-  nodejs = self.nodejs-14_x;
+  nodejs = self.nodejs-16_x;
   edumeet = import ./pkgs { pkgs = self; inherit nodejs; };
   configApp = ./config.app.js;
   configServer  = import ../substitute.nix self ./config.server.js "--replace @serverExternalIp@ ${self.lib.fileContents "${private}/serverExternalIp.txt"}";
 in {
   edumeet-app = self.stdenv.mkDerivation rec {
     name = "edumeet-app-web";
-    inherit (edumeet) version src;
-    inherit (edumeet.app) package;
+    inherit (edumeet.app.package) version;
+    inherit (edumeet) src;
+    inherit (edumeet.app) node_modules;
+    passthru.app = edumeet.app;
     config = configApp;
 
-    buildInputs = [ nodejs package ];
+    buildInputs = [ nodejs ];
 
     buildPhase = ''
       cd app
@@ -19,14 +21,14 @@ in {
       # react-scripts doesn't want to use NODE_PATH so we use one of the
       # preferred alternatives.
       #echo '{"compilerOptions": {"baseUrl": "node_modules"}}' >jsconfig.json
-      #ln -s $package/lib/node_modules/edumeet/node_modules
+      #ln -s $node_modules/edumeet/node_modules
       mkdir node_modules
-      cp -sr $package/lib/node_modules/edumeet/node_modules/* node_modules/
+      cp -sr $node_modules/* node_modules/
 
       rm public/config/config.example.js
       ln -s $config public/config/config.js
 
-      export PATH=$PATH:$package/lib/node_modules/edumeet/node_modules/.bin
+      export PATH=$PATH:$node_modules/.bin
 
       react-scripts build
     '';
@@ -38,31 +40,31 @@ in {
 
   edumeet-server = self.stdenv.mkDerivation rec {
     name = "edumeet-server";
-    inherit (edumeet) version src;
-    inherit (edumeet.server) package;
+    inherit (edumeet.server.package) version;
+    inherit (edumeet) src server;
     inherit (self) bash;
+    passthru.withoutConfig = edumeet.server;
+    passthru.mediasoup = edumeet.mediasoup;
     app = self.edumeet-app;
     config = configServer;
 
-    buildInputs = [ nodejs package ];
+    buildInputs = [ nodejs ];
 
     buildPhase = "";
 
     installPhase = ''
-      mkdir -p $out/{bin,lib/edumeet-server}
+      mkdir -p $out
+      cp -r $server/{bin,libexec} $out/
 
-      cd $out/lib/edumeet-server
-      cp -r $src/server/* .
-      chmod +w config
-      rm config/config.example.js
+      dir=$out/libexec/edumeet-server/deps/edumeet-server
+      chmod +w $dir $dir/config
+
       # config uses require with relative paths so symlink won't work
-      cp $config config/config.js
-      ln -sfd $app public
+      cp $config $dir/config/config.js
+      ln -sfd $app $dir/public
 
-      ln -sfd $package/lib/node_modules/edumeet-server/node_modules node_modules
-
-      ln -s ../lib/edumeet-server/server.js $out/bin/edumeet-server
-      ln -s ../lib/edumeet-server/connect.js $out/bin/edumeet-connect
+      #ln -s ../libexec/edumeet-server/node_modules/edumeet-server/server.js $out/bin/edumeet-server
+      #ln -s ../libexec/edumeet-server/node_modules/edumeet-server/connect.js $out/bin/edumeet-connect
     '';
   };
 }

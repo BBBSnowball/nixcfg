@@ -1,0 +1,171 @@
+diff -Naur /nix/store/cn55zzwc7drdcgskssfh273vlmn8jnjn-edumeet-server-modules-3.5.3/node_modules/mediasoup/worker/deps/libwebrtc/meson.build b/deps/libwebrtc/meson.build
+--- /nix/store/cn55zzwc7drdcgskssfh273vlmn8jnjn-edumeet-server-modules-3.5.3/node_modules/mediasoup/worker/deps/libwebrtc/meson.build	1970-01-01 01:00:01.000000000 +0100
++++ b/deps/libwebrtc/meson.build	2022-11-01 18:43:03.343864551 +0100
+@@ -45,13 +45,6 @@
+   'libwebrtc/modules/congestion_controller/rtp/control_handler.cc',
+ ]
+ 
+-abseil_cpp_proj = subproject(
+-  'abseil-cpp',
+-  default_options: [
+-    'warning_level=0',
+-  ],
+-)
+-
+ local_include_directories = declare_dependency(
+   include_directories: include_directories('libwebrtc')
+ )
+@@ -61,11 +54,8 @@
+   libwebrtc_sources,
+   dependencies: [
+     local_include_directories,
+-    openssl_proj.get_variable('openssl_dep'),
+-    abseil_cpp_proj.get_variable('absl_strings_dep'),
+-    abseil_cpp_proj.get_variable('absl_types_dep'),
+-    nlohmann_json_proj.get_variable('nlohmann_json_dep'),
+-    libuv_proj.get_variable('libuv_dep'),
++    abseil_cpp_dep,
++    abseil_cpp_dep2,
+   ],
+   include_directories: libwebrtc_include_directories,
+   cpp_args: cpp_args,
+@@ -74,8 +64,6 @@
+ libwebrtc_dep = declare_dependency(
+   dependencies: [
+     local_include_directories,
+-    abseil_cpp_proj.get_variable('absl_strings_dep'),
+-    abseil_cpp_proj.get_variable('absl_types_dep'),
+   ],
+   include_directories: include_directories('.'),
+   link_with: libwebrtc,
+diff -Naur /nix/store/cn55zzwc7drdcgskssfh273vlmn8jnjn-edumeet-server-modules-3.5.3/node_modules/mediasoup/worker/include/DepLibSRTP.hpp b/include/DepLibSRTP.hpp
+--- /nix/store/cn55zzwc7drdcgskssfh273vlmn8jnjn-edumeet-server-modules-3.5.3/node_modules/mediasoup/worker/include/DepLibSRTP.hpp	1970-01-01 01:00:01.000000000 +0100
++++ b/include/DepLibSRTP.hpp	2022-11-01 18:02:49.781426204 +0100
+@@ -1,7 +1,7 @@
+ #ifndef MS_DEP_LIBSRTP_HPP
+ #define MS_DEP_LIBSRTP_HPP
+ 
+-#include <srtp.h>
++#include <srtp2/srtp.h>
+ #include <vector>
+ 
+ class DepLibSRTP
+diff -Naur /nix/store/cn55zzwc7drdcgskssfh273vlmn8jnjn-edumeet-server-modules-3.5.3/node_modules/mediasoup/worker/include/RTC/SrtpSession.hpp b/include/RTC/SrtpSession.hpp
+--- /nix/store/cn55zzwc7drdcgskssfh273vlmn8jnjn-edumeet-server-modules-3.5.3/node_modules/mediasoup/worker/include/RTC/SrtpSession.hpp	1970-01-01 01:00:01.000000000 +0100
++++ b/include/RTC/SrtpSession.hpp	2022-11-01 18:03:04.636457122 +0100
+@@ -2,7 +2,7 @@
+ #define MS_RTC_SRTP_SESSION_HPP
+ 
+ #include "common.hpp"
+-#include <srtp.h>
++#include <srtp2/srtp.h>
+ 
+ namespace RTC
+ {
+diff -Naur /nix/store/cn55zzwc7drdcgskssfh273vlmn8jnjn-edumeet-server-modules-3.5.3/node_modules/mediasoup/worker/meson.build b/meson.build
+--- /nix/store/cn55zzwc7drdcgskssfh273vlmn8jnjn-edumeet-server-modules-3.5.3/node_modules/mediasoup/worker/meson.build	1970-01-01 01:00:01.000000000 +0100
++++ b/meson.build	2022-11-01 18:43:54.112980511 +0100
+@@ -3,7 +3,7 @@
+   ['c', 'cpp'],
+   default_options : [
+     'warning_level=1',
+-    'cpp_std=c++11',
++    'cpp_std=c++17',
+     'default_library=static',
+   ],
+   meson_version: '>= 0.58',
+@@ -144,72 +144,28 @@
+ 
+ cpp = meson.get_compiler('cpp')
+ 
+-openssl_proj = subproject(
+-  'openssl',
+-  default_options: [
+-    'warning_level=0',
+-  ],
+-)
+-nlohmann_json_proj = subproject(
+-  'nlohmann_json',
+-  default_options: [
+-    'warning_level=0',
+-  ],
+-)
+-libuv_proj = subproject(
+-  'libuv',
+-  default_options: [
+-    'warning_level=0',
+-    'build_tests=false',
+-    'build_benchmarks=false',
+-  ],
+-)
+-libsrtp2_proj = subproject(
+-  'libsrtp2',
+-  default_options: [
+-    'warning_level=0',
+-    'crypto-library=openssl',
+-    'crypto-library-kdf=disabled',
+-    'tests=disabled',
+-  ],
+-)
+-usrsctp_proj = subproject(
+-  'usrsctp',
+-  default_options: [
+-    'warning_level=0',
+-    'sctp_build_programs=false',
+-  ],
+-)
+-abseil_cpp_proj = subproject(
+-  'abseil-cpp',
+-  default_options: [
+-    'warning_level=0',
+-  ],
+-)
+-catch2_proj = subproject(
+-  'catch2',
+-  default_options: [
+-    'warning_level=0',
+-  ],
+-)
++openssl_dep = dependency('openssl', required : true)
++nlohmann_json_dep = dependency('nlohmann_json', required : true)
++libuv_dep = dependency('libuv', required : true)
++libsrtp2_dep = dependency('libsrtp2', required : true)
++usrsctp_dep = dependency('usrsctp', required : true)
++abseil_cpp_dep = dependency('absl_strings', required : true)
++abseil_cpp_dep2 = dependency('absl_optional', required : true)
+ libwebrtc_include_directories = include_directories('include')
+ subdir('deps/libwebrtc')
+ 
+ dependencies = [
+-  openssl_proj.get_variable('openssl_dep'),
+-  nlohmann_json_proj.get_variable('nlohmann_json_dep'),
+-  libuv_proj.get_variable('libuv_dep'),
+-  libsrtp2_proj.get_variable('libsrtp2_dep'),
+-  usrsctp_proj.get_variable('usrsctp_dep'),
++  openssl_dep,
++  nlohmann_json_dep,
++  libuv_dep,
++  libsrtp2_dep,
++  usrsctp_dep,
+   libwebrtc_dep,
++  abseil_cpp_dep,
++  abseil_cpp_dep2,
+ ]
+ 
+ link_whole = [
+-  openssl_proj.get_variable('libcrypto_lib'),
+-  openssl_proj.get_variable('libssl_lib'),
+-  libuv_proj.get_variable('libuv'),
+-  libsrtp2_proj.get_variable('libsrtp2'),
+-  usrsctp_proj.get_variable('usrsctp'),
+   libwebrtc,
+ ]
+ 
+@@ -259,7 +215,6 @@
+   install: true,
+   install_tag: 'mediasoup-worker-test',
+   dependencies: dependencies + [
+-    catch2_proj.get_variable('catch2_dep'),
+   ],
+   sources: common_sources + [
+     'test/src/tests.cpp',
