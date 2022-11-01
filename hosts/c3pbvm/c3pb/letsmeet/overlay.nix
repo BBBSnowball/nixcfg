@@ -8,9 +8,9 @@ in {
   edumeet-app = self.stdenv.mkDerivation rec {
     name = "edumeet-app-web";
     inherit (edumeet.app.package) version;
-    inherit (edumeet) src;
+    inherit (edumeet) src app;
     inherit (edumeet.app) node_modules;
-    passthru.app = edumeet.app;
+    passthru.withoutConfig = edumeet.app;
     config = configApp;
 
     buildInputs = [ nodejs ];

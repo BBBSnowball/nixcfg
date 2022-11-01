@@ -30,7 +30,20 @@ rec {
     packageJSON = "${edumeetSrc}/app/package.json";
     yarnLock = "${edumeetSrc}/app/yarn.lock";
     yarnNix = ./yarn-app.nix;
-  };
+
+    buildPhase = ''
+      cp -r $src/* .
+
+      # react-scripts doesn't want to use NODE_PATH so we use one of the
+      export PATH=$PATH:$PWD/node_modules/.bin
+
+      react-scripts build
+    '';
+
+    installPhase = ''
+      cp -r build $out
+    '';
+   };
   server1 = pkgs.mkYarnPackage {
     name = "edumeet";
     src = "${edumeetSrc}/server";
