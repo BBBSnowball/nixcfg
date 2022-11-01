@@ -18,8 +18,10 @@ in {
 
       # react-scripts doesn't want to use NODE_PATH so we use one of the
       # preferred alternatives.
-      echo '{"compilerOptions": {"baseUrl": "node_modules"}}' >jsconfig.json
-      ln -s $package/lib/node_modules/edumeet/node_modules
+      #echo '{"compilerOptions": {"baseUrl": "node_modules"}}' >jsconfig.json
+      #ln -s $package/lib/node_modules/edumeet/node_modules
+      mkdir node_modules
+      cp -sr $package/lib/node_modules/edumeet/node_modules/* node_modules/
 
       rm public/config/config.example.js
       ln -s $config public/config/config.js

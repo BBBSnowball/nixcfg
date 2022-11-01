@@ -11,7 +11,7 @@ cp -LrT src-link src
 chmod -R u+rw .
 
 cd src/app
-node2nix package.json
+node2nix -16 package.json
 cd ../server
-node2nix package.json
+node2nix -16 package.json
 

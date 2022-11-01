@@ -15588,8 +15588,8 @@ let
   args = {
     name = "edumeet";
     packageName = "edumeet";
-    src = "${edumeetSrc}/app";
     version = "3.5.3";
+    src = "${edumeetSrc}/app";
     dependencies = [
       (sources."@ampproject/remapping-2.2.0" // {
         dependencies = [
