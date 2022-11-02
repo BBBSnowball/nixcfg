@@ -5,6 +5,10 @@ let
   configApp = ./config.app.js;
   configServer  = import ../substitute.nix self ./config.server.js "--replace @serverExternalIp@ ${self.lib.fileContents "${private}/serverExternalIp.txt"}";
 in {
+  # https://nixos.wiki/wiki/Node.js#Using_nodePackages_with_a_different_node_version
+  # -> doesn't seem to have any effect on node-pre-gyp but would fail to build anyway
+  #nodejs = self.nodejs-16_x;
+
   edumeet-app = self.stdenv.mkDerivation rec {
     name = "edumeet-app-web";
     inherit (edumeet.app.package) version;
@@ -41,30 +45,31 @@ in {
   edumeet-server = self.stdenv.mkDerivation rec {
     name = "edumeet-server";
     inherit (edumeet.server.package) version;
-    inherit (edumeet) src server;
+    inherit (edumeet) src;
     inherit (self) bash;
-    passthru.withoutConfig = edumeet.server;
+    withoutConfig = edumeet.server.bin;
     passthru.mediasoup = edumeet.mediasoup;
+    #passthru.serviceWorkingSubdirectory = "libexec/edumeet-server/node_modules/edumeet-server";
+    passthru.serviceWorkingSubdirectory = "lib/edumeet-server";
     app = self.edumeet-app;
     config = configServer;
-
-    buildInputs = [ nodejs ];
 
     buildPhase = "";
 
     installPhase = ''
       mkdir -p $out
-      cp -r $server/{bin,libexec} $out/
+      cp -r $withoutConfig/* $out/
 
-      dir=$out/libexec/edumeet-server/deps/edumeet-server
+      #dir=$out/libexec/edumeet-server/deps/edumeet-server
+      dir=$out/lib/edumeet-server
       chmod +w $dir $dir/config
 
       # config uses require with relative paths so symlink won't work
       cp $config $dir/config/config.js
-      ln -sfd $app $dir/public
 
-      #ln -s ../libexec/edumeet-server/node_modules/edumeet-server/server.js $out/bin/edumeet-server
-      #ln -s ../libexec/edumeet-server/node_modules/edumeet-server/connect.js $out/bin/edumeet-connect
+      ln -sfd $app $dir/public
+      mkdir $dir/dist
+      ln -sfd $app $dir/dist/public
     '';
   };
 }

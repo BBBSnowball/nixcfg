@@ -1,9 +1,9 @@
-{ config, pkgs, lib, private, nixpkgsLetsmeet, ... }:
+{ config, pkgs, lib, private, nixpkgs, nixpkgsLetsmeet, ... }:
 let
   useOldNixpkgs = false;
   pkgs2 = if useOldNixpkgs
     then import nixpkgsLetsmeet { overlays = [ (import ./overlay.nix private) ]; system = pkgs.system; }
-    else pkgs;
+    else import nixpkgs { overlays = [ (import ./overlay.nix private) ]; system = pkgs.system; };
   pkg = pkgs2.edumeet-server;
 in {
   nixpkgs.overlays = lib.mkIf (!useOldNixpkgs) [ (import ./overlay.nix private) ];
@@ -40,7 +40,7 @@ in {
 
     serviceConfig = {
       ExecStart = "${pkg}/bin/edumeet-server";
-      WorkingDirectory = "${pkg}/lib/edumeet-server";
+      WorkingDirectory = "${pkg}/${pkg.serviceWorkingSubdirectory}";
       User = "edumeet";
       PermissionsStartOnly = true;
     };
@@ -54,5 +54,8 @@ in {
         chmod 740 /etc/edumeet/server.config.d/cookieSecret.js
       fi
     '';
+
+    environment.DEBUG = "edumeet-server:WARN,edumeet-server:ERROR";  # show errors and warnings
+    #environment.DEBUG = "edumeet-server:*";  # show everything
   };
 }

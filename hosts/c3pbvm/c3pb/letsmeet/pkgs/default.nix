@@ -54,13 +54,35 @@ rec {
     packageJSON = "${edumeetSrc}/server/package.json";
     yarnLock = "${edumeetSrc}/server/yarn.lock";
     yarnNix = ./yarn-server.nix;
+    yarnPreBuild = ''
+      mkdir -p $HOME/.node-gyp/${nodejs.version}
+      echo 9 > $HOME/.node-gyp/${nodejs.version}/installVersion
+      ln -sfv ${nodejs}/include $HOME/.node-gyp/${nodejs.version}
+      export npm_config_nodedir=${nodejs}
+    '';
     pkgConfig = {
       mediasoup = {
         postInstall = ''
           #yarn --offline run worker:build
           #make -C worker PIP_BUILD_BINARIES='--no-binary :all:' MESON="$(which meson)" MESON_ARGS="-Dwrap_mode=nodownload \"\""
-          mkdir -p worker/out/Release/bin/
-          cp ${mediasoup}/bin/mediasoup-worker worker/out/Release/bin/
+          mkdir -p worker/out/Release/
+          cp ${mediasoup}/bin/mediasoup-worker worker/out/Release/
+        '';
+      };
+      bcrypt = {
+        nativeBuildInputs = with pkgs; [
+          which
+          (python3.withPackages (p: [ p.pip p.setuptools p.meson ]))
+        ];
+        buildInputs = [
+          pkgs.nodePackages.node-gyp-build
+          pkgs.nodePackages.node-pre-gyp
+          nodejs
+        ];
+        postInstall = ''
+          node-pre-gyp install --fallback-to-build --help
+          #node-pre-gyp build
+          rm -rf build-tmp-napi-v3
         '';
       };
     };
@@ -68,11 +90,18 @@ rec {
       cp -r $src/* .
       #yarn --offline build
       export PATH=$PATH:$node_modules/.bin
-      tsc && ln -s ../certs dist/certs && chmod 755 dist/server.js && ( for fileExt in yaml json toml ; do [ -f config/config.$fileExt ] && cp config/config.$fileExt dist/config/ || true; done ) | true && touch 'dist/ __AUTO_GENERATED_CONTENT_REFRESHED_AFTER_REBUILDING!__ '
+      tsc
+      # Those are demo certs -> omit them
+      #cp $src/certs -r dist/certs
+      chmod 755 dist/server.js
     '';
+    outputs = [ "out" "bin" ];
     postInstall = ''
-      ln -s ../libexec/edumeet-server/node_modules/edumeet-server/server.js $out/bin/edumeet-server
-      ln -s ../libexec/edumeet-server/node_modules/edumeet-server/connect.js $out/bin/edumeet-connect
+      mkdir $bin/{bin,lib} -p
+      cp -r dist $bin/lib/edumeet-server
+      cp -r $out/libexec/edumeet-server/node_modules $bin/lib/edumeet-server/
+      ln -s ../lib/edumeet-server/server.js $bin/bin/edumeet-server
+      ln -s ../lib/edumeet-server/connect.js $bin/bin/edumeet-connect
     '';
     extraBuildInputs = with pkgs; [
       (python3.withPackages (p: [ p.pip p.setuptools p.meson ]))
