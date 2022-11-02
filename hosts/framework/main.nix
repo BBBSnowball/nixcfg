@@ -1,4 +1,4 @@
-{ config, pkgs, lib, rockpro64Config, routeromen, withFlakeInputs, private, ... }@args:
+{ config, pkgs, lib, rockpro64Config, routeromen, withFlakeInputs, private, nixos-hardware, ... }@args:
 let
   modules = args.modules or (import ./modules.nix {});
   hostSpecificValue = path: import "${private}/by-host/${config.networking.hostName}${path}";
@@ -14,11 +14,14 @@ in
       tinc-client-a
       vscode
       ssh-github
+      xonsh
     ] ++
     [ ./hardware-configuration.nix
       ./pipewire.nix
       ./mcu-dev.nix
       (import ./users.nix { inherit pkgs private; })
+      ./bluetooth.nix
+      nixos-hardware.nixosModules.framework
     ];
 
   networking.hostName = "fw";
@@ -30,6 +33,7 @@ in
   nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
     "memtest86-efi"
     "vscode"
+    "mfc9142cdnlpr"
   ];
 
   networking.useDHCP = false;
@@ -43,6 +47,8 @@ in
     # tincd chroots into /etc/tinc/${name} so we cannot put the file into /run, as we usually would.
     # Furthermore, tincd needs write access to the directory so we make a subdir.
     GraphDumpFile = status/graph.dot
+
+    ConnectTo=orangepi_remoteadmin
   '';
   systemd.services."tinc.a" = let name = "a"; in {
     preStart = ''
@@ -82,13 +88,15 @@ in
   programs.sway.enable = true;
   programs.sway.wrapperFeatures.gtk = true;
   programs.sway.extraPackages = with pkgs; [
-    sway alacritty kitty foot dmenu kupfer
+    alacritty kitty foot dmenu kupfer
     i3status i3status-rust termite rofi light
     swaylock
     wdisplays
     brightnessctl  # uses logind so doesn't need root
+    sway-contrib.grimshot
   ];
   environment.etc."sway/config".source = ./sway-config;
+  environment.etc."alacritty.yml".source = ./alacritty.yml;
   #environment.etc."i3status.conf".source = ./i3status.conf;
   environment.etc."xdg/i3status/config".source = ./i3status.conf;
   hardware.opengl.enable = true;
@@ -96,12 +104,47 @@ in
   # https://github.com/NixOS/nixpkgs/issues/19629#issuecomment-368051434
   services.xserver.exportConfiguration = true;
 
-  # for Framework laptop
-  # see http://kvark.github.io/linux/framework/2021/10/17/framework-nixos.html
-  boot.kernelParams = [ "mem_sleep_default=deep" ];
-  boot.kernelPackages = pkgs.linuxPackages_latest;
-
   programs.wireshark.enable = true;
+  programs.wireshark.package = pkgs.wireshark;  # wireshark-qt instead of wireshark-cli
+
+  environment.systemPackages = with pkgs; [
+    mumble
+    picocom
+    #wireshark
+    zeal
+    lazygit
+    clementine
+    entr
+    zgrviewer graphviz
+  ];
+
+  services.printing.drivers = [
+    (pkgs.callPackage ../../pkgs/mfc9142cdncupswrapper.nix { mfc9142cdnlpr = pkgs.callPackage ../../pkgs/mfc9142cdnlpr.nix {}; })
+  ];
+  #services.printing.extraConf = "LogLevel debug2";
+
+  services.fwupd.enable = true;
+  environment.etc."fwupd/remotes.d/lvfs-testing.conf".enable = false;
+  environment.etc."fwupd/remotes.d/lvfs-testing.conf2" = {
+    source = pkgs.runCommand "lvfs-testing.conf" {} ''
+      sed 's/Enabled=false/Enabled=true/' <${config.environment.etc."fwupd/remotes.d/lvfs-testing.conf".source} >$out
+    '';
+    target = "fwupd/remotes.d/lvfs-testing.conf";
+  };
+  environment.etc."fwupd/uefi_capsule.conf".enable = false;
+  environment.etc."fwupd/uefi_capsule.conf2" = {
+    source = pkgs.runCommand "uefi_capsule.conf" {} ''
+      cat <${config.environment.etc."fwupd/uefi_capsule.conf".source} >$out
+      echo "" >>$out
+      echo '# description says that we should do this:' >>$out
+      echo '# https://fwupd.org/lvfs/devices/work.frame.Laptop.TGL.BIOS.firmware' >>$out
+      echo 'DisableCapsuleUpdateOnDisk=true' >>$out
+    '';
+    target = "fwupd/uefi_capsule.conf";
+  };
+
+  # enabled by nixos-hardware but causes multi-second delays for login manager and swaylock
+  services.fprintd.enable = false;
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions

@@ -100,6 +100,25 @@ else
   hosts=()
 fi
 
+case "$action" in
+  switch|boot)
+    generatesResult=0
+    ;;
+  test)
+    if [ -n "$targetHost" ] ; then
+      generatesResult=0
+    else
+      generatesResult=1
+    fi
+    ;;
+  *)
+    generatesResult=1
+    ;;
+esac
+if [ $generatesResult -gt 0 ] ; then
+  rm -f result
+fi
+
 # We have to pass `--flake` because nixos-rebuild would use the hostname of the current host.
 # `nixos-rebuild` doesn't pass through `--log-format bar-with-logs` or `--print-build-logs` but `-L` works.
 # Explicit build-host is required to work around a bug in nixos-rebuild: It would set buildHost=targetHost,
@@ -110,10 +129,7 @@ set -x
 nixos-rebuild ${hosts[@]} --flake "$flake#$targetHost" "$action" -L ${overrideInput[@]} "${extraBuildFlags[@]}" "$@"
 set +x
 
-case "$action" in
-  switch|boot)
-    ;;
-  *)
+if [ $generatesResult -gt 0 ] ; then
     if [ -z "$targetHost" ] ; then
       read -r hostname < /proc/sys/kernel/hostname
       pathToConfig="./result-$hostname"
@@ -122,8 +138,7 @@ case "$action" in
     fi
     rm -f "$pathToConfig"
     mv result "$pathToConfig"
-    ;;
-esac
+fi
 
 case "$post_cmd" in
   "")

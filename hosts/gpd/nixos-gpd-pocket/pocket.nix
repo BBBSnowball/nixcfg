@@ -1,0 +1,51 @@
+{ pkgs, lib, ... }:
+{
+  imports = [
+    ./hardware.nix
+    ./kernel.nix
+    ./firmware.nix
+    ./xserver.nix
+    ./bluetooth.nix
+    ./suspend.nix
+  ];
+
+  environment.systemPackages = with pkgs; [
+    vim
+  ];
+  networking.wireless.enable = false;
+  boot.kernelPatches = [ pkgs.linux_gpd_pocket_patches ];
+  boot.initrd.kernelModules = pkgs.linux_gpd_pocket_modules;
+  networking.networkmanager.enable = true;
+  services.xserver.enable = true;
+  #services.xserver.displayManager.sddm.enable = true;
+  #services.xserver.desktopManager.plasma5.enable = true;
+  services.xserver.displayManager.gdm.enable = true;
+  services.xserver.desktopManager.gnome3.enable = true;
+  services.tlp.enable = true;
+  i18n = {
+   consoleFont = "Lat2-Terminus16";
+   consoleKeyMap = "us";
+   defaultLocale = "en_US.UTF-8";
+  };
+  time.timeZone = "Europe/Berlin";
+
+  services.openssh.enable = true;
+  systemd.services.sshd.wantedBy = lib.mkForce [ "multi-user.target" ];
+
+  users.users = {
+    andi = {
+      isNormalUser = true;
+      name = "andi";
+      group = "users";
+      extraGroups = ["wheel" "networkmanager" "docker" "cdrom" "dialout" "nitrokey"];
+      uid = 1000;
+      createHome = true;
+      home = "/home/andi/";
+      shell = pkgs.zsh;
+    };
+    root.openssh.authorizedKeys.keys = [
+      "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDHI4+Y1uPC+2KV0kVinvPVGA4YUl1bl3n0Gc4/GC9IflFYiSdq56fY5QaHuOciDleTR28wKydKBakGNO8GdrjCHkdEQbSNbeDWv8Xewq4XYiH9KsurbLnERIOZpGqjgMbmv+xXcqnHdK4QpieiKPtJ+WdLLjC8zpL1JMAIyfJ+FxQ3BJywdfZfcDMbrzVGWZBJ3jHC7F9VxG5+4m3e24pOBt08cm1E0nQy4OU736lXo6iz/5vwrgoTjSgPHB8nk5kK0/kn3oyAT441q8HQWJj1obER8qswuJc3nnT/pOP1GTG7xu17NuF8pJefRnve1ZepBZYhyqfOAjwxDVwHnYlvF53kX1XCp9p5J/Fk40oFxT4DwrUPE+6hxo2C3KK2rXZiwXJWjCFweMANaBKjWyqAGuTAhgADPhfEkapuPVe0tO0AWxF62Oj+jl2BT/huFfeO9dY413yh9kH9sbnxcQSpvxfXngCb6BTxTujY83SAPSPnlPPmJP00DMO8PzY7TmtrUa7iio2piteKyiEkhxKc75t7//fJKPQBRa/fKeNWIRvJB+ws5GcKqL3JJH5T/r9FfFXzIu/KpSdchoPX9qj+RXYIIGq78Ufwn8HFtxH0MI3EEoNx70bfxMHT15mxuzNNnN6/wBiJ78JVdV3IV15SwMDnN0Hp6g946mPdxFfa3w=="
+    ];
+  };
+
+}

@@ -14,7 +14,7 @@ set $down j
 set $up k
 set $right l
 # Your preferred terminal emulator
-set $term alacritty
+set $term alacritty --config-file /etc/alacritty.yml
 # Your preferred application launcher
 # Note: pass the final command to swaymsg so that the resulting window can be opened
 # on the original workspace that the command was run on.
@@ -246,6 +246,14 @@ bindsym F12       exec dbus-send --dest=net.sourceforge.mumble.mumble --type=met
 
 bindsym XF86MonBrightnessDown exec brightnessctl s 5%- -n 1
 bindsym XF86MonBrightnessUp   exec brightnessctl s 5%+ -n 1
+
+# Alt=active, Control=select area, Shift=save to file
+bindsym Print               exec grimshot copy output
+bindsym Shift+Print         exec grimshot save output
+bindsym Alt+Print           exec grimshot copy active
+bindsym Shift+Alt+Print     exec grimshot save active
+bindsym Control+Print       exec grimshot copy area
+bindsym Shift+Control+Print exec grimshot save area
 
 # include config.d, which contains nixos.conf that forwards env variables to the session bus
 include /etc/sway/config.d/*

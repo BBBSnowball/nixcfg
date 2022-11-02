@@ -1,7 +1,7 @@
 {
   description = "Config for my NixOS hosts";
 
-  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-21.11";
+  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-22.05";
 
   #inputs.flake-compat.url = "github:edolstra/flake-compat";
   inputs.flake-compat.url = "github:BBBSnowball/flake-compat";
@@ -61,16 +61,21 @@
     nixosConfigurations.hetzner-temp = mkHostInSubflake "hetzner-temp";
     nixosConfigurations.framework = self.nixosConfigurations.fw;
     nixosConfigurations.fw = mkHostInSubflake "fw";
+    nixosConfigurations.orangepi-remoteadmin = mkHostInSubflake "orangepi-remoteadmin";
+    nixosConfigurations.gpd = mkHostInSubflake "gpd";
   } // (let
     supportedSystems = [ "x86_64-linux" "i686-linux" "aarch64-linux" ];
     forAllSystems = nixpkgs.lib.genAttrs supportedSystems;
     gd32 = forAllSystems (system: import ./riscv/compiler.nix { inherit nixpkgs system; });
     rppico = forAllSystems (system: import ./raspi-pico/toolchain.nix { inherit nixpkgs system; });
+    purethermal = forAllSystems (system: import ./pkgs/purethermal-firmware.nix { inherit nixpkgs system; lib = nixpkgs.lib; });
   in {
     packages = forAllSystems (system: let pkgs = nixpkgs.legacyPackages.${system}; in {
       nrfjprog = pkgs.callPackage ./embedded/nrfjprog.nix {};
       apio = pkgs.callPackage ./embedded/apio.nix {};
       wlay = pkgs.callPackage ./pkgs/wlay.nix {};
+      GetThermal = pkgs.libsForQt5.callPackage ./pkgs/GetThermal.nix {};
+      purethermal-firmware-untested = purethermal.${system}.firmware-untested;
     } // (with gd32.${system}; {
       gcc-gd32 = gcc; binutils-gd32 = binutils; openocd-gd32 = openocd-nuclei; gdb-gd32 = gdb-nuclei;
       rustc-gd32 = rustc; cargo-gd32 = cargo;
@@ -114,6 +119,7 @@
       gd32 = mkShell {
         buildInputs = [ gcc-gd32 binutils-gd32 rustc-gd32 cargo-gd32 ] ++ [ gcc lld_11 ];
       };
+      purethermal = purethermal.${system}.shell;
     });
     inherit (nix-bundle) bundlers defaultBundler;
   }) // {
