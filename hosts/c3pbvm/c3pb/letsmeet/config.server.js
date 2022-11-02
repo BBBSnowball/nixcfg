@@ -120,8 +120,8 @@ module.exports =
 	},
 	*/
 	// URI and key for requesting geoip-based TURN server closest to the client
-	turnAPIKey    : 'examplekey',
-	turnAPIURI    : 'https://example.com/api/turn',
+	//turnAPIKey    : 'examplekey',
+	//turnAPIURI    : 'https://example.com/api/turn',
 	turnAPIparams : {
 		'uri_schema' 	: 'turn',
 		'transport' 		: 'tcp',
@@ -133,10 +133,13 @@ module.exports =
 	backupTurnServers : [
 		{
 			urls : [
-				'turn:turn.example.com:443?transport=tcp'
+				//'turn:turn.example.com:443?transport=tcp'
+                                //'turn:openrelay.metered.ca:443?transport=tcp'
+                                //'turn:wahrhe.it:3478'
+                                'stun:stun.l.google.com:19302'
 			],
-			username   : 'example',
-			credential : 'example'
+			username   : '',
+			credential : ''
 		}
 	],
 	// bittorrent tracker: please replace this if you want a more private file sharing service inside eduMEET
@@ -369,6 +372,10 @@ module.exports =
 	// action as soon as a peer with the permission joins. In this example
 	// everyone will be able to lock/unlock room until a MODERATOR joins.
 	allowWhenRoleMissing : [ CHANGE_ROOM_LOCK ]
+
+        // Mediasoup settings
+        // mediasoup : ...
+        // If we set this here, we will overwrite all settings in this tree because Object.assign is used for the merge - not good.
 };
 
 const path = require("path");

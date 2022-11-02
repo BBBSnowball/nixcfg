@@ -1,6 +1,7 @@
 { config, pkgs, lib, private, nixpkgs, nixpkgsLetsmeet, ... }:
 let
   useOldNixpkgs = false;
+  debug = true;
   pkgs2 = if useOldNixpkgs
     then import nixpkgsLetsmeet { overlays = [ (import ./overlay.nix private) ]; system = pkgs.system; }
     else import nixpkgs { overlays = [ (import ./overlay.nix private) ]; system = pkgs.system; };
@@ -55,7 +56,8 @@ in {
       fi
     '';
 
-    environment.DEBUG = "edumeet-server:WARN,edumeet-server:ERROR";  # show errors and warnings
-    #environment.DEBUG = "edumeet-server:*";  # show everything
+    environment.DEBUG = if debug
+    then "edumeet-server:*"                           # show everything
+    else "edumeet-server:WARN,edumeet-server:ERROR";  # show errors and warnings
   };
 }

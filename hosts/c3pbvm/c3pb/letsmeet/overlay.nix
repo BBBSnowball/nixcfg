@@ -4,6 +4,7 @@ let
   edumeet = import ./pkgs { pkgs = self; inherit nodejs; };
   configApp = ./config.app.js;
   configServer  = import ../substitute.nix self ./config.server.js "--replace @serverExternalIp@ ${self.lib.fileContents "${private}/serverExternalIp.txt"}";
+  configServer2 = import ../substitute.nix self ./config.server.yaml "--replace @serverExternalIp@ ${self.lib.fileContents "${private}/serverExternalIp.txt"}";
 in {
   # https://nixos.wiki/wiki/Node.js#Using_nodePackages_with_a_different_node_version
   # -> doesn't seem to have any effect on node-pre-gyp but would fail to build anyway
@@ -53,6 +54,7 @@ in {
     passthru.serviceWorkingSubdirectory = "lib/edumeet-server";
     app = self.edumeet-app;
     config = configServer;
+    config2 = configServer2;
 
     buildPhase = "";
 
@@ -66,6 +68,7 @@ in {
 
       # config uses require with relative paths so symlink won't work
       cp $config $dir/config/config.js
+      cp $config2 $dir/config/config.yaml
 
       ln -sfd $app $dir/public
       mkdir $dir/dist
