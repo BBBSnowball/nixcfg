@@ -7,6 +7,7 @@
       ./fix-sudo.nix
       modules.enable-flakes
       modules.nvim
+      modules.tig
     ];
 
   environment.systemPackages = with pkgs; [
@@ -57,5 +58,35 @@
     map T $tig
     set ifs "\n"
     set shellopts '-eu'
+  '';
+
+  programs.tig.enable = true;
+  programs.tig.configText = ''
+    bind status A !git commit --amend
+    bind main   I !git rebase -i %(commit)
+    bind status U !git push
+    bind main   U !git push
+    bind status D !git pull
+    bind main   D !git pull
+    #NOTE 'R' is reload
+    #NOTE revert is bound to '!', anyway
+    #bind status R !git checkout %(file)
+    
+    bind status P !git patch-absolute %(file)
+    
+    bind status I !git-ignore --absolute %(file)
+    
+    # http://blogs.atlassian.com/2013/05/git-tig/#comment-101340
+    
+    # commit with diff
+    bind status + !git commit -v
+    bind status = !git commit –amend -v
+    
+    # make a commit that fixes another commit (use autosquash to squash it)
+    bind main = !git commit --fixup=%(commit)
+    #NOTE 'R' is reload
+    #bind main R !git rebase --autosquash -i %(commit)
+    
+    bind status B !git tig-submodule %(file)
   '';
 }
