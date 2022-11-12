@@ -75,7 +75,7 @@
       apio = pkgs.callPackage ./embedded/apio.nix {};
       wlay = pkgs.callPackage ./pkgs/wlay.nix {};
       GetThermal = pkgs.libsForQt5.callPackage ./pkgs/GetThermal.nix {};
-      purethermal-firmware-untested = purethermal.${system}.firmware-untested;
+      purethermal-firmware = purethermal.${system}.firmware;
     } // (with gd32.${system}; {
       gcc-gd32 = gcc; binutils-gd32 = binutils; openocd-gd32 = openocd-nuclei; gdb-gd32 = gdb-nuclei;
       rustc-gd32 = rustc; cargo-gd32 = cargo;

@@ -13,7 +13,7 @@ rec {
   shell = pkgs.pkgsBuildHost.mkShell {
     packages = [ pkgs.pkgsBuildHost.gcc pkgs.pkgsBuildHost.binutils pkgs.newlib ];
   };
-  firmware-untested-unapplied = { stdenv, fetchFromGitHub, dfu-util, which }:
+  firmware-unapplied = { stdenv, fetchFromGitHub, dfu-util, which }:
   stdenv.mkDerivation {
     pname = "purethermal1-firmware";
     version = "1.3.0";
@@ -42,6 +42,7 @@ rec {
         echo "Usage: $0 --do-it [further args for dfu-util]" >&2
         exit 1
       fi
+      shift
       exec @dfuutil@ -a 0 -D @out@/share/firmware.bin -s 0x08000000 "$@"
     '';
     passAsFile = [ "versionHeaderTemplate" "installScriptTemplate" ];
@@ -63,6 +64,6 @@ rec {
       chmod +x $out/bin/flash-purethermal1-firmware
     '';
   };
-  firmware-untested = pkgs.callPackage firmware-untested-unapplied {};
+  firmware = pkgs.callPackage firmware-unapplied {};
 }
 

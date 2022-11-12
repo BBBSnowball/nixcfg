@@ -15,6 +15,7 @@ in
       vscode
       ssh-github
       xonsh
+      flir
     ] ++
     [ ./hardware-configuration.nix
       ./pipewire.nix
