@@ -37,6 +37,8 @@ in
     "mfc9142cdnlpr"
   ];
 
+  networking.useNetworkd = true;
+
   networking.useDHCP = false;
 
   networking.interfaces."tinc.a".ipv4.addresses = [ {
