@@ -121,6 +121,28 @@ in
     environment.YUBIKEY_TOUCH_DETECTOR_LIBNOTIFY = "true";
   };
 
+  programs.git.enable = true;
+  programs.git.config = let
+    p = import "${private}/git";
+  in {
+    user.name = p.name;
+    user.email = p.email;
+
+    # see https://developers.yubico.com/SSH/Securing_git_with_SSH_and_FIDO2.html
+    # ssh-keygen -t ed25519-sk   # "-O resident" didn't work for me although Yubikey 5 should support up to 25 discoverable keys
+    gpg.format = "ssh";
+    #user.signingKey = "/etc/git/id_ed25519_sk";
+    user.signingKey = "~/.ssh/id_ed25519_sk";
+    #commit.gpgSign = "true";  # set for individual repositories only
+    gpg.ssh.allowedSignersFile = "/etc/git/allowed_signers";
+
+    #https://git-scm.com/book/en/v2/Git-Tools-Signing-Your-Work
+    alias.logs = "log --pretty=\\\"format:%h %G? %<(8)%GS %<(15)%aN  %s\\\"";
+  };
+  environment.etc."git/allowed_signers".source = "${private}/git/allowed_signers";
+  environment.etc."git/id_ed25519_sk.pub".source = "${private}/git/id_ed25519_sk.pub";
+  #environment.etc."git/id_ed25519_sk".source = "${private}/git/id_ed25519_sk";  # -> totally save for sk keys but still not accepted
+
   environment.systemPackages = with pkgs; [
     mumble
     picocom
