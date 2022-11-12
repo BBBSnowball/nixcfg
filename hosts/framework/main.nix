@@ -97,6 +97,9 @@ in
     wdisplays
     brightnessctl  # uses logind so doesn't need root
     sway-contrib.grimshot
+    #yubikey-agent
+    #yubikey-touch-detector
+    mako
   ];
   environment.etc."sway/config".source = ./sway-config;
   environment.etc."alacritty.yml".source = ./alacritty.yml;
@@ -110,6 +113,14 @@ in
   programs.wireshark.enable = true;
   programs.wireshark.package = pkgs.wireshark;  # wireshark-qt instead of wireshark-cli
 
+  systemd.user.services.yubikey-touch-detector = {
+    enable = true;
+    description = "Detects when your YubiKey is waiting for a touch";
+    path = with pkgs; [ yubikey-touch-detector ];
+    script = ''exec yubikey-touch-detector'';
+    environment.YUBIKEY_TOUCH_DETECTOR_LIBNOTIFY = "true";
+  };
+
   environment.systemPackages = with pkgs; [
     mumble
     picocom
@@ -119,6 +130,7 @@ in
     clementine
     entr
     zgrviewer graphviz
+    yubikey-manager yubikey-manager-qt yubikey-personalization
   ];
 
   services.printing.drivers = [
