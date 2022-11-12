@@ -88,5 +88,11 @@
     #bind main R !git rebase --autosquash -i %(commit)
     
     bind status B !git tig-submodule %(file)
+
+    # There doesn't seem to be any option to show signatures in the main view but we can
+    # add them to some other views (e.g. in commit details, press enter in main view).
+    # see https://github.com/jonas/tig/issues/208#issuecomment-352813725
+    set log-options = --show-signature
+    set diff-options = --show-signature
   '';
 }
