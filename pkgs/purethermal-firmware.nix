@@ -13,6 +13,16 @@ rec {
   shell = pkgs.pkgsBuildHost.mkShell {
     packages = [ pkgs.pkgsBuildHost.gcc pkgs.pkgsBuildHost.binutils pkgs.newlib ];
   };
+  installScriptTemplate = ''
+    #!/bin/sh
+    if [ "$1" != "--do-it" ] ; then
+      echo "This will flash the firmware without further questions and without checking whether the target STM really is a PureThermal board!" >&2
+      echo "Usage: $0 --do-it [further args for dfu-util]" >&2
+      exit 1
+    fi
+    shift
+    exec @dfuutil@ -a 0 -D @out@/share/firmware.bin -s 0x08000000 "$@"
+  '';
   firmware-unapplied = { stdenv, fetchFromGitHub, dfu-util, which }:
   stdenv.mkDerivation {
     pname = "purethermal1-firmware";
@@ -35,16 +45,7 @@ rec {
       #endif
     '';
 
-    installScriptTemplate = ''
-      #!/bin/sh
-      if [ "$1" != "--do-it" ] ; then
-        echo "This will flash the firmware without further questions and without checking whether the target STM really is a PureThermal board!" >&2
-        echo "Usage: $0 --do-it [further args for dfu-util]" >&2
-        exit 1
-      fi
-      shift
-      exec @dfuutil@ -a 0 -D @out@/share/firmware.bin -s 0x08000000 "$@"
-    '';
+    inherit installScriptTemplate;
     passAsFile = [ "versionHeaderTemplate" "installScriptTemplate" ];
 
     buildPhase = ''
@@ -65,5 +66,24 @@ rec {
     '';
   };
   firmware = pkgs.callPackage firmware-unapplied {};
+
+  firmware-original-unapplied = { stdenv, dfu-util, which }:
+  stdenv.mkDerivation {
+    name = "purethermal1-firmware-original";
+
+    nativeBuildInputs = [ dfu-util which ];
+
+    inherit installScriptTemplate;
+    passAsFile = [ "installScriptTemplate" ];
+
+    installPhase = ''
+      mkdir -p $out/bin $out/share
+      ln -s ${./2022-10-08-PureThermal3-stock-firmware-0-flash-page01.bin} $out/share/firmware.bin
+      substitute $installScriptTemplatePath $out/bin/flash-purethermal1-firmware \
+        --subst-var out --subst-var-by dfuutil $(which dfu-util)
+      chmod +x $out/bin/flash-purethermal1-firmware
+    '';
+  };
+  firmware-original = pkgs.callPackage firmware-original-unapplied {};
 }
 
