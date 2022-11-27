@@ -66,6 +66,8 @@
   } // (let
     supportedSystems = [ "x86_64-linux" "i686-linux" "aarch64-linux" ];
     forAllSystems = nixpkgs.lib.genAttrs supportedSystems;
+    darwinSystems = [ "aarch64-darwin" "x64_86-darwin" ];  #NOTE I only have an aarch64-darwin so x86 is completely untested!
+    forDarwinSystems = nixpkgs.lib.genAttrs darwinSystems;
     gd32 = forAllSystems (system: import ./riscv/compiler.nix { inherit nixpkgs system; });
     rppico = forAllSystems (system: import ./raspi-pico/toolchain.nix { inherit nixpkgs system; });
     purethermal = forAllSystems (system: import ./pkgs/purethermal-firmware.nix { inherit nixpkgs system; lib = nixpkgs.lib; });
@@ -85,7 +87,10 @@
       inherit openocd-rppico picotool pioasm elf2uf2 picoprobe picosdk;
       inherit picoexamples picoplayground picoextras;
       rppicoShell = shell;
-    }) // (let x = import ./raspi-zero/overlay.nix (pkgs // x // { nixpkgsPath = nixpkgs; }) pkgs; in x));
+    }) // (let x = import ./raspi-zero/overlay.nix (pkgs // x // { nixpkgsPath = nixpkgs; }) pkgs; in x))
+    // (forDarwinSystems (system: let pkgs = nixpkgs.legacyPackages.${system}; in {
+      iproute2mac = pkgs.callPackage ./pkgs/iproute2mac.nix {};
+    }));
 
     apps = forAllSystems (system: {
       gcc-gd32   = { type = "app"; program = "${self.packages.${system}.gcc-gd32}/bin/gcc"; };
@@ -115,6 +120,8 @@
       ''); };
 
       nixos-install = { type = "app"; program = "${nixpkgs.legacyPackages.${system}.nixos-install-tools}/bin/nixos-install"; };
+    }) // forDarwinSystems (system: {
+      ip = { type = "app"; program = "${self.packages.${system}.iproute2mac}/bin/ip"; };
     });
     devShells = forAllSystems (system: with self.packages.${system}; with nixpkgs.legacyPackages.${system}; {
       gd32 = mkShell {
