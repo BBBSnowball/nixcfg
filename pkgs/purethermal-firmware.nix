@@ -1,4 +1,4 @@
-{ nixpkgs ? <nixpkgs>, lib ? (import nixpkgs {}).lib, system ? builtins.currentSystem }:
+{ nixpkgs ? <nixpkgs>, lib ? (import nixpkgs {}).lib, system ? builtins.currentSystem, src ? null }:
 rec {
   purethermal-arch = lib.systems.examples.armhf-embedded // {
     gcc.cpu = "cortex-m4";
@@ -10,9 +10,12 @@ rec {
     crossSystem = purethermal-arch;
     config.allowUnsupportedSystem = true;
   };
+
   shell = pkgs.pkgsBuildHost.mkShell {
-    packages = [ pkgs.pkgsBuildHost.gcc pkgs.pkgsBuildHost.binutils pkgs.newlib ];
+    packages = (with pkgs.pkgsBuildHost; [ gcc binutils dfu-util ])
+      ++ (with pkgs; [ newlib ]);
   };
+
   installScriptTemplate = ''
     #!/bin/sh
     if [ "$1" != "--do-it" ] ; then
@@ -21,14 +24,15 @@ rec {
       exit 1
     fi
     shift
-    exec @dfuutil@ -a 0 -D @out@/share/firmware.bin -s 0x08000000 "$@"
+    exec @dfuutil@ -a 0 -D @out@/share/firmware.bin -s 0x08000000:leave "$@"
   '';
+
   firmware-unapplied = { stdenv, fetchFromGitHub, dfu-util, which }:
   stdenv.mkDerivation {
     pname = "purethermal1-firmware";
     version = "1.3.0";
 
-    src = fetchFromGitHub {
+    src = if src != null then src else fetchFromGitHub {
       owner = "groupgets";
       repo = "purethermal1-firmware";
       rev = "1.3.0";
@@ -75,6 +79,8 @@ rec {
 
     inherit installScriptTemplate;
     passAsFile = [ "installScriptTemplate" ];
+
+    phases = [ "installPhase" ];
 
     installPhase = ''
       mkdir -p $out/bin $out/share
