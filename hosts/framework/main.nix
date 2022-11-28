@@ -23,7 +23,7 @@ in
       (import ./users.nix { inherit pkgs private; })
       ./bluetooth.nix
       nixos-hardware.nixosModules.framework
-      ./virtmanager.nix
+      #./virtmanager.nix
     ];
 
   networking.hostName = "fw";
