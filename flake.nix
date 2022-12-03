@@ -79,6 +79,7 @@
       GetThermal = pkgs.libsForQt5.callPackage ./pkgs/GetThermal.nix {};
       purethermal-firmware = purethermal.${system}.firmware;
       purethermal-firmware-original = purethermal.${system}.firmware-original;
+      pip2nix = pkgs.callPackage ./pkgs/pip2nix.nix { inherit pkgs; nixpkgs = "blub"; };
     } // (with gd32.${system}; {
       gcc-gd32 = gcc; binutils-gd32 = binutils; openocd-gd32 = openocd-nuclei; gdb-gd32 = gdb-nuclei;
       rustc-gd32 = rustc; cargo-gd32 = cargo;
