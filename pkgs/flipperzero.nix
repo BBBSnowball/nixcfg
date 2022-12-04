@@ -87,12 +87,15 @@ in
     WORKFLOW_BRANCH_OR_TAG = version;
 
     buildPhase = ''
-      ./fbt
+      ./fbt fw_dist fap_dist copro_dist updater_package updater_minpackage
     '';
 
+    #NOTE Use flipper-z-f7-update-local.tgz with qFlipper or f7-update-local/update.fuf with selfupdate.py.
+    #     The TAR and directory have the same data but the tools want them in different formats.
+    #     -> The .dfu file works with qFlipper but it just hangs with the TAR file.
     installPhase = ''
-      #cp . $out -r
       cp -r dist/f7-D $out
+      cp build/core2_firmware.tgz $out/
 
       # replace ZIP files by actual directory because that's more useful in the Nix store
       for x in lib sdk ; do
