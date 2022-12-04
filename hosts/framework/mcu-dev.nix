@@ -27,6 +27,9 @@ in
 
     # Android Bootloader
     ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="18d1", ATTR{idProduct}=="d00d", GROUP="dialout"
+
+    # Flipper Zero
+    ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="0483", ATTR{idProduct}=="5740", GROUP="dialout"
   '';
 
   services.udev.packages = [ openfpgaloaderRules ];

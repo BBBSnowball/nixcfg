@@ -71,6 +71,7 @@
     gd32 = forAllSystems (system: import ./riscv/compiler.nix { inherit nixpkgs system; });
     rppico = forAllSystems (system: import ./raspi-pico/toolchain.nix { inherit nixpkgs system; });
     purethermal = forAllSystems (system: import ./pkgs/purethermal-firmware.nix { inherit nixpkgs system; lib = nixpkgs.lib; });
+    flipperzero = forAllSystems (system: import ./pkgs/flipperzero.nix { inherit nixpkgs system; lib = nixpkgs.lib; });
   in {
     packages = forAllSystems (system: let pkgs = nixpkgs.legacyPackages.${system}; in {
       nrfjprog = pkgs.callPackage ./embedded/nrfjprog.nix {};
@@ -79,6 +80,7 @@
       GetThermal = pkgs.libsForQt5.callPackage ./pkgs/GetThermal.nix {};
       purethermal-firmware = purethermal.${system}.firmware;
       purethermal-firmware-original = purethermal.${system}.firmware-original;
+      flipperzero-firmware = flipperzero.${system};
       pip2nix = pkgs.callPackage ./pkgs/pip2nix.nix { inherit pkgs; nixpkgs = "blub"; };
     } // (with gd32.${system}; {
       gcc-gd32 = gcc; binutils-gd32 = binutils; openocd-gd32 = openocd-nuclei; gdb-gd32 = gdb-nuclei;
@@ -129,6 +131,7 @@
         buildInputs = [ gcc-gd32 binutils-gd32 rustc-gd32 cargo-gd32 ] ++ [ gcc lld_11 ];
       };
       purethermal = purethermal.${system}.shell;
+      flipperzero = flipperzero.${system}.shell;
     });
     inherit (nix-bundle) bundlers defaultBundler;
   }) // {

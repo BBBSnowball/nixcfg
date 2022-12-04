@@ -1,0 +1,233 @@
+diff --git a/fbt_options.py b/fbt_options.py
+index 7a805c99..b5dae040 100644
+--- a/fbt_options.py
++++ b/fbt_options.py
+@@ -41,7 +41,7 @@ COPRO_STACK_BIN_DIR = posixpath.join(
+ )
+ 
+ # Supported toolchain versions
+-FBT_TOOLCHAIN_VERSIONS = (" 10.3.",)
++FBT_TOOLCHAIN_VERSIONS = (" 10.",)
+ 
+ OPENOCD_OPTS = [
+     "-f",
+diff --git a/lib/print/wrappers.c b/lib/print/wrappers.c
+index 5cfe1060..45c41d24 100644
+--- a/lib/print/wrappers.c
++++ b/lib/print/wrappers.c
+@@ -56,6 +56,11 @@ int __wrap_fflush(FILE* stream) {
+     return 0;
+ }
+ 
++int __wrap__fflush_r(struct _reent *ptr, FILE* stream) {
++    (void)ptr;
++    return __wrap_fflush(stream);
++}
++
+ __attribute__((__noreturn__)) void __wrap___assert(const char* file, int line, const char* e) {
+     UNUSED(file);
+     UNUSED(line);
+@@ -70,4 +75,4 @@ __attribute__((__noreturn__)) void
+     UNUSED(func);
+     // TODO: message file and line number
+     furi_crash(e);
+-}
+\ No newline at end of file
++}
+diff --git a/lib/print/wrappers.h b/lib/print/wrappers.h
+index b6f0f004..3b67f50b 100644
+--- a/lib/print/wrappers.h
++++ b/lib/print/wrappers.h
+@@ -14,6 +14,7 @@ int __wrap_putchar(int ch);
+ int __wrap_putc(int ch, FILE* stream);
+ int __wrap_snprintf(char* str, size_t size, const char* format, ...);
+ int __wrap_fflush(FILE* stream);
++int __wrap__fflush_r(struct _reent *ptr, FILE* stream);
+ 
+ __attribute__((__noreturn__)) void __wrap___assert(const char* file, int line, const char* e);
+ 
+@@ -22,4 +23,4 @@ __attribute__((__noreturn__)) void
+ 
+ #ifdef __cplusplus
+ }
+-#endif
+\ No newline at end of file
++#endif
+diff --git a/scripts/fbt/version.py b/scripts/fbt/version.py
+index e7fe2eda..b4954a1d 100644
+--- a/scripts/fbt/version.py
++++ b/scripts/fbt/version.py
+@@ -1,15 +1,20 @@
+ import subprocess
+ import datetime
+ from functools import cache
++import os
+ 
+ 
+ @cache
+ def get_git_commit_unix_timestamp():
++    if "SOURCE_DATE_EPOCH" in os.environ:
++        return int(os.environ["SOURCE_DATE_EPOCH"])
+     return int(subprocess.check_output(["git", "show", "-s", "--format=%ct"]))
+ 
+ 
+ @cache
+ def get_fast_git_version_id():
++    if "WORKFLOW_BRANCH_OR_TAG" in os.environ:
++        return (os.environ["WORKFLOW_BRANCH_OR_TAG"], datetime.date.today())  # not really the same thing but good enough, I think
+     try:
+         version = (
+             subprocess.check_output(
+diff --git a/scripts/fbt_tools/fbt_assets.py b/scripts/fbt_tools/fbt_assets.py
+index e1748735..ddd52a99 100644
+--- a/scripts/fbt_tools/fbt_assets.py
++++ b/scripts/fbt_tools/fbt_assets.py
+@@ -92,7 +92,10 @@ def proto_ver_generator(target, source, env):
+             source_dir=src_dir,
+         )
+     except (subprocess.CalledProcessError, EnvironmentError) as e:
+-        raise SConsEnvironmentError("Git: describe failed")
++        if "PROTOBUF_VERSION" in os.environ:
++            git_describe = os.environ["PROTOBUF_VERSION"]
++        else:
++            raise SConsEnvironmentError("Git: describe failed")
+ 
+     git_major, git_minor = git_describe.split(".")
+     version_file_data = (
+diff --git a/scripts/fbt_tools/fbt_extapps.py b/scripts/fbt_tools/fbt_extapps.py
+index f0015cf2..3a549ee8 100644
+--- a/scripts/fbt_tools/fbt_extapps.py
++++ b/scripts/fbt_tools/fbt_extapps.py
+@@ -166,7 +166,7 @@ def BuildAppElf(env, app):
+ def prepare_app_metadata(target, source, env):
+     sdk_cache = SdkCache(env["SDK_DEFINITION"].path, load_version_only=True)
+ 
+-    if not sdk_cache.is_buildable():
++    if not sdk_cache.is_buildable() and False:
+         raise UserError(
+             "SDK version is not finalized, please review changes and re-run operation"
+         )
+diff --git a/scripts/fbt_tools/fbt_sdk.py b/scripts/fbt_tools/fbt_sdk.py
+index 3a37eacc..b8dee263 100644
+--- a/scripts/fbt_tools/fbt_sdk.py
++++ b/scripts/fbt_tools/fbt_sdk.py
+@@ -218,7 +218,7 @@ def gen_sdk_data(sdk_cache: SdkCache):
+ 
+ 
+ def _check_sdk_is_up2date(sdk_cache: SdkCache):
+-    if not sdk_cache.is_buildable():
++    if not sdk_cache.is_buildable() and False:
+         raise UserError(
+             "SDK version is not finalized, please review changes and re-run operation"
+         )
+diff --git a/scripts/fbt_tools/fwbin.py b/scripts/fbt_tools/fwbin.py
+index f510c2a6..b7ce2cef 100644
+--- a/scripts/fbt_tools/fwbin.py
++++ b/scripts/fbt_tools/fwbin.py
+@@ -2,8 +2,8 @@ from SCons.Builder import Builder
+ from SCons.Action import Action
+ import SCons
+ 
+-__OBJCOPY_ARM_BIN = "arm-none-eabi-objcopy"
+-__NM_ARM_BIN = "arm-none-eabi-nm"
++__OBJCOPY_ARM_BIN = "arm-none-eabihf-objcopy"
++__NM_ARM_BIN = "arm-none-eabihf-nm"
+ 
+ 
+ def generate(env):
+diff --git a/scripts/fwsize.py b/scripts/fwsize.py
+index 445c2904..17980709 100644
+--- a/scripts/fwsize.py
++++ b/scripts/fwsize.py
+@@ -21,7 +21,7 @@ class Main(App):
+ 
+     def process_elf(self):
+         all_sizes = subprocess.check_output(
+-            ["arm-none-eabi-size", "-A", self.args.elfname], shell=False
++            ["arm-none-eabihf-size", "-A", self.args.elfname], shell=False
+         )
+         all_sizes = all_sizes.splitlines()
+ 
+diff --git a/scripts/sconsdist.py b/scripts/sconsdist.py
+index b8f1d72b..2eacdf4e 100644
+--- a/scripts/sconsdist.py
++++ b/scripts/sconsdist.py
+@@ -82,6 +82,7 @@ class Main(App):
+             self.get_dist_file_path(self.get_dist_file_name(foldertype, "zip")),
+             "w",
+             zipfile.ZIP_DEFLATED,
++            strict_timestamps=False,
+         ) as zf:
+             for root, _, files in walk(sdk_folder):
+                 for file in files:
+diff --git a/scripts/version.py b/scripts/version.py
+index 896b58a4..8dac0627 100644
+--- a/scripts/version.py
++++ b/scripts/version.py
+@@ -33,7 +33,7 @@ class GitVersion:
+         branch_num = self._exec_git("rev-list --count HEAD") or "n/a"
+ 
+         try:
+-            version = self._exec_git("describe --tags --abbrev=0 --exact-match")
++            version = self._exec_git("describe --tags --abbrev=0 --exact-match") or "unknown"
+         except subprocess.CalledProcessError:
+             version = "unknown"
+ 
+@@ -46,6 +46,8 @@ class GitVersion:
+         }
+ 
+     def _exec_git(self, args):
++        if "FBT_NO_GIT" in os.environ:
++            return None
+         cmd = ["git"]
+         cmd.extend(args.split(" "))
+         return (
+diff --git a/site_scons/environ.scons b/site_scons/environ.scons
+index acdc83e2..1286c198 100644
+--- a/site_scons/environ.scons
++++ b/site_scons/environ.scons
+@@ -29,6 +29,9 @@ variables_to_forward = [
+     "TEMP",
+     # Colors for tools
+     "TERM",
++    # for Nix build
++    "FBT_NO_GIT",
++    "SOURCE_DATE_EPOCH",
+ ]
+ if proxy_env := GetOption("proxy_env"):
+     variables_to_forward.extend(proxy_env.split(","))
+@@ -44,7 +47,7 @@ coreenv = VAR_ENV.Clone(
+         (
+             "crosscc",
+             {
+-                "toolchain_prefix": "arm-none-eabi-",
++                "toolchain_prefix": "arm-none-eabihf-",
+                 "versions": VAR_ENV["FBT_TOOLCHAIN_VERSIONS"],
+             },
+         ),
+diff --git a/site_scons/extapps.scons b/site_scons/extapps.scons
+index b8f21056..b77cf2c9 100644
+--- a/site_scons/extapps.scons
++++ b/site_scons/extapps.scons
+@@ -43,7 +43,7 @@ appenv.AppendUnique(
+         "-Wl,-e${APP_ENTRY}",
+         "-Xlinker",
+         "-Map=${TARGET}.map",
+-        "-specs=nano.specs",
++        #"-specs=nano.specs",  # We select newlib-nano via nixpkgs.
+         "-specs=nosys.specs",
+     ],
+     LIBS=[
+diff --git a/site_scons/firmwareopts.scons b/site_scons/firmwareopts.scons
+index 9f707b4d..06a58ca6 100644
+--- a/site_scons/firmwareopts.scons
++++ b/site_scons/firmwareopts.scons
+@@ -34,7 +34,7 @@ else:
+ 
+ ENV.AppendUnique(
+     LINKFLAGS=[
+-        "-specs=nano.specs",
++        #"-specs=nano.specs",  # We select newlib-nano via nixpkgs.
+         "-specs=nosys.specs",
+         "-Wl,--gc-sections",
+         "-Wl,--undefined=uxTopUsedPriority",
