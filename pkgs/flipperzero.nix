@@ -1,3 +1,4 @@
+# Usage: nix build .#flipperzero-firmware && ./result/bin/flipper-selfupdate ./result/f7-update-local/update.fuf
 { nixpkgs ? <nixpkgs>, lib ? (import nixpkgs {}).lib, system ? builtins.currentSystem, src ? null }:
 let
   all = rec {
@@ -90,9 +91,8 @@ in
       ./fbt fw_dist fap_dist copro_dist updater_package updater_minpackage
     '';
 
-    #NOTE Use flipper-z-f7-update-local.tgz with qFlipper or f7-update-local/update.fuf with selfupdate.py.
+    #NOTE Use flipper-z-f7-update-local.tgz with qFlipper (well, doesn't work) or f7-update-local/update.fuf with selfupdate.py (see head of this file).
     #     The TAR and directory have the same data but the tools want them in different formats.
-    #     -> The .dfu file works with qFlipper but it just hangs with the TAR file.
     installPhase = ''
       cp -r dist/f7-D $out
       cp build/core2_firmware.tgz $out/
@@ -101,6 +101,13 @@ in
       for x in lib sdk ; do
         rm -f $out/flipper-z-f7-''${x}-local.zip
         cp -r build/f7-firmware-D/$x $out/$x
+      done
+
+      mkdir $out/bin
+      for x in flash lint ob otp runfap selfupdate serial_cli slideshow storage ; do
+        echo "#! ${pkgs.pkgsBuildHost.bash}/bin/bash" >$out/bin/flipper-$x
+        echo "exec ${all.pythonWithPkgs}/bin/python $src/scripts/$x.py \"\$@\"" >>$out/bin/flipper-$x
+        chmod +x $out/bin/flipper-$x
       done
     '';
 
