@@ -59,6 +59,8 @@ in
     pname = "flipperzero-firmware";
     version = "0.72.1";  # change timestampOfCommit and tagOfCommit and PROTOBUF_VERSION to match this
 
+    outputs = [ "out" "sdk" ];
+
     src = pkgs.fetchFromGitHub {
       owner = "flipperdevices";
       repo = "flipperzero-firmware";
@@ -76,7 +78,10 @@ in
 
     nativeBuildInputs = hostDeps;
 
-    patches = [ ./flipperzero-fix-build.patch ];
+    patches = [
+      ./flipperzero-fix-build.patch
+      ./flipperzero-external-apps.patch
+    ];
 
     # Don't build virtualenv, don't update git.
     FBT_NOENV = 1;
@@ -88,6 +93,10 @@ in
     WORKFLOW_BRANCH_OR_TAG = version;
 
     buildPhase = ''
+      ./fbt fap_snake_game
+      rm -rf build/f7-firmware-D/assets build/f7-firmware-D/.extapps
+      cp -r . $sdk
+
       ./fbt fw_dist fap_dist copro_dist updater_package updater_minpackage
     '';
 

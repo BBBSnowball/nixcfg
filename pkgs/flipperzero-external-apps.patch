@@ -1,0 +1,54 @@
+diff --git a/firmware.scons b/firmware.scons
+index d674bf16..779332b7 100644
+--- a/firmware.scons
++++ b/firmware.scons
+@@ -138,6 +138,10 @@ for app_dir, _ in env["APPDIRS"]:
+         if isinstance(entry, FS.Dir) and not str(entry).startswith("."):
+             fwenv.LoadAppManifest(entry)
+ 
++if fwenv["EXTRA_APPDIR"] != "":
++    entry = env.Dir(fwenv["EXTRA_APPDIR"])
++    fwenv.LoadAppManifest(entry)
++
+ 
+ fwenv.PrepareApplicationsBuild()
+ 
+diff --git a/scripts/fbt_tools/fbt_dist.py b/scripts/fbt_tools/fbt_dist.py
+index f0b44348..e8f1ec54 100644
+--- a/scripts/fbt_tools/fbt_dist.py
++++ b/scripts/fbt_tools/fbt_dist.py
+@@ -22,7 +22,10 @@ def GetProjetDirName(env, project=None):
+ 
+ def create_fw_build_targets(env, configuration_name):
+     flavor = GetProjetDirName(env, configuration_name)
+-    build_dir = env.Dir("build").Dir(flavor)
++    if env["EXTERNAL_BUILD_DIR"] != "":
++        build_dir = env.Dir(env["EXTERNAL_BUILD_DIR"]).Dir(flavor)
++    else:
++        build_dir = env.Dir("build").Dir(flavor)
+     return env.SConscript(
+         "firmware.scons",
+         variant_dir=build_dir,
+diff --git a/site_scons/commandline.scons b/site_scons/commandline.scons
+index fc2534ed..0f2d2b41 100644
+--- a/site_scons/commandline.scons
++++ b/site_scons/commandline.scons
+@@ -235,6 +235,18 @@ vars.AddVariables(
+             ("applications_user", False),
+         ],
+     ),
++    PathVariable(
++        "EXTRA_APPDIR",
++        help="Path to application outside of this tree",
++        validator=PathVariable.PathAccept,
++        default="",
++    ),
++    PathVariable(
++        "EXTERNAL_BUILD_DIR",
++        help="Path to build directory outside of this tree",
++        validator=PathVariable.PathAccept,
++        default="",
++    ),
+ )
+ 
+ Return("vars")
