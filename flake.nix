@@ -82,6 +82,7 @@
       purethermal-firmware-original = purethermal.${system}.firmware-original;
       flipperzero-firmware = flipperzero.${system};
       pip2nix = pkgs.callPackage ./pkgs/pip2nix.nix { inherit pkgs; nixpkgs = "blub"; };
+      openups = pkgs.callPackage ./pkgs/openups.nix {};
     } // (with gd32.${system}; {
       gcc-gd32 = gcc; binutils-gd32 = binutils; openocd-gd32 = openocd-nuclei; gdb-gd32 = gdb-nuclei;
       rustc-gd32 = rustc; cargo-gd32 = cargo;
@@ -103,6 +104,7 @@
       cargo-gd32 = { type = "app"; program = "${self.packages.${system}.cargo-gd32}/bin/cargo"; };
       nrfjprog   = { type = "app"; program = "${self.packages.${system}.nrfjprog}/bin/nrfjprog"; };
       apio       = { type = "app"; program = "${self.packages.${system}.apio}/bin/apio"; };
+      openups    = { type = "app"; program = "${self.packages.${system}.openups}/bin/openups"; };
 
       bundle = { type = "app"; program = builtins.toString (with nixpkgs.legacyPackages.${system}; writeShellScript "nix-bundle-routeromen" ''
         if [ -z "$1" ] ; then

@@ -30,6 +30,9 @@ in
 
     # Flipper Zero
     ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="0483", ATTR{idProduct}=="5740", GROUP="dialout"
+
+    # OpenUPS
+    ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="04d8", ATTR{idProduct}=="d004", GROUP="dialout"
   '';
 
   services.udev.packages = [ openfpgaloaderRules ];
