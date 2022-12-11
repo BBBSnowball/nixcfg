@@ -31,6 +31,7 @@ in {
     environment = {
       #OMADA_HOME = conf.package.outPath;
       OMADA_PKG = conf.package.outPath;
+      OMADA_VERSION = conf.package.version;
       OMADA_HOME = "/var/lib/${name}";
       LOG_DIR = "/var/log/${name}";
       WORK_DIR = "/run/${name}";
@@ -50,6 +51,31 @@ in {
     #http_code=$(curl -I -m 10 -o /dev/null -s -w %{http_code} http://localhost:${HTTP_PORT}/actuator/linux/check)
 
     script = ''
+      # Check whether we are starting an older or newer version than before.
+      if [ -e $OMADA_HOME/current-version ] ; then
+        old_version="$(cat $OMADA_HOME/current-version)"
+        if [ "$old_version" != "$OMADA_VERSION" ] ; then
+          # idea for how to compare the versions is from here: https://github.com/mbentley/docker-omada-controller/pull/229/files#diff-edf4d034db059e72b5f6260af6d16b2194c6e733649071d376595ebc9f6d8ce1R210
+          newer_version="$(printf '%s\n' "$old_version" "$OMADA_VERSION" | sort -rV | head -n1)"
+          if [ "$newer_version" != "$OMADA_VERSION" ] ; then
+            echo "ERROR: Current version of omada-controller is '$OMADA_VERSION' but this directory has previously been used with version '$old_version'. Refusing to downgrad because that may break this instance." >&2
+            echo "See https://community.tp-link.com/en/business/forum/topic/577334 and https://github.com/mbentley/docker-omada-controller/issues/228" >&2
+            echo "A backup of the old data may be available in $OMADA_HOME-backup-*" >&2
+            exit 1
+          fi
+
+          #NOTE This is not ideal but we cannot write outside of our state directory at this point.
+          backupdir="''${OMADA_HOME}/backup-$old_version"
+          echo "Making backup because we are upgrading from $old_version to $OMADA_VERSION. Backup destination is $backupdir ..."
+          if [ -e "$backupdir" ] ; then
+            echo "ERROR: Backup directory already exists!" >&2
+            exit 1
+          fi
+          ( umask 077 && mkdir $backupdir && cp -r $DATA_DIR/ $backupdir/ )
+        fi
+      fi
+      echo "$OMADA_VERSION" >$OMADA_HOME/current-version
+
       mkdir -p $DATA_DIR/autobackup
       cp -rf $OMADA_PKG/data/* $DATA_DIR/
       chmod -R u+w $DATA_DIR
