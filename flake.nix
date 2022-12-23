@@ -83,6 +83,11 @@
       flipperzero-firmware = flipperzero.${system};
       pip2nix = pkgs.callPackage ./pkgs/pip2nix.nix { inherit pkgs; nixpkgs = "blub"; };
       openups = pkgs.callPackage ./pkgs/openups.nix {};
+      openups-aarch64-static = let p = pkgs.pkgsCross.aarch64-multiplatform-musl.pkgsStatic; in
+      (p.callPackage ./pkgs/openups.nix {}).overrideAttrs (old: {
+        patches = (old.patches or []) ++ [ ./pkgs/openups-static.patch ];
+        buildInputs = (old.buildInputs or []) ++ [ p.libusb ];
+      });
     } // (with gd32.${system}; {
       gcc-gd32 = gcc; binutils-gd32 = binutils; openocd-gd32 = openocd-nuclei; gdb-gd32 = gdb-nuclei;
       rustc-gd32 = rustc; cargo-gd32 = cargo;
