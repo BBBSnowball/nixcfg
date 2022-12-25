@@ -88,6 +88,11 @@
         patches = (old.patches or []) ++ [ ./pkgs/openups-static.patch ];
         buildInputs = (old.buildInputs or []) ++ [ p.libusb ];
       });
+      openups-aarch64-static-dbg = self.packages.${system}.openups-aarch64-static.overrideAttrs (old: {
+        postPatch = ''
+          sed -i 's/#undef DEBUG_RECV/#define DEBUG_RECV 1/' src/lib/usbhid.cpp
+        '';
+      });
     } // (with gd32.${system}; {
       gcc-gd32 = gcc; binutils-gd32 = binutils; openocd-gd32 = openocd-nuclei; gdb-gd32 = gdb-nuclei;
       rustc-gd32 = rustc; cargo-gd32 = cargo;
