@@ -16,4 +16,16 @@
 
   sound.enable = lib.mkOverride 500 true;
   hardware.pulseaudio.enable = lib.mkOverride 500 true;
+
+  environment.systemPackages = with pkgs; [
+    meld
+    firefox pavucontrol chromium
+    mplayer mpv vlc
+    speedcrunch
+    gnome.eog gnome.evince
+    w3m
+    (git.override { guiSupport = true; })
+    gnome.gnome-screenshot
+    iw wirelesstools
+  ];
 }

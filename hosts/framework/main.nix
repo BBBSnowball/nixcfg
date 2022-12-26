@@ -154,6 +154,7 @@ in
     entr
     zgrviewer graphviz
     yubikey-manager yubikey-manager-qt yubikey-personalization
+    cura freecad kicad graphviz blender
   ];
 
   services.printing.drivers = [
