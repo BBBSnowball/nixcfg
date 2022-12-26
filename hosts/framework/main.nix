@@ -16,6 +16,7 @@ in
       ssh-github
       xonsh
       flir
+      allowUnfree
     ] ++
     [ ./hardware-configuration.nix
       ./pipewire.nix
@@ -32,9 +33,8 @@ in
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
   boot.loader.systemd-boot.memtest86.enable = true;
-  nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
+  nixpkgs.allowUnfreeByName = [
     "memtest86-efi"
-    "vscode"
     "mfc9142cdnlpr"
   ];
 

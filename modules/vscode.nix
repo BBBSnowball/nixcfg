@@ -1,8 +1,7 @@
-{ lib, pkgs, ... }:
+{ lib, pkgs, modules, ... }:
 {
-  nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
-    "vscode"
-  ];
+  imports = [ modules.allowUnfree ];
+  nixpkgs.allowUnfreeByName = [ "vscode" ];
 
   environment.interactiveShellInit = let
     pioLibs = [
