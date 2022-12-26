@@ -79,7 +79,8 @@
       wlay = pkgs.callPackage ./pkgs/wlay.nix {};
       GetThermal = pkgs.libsForQt5.callPackage ./pkgs/GetThermal.nix {};
       purethermal-firmware = purethermal.${system}.firmware;
-      purethermal-firmware-original = purethermal.${system}.firmware-original;
+      purethermal-firmware-upstream = purethermal.${system}.firmware-upstream;
+      purethermal-firmware-original-bin = purethermal.${system}.firmware-original-bin;
       flipperzero-firmware = flipperzero.${system};
       pip2nix = pkgs.callPackage ./pkgs/pip2nix.nix { inherit pkgs; nixpkgs = "blub"; };
       openups = pkgs.callPackage ./pkgs/openups.nix {};
