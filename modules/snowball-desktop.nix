@@ -24,7 +24,8 @@
     speedcrunch
     gnome.eog gnome.evince
     w3m
-    (git.override { guiSupport = true; })
+    #(git.override { guiSupport = true; })  # provides `git gui`
+    gitui gitg
     gnome.gnome-screenshot
     iw wirelesstools
   ];

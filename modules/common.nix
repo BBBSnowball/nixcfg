@@ -33,6 +33,7 @@
     mosh
 
     ripgrep lf
+    gitui
   ] ++ (if system == "x86_64-linux" then [
     cpufrequtils
     i7z config.boot.kernelPackages.cpupower config.boot.kernelPackages.turbostat powertop
