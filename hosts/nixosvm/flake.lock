@@ -37,10 +37,7 @@
     },
     "nix-bundle": {
       "inputs": {
-        "nixpkgs": [
-          "routeromen",
-          "nixpkgs"
-        ]
+        "nixpkgs": "nixpkgs_2"
       },
       "locked": {
         "lastModified": 1611019385,
@@ -58,6 +55,22 @@
     },
     "nixpkgs": {
       "locked": {
+        "lastModified": 1659446231,
+        "narHash": "sha256-hekabNdTdgR/iLsgce5TGWmfIDZ86qjPhxDg/8TlzhE=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "eabc38219184cc3e04a974fe31857d8e0eac098d",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixos-21.11",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs-notes": {
+      "locked": {
         "lastModified": 1617271991,
         "narHash": "sha256-VdzjIQaT1FtycNid0iPSVr44Jrstoox6QRLrwCY1uG0=",
         "owner": "NixOS",
@@ -67,9 +80,40 @@
       },
       "original": {
         "owner": "NixOS",
-        "ref": "nixos-20.09",
         "repo": "nixpkgs",
+        "rev": "da7f4c4842520167f65c20ad75ecdbd14e27ae91",
         "type": "github"
+      }
+    },
+    "nixpkgs-rss": {
+      "locked": {
+        "lastModified": 1617271991,
+        "narHash": "sha256-VdzjIQaT1FtycNid0iPSVr44Jrstoox6QRLrwCY1uG0=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "da7f4c4842520167f65c20ad75ecdbd14e27ae91",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "da7f4c4842520167f65c20ad75ecdbd14e27ae91",
+        "type": "github"
+      }
+    },
+    "nixpkgs_2": {
+      "locked": {
+        "lastModified": 1620055814,
+        "narHash": "sha256-8LEHoYSJiL901bTMVatq+rf8y7QtWuZhwwpKE2fyaRY=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "1db42b7fe3878f3f5f7a4f2dc210772fd080e205",
+        "type": "github"
+      },
+      "original": {
+        "id": "nixpkgs",
+        "ref": "nixos-20.03-small",
+        "type": "indirect"
       }
     },
     "private": {
@@ -96,6 +140,8 @@
           "flake-compat"
         ],
         "nixpkgs": "nixpkgs",
+        "nixpkgs-notes": "nixpkgs-notes",
+        "nixpkgs-rss": "nixpkgs-rss",
         "routeromen": "routeromen"
       }
     },
