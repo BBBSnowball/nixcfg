@@ -23,7 +23,7 @@ in {
         wp-cmd unzip
       ];
 
-      services.wordpress."janina" = {
+      services.wordpress.sites."janina" = {
         database = {
           #host = "127.0.0.1";
           #port = mysqlPort;

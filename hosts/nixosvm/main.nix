@@ -29,6 +29,7 @@ in {
       (withFlakeInputs ./containers/rss.nix)
       (withFlakeInputs ./containers/php.nix)
       (withFlakeInputs ./containers/janina-wordpress.nix)
+      (withFlakeInputs ./containers/janina-komm-wordpress.nix)
       ./firewall-iptables-restore
     ];
 
@@ -45,6 +46,10 @@ in {
   } ];
   networking.interfaces."tinc.door".ipv4.addresses = [ {
     address = "192.168.19.39";
+    prefixLength = 25;
+  } ];
+  networking.interfaces."tinc.a".ipv4.addresses = [ {
+    address = "192.168.83.39";
     prefixLength = 25;
   } ];
 

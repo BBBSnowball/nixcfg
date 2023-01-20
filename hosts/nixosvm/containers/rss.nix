@@ -1,9 +1,10 @@
-{ config, lib, modules, ... }:
+{ config, lib, modules, nixpkgs-rss, ... }:
 let
   ports = config.networking.firewall.allowedPorts;
 in {
   containers.rss = {
     autoStart = true;
+    nixpkgs = nixpkgs-rss;
     config = { config, pkgs, ... }: let
       poolName = "my_selfoss_pool";
       phpfpmSocketName = config.services.phpfpm.pools.my_selfoss_pool.socket;
