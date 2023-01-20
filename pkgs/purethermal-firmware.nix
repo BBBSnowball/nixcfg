@@ -1,5 +1,5 @@
 { nixpkgs ? <nixpkgs>, lib ? (import nixpkgs {}).lib, system ? builtins.currentSystem, src ? null }:
-rec {
+let
   purethermal-arch = lib.systems.examples.armhf-embedded // {
     gcc.cpu = "cortex-m4";
     gcc.fpu = "fpv4-sp-d16";
@@ -27,19 +27,17 @@ rec {
     exec @dfuutil@ -a 0 -D @out@/share/firmware.bin -s 0x08000000:leave "$@"
   '';
 
-  firmware-unapplied = { stdenv, fetchFromGitHub, dfu-util, which }:
-  stdenv.mkDerivation {
+  firmware-unapplied-fn = { src, ... }@args: { stdenv, fetchFromGitHub, dfu-util, which, python3 }:
+  let useEnterDfuScript = args.useEnterDfuScript or false; in
+  stdenv.mkDerivation ({
     pname = "purethermal1-firmware";
-    version = "1.3.0";
 
-    src = if src != null then src else fetchFromGitHub {
-      owner = "groupgets";
-      repo = "purethermal1-firmware";
-      rev = "1.3.0";
-      hash = "sha256-ImWDv4y2JOVXHPQeGLkN4WNEwKg88MP482LlR1bmgOA=";
-    };
+    src = src { inherit fetchFromGitHub; };
 
     nativeBuildInputs = [ dfu-util which ];
+    # Python doesn't seem to like this ARM architecture - even for pkgsHostHost. Well, ok, let's not
+    # replace the she-bang for enter-dfu.py. It should be fine because it calls nix-shell.
+    #depsHostHost = lib.optional useEnterDfuScript [ (python3.withPackages(p:[p.pyusb])) ];
 
     versionHeaderTemplate = ''
       #ifndef VERSION_H
@@ -49,14 +47,16 @@ rec {
       #endif
     '';
 
-    inherit installScriptTemplate;
+    inherit useEnterDfuScript installScriptTemplate;
     passAsFile = [ "versionHeaderTemplate" "installScriptTemplate" ];
+
+    OPTIONS = "";
 
     buildPhase = ''
       mkdir .git; touch .git/HEAD .git/index
       substitute $versionHeaderTemplatePath Inc/version.h --subst-var version
 
-      make SYSTEM=arm-none-eabihf-
+      make SYSTEM=arm-none-eabihf- OPTIONS="$OPTIONS"
     '';
 
     installPhase = ''
@@ -65,13 +65,19 @@ rec {
         cp main.$x $out/share/firmware.$x
       done
       mv $out/share/firmware.out $out/share/firmware.elf
-      substitute $installScriptTemplatePath $out/bin/flash-purethermal1-firmware --subst-var out --subst-var-by dfuutil $(which dfu-util)
+
+      if [ "$useEnterDfuScript" == 1 ]; then
+        cp scripts/enter-dfu.py $out/share/
+        substitute $installScriptTemplatePath $out/bin/flash-purethermal1-firmware --subst-var out \
+          --subst-var-by dfuutil "$out/share/enter-dfu.py $(which dfu-util)"
+      else
+        substitute $installScriptTemplatePath $out/bin/flash-purethermal1-firmware --subst-var out --subst-var-by dfuutil $(which dfu-util)
+      fi
       chmod +x $out/bin/flash-purethermal1-firmware
     '';
-  };
-  firmware = pkgs.callPackage firmware-unapplied {};
+  } // removeAttrs args ["src"]);
 
-  firmware-original-unapplied = { stdenv, dfu-util, which }:
+  firmware-original-bin-unapplied = { stdenv, dfu-util, which }:
   stdenv.mkDerivation {
     name = "purethermal1-firmware-original";
 
@@ -90,6 +96,39 @@ rec {
       chmod +x $out/bin/flash-purethermal1-firmware
     '';
   };
-  firmware-original = pkgs.callPackage firmware-original-unapplied {};
-}
+in rec {
+  inherit purethermal-arch pkgs shell;
 
+  inherit firmware-original-bin-unapplied;
+  firmware-original-bin = pkgs.callPackage firmware-original-bin-unapplied {};
+
+  firmware-upstream-unapplied = firmware-unapplied-fn {
+    pname = "purethermal1-firmware";
+    version = "1.3.0";
+
+    src = { fetchFromGitHub }: fetchFromGitHub {
+      owner = "groupgets";
+      repo = "purethermal1-firmware";
+      rev = "1.3.0";
+      hash = "sha256-ImWDv4y2JOVXHPQeGLkN4WNEwKg88MP482LlR1bmgOA=";
+    };
+  };
+  firmware-upstream = pkgs.callPackage firmware-upstream-unapplied {};
+
+  firmware-unapplied = firmware-unapplied-fn {
+    name = "purethermal1-firmware";
+    version = "1.3.0";
+
+    src = { fetchFromGitHub }: if src != null then src else fetchFromGitHub {
+      owner = "BBBSnowball";
+      repo = "purethermal1-firmware";
+      rev = "6282234a98d974b7b16bc958bca9f7296a2d52a4";
+      hash = "sha256-Mg8s48lMmS3tuJ6U6z3mbHgCwYLKJ/IQE5dWgsmFL2U=";
+    };
+
+    OPTIONS = "MLX90614 MLX90614_OVERLAY OVERLAY_DEFAULT_ON";
+
+    useEnterDfuScript = true;
+  };
+  firmware = pkgs.callPackage firmware-unapplied {};
+}

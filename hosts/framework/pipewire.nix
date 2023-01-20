@@ -6,7 +6,7 @@
     enable = true;
     #extraPortals = with pkgs; [ xdg-desktop-portal-wlr ];
     wlr.enable = true;
-    gtkUsePortal = true;
+    #gtkUsePortal = true;  # see below
   };
 
   services.pipewire = {
@@ -19,4 +19,7 @@
       slurp grim
     ];
   };
+
+  # NixOS has deprecated xdg.portal.gtkUsePortal but it works ok for me so let's keep the effect
+  environment.sessionVariables.GTK_USE_PORTAL = "1";
 }

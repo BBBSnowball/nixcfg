@@ -1,0 +1,11 @@
+--- a/CMakeLists.txt	2022-12-23 17:37:06.693349560 +0100
++++ b/CMakeLists.txt	2022-12-23 17:36:21.834607025 +0100
+@@ -25,6 +25,7 @@
+ target_link_libraries(openups
+ #pthread
+ usb
++usb-1.0
+ )
+
+ install(
+

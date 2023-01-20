@@ -50,10 +50,6 @@
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
-    vim
-    firefox
-    iw wirelesstools
-    pavucontrol
     i2c-tools
     mumble
     freecad
