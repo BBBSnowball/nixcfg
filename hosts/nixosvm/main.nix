@@ -24,6 +24,7 @@ in {
       ./services/openvpn.nix
       (withFlakeInputs ./services/tinc.nix)
       (withFlakeInputs ./containers/feg.nix)
+      (withFlakeInputs ./containers/git.nix)
       (withFlakeInputs ./containers/mate.nix)
       (withFlakeInputs ./containers/notes.nix)
       (withFlakeInputs ./containers/rss.nix)
