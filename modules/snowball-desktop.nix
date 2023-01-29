@@ -20,7 +20,7 @@
   environment.systemPackages = with pkgs; [
     meld
     firefox pavucontrol chromium
-    mplayer mpv vlc
+    mpv vlc
     speedcrunch
     gnome.eog gnome.evince
     w3m
@@ -28,5 +28,8 @@
     gitui gitg
     gnome.gnome-screenshot
     iw wirelesstools
-  ];
+  ] ++ (builtins.filter (p: p.meta.available) [
+    # These are not available for aarch64-linux at the moment.
+    mplayer
+  ]);
 }
