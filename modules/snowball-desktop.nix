@@ -1,6 +1,9 @@
 { lib, config, pkgs, modules, ... }:
 {
-  imports = [ modules.snowball-big ];
+  imports = with modules; [
+    snowball-big
+    allowUnfree
+  ];
 
   services.printing.enable = true;
   #services.printing.drivers = with pkgs; [
@@ -9,11 +12,21 @@
   #  mfc9140cdncupswrapper
   #];
 
-  ##NOTE This doesn't seem to get merged with other definitions of the same setting!
-  #nixpkgs.config.allowUnfreePredicate = pkg: lib.trace "abc" (builtins.elem (lib.getName pkg) [
-  #  "mfc9140cdnlpr"
-  #]);
+  #nixpkgs.allowUnfreeByName = [ "mfc9140cdnlpr" ];
 
   sound.enable = lib.mkOverride 500 true;
   hardware.pulseaudio.enable = lib.mkOverride 500 true;
+
+  environment.systemPackages = with pkgs; [
+    meld
+    firefox pavucontrol chromium
+    mplayer mpv vlc
+    speedcrunch
+    gnome.eog gnome.evince
+    w3m
+    #(git.override { guiSupport = true; })  # provides `git gui`
+    gitui gitg
+    gnome.gnome-screenshot
+    iw wirelesstools
+  ];
 }

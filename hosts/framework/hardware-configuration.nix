@@ -24,6 +24,11 @@
     { device = "/dev/vg1/nixos-store";
       fsType = "xfs";
     };
+  
+  fileSystems."/home/gos/data" =
+    { device = "/dev/vg1/gos";
+      fsType = "xfs";
+    };
 
   fileSystems."/boot" =
     { device = "/dev/disk/by-uuid/9FB9-1E18";

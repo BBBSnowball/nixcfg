@@ -37,5 +37,25 @@ in
   users.users.user2 = guiUser // {
     extraGroups = [ ];
   };
+
+  users.users.gos = basicUser // {
+    extraGroups = [ ];
+    isNormalUser = true;
+
+    packages = with pkgs; [
+      # https://grapheneos.org/build#build-dependencies
+      # -> use nix-shell, instead
+      #gitRepo git gnupg
+      #libgcc binutils
+      #(python3.withPackages (p: with p; [ protobuf ]))
+      #nodejs
+      #yarn
+      #gperf
+      #pkgsi686Linux.gcc.libc_lib
+      #pkgsi686Linux.gcc.libc_dev
+      #pkgsi686Linux.gcc
+      #signify
+    ];
+  };
 }
 
