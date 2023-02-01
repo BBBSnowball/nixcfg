@@ -57,10 +57,10 @@ in
       -j nixos-fw-refuse
       '';
 
-    raw.nixos-fw-rpfilter.enable = kernelHasRPFilter && (cfg.checkReversePath != false);
-    raw.nixos-fw-rpfilter.rules.default.rules4 = ''
+    mangle.nixos-fw-rpfilter.enable = kernelHasRPFilter && (cfg.checkReversePath != false);
+    mangle.nixos-fw-rpfilter.rules.default.rules4 = ''
       # Perform a reverse-path test to refuse spoofers
-      # For now, we just drop, as the raw table doesn't have a log-refuse yet
+      # For now, we just drop, as the mangle table doesn't have a log-refuse yet
       -m rpfilter --validmark ${optionalString (cfg.checkReversePath == "loose") "--loose"} -j RETURN
   
       # Allows this host to act as a DHCP4 client without first having to use APIPA
@@ -74,9 +74,9 @@ in
       ''}
       -j DROP
       '';
-    raw.nixos-fw-rpfilter.rules.default.rules6 = ''
+    mangle.nixos-fw-rpfilter.rules.default.rules6 = ''
       # Perform a reverse-path test to refuse spoofers
-      # For now, we just drop, as the raw table doesn't have a log-refuse yet
+      # For now, we just drop, as the mangle table doesn't have a log-refuse yet
       -m rpfilter --validmark ${optionalString (cfg.checkReversePath == "loose") "--loose"} -j RETURN
   
       ${optionalString cfg.logReversePathDrops ''
@@ -84,7 +84,7 @@ in
       ''}
       -j DROP
       '';
-    raw.PREROUTING.rules.rpfilter = {
+    mangle.PREROUTING.rules.rpfilter = {
       enable = kernelHasRPFilter && (cfg.checkReversePath != false);
       order = -50;
       rules = ''-j nixos-fw-rpfilter'';
