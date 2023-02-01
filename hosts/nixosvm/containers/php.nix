@@ -12,7 +12,7 @@ in {
       imports = [ modules.container-common ];
 
       environment.systemPackages = with pkgs; [
-        php74Packages.composer
+        phpPackages.composer
       ];
 
       services.nginx = {

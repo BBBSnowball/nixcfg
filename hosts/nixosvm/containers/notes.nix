@@ -122,7 +122,7 @@ in {
           Restart = "always";
         };
         wantedBy = [ "multi-user.target" ];
-        after = [ "magpie" ];
+        after = [ "magpie.service" ];
       };
     };
   };
