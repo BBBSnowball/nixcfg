@@ -1,5 +1,5 @@
 #! /usr/bin/env nix-shell
-#! nix-shell -i bash -p git-crypt gnupg pinentry.curses gawk gnused git coreutils psmisc
+#! nix-shell -i bash -p git-crypt gnupg pinentry.curses gawk gnused git coreutils psmisc monkeysphere
 
 user="${USER:-root}"
 hostname=macnix
@@ -125,15 +125,37 @@ fi
 
 ### generate SSH key
 
+#ssh_pubkeys_new=0
+#if [ ! -e $keydir/id_rsa ] ; then
+#  ssh-keygen -t rsa -b 4096 -f $keydir/id_rsa -N "" </dev/null
+#  ssh_pubkeys_new=1
+#fi
+#if [ ! -e $keydir/ssh-pubkeys -o $keydir/id_rsa -nt $keydir/ssh-pubkeys -o $keydir/info -nt $keydir/ssh-pubkeys ] ; then
+#  #( gpg --export-ssh-key $fprint; ssh-keygen -ef $keydir/id_rsa ) >$keydir/ssh-pubkeys
+#  gpg --export-ssh-key $fprint >$keydir/id_gpg.pub
+#  chmod 0600 $keydir/id_gpg.pub  # SSH insists because IdentityFile is usually the private key
+#  cat $keydir/id_{gpg,rsa}.pub >$keydir/ssh-pubkeys
+#  ssh_pubkeys_new=1
+#fi
+
+### extract auth key from GPG and convert to SSH key
+
 ssh_pubkeys_new=0
-if [ ! -e $keydir/id_rsa ] ; then
-  ssh-keygen -t rsa -b 4096 -f $keydir/id_rsa -N "" </dev/null
+if [ ! -e $keydir/id_rsa -o $keydir/info -nt $keydir/id_rsa ] ; then
+  # We want the auth subkey but monkeysphere would choose some other subkey, be default.
+  # -> Get the correct fingerprint from GnuPG and pass it to monkeysphere.
+  fpr_of_auth_key="$(gpg --with-colon --with-subkey-fingerprints --list-secret-keys 0x$fprint | awk -F: '{ if ($1 == "ssb") { type=$12 }; if ($1 == "fpr" && type == "a") {print $10} }')"
+  if [ ${#fpr_of_auth_key} != 40 ] ; then
+    echo "Error: We expected exactly auth sub-key (for key 0x$fprint) but we got: $fpr_of_auth_key" >&2
+    exit 1
+  fi
+
+  # see https://frizky.web.id/?p=103
+  ( umask 077; gpg --export-options export-minimal,no-export-attributes --export-secret-keys --no-armor 0x$fprint | openpgp2ssh $fpr_of_auth_key >$keydir/id_rsa.tmp )
+  mv $keydir/id_rsa.tmp $keydir/id_rsa
 fi
-if [ ! -e $keydir/ssh-pubkeys -o $keydir/id_rsa -nt $keydir/ssh-pubkeys -o $keydir/info -nt $keydir/ssh-pubkeys ] ; then
-  #( gpg --export-ssh-key $fprint; ssh-keygen -ef $keydir/id_rsa ) >$keydir/ssh-pubkeys
-  gpg --export-ssh-key $fprint >$keydir/id_gpg.pub
-  chmod 0600 $keydir/id_gpg.pub  # SSH insists because IdentityFile is usually the private key
-  cat $keydir/id_{gpg,rsa}.pub >$keydir/ssh-pubkeys
+if [ ! -e $keydir/id_rsa.pub -o $keydir/id_rsa -nt $keydir/id_rsa.pub ] ; then
+  ssh-keygen -y -f $keydir/id_rsa >$keydir/id_rsa.pub
   ssh_pubkeys_new=1
 fi
 
@@ -168,7 +190,7 @@ if [ ! -e $keydir/ssh_config ] ; then
       # This answer suggests that one could use a public key with IdentitFile.
       # https://serverfault.com/a/964317
       # -> SSH was complaining but now it works.
-      IdentityFile $keydir/id_gpg.pub
+      IdentityFile $keydir/id_rsa.pub
 EOF
 fi
 
@@ -189,13 +211,16 @@ if [ $ssh_pubkeys_new == 0 -a ! \( -e "$secrets_shared_repo/.git" -a -e "$privat
   #    terminate itself "after a few seconds" when the child process
   #    is done.
   # Unfortunately, this check often fails without producing any output. I have no idea why.
-  killall -u $USER gpg-agent || true
-  sleep 1
-  if ( set -x; gpg-agent --verbose --batch --enable-ssh-support --steal-socket --daemon  bash -c "sleep 1; ssh -F $keydir/ssh_config -o BatchMode=yes sync-gpg info" ) </dev/null ; then
-    echo "-> GnuPG key can be used to access host sync."
-  else
-    echo "-> GnuPG key doesn't work (yet). Exit code: $?"
-    ssh_pubkeys_new=1
+  # -> No need to test this because id_rsa is the same key - thanks to monkeysphere.
+  if false ; then
+    killall -u $USER gpg-agent || true
+    sleep 1
+    if ( set -x; gpg-agent --verbose --batch --enable-ssh-support --steal-socket --daemon  bash -c "sleep 1; ssh -F $keydir/ssh_config -o BatchMode=yes sync-gpg info" ) </dev/null ; then
+      echo "-> GnuPG key can be used to access host sync."
+    else
+      echo "-> GnuPG key doesn't work (yet). Exit code: $?"
+      ssh_pubkeys_new=1
+    fi
   fi
 fi
 
@@ -206,9 +231,9 @@ if [ $ssh_pubkeys_new != 0 ] ; then
     echo ""
     echo "Please add these pubkeys to the gitolite config as user $user@$hostname (keydir/$user@hostname.pub) and add that user to the @hosts group."
     echo ""
-    echo "cat $keydir/ssh-pubkeys"
+    echo "cat $keydir/id_rsa.pub"
     echo ""
-    cat $keydir/ssh-pubkeys
+    cat $keydir/id_rsa.pub
   ) >&2
   exit 1
 fi
