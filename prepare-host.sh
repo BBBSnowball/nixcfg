@@ -229,7 +229,7 @@ if [ $ssh_pubkeys_new != 0 ] ; then
     echo ""
     echo "=================================="
     echo ""
-    echo "Please add these pubkeys to the gitolite config as user $user@$hostname (keydir/$user@hostname.pub) and add that user to the @hosts group."
+    echo "Please add this pubkey to the gitolite config as user $hostname (keydir/$hostname.pub) and add that user to the @hosts group."
     echo ""
     echo "cat $keydir/id_rsa.pub"
     echo ""
@@ -346,7 +346,7 @@ if [ ! -e $private_repo/keys/"$user@$hostname.gpg.pub" ] ; then
   # If this fails for whatever reason, the user must clean it up. Sorry.
   ( cd $private_repo && git add keys/{"$hostname.ssh_host.pub","$user@$hostname.ssh.pub","$user@$hostname.gpg.pub"} \
     && git commit -m "add public keys for host $hostname" -S0x$fprint \
-    && git push -u origin private:"$user@$hostname.local/private" )
+    && git push -u origin private:"$hostname/private" )
 fi
 
 ### check signature and git-crypt access for GPG key
