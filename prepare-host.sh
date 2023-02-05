@@ -19,12 +19,7 @@ secrets_shared_repo="$nixos_dir/secret"
 # Information that shouldn't be published together with my nixcfg repo but it will be
 # in the Nix store on some hosts. Some of it may be encrypted because not all hosts need to
 # see it.
-# Private could be a subdirectory of the shared secret repo but we don't want some tool to
-# accidentally copy the whole git into the store so we keep it as a separate repo.
-#FIXME Maybe make it a subdir of secret but copy files to another location before giving them to nix (and filter encrypted files in that step).
-#FIXME Alternative: Track access rights in a common branch that is merged into the private and secret branch.
-#FIXME If we do copy the files anyway: Have a private dir per host, symlink to common dir to select which common files we want, resolve symlinks when making the copy for nix.
-#      -> better: worktree with sparse checkout for only parts of the private/ subdir
+# This directory will contain a filtered worktree of the shared-secrets repo.
 private_repo="$nixos_dir/private"
 
 set -eo pipefail
@@ -315,48 +310,84 @@ if [ -e $nixos_dir.prepare-host.old/hostkeys -a ! -e $secrets_local_dir/hostkeys
 fi
 
 if [ ! -e $secrets_shared_repo ] ; then
-  ( umask 077; set -x; git submodule add -b secret sync:nixcfg-secret ${secrets_shared_repo#$nixos_dir/} ) </dev/null
+  ( umask 077; set -x; git submodule add -b main sync:nixcfg-secret ${secrets_shared_repo#$nixos_dir/} ) </dev/null
+fi
+
+sparse_list=$secrets_shared_repo/sparse-configs-for-private/"$hostname"
+if [ ! -e "$sparse_list" ] ; then
+  mkdir -p $secrets_shared_repo/sparse-configs-for-private
+  sed 's/^    //' <<"EOF" >"$sparse_list"
+    !/*
+    /.decryption_test
+    /.gitattributes
+    #/.git-crypt
+EOF
+  ( set -x; cd $secrets_shared_repo && git add sparse-configs-for-private/"$hostname" \
+    && git commit -m "init sparse-checkout config for private dir on $hostname" -S0x$fprint )
 fi
 
 if [ ! -e $private_repo ] ; then
-  ( umask 077; set -x; git submodule add -b private sync:nixcfg-secret ${private_repo#$nixos_dir/} ) </dev/null
+  # private repo is a worktree of the secret repo
+  ( umask 077; set -x; cd ${secrets_shared_repo#$nixos_dir/} && git worktree add -b private --no-checkout $private_repo )
+
+  # add it as a fake submodule so git doesn't complain
+  ( set -x; git submodule add -b no-such-branch--worktree-of-secret sync:nixcfg-secret ${private_repo#$nixos_dir/} )
+fi
+gitdir="$(cd $private_repo && git rev-parse --git-dir)"
+if [ "$(cd $private_repo && git config --worktree core.sparseCheckout 2>/dev/null)" != "true" ] ; then
+  # configure sparse checkout
+  ( cd $private_repo && git sparse-checkout init && git config --worktree core.sparseCheckoutCone false )
+  if [ ! -e "$gitdir/info/sparse-checkout" ] ; then
+    echo "Error: Sparse-checkout file must already exist. We think that it should be here: $gitdir/info/sparse-checkout" >&2
+    exit 1
+  fi
+  #NOTE `git sparse-checkout add` keeps this symlink.
+  ( set -x; ln -sfT "$sparse_list" "$gitdir/info/sparse-checkout" )
+
+  # reset index because `--no-checkout` has marked all files as deleted
+  ( cd $private_repo && git reset --quiet )
+fi
+if [ ! -L "$gitdir/info/sparse-checkout" -o ! -e "$gitdir/info/sparse-checkout" ] ; then
+  echo "Error: sparse-checkout file should be a symlink!" >&2
+  echo "Run this command to fix that: ln -sfT \"$sparse_list\" \"$gitdir/info/sparse-checkout\"" >&2
+  exit 1
 fi
 
 if [ ! -e flake/.git ] ; then
   ( set -x; git submodule add https://github.com/BBBSnowball/nixcfg flake )
-  ( cd flake && git remote add stage sync:nixcfg )
+  ( set -x; cd flake && git remote add stage sync:nixcfg )
 fi
 
 ### enable signed commits for our gits
 
 # $secrets_local_dir is probably not a git but then it will just be set on the parent repo, again.
 for x in $nixos_dir $secrets_local_dir $secrets_shared_repo $private_repo ; do
-  ( cd $x && git config commit.gpgsign true && git config user.signingkey 0x$fprint )
+  ( set -x; cd $x && git config commit.gpgsign true && git config user.signingkey 0x$fprint )
 done
 
 ### create first commit
 
 if [ ! -e .git/refs/heads/main -a ! -e .git/refs/heads/master ] ; then
-  git commit -m "initial commit (by prepare-host.sh)" -S0x$fprint
+  ( set -x; git commit -m "initial commit (by prepare-host.sh)" -S0x$fprint )
 fi
 
 ### commit&push GPG public key
 
-if [ ! -e $private_repo/keys/"$user@$hostname.gpg.pub" ] ; then
-  mkdir -p $private_repo/keys
-  cp $keydir/id_rsa.pub $private_repo/keys/"$user@$hostname.ssh.pub"
+if [ ! -e $secrets_shared_repo/keys/"$user@$hostname.gpg.pub" ] ; then
+  mkdir -p $secrets_shared_repo/keys
+  cp $keydir/id_rsa.pub $secrets_shared_repo/keys/"$user@$hostname.ssh.pub"
   for x in /etc/ssh/ssh_host_*.pub ; do
     ssh-keygen -l -f "$x" | sed 's/^/# /'
     cat "$x"
-  done >$private_repo/keys/"$hostname.ssh_host.pub"
-  gpg --armor --export 0x$fprint >$private_repo/keys/"$user@$hostname.gpg.pub.tmp"
+  done >$secrets_shared_repo/keys/"$hostname.ssh_host.pub"
+  gpg --armor --export 0x$fprint >$secrets_shared_repo/keys/"$user@$hostname.gpg.pub.tmp"
   # Only now create the .gpg.pub file, which means we won't enter this "if" branch again.
-  mv $private_repo/keys/"$user@$hostname.gpg.pub.tmp" $private_repo/keys/"$user@$hostname.gpg.pub"
+  mv $secrets_shared_repo/keys/"$user@$hostname.gpg.pub.tmp" $secrets_shared_repo/keys/"$user@$hostname.gpg.pub"
 
   # If this fails for whatever reason, the user must clean it up. Sorry.
-  ( cd $private_repo && git add keys/{"$hostname.ssh_host.pub","$user@$hostname.ssh.pub","$user@$hostname.gpg.pub"} \
+  ( cd $secrets_shared_repo && git add keys/{"$hostname.ssh_host.pub","$user@$hostname.ssh.pub","$user@$hostname.gpg.pub"} \
     && git commit -m "add public keys for host $hostname" -S0x$fprint \
-    && git push -u origin private:"$hostname/private" )
+    && git push -u origin private:"$hostname/main" )
 fi
 
 ### check signature and git-crypt access for GPG key
@@ -366,24 +397,25 @@ fi
 # wrong tree in the previous step.
 # Nonetheless, let's not do this, for now. We will mark the key as trusted
 # and the admin may forget to undo that if they detect a MITM situation.
-#admin_gpg_key="$(get_fprint_from_file <$private_repo/keys/admin.gpg.pub)"
+#admin_gpg_key="$(get_fprint_from_file <$secrets_shared_repo/keys/admin.gpg.pub)"
 
 if ! gpg2 --textmode --batch --list-keys 0x$admin_gpg_key &>/dev/null ; then
-  gpg --import "$private_repo/keys/admin.gpg.pub"
+  gpg --import "$secrets_shared_repo/keys/admin.gpg.pub"
 fi
 
 trust_key "$admin_gpg_key" "$fprint"
 
 if [ "$(is_key_signed $fprint $admin_gpg_key)" != "1" ] ; then
   echo "Our key is not yet signed by $admin_gpg_key  -> try to import key (might have been updated)"
-  gpg --import "$private_repo/keys/$user@$hostname.gpg.pub"
+  gpg --import "$secrets_shared_repo/keys/$user@$hostname.gpg.pub"
 fi
 
 needs_action=0
 if [ "$(is_key_signed $fprint $admin_gpg_key)" != "1" ] ; then
   echo "Our key is not yet signed by $admin_gpg_key."
   needs_action=1
-elif [ ! -e $private_repo/.git-crypt/keys/all/0/$fprint.gpg ] ; then
+fi
+if [ ! -e $secrets_shared_repo/.git-crypt/keys/all/0/$fprint.gpg ] ; then
   echo "Our key doesn't have access to git-crypt, yet."
   needs_action=1
 fi
@@ -395,8 +427,8 @@ if [ $needs_action != 0 ] ; then
     echo ""
     echo "Please sign our GPG key and add it to git-crypt:"
     echo ""
-    echo "  cd private"
-    echo "  git pull origin $user@$hostname.local/private"
+    echo "  cd nixcfg-secret"
+    echo "  git pull origin $user@$hostname.local/main"
     echo "  gpg --import keys/$user@$hostname.gpg.pub && gpg --quick-sign-key 0x$fprint && gpg --armor --export 0x$fprint >keys/$user@$hostname.gpg.pub"
     echo "  git-crypt add-gpg-user -n -k all 0x$fprint   # can be repeated for other groups"
     echo "  git add keys/$user@$hostname.gpg.pub && git commit -m \"sign key for host $hostname\" && git push origin main"
@@ -406,11 +438,22 @@ fi
 
 ### unlock repos
 
-for repo in $private_repo $secrets_shared_repo ; do
-  if [ "$(cat "$repo/.decryption_test")" != "decrypted" ] ; then
+for repo in $secrets_shared_repo ; do
+  if [ "$(tr -d '\0' <"$repo/.decryption_test")" != "decrypted" ] ; then
     ( set -x; cd $repo && git-crypt unlock )
   fi
 done
+
+# private repo is a worktree of secret, which git-crypt doesn't seem to support so well
+# -> just use the same decrypted keys for both
+gitdir1="$(cd $secrets_shared_repo && git rev-parse --git-dir)"
+gitdir2="$(cd $private_repo && git rev-parse --git-dir)"
+mkdir -p $gitdir2/git-crypt
+( set -x; ln -sfT "$gitdir1/git-crypt/keys" "$gitdir2/git-crypt/keys" )
+# Now, we can undo the "deletion" of those files that we haven't checked out, yet.
+if [ ! -e $private_repo/.decryption_test ] ; then
+  ( set -x; cd $private_repo && git ls-files -dz | xargs -0 git checkout )
+fi
 
 ### done
 
