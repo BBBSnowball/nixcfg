@@ -64,13 +64,30 @@ generate_key() {
   gpg2 --batch --passphrase "" --quick-add-key "0x$fprint" rsa4096 encrypt never
   gpg2 --batch --passphrase "" --quick-add-key "0x$fprint" rsa4096 auth never
 
-  keygrip="$(gpg --textmode --batch --with-keygrip --list-keys "0x$fprint" | sed -n '/^sub .* \[A\]/,/./ { n; s/^ *Keygrip = //p }')"
+  echo "fprint='$fprint'" >"$save_fprint_file"
+}
+
+get_auth_keygrip() {
+  fprint="$1"
+  #keygrip="$(gpg --textmode --batch --with-keygrip --list-keys "0x$fprint" | sed -n '/^sub .* \[A\]/,/./ { n; s/^ *Keygrip = //p }')"
+  keygrip="$(gpg --with-colon --batch --with-keygrip --list-keys 0x$fprint \
+    | awk -F: '{ if ($1 == "sub") { type=$12 }; if ($1 == "grp" && type == "a") {print $10} }')"
   if [ ${#keygrip} -ne 40 ] ; then
     echo "Error: We expected exactly one keygrip (for auth key of uid: $gpg_uid) but we got: $keygrip" >&2
     exit 1
   fi
+  echo "$keygrip"
+}
 
-  ( echo "fprint='$fprint'"; echo "auth_keygrip='$keygrip'" ) >"$save_fprint_file"
+get_auth_fprint() {
+  fprint="$1"
+  fpr_of_auth_key="$(gpg --with-colon --batch --with-subkey-fingerprints --list-secret-keys 0x$fprint \
+    | awk -F: '{ if ($1 == "ssb") { type=$12 }; if ($1 == "fpr" && type == "a") {print $10} }')"
+  if [ ${#fpr_of_auth_key} != 40 ] ; then
+    echo "Error: We expected exactly auth sub-key (for key 0x$fprint) but we got: $fpr_of_auth_key" >&2
+    exit 1
+  fi
+  echo "$fpr_of_auth_key"
 }
 
 delete_key_unsafe() {
@@ -95,13 +112,14 @@ trust_key() {
   key_to_trust="$1"
   our_key="$2"
   # state that this key is really for that id
-  gpg --batch --default-key "0x$our_key" --quick-lsign-key "0x$key_to_trust"
+  gpg --batch --default-key "0x$our_key" --quiet --quick-lsign-key "0x$key_to_trust"
   # trust signatures that are made by that key
   gpg --batch --import-ownertrust <<<"$key_to_trust:5:"
 }
 
-#FIXME remove
-#delete_key_unsafe "$gpg_uid"  # for debugging
+if [ "$UNSAFE_REMOVE_OLD_GPG_KEY" == "1" ] ; then
+  delete_key_unsafe "$gpg_uid"  # for debugging
+fi
 
 ### generate GPG key
 
@@ -116,47 +134,42 @@ else
   generate_key "$gpg_uid" "$keydir/info"
   . $keydir/info
 fi
-if [ ! -e $keydir/id_gpg.secret ] ; then
-  ( umask 077; gpg --armor --export-secret-key 0x$fprint >$keydir/id_gpg.secret )
+if [ ! -e $keydir/gpg.secret.asc ] ; then
+  ( umask 077; gpg --armor --export-secret-key 0x$fprint >$keydir/gpg.secret.asc )
 fi
-if ! [ -e ~/.gnupg/sshcontrol ] || ! grep -F "$auth_keygrip" ~/.gnupg/sshcontrol ; then
+auth_keygrip="$(get_auth_keygrip $fprint)"
+if ! [ -e ~/.gnupg/sshcontrol ] || ! grep -qF "$auth_keygrip" ~/.gnupg/sshcontrol ; then
   echo "$auth_keygrip" >>~/.gnupg/sshcontrol
 fi
-
-### generate SSH key
-
-#ssh_pubkeys_new=0
-#if [ ! -e $keydir/id_rsa ] ; then
-#  ssh-keygen -t rsa -b 4096 -f $keydir/id_rsa -N "" </dev/null
-#  ssh_pubkeys_new=1
-#fi
-#if [ ! -e $keydir/ssh-pubkeys -o $keydir/id_rsa -nt $keydir/ssh-pubkeys -o $keydir/info -nt $keydir/ssh-pubkeys ] ; then
-#  #( gpg --export-ssh-key $fprint; ssh-keygen -ef $keydir/id_rsa ) >$keydir/ssh-pubkeys
-#  gpg --export-ssh-key $fprint >$keydir/id_gpg.pub
-#  chmod 0600 $keydir/id_gpg.pub  # SSH insists because IdentityFile is usually the private key
-#  cat $keydir/id_{gpg,rsa}.pub >$keydir/ssh-pubkeys
-#  ssh_pubkeys_new=1
-#fi
 
 ### extract auth key from GPG and convert to SSH key
 
 ssh_pubkeys_new=0
+fpr_of_auth_key="$(get_auth_fprint $fprint)"
 if [ ! -e $keydir/id_rsa -o $keydir/info -nt $keydir/id_rsa ] ; then
   # We want the auth subkey but monkeysphere would choose some other subkey, be default.
   # -> Get the correct fingerprint from GnuPG and pass it to monkeysphere.
-  fpr_of_auth_key="$(gpg --with-colon --with-subkey-fingerprints --list-secret-keys 0x$fprint | awk -F: '{ if ($1 == "ssb") { type=$12 }; if ($1 == "fpr" && type == "a") {print $10} }')"
-  if [ ${#fpr_of_auth_key} != 40 ] ; then
-    echo "Error: We expected exactly auth sub-key (for key 0x$fprint) but we got: $fpr_of_auth_key" >&2
-    exit 1
-  fi
-
   # see https://frizky.web.id/?p=103
   ( umask 077; gpg --export-options export-minimal,no-export-attributes --export-secret-keys --no-armor 0x$fprint | openpgp2ssh $fpr_of_auth_key >$keydir/id_rsa.tmp )
   mv $keydir/id_rsa.tmp $keydir/id_rsa
 fi
 if [ ! -e $keydir/id_rsa.pub -o $keydir/id_rsa -nt $keydir/id_rsa.pub ] ; then
-  ssh-keygen -y -f $keydir/id_rsa >$keydir/id_rsa.pub
+  ( ssh-keygen -y -f $keydir/id_rsa | tr -d '\n'; echo " $user@$hostname,openpgp:0x${fpr_of_auth_key:32:8}" ) >$keydir/id_rsa.pub
   ssh_pubkeys_new=1
+fi
+
+# sanity check: Do we get the same pubkey from GPG and monkeysphere+OpenSSH?
+a="$(gpg --export-ssh-key 0x$fprint)"
+b="$(cat $keydir/id_rsa.pub)"
+a2="$(awk '{print $1, $2}' <<<"$a")"
+b2="$(awk '{print $1, $2}' <<<"$b")"
+if [ "$a2" != "$b2" ] ; then
+  echo "Error: SSH pubkeys are different!" >&2
+  echo "  GPG: $a" >&2
+  echo "    -> $a2" >&2
+  echo "  SSH: $b" >&2
+  echo "    -> $b2" >&2
+  exit 1
 fi
 
 ### add sync.wahrhe.it to known_hosts
@@ -247,22 +260,8 @@ set +x
 ### move existing /etc/nixos
 
 if [ -e $nixos_dir -a ! -L $nixos_dir/nixos-rebuild.sh ] ; then
-  if [ -e $nixos_dir.prepare-host.old ] && false; then
-    # Is this a half-empty dir from a previous attempt?
-    # -> Shouldn't be necessary anymore because we skip this part if nixos-rebuild.sh symlink exists (but may point to non-existing subdir).
-    if [ -L $nixos_dir.prepare-host.old/flake.nix ] && [ "$(readlink $nixos_dir.prepare-host.old/flake.nix)" == "flake/flake.nix" ] ; then
-      rm $nixos_dir.prepare-host.old/flake.nix
-    fi
-    if [ -L $nixos_dir.prepare-host.old/nixos-rebuild.sh ] && [ "$(readlink $nixos_dir.prepare-host.old/nixos-rebuild.sh)" == "flake/nixos-rebuild.sh" ] ; then
-      rm $nixos_dir.prepare-host.old/nixos-rebuild.sh
-    fi
-    if [ -d $nixos_dir.prepare-host.old/.git -a ! -e $nixos_dir.prepare-host.old/.git/refs/heads/* ] ; then
-      rm -rf $nixos_dir.prepare-host.old/.git
-    fi
-    if [ ! -e $nixos_dir.prepare-host.old/* ] ; then
-      rmdir $nixos_dir.prepare-host.old
-    fi
-  fi
+  # remove if empty
+  rmdir $nixos_dir.prepare-host.old || true
 
   if [ -e $nixos_dir.prepare-host.old ] ; then
     echo "Error: The backup dir already exists and isn't empty: $nixos_dir.prepare-host.old" >&2
