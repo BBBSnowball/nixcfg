@@ -102,7 +102,7 @@ delete_key_unsafe() {
 
 is_key_signed() {
   key_to_check="$1"
-  signed_by="$1"
+  signed_by="$2"
   gpg --batch --textmode --list-sigs --with-colons "0x$key_to_check" \
     | awk -v our="${signed_by:40-16:16}" -F: 'BEGIN { found=0 } { if ($1 == "sig" && $5 == our) { found=1 } } END { print found }'
 }
