@@ -90,6 +90,10 @@ get_auth_fprint() {
   echo "$fpr_of_auth_key"
 }
 
+get_fprint_from_file() {
+  gpg --with-colons --show-key | awk -F: '{ if ($1 == "fpr" && prev == "pub") { print $10 }; prev=$1 }'
+}
+
 delete_key_unsafe() {
   gpg_uid="$1"
   fprint="$(get_fprint "$gpg_uid")"
@@ -356,6 +360,13 @@ if [ ! -e $private_repo/keys/"$user@$hostname.gpg.pub" ] ; then
 fi
 
 ### check signature and git-crypt access for GPG key
+
+# We can extract the fingerprint from admin.gpg.pub because we have to
+# trust this repo anyway and the admin will notice if we have pushed to the
+# wrong tree in the previous step.
+# Nonetheless, let's not do this, for now. We will mark the key as trusted
+# and the admin may forget to undo that if they detect a MITM situation.
+#admin_gpg_key="$(get_fprint_from_file <$private_repo/keys/admin.gpg.pub)"
 
 if ! gpg2 --textmode --batch --list-keys 0x$admin_gpg_key &>/dev/null ; then
   gpg --import "$private_repo/keys/admin.gpg.pub"
