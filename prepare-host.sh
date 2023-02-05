@@ -49,15 +49,15 @@ generate_key() {
   gpg_uid="$1"
   save_fprint_file="$2"
 
-  gpg2 --batch --passphrase "" --quick-generate-key "$gpg_uid" rsa4096 default never
+  ( set -x; gpg2 --batch --passphrase "" --quick-generate-key "$gpg_uid" rsa4096 default never )
   fprint="$(get_fprint "$gpg_uid")"
   if [ -z "$fprint" ] ; then
     echo "Error: We couldn't retrieve the fingerprint of the newly-generated key." >&2
     exit 1
   fi
 
-  gpg2 --batch --passphrase "" --quick-add-key "0x$fprint" rsa4096 encrypt never
-  gpg2 --batch --passphrase "" --quick-add-key "0x$fprint" rsa4096 auth never
+  ( set -x; gpg2 --batch --passphrase "" --quick-add-key "0x$fprint" rsa4096 encrypt never )
+  ( set -x; gpg2 --batch --passphrase "" --quick-add-key "0x$fprint" rsa4096 auth never )
 
   echo "fprint='$fprint'" >"$save_fprint_file"
 }
