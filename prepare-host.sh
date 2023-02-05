@@ -323,6 +323,13 @@ if [ ! -e flake/.git ] ; then
   ( cd flake && git remote add stage sync:nixcfg )
 fi
 
+### enable signed commits for our gits
+
+# $secrets_local_dir is probably not a git but then it will just be set on the parent repo, again.
+for x in $nixos_dir $secrets_local_dir $secrets_shared_repo $private_repo ; do
+  ( cd $x && git config commit.gpgsign true && git config user.signingkey 0x$fprint )
+done
+
 ### create first commit
 
 if [ ! -e .git/refs/heads/main -a ! -e .git/refs/heads/master ] ; then
@@ -404,6 +411,5 @@ done
   echo "The old config is in $nixos_dir.prepare-host.old" >&2
 ) >&2
 
-#FIXME add gpg signing options to repos
 #FIXME add scripts for fixing up file rights in the repos (e.g. some secrets may be readable by certain groups) -> make sure that rights are only changed on the correct hosts! -> or maybe we don't want this for the repo and we should copy files, which needs special rights, to another dir
 
