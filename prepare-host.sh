@@ -5,8 +5,8 @@ user="${USER:-root}"
 hostname=macnix
 gpg_uid="$hostname, $user <$user@$hostname.local>"
 admin_gpg_key=A7CF599DB8F0E0053F69FDF0D76426D14FDEEE3D
-#nixos_dir="/etc/nixos"
-nixos_dir=/tmp/nixos
+nixos_dir="/etc/nixos"
+#nixos_dir=/tmp/nixos  # for debugging
 # Highest level of secrets - only exist on the local machine, e.g. private keys.
 # If such secrets have another place in /etc, there is no reason to copy it here, e.g. SSH host keys.
 # This doesn't have to be a separate repo (i.e. can be just a subdir) because we also have a repo in /etc/nixos.
