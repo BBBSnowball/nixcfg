@@ -173,11 +173,15 @@ fi
 
 ### add sync.wahrhe.it to known_hosts
 
+if [ ! -e ~/.ssh/known_hosts ] ; then
+  mkdir -p ~/.ssh
+  touch ~/.ssh/known_hosts
+fi
 for host_alias in '[sync.wahrhe.it]:8022' '[163.172.39.101]:8022' ; do
   if ! ssh-keygen -F "$host_alias" >/dev/null ; then
     echo "$host_alias ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGWlaVpTl5VjOKdhtaxvxusvrWg91mhEPNPgw87JtYbp root@git" >.tmp
     echo "$host_alias ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDJNyKPADYiUcdLK/KF4FBLvGMvT1fZIOMVox3YzNoIQHPVOm+/wLLYYRDg0CfTPPoi4gyEH+k+7uRpqqOl9TmEVv4HTS6xXgrrdLo5L1m20dgjvM9Bt+5lJ1T/wQsZVrjcKNzZZcEPYJFgAQakw0unKOcHG9QVYH+P2bF18fgCxldTuIuE5Er/z3EYVEHbeF1QMisvnK8N7xTqVAiRfbpnUbiXoQ0VXod4yj7ol2Msv0mJF+vs8UGgLniMA2UAAhzrE618XoHcNOOUr66oLysP9EzSvLTVfGSf+9XD0X3Bn4/qiZC0RqVEKFOKFWVmort8wbmVb1gsec+CbGBd5L3QA/XwANcKq9wwFPyV3FSFzmiZ3eQIR/aUVXcxCbxnoVx28iyNnwqAGhhdsojsX8/K9ZknTa47XNvUBvOpCzkGSVI7j2HDVm5vAEJcKUTXCufAq/QWswutHPQLRGxNuD8PjdK/sMd/3+A4QXBt7Oucs/0f9X1U7TrVTCBDmr7FNbER9FVBv5P7U8W2mOn5wLj3792YGwMbxLknaWSSt0BLRpl08eEFZoaz65XPHesiPS2oYQRGQ/2CRNjtqFQQeKdWqdO6kDVD2DaYbg0+7zd2IC10uingqNSrwl6ZmzfYJUNwC64Lqn63q552OeUPTXrKnmCVqZrdGi9UBQ9Q5mjnHw== root@git" >>.tmp
-    ssh-keygen -H -f .tmp
+    ssh-keygen -H -f .tmp &>/dev/null
     cat .tmp >>~/.ssh/known_hosts
     rm .tmp.old .tmp
   fi
