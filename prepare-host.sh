@@ -262,9 +262,11 @@ set +x
 
 ### move existing /etc/nixos
 
-if [ -e $nixos_dir -a ! -L $nixos_dir/nixos-rebuild.sh ] ; then
+if [ -e $nixos_dir -a \( ! -L $nixos_dir/nixos-rebuild.sh -o -L $nixos_dir/secret \) ] ; then
   # remove if empty
-  rmdir $nixos_dir.prepare-host.old || true
+  if [ -e $nixos_dir.prepare-host.old ] ; then
+    rmdir $nixos_dir.prepare-host.old || true
+  fi
 
   if [ -e $nixos_dir.prepare-host.old ] ; then
     echo "Error: The backup dir already exists and isn't empty: $nixos_dir.prepare-host.old" >&2
@@ -389,9 +391,10 @@ if [ ! -e $secrets_shared_repo/keys/"$user@$hostname.gpg.pub" ] ; then
   mv $secrets_shared_repo/keys/"$user@$hostname.gpg.pub.tmp" $secrets_shared_repo/keys/"$user@$hostname.gpg.pub"
 
   # If this fails for whatever reason, the user must clean it up. Sorry.
-  ( cd $secrets_shared_repo && git add keys/{"$hostname.ssh_host.pub","$user@$hostname.ssh.pub","$user@$hostname.gpg.pub"} \
+  ( set -x;
+    cd $secrets_shared_repo && git add keys/{"$hostname.ssh_host.pub","$user@$hostname.ssh.pub","$user@$hostname.gpg.pub"} \
     && git commit -m "add public keys for host $hostname" -S0x$fprint \
-    && git push -u origin private:"$hostname/main" )
+    && git push -u origin main:"$hostname/main" )
 fi
 
 ### check signature and git-crypt access for GPG key
@@ -410,7 +413,8 @@ fi
 trust_key "$admin_gpg_key" "$fprint"
 
 if [ "$(is_key_signed $fprint $admin_gpg_key)" != "1" ] ; then
-  echo "Our key is not yet signed by $admin_gpg_key  -> try to import key (might have been updated)"
+  echo "Our key is not yet signed by $admin_gpg_key  -> try to fetch repo and import key again (might have been updated)"
+  ( cd $secrets_shared_repo && git pull origin main )
   gpg --import "$secrets_shared_repo/keys/$user@$hostname.gpg.pub"
 fi
 
@@ -432,8 +436,8 @@ if [ $needs_action != 0 ] ; then
     echo "Please sign our GPG key and add it to git-crypt:"
     echo ""
     echo "  cd nixcfg-secret"
-    echo "  git pull origin $user@$hostname.local/main"
-    echo "  gpg --import keys/$user@$hostname.gpg.pub && gpg --quick-sign-key 0x$fprint && gpg --armor --export 0x$fprint >keys/$user@$hostname.gpg.pub"
+    echo "  git pull origin $hostname/main"
+    echo "  gpg --import keys/$user@$hostname.gpg.pub && gpg --default-key 0x$admin_gpg_key --quick-sign-key 0x$fprint && gpg --armor --export 0x$fprint >keys/$user@$hostname.gpg.pub"
     echo "  git-crypt add-gpg-user -n -k all 0x$fprint   # can be repeated for other groups"
     echo "  git add keys/$user@$hostname.gpg.pub && git commit -m \"sign key for host $hostname\" && git push origin main"
     exit 1
