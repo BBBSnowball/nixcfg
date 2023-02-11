@@ -2,7 +2,8 @@
 #! nix-shell -i bash -p git-crypt gnupg pinentry.curses gawk gnused git coreutils psmisc monkeysphere
 
 user="${USER:-root}"
-hostname=macnix
+#hostname=macnix
+hostname="$(hostname)"
 gpg_uid="$hostname, $user <$user@$hostname.local>"
 admin_gpg_key=A7CF599DB8F0E0053F69FDF0D76426D14FDEEE3D
 nixos_dir="/etc/nixos"
@@ -367,8 +368,9 @@ fi
 ### enable signed commits for our gits
 
 # $secrets_local_dir is probably not a git but then it will just be set on the parent repo, again.
+# (Setting gpg.format is optional because it is the default - unless we have changed it in the global git config.)
 for x in $nixos_dir $secrets_local_dir $secrets_shared_repo $private_repo ; do
-  ( set -x; cd $x && git config commit.gpgsign true && git config user.signingkey 0x$fprint )
+  ( set -x; cd $x && git config commit.gpgsign true && git config gpg.format openpgp && git config user.signingkey 0x$fprint )
 done
 
 ### create first commit
