@@ -84,14 +84,23 @@ esac
 
 echo "hostname: $hostname"
 
-if [ -e "./hosts/$hostname/private/data" ] ; then
-  overrideInput=(--override-input private "path:./hosts/$hostname/private/data")
-elif [ -e "./hosts/$hostname/private" ] ; then
-  # This will copy .git if present so use a data subdir if possible.
-  overrideInput=(--override-input private "path:./hosts/$hostname/private")
-else
-  overrideInput=()
-fi
+overrideInput=()
+for x in \
+  "./hosts/$hostname/private/private" \
+  "./hosts/$hostname/private/data" \
+  "./hosts/$hostname/private"
+do
+  if [ -d "$x/.git" ] ; then
+    # We will only get here for a real .git directory. If this is a worktree with a .git file,
+    # that's not great (hash may differ if we build this on more than one machine) but we don't
+    # leak any sensitive or large information.
+    # In any case, use a data subdir to avoid this.
+    echo "Refusing to use this private dir because it contains a .git directory: $x" >&2
+  elif [ -e "$x" ] ; then
+    overrideInput=(--override-input private "path:$x")
+    break
+  fi
+done
 
 if [ $needSshToTarget -ne 0 -a -n "$targetHost" ] ; then
   hosts=(--target-host "$targetHost" --build-host localhost)

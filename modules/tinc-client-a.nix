@@ -33,10 +33,18 @@ in
 
   systemd.services."tinc.${name}".preStart = ''
     ${pkgs.coreutils}/bin/install -o tinc.${name} -m755 -d /etc/tinc/${name}/hosts
-    ${pkgs.coreutils}/bin/install -o root -m400 /etc/nixos/secret/tinc-${name}-rsa_key.priv /etc/tinc/${name}/rsa_key.priv
+    if [ -e "/etc/nixos/secret_local/tinc-${name}-rsa_key.priv" ] ; then
+      ${pkgs.coreutils}/bin/install -o root -m400 /etc/nixos/secret_local/tinc-${name}-rsa_key.priv /etc/tinc/${name}/rsa_key.priv
+    else
+      ${pkgs.coreutils}/bin/install -o root -m400 /etc/nixos/secret/tinc-${name}-rsa_key.priv /etc/tinc/${name}/rsa_key.priv
+    fi
 
-    #${pkgs.coreutils}/bin/install -o tinc.${name} -m444 ${private}/tinc-pubkeys/${name}/* /etc/tinc/${name}/hosts/
-    ${pkgs.rsync}/bin/rsync -r --delete ${private}/tinc-pubkeys/${name}/ /etc/tinc/${name}/hosts
+    if [ -e "${private}/by-host/$HOSTNAME/tinc-pubkeys/${name}" ] ; then
+      ${pkgs.rsync}/bin/rsync -r --delete "${private}/by-host/$HOSTNAME/tinc-pubkeys/${name}/" /etc/tinc/${name}/hosts
+    else
+      #${pkgs.coreutils}/bin/install -o tinc.${name} -m444 ${private}/tinc-pubkeys/${name}/* /etc/tinc/${name}/hosts/
+      ${pkgs.rsync}/bin/rsync -r --delete ${private}/tinc-pubkeys/${name}/ /etc/tinc/${name}/hosts
+    fi
     chmod 444 /etc/tinc/${name}/hosts/*
     chown -R tinc.${name} /etc/tinc/${name}/hosts/
   '';

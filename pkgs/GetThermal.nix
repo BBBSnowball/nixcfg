@@ -19,18 +19,9 @@ let
       cp libuvcstatic.a $out/lib
     '';
   };
-in
-  stdenv.mkDerivation {
-    pname = "GetThermal";
-    version = "0.1.4";
 
-    src = fetchFromGitHub {
-      owner = "groupgets";
-      repo = "GetThermal";
-      rev = "v0.1.4";
-      hash = "sha256-WoogUjAGm0vmz2WwIFos9kLpRko+tAqqtl6HOhzxFQY=";
-    };
-
+  GetThermal = args:
+  stdenv.mkDerivation (args // {
     passthru.libuvc = libuvc;
 
     nativeBuildInputs = [ pkg-config qmake qtbase wrapQtAppsHook ];
@@ -47,4 +38,32 @@ in
       mkdir $out/bin -p
       cp release/GetThermal $out/bin/
     '';
+  });
+
+  GetThermal-upstream = GetThermal {
+    pname = "GetThermal";
+    version = "0.1.4";
+
+    src = fetchFromGitHub {
+      owner = "groupgets";
+      repo = "GetThermal";
+      rev = "v0.1.4";
+      hash = "sha256-WoogUjAGm0vmz2WwIFos9kLpRko+tAqqtl6HOhzxFQY=";
+    };
+  };
+  GetThermal-mine = GetThermal {
+    pname = "GetThermal";
+    name = "GetThermal-with-mlx-thermometer";
+    version = "0.1.4";
+
+    src = fetchFromGitHub {
+      owner = "BBBSnowball";
+      repo = "GetThermal";
+      rev = "ca01b2765688a544d609186a2886959d724e41f0";
+      hash = "sha256-5h8uekCj0MtQjCSSZ8oX/rFWwEgXcFpfaJXYCntqj5M=";
+    };
+  };
+in
+  GetThermal-mine // {
+    upstream = GetThermal-upstream;
   }
