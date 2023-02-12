@@ -125,6 +125,7 @@ fi
 ### generate GPG key
 
 if [ ! -d $keydir ] ; then
+  ( umask 077; install -m 0700 -d $secrets_local_dir )  # explicit creation to specify permissions
   ( umask 077; install -m 0700 -d $keydir )
 fi
 
@@ -362,6 +363,7 @@ if [ ! -L "$gitdir/info/sparse-checkout" -o ! -e "$gitdir/info/sparse-checkout" 
 fi
 if [ ! -e $private_symlink ] ; then
   ln -s "${private_repo#$nixos_dir/}" $private_symlink
+  git add $private_symlink
 fi
 
 if [ ! -e flake/.git ] ; then
@@ -388,6 +390,7 @@ done
 ### create first commit
 
 if [ ! -e .git/refs/heads/main -a ! -e .git/refs/heads/master ] ; then
+  ( set -x; git add ${keydir#$nixos_dir/} )
   ( set -x; git commit -m "initial commit (by prepare-host.sh)" -S0x$fprint )
 fi
 
