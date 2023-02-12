@@ -55,17 +55,49 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1673957332,
-        "narHash": "sha256-njH7Szk1BLVWGMw7IRibgGejSlxXHj9saZHfH20gHdk=",
+        "lastModified": 1675410244,
+        "narHash": "sha256-ODj6egMoH/HgAF/0wIy0EfRBeUx5FMuLl6uAdUW3kCI=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "b83e7f5a04a3acc8e92228b0c4bae68933d504eb",
+        "rev": "f7543a7539a007e9562e4d8d24e17a4bcf369b68",
         "type": "github"
       },
       "original": {
         "owner": "NixOS",
         "ref": "nixos-22.11",
         "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs-notes": {
+      "locked": {
+        "lastModified": 1617271991,
+        "narHash": "sha256-VdzjIQaT1FtycNid0iPSVr44Jrstoox6QRLrwCY1uG0=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "da7f4c4842520167f65c20ad75ecdbd14e27ae91",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "da7f4c4842520167f65c20ad75ecdbd14e27ae91",
+        "type": "github"
+      }
+    },
+    "nixpkgs-rss": {
+      "locked": {
+        "lastModified": 1617271991,
+        "narHash": "sha256-VdzjIQaT1FtycNid0iPSVr44Jrstoox6QRLrwCY1uG0=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "da7f4c4842520167f65c20ad75ecdbd14e27ae91",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "da7f4c4842520167f65c20ad75ecdbd14e27ae91",
         "type": "github"
       }
     },
@@ -108,6 +140,8 @@
           "flake-compat"
         ],
         "nixpkgs": "nixpkgs",
+        "nixpkgs-notes": "nixpkgs-notes",
+        "nixpkgs-rss": "nixpkgs-rss",
         "routeromen": "routeromen"
       }
     },
@@ -122,11 +156,11 @@
         "private": "private"
       },
       "locked": {
-        "lastModified": 1651540367,
-        "narHash": "sha256-8lTJxhL3utGnIHh1LmnRYp9CtCm5PIoPDomWpy/n7zU=",
+        "lastModified": 1674184200,
+        "narHash": "sha256-/ner2j0SZQOEMrvsTBUKv6vv6WvkbnBAKgJBOGOshIs=",
         "owner": "BBBSnowball",
         "repo": "nixcfg",
-        "rev": "4792f024f64ea9e6cc0689fda1724699159d4141",
+        "rev": "f92d76645d51daa749c82f06e5574d7705b082ab",
         "type": "github"
       },
       "original": {

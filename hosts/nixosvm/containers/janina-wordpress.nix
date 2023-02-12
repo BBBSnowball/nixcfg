@@ -29,7 +29,7 @@ in {
           #port = mysqlPort;
           socket = "/run/mysqld/mysqld.sock";
           name = "wordpress";
-          passwordFile = "/etc/nixos/secret/janina-wordpress-db-password";
+          #passwordFile = "/etc/nixos/secret/janina-wordpress-db-password";  # not allowed because createLocally manages it
           createLocally = true;
         };
         extraConfig = ''
@@ -52,7 +52,7 @@ in {
         };
       };
 
-      services.mysql.port = 3307;
+      #services.mysql.port = 3307;
       services.mysql.settings.mysqld.skip-networking = true;
 
       programs.msmtp = {
