@@ -24,8 +24,16 @@ in
       ];
     };
     dns = {
-      proto = "udp";
-      destPort = [ 53 ];
+      rules = [
+        {
+          proto = "tcp";
+          destPort = [ 53 ];
+        }
+        {
+          proto = "udp";
+          destPort = [ 53 ];
+        }
+      ];
     };
   };
 
