@@ -220,6 +220,7 @@ in {
   nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
     "android-studio"
     "android-studio-stable"
+    "tools"  #FIXME The error message calls this "androidsdk" but we have to make the filter for "tools", which is quite generic.
   ];
   users.users.remoteBuild = {
     isNormalUser = true;
