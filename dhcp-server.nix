@@ -64,7 +64,7 @@ in
       dhcp-boot=tag:bios,grub/booti386,${self}
 
       # static IPs are defined in this file
-      conf-file=/etc/nixos/private/data/by-host/routeromen/dhcp-static-hosts.conf
+      conf-file=/etc/nixos/private/private/by-host/routeromen/dhcp-static-hosts.conf
 
 
       # DNS config

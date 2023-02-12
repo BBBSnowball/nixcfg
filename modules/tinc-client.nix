@@ -1,6 +1,6 @@
 { config, pkgs, ... }:
 let
-  private    = "/etc/nixos/private/data";
+  private    = "/etc/nixos/private/private";
   tincIP     = (builtins.head config.networking.interfaces."tinc.bbbsnowbal".ipv4.addresses).address;
 in
 {

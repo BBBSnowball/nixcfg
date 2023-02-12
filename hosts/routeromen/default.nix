@@ -5,7 +5,8 @@
 { config, pkgs, lib, private, ... }@args:
 let
   modules = args.modules or (import ./modules.nix {});
-  hostSpecificValue = path: import "${private}/by-host/${config.networking.hostName}${path}";
+  hostSpecificPath = "${private}/by-host/${config.networking.hostName}";
+  hostSpecificValue = path: import "${hostSpecificPath}${path}";
   sshPublicPort = hostSpecificValue "/sshPublicPort.nix";
 in {
   imports =
@@ -192,17 +193,17 @@ in {
     isNormalUser = true;
     extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
     hashedPassword = hostSpecificValue "/hashedPassword.nix";
-    openssh.authorizedKeys.keyFiles = [ "${private}/ssh-laptop.pub" ];
+    openssh.authorizedKeys.keyFiles = [ "${hostSpecificPath}/ssh-laptop.pub" ];
   };
   users.users.root = {
     hashedPassword = hostSpecificValue "/hashedPassword.nix";
-    openssh.authorizedKeys.keyFiles = [ "${private}/ssh-laptop.pub" ];
+    openssh.authorizedKeys.keyFiles = [ "${hostSpecificPath}/ssh-laptop.pub" ];
   };
   users.groups.test = {};
   users.users.test = {
     isNormalUser = true;
     hashedPassword = hostSpecificValue "/hashedPassword.nix";
-    openssh.authorizedKeys.keyFiles = [ "${private}/ssh-laptop.pub" ];
+    openssh.authorizedKeys.keyFiles = [ "${hostSpecificPath}/ssh-laptop.pub" ];
     packages = with pkgs; [
       anbox apktool
       android-studio # unfree :-(
@@ -225,12 +226,12 @@ in {
   users.users.remoteBuild = {
     isNormalUser = true;
     hashedPassword = "!";
-    openssh.authorizedKeys.keyFiles = [ "${private}/ssh-laptop.pub" "${private}/ssh-gpd.pub" ];
+    openssh.authorizedKeys.keyFiles = [ "${hostSpecificPath}/ssh-laptop.pub" "${hostSpecificPath}/ssh-gpd.pub" ];
   };
   users.users.test_nonet = {
     isNormalUser = true;
     hashedPassword = hostSpecificValue "/hashedPassword.nix";
-    openssh.authorizedKeys.keyFiles = [ "${private}/ssh-laptop.pub" ];
+    openssh.authorizedKeys.keyFiles = [ "${hostSpecificPath}/ssh-laptop.pub" ];
     extraGroups = [
       "test"
     ];
