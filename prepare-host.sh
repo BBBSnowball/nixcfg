@@ -377,6 +377,14 @@ for x in $nixos_dir $secrets_local_dir $secrets_shared_repo $private_repo ; do
   ( set -x; cd $x && git config commit.gpgsign true && git config gpg.format openpgp && git config user.signingkey 0x$fprint )
 done
 
+# Make a "TODO" smudge filter. We use that to mark paths in the secret repo that might need encryption.
+# The filter will any accidental staging of such files.
+for x in $secrets_shared_repo $private_repo ; do
+  ( cd $x && git config filter.TODO.smudge false )
+  ( cd $x && git config filter.TODO.clean false )
+  ( cd $x && git config filter.TODO.required true )
+done
+
 ### create first commit
 
 if [ ! -e .git/refs/heads/main -a ! -e .git/refs/heads/master ] ; then
