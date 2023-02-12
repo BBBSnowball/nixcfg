@@ -1,5 +1,7 @@
 { config, lib, pkgs, private, ... }:
 let
+  privateHostPath = "${private}/by-host/${config.networking.hostName}";
+  privateHostValues = import privateHostPath;
   basename   = "a";
   # "main" connects via default gateway (e.g. usbnet or LAN) and it listens on all interfaces (e.g. Ethernet and/ or WiFi).
   # There are three ways to connect to it:
@@ -22,8 +24,8 @@ let
     modem.extraConfig = ''
       ConnectTo=${main.name}
     '';
-    main.ip = builtins.readFile "${private}/tinc-ip-a-main.txt";
-    modem.ip = builtins.readFile "${private}/tinc-ip-a-modem.txt";
+    main.ip = privateHostValues.tinc-ip.a.main;
+    modem.ip = privateHostValues.tinc-ip.a.modem;
   };
 in
 {
@@ -31,7 +33,7 @@ in
     name = "${basename}-${part}";
     partSettings = settings.${part};
     tincIP = partSettings.ip;
-    pubkeys = pkgs.runCommand "tinc-pubkeys-${basename}" { base = "${private}/tinc-pubkeys/${basename}"; } ''
+    pubkeys = pkgs.runCommand "tinc-pubkeys-${basename}" { base = "${privateHostPath}/tinc-pubkeys/${basename}"; } ''
       cp -r $base $out
     '';
   in {

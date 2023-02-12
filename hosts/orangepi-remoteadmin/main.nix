@@ -1,13 +1,16 @@
 { config, pkgs, lib, routeromen, withFlakeInputs, private, ... }:
 let
+  privateHostPath = "${private}/by-host/${config.networking.hostName}";
+  privateHostValues = import "${private}/by-host/${config.networking.hostName}";
+
   basicUser = {
     # generate contents with `mkpasswd -m sha-512`
     passwordFile = "/etc/nixos/secret/rootpw";
 
     openssh.authorizedKeys.keyFiles = [
-      "${private}/ssh-laptop.pub"
-      "${private}/ssh-framework-user.pub"
-      "${private}/ssh-framework-root.pub"
+      "${privateHostPath}/ssh-laptop.pub"
+      "${privateHostPath}/ssh-framework-user.pub"
+      "${privateHostPath}/ssh-framework-root.pub"
     ];
   };
   rootUser = basicUser;
@@ -43,7 +46,7 @@ in {
 
   networking.hostName = "orangepi-remoteadmin";
 
-  system.baseUUID = builtins.readFile "${private}/baseUUID";
+  system.baseUUID = privateHostValues.baseUUID;
 
   networking.useDHCP = false;
   networking.interfaces.eth0.useDHCP = true;
