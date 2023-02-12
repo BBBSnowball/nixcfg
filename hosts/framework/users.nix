@@ -5,7 +5,7 @@ let
 
   basicUser = {
     # generate contents with `mkpasswd -m sha-512`
-    passwordFile = "/etc/nixos/secret/rootpw";
+    passwordFile = "/etc/nixos/secret/by-host/${config.networking.hostName}/rootpw";
 
     openssh.authorizedKeys.keyFiles = [ (hostSpecificPath "/ssh-laptop.pub") ];
   };
