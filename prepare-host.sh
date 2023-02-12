@@ -21,7 +21,8 @@ secrets_shared_repo="$nixos_dir/secret"
 # in the Nix store on some hosts. Some of it may be encrypted because not all hosts need to
 # see it.
 # This directory will contain a filtered worktree of the shared-secrets repo.
-private_repo="$nixos_dir/private"
+private_repo="$nixos_dir/hosts/$hostname/private"
+private_symlink="$nixos_dir/private"
 
 set -eo pipefail
 
@@ -358,6 +359,9 @@ if [ ! -L "$gitdir/info/sparse-checkout" -o ! -e "$gitdir/info/sparse-checkout" 
   echo "Error: sparse-checkout file should be a symlink!" >&2
   echo "Run this command to fix that: ln -sfT \"$sparse_list\" \"$gitdir/info/sparse-checkout\"" >&2
   exit 1
+fi
+if [ ! -e $private_symlink ] ; then
+  ln -s "${private_repo#$nixos_dir/}" $private_symlink
 fi
 
 if [ ! -e flake/.git ] ; then
