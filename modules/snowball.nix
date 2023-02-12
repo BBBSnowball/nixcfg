@@ -1,6 +1,6 @@
 { lib, config, modules, ... }:
 {
-  imports = [ modules.common ];
+  imports = [ modules.common modules.nixcfg-sync ];
 
   programs.nvim.defaultEditor = lib.mkDefault (! (config.programs.emacs.defaultEditor or false));
 
