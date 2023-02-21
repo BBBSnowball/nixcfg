@@ -49,7 +49,6 @@ in
     ]);
 
 
-    secrets."/etc/dhcp/dhclient6.conf" = "${private.secretDir}/dhclient6.conf";
     secrets."/etc/secretenv" = "${private.secretDir}/secretenv";
     secrets."/var/lib/dhcpcd/duid" = "${private.secretDir}/duid";
     secrets."/var/db/dhcpcd/duid" = "${private.secretDir}/duid";
@@ -65,28 +64,19 @@ in
       ip -6 a add $ipv6/56 dev ${iface}
 
       sleep inf
-      #sh -i
     '';
-
-    #debugInQemu = true;
   };
 }
 
 # files in secret dir:
 # ( umask 077; mkdir secret )
 # ssh-keygen -t rsa -N "" -b 4096 -f secrets/ssh_host_rsa_key
-# secret/dhclient6.conf:
-#   interface "enp1s0f0" {
-#       send dhcp6.client-id DUID;
-#   }
-# (with DUID replaced by what the Scaleway web interfaces shows for the IPv6 block)
 # secret/secretenv:
 # ipv6=2001:2:3:4::123
-# private.nix:
+# private/initrd.nix:
 #   {
 #     port = 22;
 #     authorizedKeys = [ "ssh-rsa ..." ];
-#     secretDir = "/path/to/this/dir/secret";  # make sure to specify it as a string
-#     #secretDir = "$secrets";  # set $secret when running the secret appender script -> not allowed, it seems
+#     secretDir = "/etc/nixos/secret/by-host/sonline0-initrd";  # make sure to specify it as a string
 #   }
 
