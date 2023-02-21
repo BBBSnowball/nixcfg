@@ -1,7 +1,8 @@
 { config, lib, modules, private, ... }:
 let
+  privateForHost = "${private}/by-host/${config.networking.hostName}";
   ports = config.networking.firewall.allowedPorts;
-  url1 = lib.fileContents "${private}/janina/url1.txt";
+  url1 = lib.fileContents "${privateForHost}/janina/url1.txt";
 in {
   containers.php = {
     autoStart = true;

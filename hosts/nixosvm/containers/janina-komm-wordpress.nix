@@ -1,10 +1,12 @@
 { config, lib, pkgs, modules, private, ... }:
 let
+  privateForHost = "${private}/by-host/${config.networking.hostName}";
+
   ports = config.networking.firewall.allowedPorts;
   mysqlPort = 3308;
   name = "janina-komm";
-  url1 = lib.fileContents "${private}/janina/url3.txt";
-  url2 = lib.fileContents "${private}/janina/url4.txt";
+  url1 = lib.fileContents "${privateForHost}/janina/url3.txt";
+  url2 = lib.fileContents "${privateForHost}/janina/url4.txt";
 
   fetchTheme = { url, hash }: let
     nameParts = with builtins; match "(.*/)?([^.]+)[.]([0-9.]+)[.][a-z]+" url;

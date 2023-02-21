@@ -323,6 +323,7 @@ if [ ! -e $secrets_shared_repo ] ; then
 fi
 
 sparse_list=$secrets_shared_repo/sparse-configs-for-private/"$hostname"
+sparse_list=$secrets_shared_repo/sparse-configs-for-private/TEMPLATE
 if [ ! -e "$sparse_list" ] ; then
   mkdir -p $secrets_shared_repo/sparse-configs-for-private
   sed 's/^    //' <<"EOF" >"$sparse_list"
@@ -331,6 +332,9 @@ if [ ! -e "$sparse_list" ] ; then
     /.gitattributes
     #/.git-crypt
 EOF
+  if [ -e "$sparse_template" ] ; then
+    sed "s/{HOST}/$hostname/" <$sparse_template >"$sparse_list"
+  fi
   ( set -x; cd $secrets_shared_repo && git add sparse-configs-for-private/"$hostname" \
     && git commit -m "init sparse-checkout config for private dir on $hostname" -S0x$fprint )
 fi

@@ -1,5 +1,7 @@
 { config, pkgs, lib, private, ... }:
 let
+  privateForHost = "${private}/by-host/${config.networking.hostName}";
+
   readKeys = dir: with builtins; with lib;
     attrsets.filterAttrs (name: value: ! isNull value)
     (mapAttrs (name: type: if type == "regular" && ! strings.hasSuffix ".old" name then readFile (dir + "/${name}") else null)
@@ -7,7 +9,10 @@ let
   
   tincCommon = name: {
     name = "sonline";
-    hosts = readKeys "${private}/tinc/pubkeys/${name}";
+    hosts = let
+      loc1 = "${privateForHost}/tinc-pubkeys/${name}";
+      loc2 = "${private}/tinc-pubkeys/${name}";
+    in readKeys (if builtins.pathExists loc1 then loc1 else loc2);
     listenAddress = config.networking.upstreamIp;
     package = pkgs.tinc;  # the other nodes use stable so no need to use the pre-release
     interfaceType = "tap";  # must be consistent across the network

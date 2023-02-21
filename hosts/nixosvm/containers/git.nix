@@ -1,5 +1,6 @@
 { config, lib, modules, private, ... }:
 let
+  privateForHost = "${private}/by-host/${config.networking.hostName}";
   ports = config.networking.firewall.allowedPorts;
   mkForceMore = lib.mkOverride 40;
 in {
@@ -15,7 +16,7 @@ in {
       services.gitolite = {
         enable = true;
         user = "git";
-        adminPubkey = builtins.readFile "${private}/ssh-laptop.pub";
+        adminPubkey = builtins.readFile "${privateForHost}/ssh-laptop.pub";
         enableGitAnnex = true;
       };
 

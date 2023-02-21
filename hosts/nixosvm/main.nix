@@ -5,6 +5,8 @@
 { config, pkgs, lib, routeromen, private, withFlakeInputs, ... }:
 
 let
+  privateForHost = "${private}/by-host/${config.networking.hostName}";
+
   serverExternalIp = config.networking.externalIp;
   upstreamIP = config.networking.upstreamIp;
   tincIP     = (builtins.head config.networking.interfaces."tinc.bbbsnowbal".ipv4.addresses).address;
@@ -36,9 +38,9 @@ in {
 
   networking.upstreamIp = "192.168.84.133";
   users.users.root.openssh.authorizedKeys.keyFiles = [
-    "${private}/ssh-laptop.pub"
-    "${private}/ssh-dom0.pub"
-    "${private}/ssh-routeromen.pub"
+    "${privateForHost}/ssh-laptop.pub"
+    "${privateForHost}/ssh-dom0.pub"
+    "${privateForHost}/ssh-routeromen.pub"
   ];
 
   networking.interfaces."tinc.bbbsnowbal".ipv4.addresses = [ {

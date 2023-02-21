@@ -1,9 +1,11 @@
 { config, lib, pkgs, modules, private, ... }:
 let
+  privateForHost = "${private}/by-host/${config.networking.hostName}";
+
   ports = config.networking.firewall.allowedPorts;
   mysqlPort = 3307;
-  url1 = lib.fileContents "${private}/janina/url1.txt";
-  url2 = lib.fileContents "${private}/janina/url2.txt";
+  url1 = lib.fileContents "${privateForHost}/janina/url1.txt";
+  url2 = lib.fileContents "${privateForHost}/janina/url2.txt";
 
   passwordProtectPlugin = pkgs.fetchzip {
     url = "https://downloads.wordpress.org/plugin/password-protected.2.4.zip";

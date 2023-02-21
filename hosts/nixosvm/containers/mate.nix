@@ -1,5 +1,6 @@
 { config, lib, modules, private, ... }:
 let
+  privateForHost = "${private}/by-host/${config.networking.hostName}";
   ports = config.networking.firewall.allowedPorts;
 in {
   containers.mate = {
@@ -56,7 +57,7 @@ in {
 
       services.httpd = {
         enable = true;
-        adminAddr = "postmaster@${lib.fileContents "${private}/w-domain.txt"}";
+        adminAddr = "postmaster@${lib.fileContents "${privateForHost}/w-domain.txt"}";
       };
       services.httpd.virtualHosts.default = {
         documentRoot = "/var/www/html";
