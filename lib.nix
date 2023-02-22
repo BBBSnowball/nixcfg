@@ -20,7 +20,8 @@ rec {
      #nixpkgs.lib.debug.traceSeqN 2 ([ (self.inputs.private or {}) private ])
      (if (routeromen.inputs.private.rev or "") != "ab7ab3690bdb7f662bb386e554d953dc8200c977"
        then routeromen.inputs.private  # not the dummy flake
-       else builtins.throw "Override the input `private`, e.g. by passing this to nixos-rebuild: --override-input private path:/etc/nixos/hosts/${hostname}/private/data");
+       else builtins.throw ("Override the input `private`, e.g. by passing this to nixos-rebuild: --override-input private path:/etc/nixos/hosts/${hostname}/private/data/"
+         + "\nIf this is for a sub-flake, override routeromen/private instead."));
 
   mkFlakeForHostConfig = hostname: system: mainConfigFile: flakeInputs@{ self, nixpkgs, ... }: let
      extraArgs = flakeInputs // { inherit withFlakeInputs private; modules = self.nixosModules; };
