@@ -31,11 +31,13 @@
     };
 
     # getFlake doesn't work here when in pure mode so we use flake-compat.
-    mkHostInSubflake = name: (import flake-compat {
-      src = ./hosts + "/${name}";
+    getSubFlake = path: (import flake-compat {
+      src = path;
       outputFunctionOverrides.routeromen = inputs: outputFunction (inputs1 // removeDummyFlakes inputs);
       inputOverrides = { inherit private; };
-    }).defaultNix.nixosConfigurations.${name};
+    }).defaultNix;
+    getFlakeForHost = name: (getSubFlake (./hosts + "/${name}"));
+    mkHostInSubflake = name: (getFlakeForHost name).nixosConfigurations.${name};
     removeDummyFlakes = inputs1.nixpkgs.lib.attrsets.filterAttrs (key: x: key == "self" || !(x ? emptyDummyFlake));
   in {
     lib = import ./lib.nix { pkgs = nixpkgs; routeromen = self; };
@@ -104,7 +106,13 @@
       inherit openocd-rppico picotool pioasm elf2uf2 picoprobe picosdk;
       inherit picoexamples picoplayground picoextras;
       rppicoShell = shell;
-    }) // (let x = import ./raspi-zero/overlay.nix (pkgs // x // { nixpkgsPath = nixpkgs; }) pkgs; in x))
+    })
+    // (let x = import ./raspi-zero/overlay.nix (pkgs // x // { nixpkgsPath = nixpkgs; }) pkgs; in x)
+    // (let sub = getFlakeForHost "sonline0-initrd"; systemSupported = sub.packages ? ${system}; in if !systemSupported then {} else {
+      sonline0-initrd = sub.packages.${system}.make-sonline0-initrd;
+      sonline0-initrd-test = sub.packages.${system}.make-sonline0-initrd-test;
+    })
+    )
     // (forDarwinSystems (system: let pkgs = nixpkgs.legacyPackages.${system}; in {
       iproute2mac = pkgs.callPackage ./pkgs/iproute2mac.nix {};
     }));
@@ -138,7 +146,11 @@
       ''); };
 
       nixos-install = { type = "app"; program = "${nixpkgs.legacyPackages.${system}.nixos-install-tools}/bin/nixos-install"; };
-    }) // forDarwinSystems (system: {
+    }
+    // (let sub = getFlakeForHost "sonline0-initrd"; systemSupported = sub.packages ? ${system}; in if !systemSupported then {} else {
+      sonline0-initrd-run-qemu = sub.apps.${system}.run-qemu;
+    })
+    ) // forDarwinSystems (system: {
       ip = { type = "app"; program = "${self.packages.${system}.iproute2mac}/bin/ip"; };
     });
     devShells = forAllSystems (system: with self.packages.${system}; with nixpkgs.legacyPackages.${system}; {

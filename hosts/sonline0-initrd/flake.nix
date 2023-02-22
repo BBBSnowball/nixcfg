@@ -1,5 +1,8 @@
 # nix run --override-input routeromen ../.. --override-input routeromen/private path:/etc/nixos/hosts/sonline0/private/data/ .#make-sonline0-initrd
 # nix run --override-input routeromen ../.. --override-input routeromen/private path:/etc/nixos/hosts/sonline0/private/data/ .#make-sonline0-initrd-test
+# then: scp result-initrd/{bzImage,initrd} the-server:
+#       ssh the-server kexec --load --initrd=initrd --reuse-cmdline bzImage
+#       ssh the-server kexec --force --exec
 {
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-22.11";
   inputs.routeromen.url = "github:BBBSnowball/nixcfg";
@@ -18,7 +21,7 @@
         initialRamdisk
         initialRamdiskSecretAppender;
   
-      make-sonline0-initrd = pkgs.writeShellScriptBin "mkinitrd" ''
+      make-sonline0-initrd = (pkgs.writeShellScriptBin "mkinitrd" ''
         set -e
         umask 077
         dir=${if cfg.config.boot.initrd.testInQemu then "result-initrd-test" else "result-initrd"}
@@ -59,7 +62,12 @@
 
         echo "initrd has been generated at $dir/initrd"
         echo "connect with: ssh -F $dir/ssh_config -i ~/.ssh/id_rsa initrd  # or initrd6 or initrd-test"
-      '';
+      '') // {
+        inherit
+          kernel
+          initialRamdisk
+          initialRamdiskSecretAppender;
+      };
     };
 
     addSuffix = suffix: nixpkgs.lib.mapAttrs' (k: nixpkgs.lib.nameValuePair (k+suffix));
@@ -78,7 +86,7 @@
     apps.x86_64-linux = {
       # make-sonline0-initrd and make-sonline0-initrd-test can be run via packages so we don't add them here.
       # make-sonline0-initrd is the default.
-      test = {
+      run-qemu = {
         type = "app";
         program = (pkgs.writeShellScript "test-sonline0-initrd" ''
           set -xe
@@ -88,7 +96,4 @@
       };
     };
   });
-# then: scp result-initrd/{bzImage,initrd} the-server:
-#       ssh the-server kexec --load --initrd=initrd --reuse-cmdline bzImage
-#       ssh the-server kexec --force --exec
 }

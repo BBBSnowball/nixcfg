@@ -2,7 +2,7 @@
 # ./nix.sh flake check
 # ./nix.sh run .
 # ./nix.sh run .#make-sonline0-initrd-test
-# ./nix.sh run .#test
+# ./nix.sh run .#run-qemu
 if [ "$1" == "flake" ] ; then
   cmd=("$1" "$2")
   shift
