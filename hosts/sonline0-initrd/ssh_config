@@ -1,0 +1,14 @@
+UserKnownHostsFile ./known_hosts
+GlobalKnownHostsFile ./known_hosts
+StrictHostKeyChecking yes
+PasswordAuthentication no
+PubkeyAuthentication yes
+
+Host initrd*
+  User root
+  CheckHostIP no
+  HostKeyAlias initrd
+Host initrd-test
+  HostName localhost
+  Port 5555
+

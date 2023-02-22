@@ -1,14 +1,14 @@
-{ lib, pkgs, config, ... }:
+{ lib, pkgs, config, private, ... }:
 let
-  debugInQemu = config.boot.initrd.debugInQemu;
-  private = import ./private.nix { inherit debugInQemu; };
-  iface = if debugInQemu then "ens3" else "enp1s0f0";
+  testInQemu = config.boot.initrd.testInQemu;
+  privateValues = import "${private}/by-host/${config.networking.hostName}/initrd.nix" { inherit testInQemu; };
+  inherit (privateValues) secretDir;
+  iface = if testInQemu then "ens3" else "enp1s0f0";
 in
 {
   imports = [ ./hardware-configuration.nix ./debug.nix ];
   time.timeZone = "Europe/Berlin";
   system.stateVersion = "22.11";
-  networking.hostName = "sonline0";
 
   services.openssh = {
     # some options from here are also used for the initrd, e.g. useDns - but we keep the defaults, for now
@@ -27,8 +27,8 @@ in
     network.enable = true;
     network.ssh = {
       enable = true;
-      inherit (private) port authorizedKeys;
-      hostKeys = [ "${private.secretDir}/ssh_host_rsa_key" ];
+      inherit (privateValues) port authorizedKeys;
+      hostKeys = [ "${secretDir}/ssh_host_rsa_key" ];
       extraConfig = ''
         Subsystem sftp ${pkgs.openssh}/libexec/sftp-server
       '';
@@ -42,16 +42,16 @@ in
     availableKernelModules = [
       "sd_mod" "igb" "dm-snapshot"
       "ipmi_devintf" "ipmi_si" "ipmi_ssif"
-    ] ++ (if !debugInQemu then [] else [
+    ] ++ (if !testInQemu then [] else [
       # for testing in qemu
       "virtio_pci" "virtio_blk" "virtio_net"
       "e1000e"
     ]);
 
 
-    secrets."/etc/secretenv" = "${private.secretDir}/secretenv";
-    secrets."/var/lib/dhcpcd/duid" = "${private.secretDir}/duid";
-    secrets."/var/db/dhcpcd/duid" = "${private.secretDir}/duid";
+    secrets."/etc/secretenv" = "${secretDir}/secretenv";
+    secrets."/var/lib/dhcpcd/duid" = "${secretDir}/duid";
+    secrets."/var/db/dhcpcd/duid" = "${secretDir}/duid";
     network.postCommands = lib.mkAfter ''
       # https://www.scaleway.com/en/docs/dedibox-network/ipv6/quickstart/
       #dhcpd -cf /etc/dhcp/dhclient6.conf -6 -P -v enp1s0f0
@@ -72,8 +72,10 @@ in
 # ( umask 077; mkdir secret )
 # ssh-keygen -t rsa -N "" -b 4096 -f secrets/ssh_host_rsa_key
 # secret/secretenv:
-# ipv6=2001:2:3:4::123
+#   ipv4=1.2.3.4
+#   ipv6=2001:2:3:4::123
 # private/initrd.nix:
+#   { testInQemu }:
 #   {
 #     port = 22;
 #     authorizedKeys = [ "ssh-rsa ..." ];

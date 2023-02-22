@@ -1,7 +1,7 @@
 { lib, ... }:
 with lib;
 {
-  options.boot.initrd.debugInQemu = mkOption {
+  options.boot.initrd.testInQemu = mkOption {
     type = types.bool;
     default = false;
   };
