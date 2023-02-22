@@ -1,12 +1,12 @@
 { lib, pkgs, config, private, nixpkgs, ... }:
 let
-  testInQemu = config.boot.initrd.testInQemu;
+  inherit (config.boot.initrd) testInQemu withNix;
   privateValues = import "${private}/by-host/${config.networking.hostName}/initrd.nix" { inherit testInQemu; };
   inherit (privateValues) secretDir;
   iface = if testInQemu then "ens3" else "enp1s0f0";
 in
 {
-  imports = [ ./hardware-configuration.nix ./debug.nix ];
+  imports = [ ./hardware-configuration.nix ./config.nix ];
   time.timeZone = "Europe/Berlin";
   system.stateVersion = "22.11";
 
@@ -22,17 +22,16 @@ in
       (lvm2 // { meta.mainProgram = "lvm"; })
       dhcpcd
       (kexec-tools // { meta.mainProgram = "kexec"; })
+      lshw
+      (usbutils // { meta.mainProgram = "lsusb"; })
+    ];
+    # extraBin adds them without the replaced paths for some reason so we add them in postCommands, instead.
+    extraBin2 = if !withNix then [] else with pkgs; [
+      pkgs.nix
+      config.system.build.nixos-generate-config
+      config.system.build.nixos-install
       curl
-      #nix
-      #(nix // { meta.mainProgram = "nix-store"; })
-      #(nix // { meta.mainProgram = "nix-shell"; })
       #strace
-
-      # This adds them without the replaced paths for some reason so we add them in postCommands, instead.
-      #(nixpkgs.lib.nixosSystem { system = "x86_64-linux"; modules = []; }).config.system.build.nixos-generate-config
-      #(nixpkgs.lib.nixosSystem { system = "x86_64-linux"; modules = []; }).config.system.build.nixos-install
-      #config.system.build.nixos-generate-config
-      #config.system.build.nixos-install
     ];
   in {
     network.enable = true;
@@ -44,31 +43,17 @@ in
         extraUtils = config.system.build.bootStage1.extraUtils;
       in ''
         Subsystem sftp ${pkgs.openssh}/libexec/sftp-server
-
+      '' + (if extraBin2 == [] then "" else ''
         #NOTE We have to set it here because /etc/profile will not be evaluated in a non-interactive shell
         #     and we need nix-store on the path for nix-copy-closure.
-        SetEnv PATH=/bin:${nixpkgs.lib.makeBinPath [
-          #extraUtils
-          pkgs.nix
-          (nixpkgs.lib.nixosSystem { system = "x86_64-linux"; modules = []; }).config.system.build.nixos-generate-config
-          (nixpkgs.lib.nixosSystem { system = "x86_64-linux"; modules = []; }).config.system.build.nixos-install
-        ]}
+        SetEnv PATH=/bin:${nixpkgs.lib.makeBinPath extraBin2}
         #SetEnv LD_LIBRARY_PATH=''${extraUtils}/lib  # would cause infinite recursion
-      '';
+      '');
     };
     extraUtilsCommands = ''
       for x in ${toString (builtins.map lib.getExe extraBin)} ; do
         copy_bin_and_libs $x
       done
-
-      if false ; then
-        mkdir -p $out/etc/ssl/certs
-        cp ${pkgs.cacert.out}/etc/ssl/certs/ca-bundle.crt $out/etc/ssl/certs/
-        ln -s ca-bundle.crt $out/etc/ssl/certs/ca-certificates.crt
-        cp -r ${pkgs.cacert.p11kit}/etc/ssl/trust-source $out/etc/ssl/trust-source
-      fi
-
-      #cp -s ${lib.getBin pkgs.nix}/bin/* $out/bin/
     '';
   
     availableKernelModules = [
@@ -84,21 +69,17 @@ in
     secrets."/etc/secretenv" = "${secretDir}/secretenv";
     secrets."/var/lib/dhcpcd/duid" = "${secretDir}/duid";
     secrets."/var/db/dhcpcd/duid" = "${secretDir}/duid";
-    network.postCommands = lib.mkMerge [(lib.mkBefore ''
+    network.postCommands = lib.mkMerge [(lib.mkBefore (lib.optionalString withNix ''
       #NOTE nix will not be fully functional because it fails to do its /real-root mount
       #     tricks with the initramfs:
       #     error: cannot pivot old root directory onto '/nix/store/*.drv.chroot/real-root': Invalid argument
-      export PATH=$PATH:${lib.getBin pkgs.nix}/bin
-      export PATH=$PATH:${(nixpkgs.lib.nixosSystem { system = "x86_64-linux"; modules = []; }).config.system.build.nixos-generate-config}/bin
-      export PATH=$PATH:${(nixpkgs.lib.nixosSystem { system = "x86_64-linux"; modules = []; }).config.system.build.nixos-install}/bin
-      export PATH=$PATH:${lib.getBin libxfs}/bin
-      #echo "SetEnv PATH=$PATH" >>/etc/ssh/sshd_config
+      export PATH=$PATH:${nixpkgs.lib.makeBinPath extraBin2}
 
       mkdir -p /etc/ssl/certs
       ln -s ${pkgs.cacert.out}/etc/ssl/certs/ca-bundle.crt $out/etc/ssl/certs/
       ln -s ca-bundle.crt $out/etc/ssl/certs/ca-certificates.crt
       ln -s ${pkgs.cacert.p11kit}/etc/ssl/trust-source $out/etc/ssl/trust-source
-    '') (lib.mkAfter ''
+    '')) (lib.mkAfter (lib.optionalString withNix ''
       # We must do this after the commands that the SSH module adds to init /etc/passwd.
       # That's why it is in the mkAfter part.
       users=""
@@ -107,7 +88,7 @@ in
         users=$users,nixbld$i
       done
       echo "nixbld:x:30000:nixbld1$users" >>/etc/group
-
+    '')) (lib.mkAfter ''
       # https://www.scaleway.com/en/docs/dedibox-network/ipv6/quickstart/
       #dhcpd -cf /etc/dhcp/dhclient6.conf -6 -P -v enp1s0f0
       # -> not supported anymore for NixOS because it is end-of-life

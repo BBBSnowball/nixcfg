@@ -111,6 +111,8 @@
     // (let sub = getFlakeForHost "sonline0-initrd"; systemSupported = sub.packages ? ${system}; in if !systemSupported then {} else {
       sonline0-initrd = sub.packages.${system}.make-sonline0-initrd;
       sonline0-initrd-test = sub.packages.${system}.make-sonline0-initrd-test;
+      sonline0-initrd-install = sub.packages.${system}.make-sonline0-initrd-install;
+      sonline0-initrd-install-test = sub.packages.${system}.make-sonline0-initrd-install-test;
     })
     )
     // (forDarwinSystems (system: let pkgs = nixpkgs.legacyPackages.${system}; in {
@@ -149,6 +151,7 @@
     }
     // (let sub = getFlakeForHost "sonline0-initrd"; systemSupported = sub.packages ? ${system}; in if !systemSupported then {} else {
       sonline0-initrd-run-qemu = sub.apps.${system}.run-qemu;
+      sonline0-initrd-run-qemu-install = sub.apps.${system}.run-qemu-install;
     })
     ) // forDarwinSystems (system: {
       ip = { type = "app"; program = "${self.packages.${system}.iproute2mac}/bin/ip"; };

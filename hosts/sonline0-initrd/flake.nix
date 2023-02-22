@@ -10,12 +10,17 @@
 
   outputs = { self, nixpkgs, routeromen, ... }@flakeInputs:
   let
-    normal = routeromen.lib.mkFlakeForHostConfig "sonline0" "x86_64-linux" ./main.nix flakeInputs;
-    test = routeromen.lib.mkFlakeForHostConfig "sonline0" "x86_64-linux" ./main-test.nix flakeInputs;
-
     pkgs = nixpkgs.legacyPackages.x86_64-linux;
 
-    ourPkgs = cfg: rec {
+    addSuffix = suffix: nixpkgs.lib.mapAttrs' (k: nixpkgs.lib.nameValuePair (k+suffix));
+
+    ourPkgs = config: let
+      mod = { withFlakeInputs, ... }: {
+        imports = [ (withFlakeInputs ./main.nix) ];
+        boot.initrd = config;
+      };
+      cfg = (routeromen.lib.mkFlakeForHostConfig "sonline0" "x86_64-linux" mod flakeInputs).nixosConfigurations.sonline0;
+    in addSuffix cfg.config.boot.initrd.nameSuffix (rec {
       inherit (cfg.config.system.build)
         kernel
         initialRamdisk
@@ -24,7 +29,7 @@
       make-sonline0-initrd = (pkgs.writeShellScriptBin "mkinitrd" ''
         set -e
         umask 077
-        dir=${if cfg.config.boot.initrd.testInQemu then "result-initrd-test" else "result-initrd"}
+        dir=result-initrd${cfg.config.boot.initrd.nameSuffix}
         test=${if cfg.config.boot.initrd.testInQemu then "1" else "0"}
         mkdir -p $dir
         rm -f $dir/{bzImage,initrd,initrd.tmp}
@@ -69,19 +74,13 @@
           initialRamdiskSecretAppender
           cfg;
       };
-    };
-
-    addSuffix = suffix: nixpkgs.lib.mapAttrs' (k: nixpkgs.lib.nameValuePair (k+suffix));
-    # The check would throw an exception because they don't have any root filesystem or bootloader config.
-    # Therefore, let's omit them, for now.
-    omitNixosConfigurations = xs: builtins.removeAttrs xs ["nixosConfigurations"];
-  in omitNixosConfigurations (normal // rec {
-    #nixosConfigurations.sonline0-initrd = normal.nixosConfigurations.sonline0;
-    #nixosConfigurations.sonline0-initrd-test = test.nixosConfigurations.sonline0;
-
-    packages.x86_64-linux =
-      (addSuffix "-test" (ourPkgs test.nixosConfigurations.sonline0))
-      // (ourPkgs normal.nixosConfigurations.sonline0)
+    });
+  in rec {
+    packages.x86_64-linux = {}
+      // (ourPkgs { withNix = true; testInQemu = true; })
+      // (ourPkgs { withNix = true; testInQemu = false; })
+      // (ourPkgs { withNix = false; testInQemu = true; })
+      // (ourPkgs { withNix = false; testInQemu = false; })
       // { default = self.packages.x86_64-linux.make-sonline0-initrd; };
 
     apps.x86_64-linux = {
@@ -95,6 +94,14 @@
           ${./test.sh} result-initrd-test
         '').outPath;
       };
+      run-qemu-install = {
+        type = "app";
+        program = (pkgs.writeShellScript "test-sonline0-initrd" ''
+          set -xe
+          ${packages.x86_64-linux.make-sonline0-initrd-install-test}/bin/mkinitrd
+          ${./test.sh} result-initrd-test
+        '').outPath;
+      };
     };
-  });
+  };
 }
