@@ -7,7 +7,7 @@ if [ -z "$1" -o "$1" == "--help" ] ; then
 fi
 dir="$1"
 
-args=(-m 1024)
+args=(-m 8192)
 args+=(-kernel "$dir"/bzImage -initrd "$dir"/initrd)
 cmdline="boot.shell_on_fail"
 

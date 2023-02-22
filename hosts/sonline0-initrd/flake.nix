@@ -66,7 +66,8 @@
         inherit
           kernel
           initialRamdisk
-          initialRamdiskSecretAppender;
+          initialRamdiskSecretAppender
+          cfg;
       };
     };
 
