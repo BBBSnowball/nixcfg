@@ -86,6 +86,16 @@
     apps.x86_64-linux = {
       # make-sonline0-initrd and make-sonline0-initrd-test can be run via packages so we don't add them here.
       # make-sonline0-initrd is the default.
+      make-sonline0-initrd-all = {
+        type = "app";
+        program = (pkgs.writeShellScript "make-sonline0-initrd-all" ''
+          set -xe
+          ${packages.x86_64-linux.make-sonline0-initrd}/bin/mkinitrd
+          ${packages.x86_64-linux.make-sonline0-initrd-install}/bin/mkinitrd
+          ${packages.x86_64-linux.make-sonline0-initrd-test}/bin/mkinitrd
+          ${packages.x86_64-linux.make-sonline0-initrd-install-test}/bin/mkinitrd
+        '').outPath;
+      };
       run-qemu = {
         type = "app";
         program = (pkgs.writeShellScript "test-sonline0-initrd" ''

@@ -150,6 +150,7 @@
       nixos-install = { type = "app"; program = "${nixpkgs.legacyPackages.${system}.nixos-install-tools}/bin/nixos-install"; };
     }
     // (let sub = getFlakeForHost "sonline0-initrd"; systemSupported = sub.packages ? ${system}; in if !systemSupported then {} else {
+      sonline0-initrd-all = sub.apps.${system}.make-sonline0-initrd-all;
       sonline0-initrd-run-qemu = sub.apps.${system}.run-qemu;
       sonline0-initrd-run-qemu-install = sub.apps.${system}.run-qemu-install;
     })
