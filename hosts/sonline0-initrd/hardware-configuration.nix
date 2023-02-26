@@ -14,7 +14,7 @@
   boot.extraModulePackages = [ ];
 
   fileSystems."/" =
-    { device = "/dev/disk/by-uuid/20dea332-1690-4e8c-b3e6-10d950f273c0";
+    { device = "/dev/vg/root";
       fsType = "btrfs";
     };
 
@@ -24,7 +24,12 @@
     };
 
   fileSystems."/nix" =
-    { device = "/dev/disk/by-uuid/7f666dc2-7542-4e10-8d17-f5c5a97012f0";
+    { device = "/dev/vg/nix-store";
+      fsType = "btrfs";
+    };
+
+  fileSystems."/var/vms" =
+    { device = "/dev/vg/vms";
       fsType = "btrfs";
     };
 
