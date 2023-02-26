@@ -4,6 +4,10 @@ let
   privateValues = import "${private}/by-host/${config.networking.hostName}/initrd.nix" { inherit testInQemu; };
   inherit (privateValues) secretDir;
   iface = if testInQemu then "ens3" else "enp1s0f0";
+
+  passphrase = pkgs.writeShellScriptBin "passphrase" ''
+    echo "$1" >/crypt-ramfs/passphrase
+  '';
 in
 {
   imports = [ ./hardware-configuration.nix ./config.nix ];
@@ -44,6 +48,7 @@ in
       duplicity
       gnupg
       grub2
+      passphrase
     ];
   in {
     network.enable = true;
@@ -115,7 +120,10 @@ in
       source /etc/secretenv
       ip -6 a add $ipv6/56 dev ${iface}
 
-      sleep inf
+      # The init script will wait for us to paste a passphrase into /crypt-ramfs/passphrase
+      # but only if we have configured some luks device. We used to sleep here but that should
+      # not be necessary anymore.
+      #${if testInQemu then "sleep inf" else ""}
     '')];
 
     luks.devices = lib.listToAttrs (lib.imap1 (i: id: lib.nameValuePair "luks${toString i}" {

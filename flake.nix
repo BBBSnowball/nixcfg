@@ -67,6 +67,7 @@
     nixosConfigurations.gpd = mkHostInSubflake "gpd";
     nixosConfigurations.m1 = mkHostInSubflake "m1";
     nixosConfigurations.macnix = self.nixosConfigurations.m1;
+    nixosConfigurations.sonline0 = mkHostInSubflake "sonline0";
   } // (let
     supportedSystems = [ "x86_64-linux" "i686-linux" "aarch64-linux" ];
     forAllSystems = nixpkgs.lib.genAttrs supportedSystems;

@@ -256,6 +256,8 @@ in {
 
   nix.registry = lib.mkIf (args ? self) { routeromen.flake = args.self; };
 
+  nix.settings.secret-key-files = [ "/etc/nixos/secret_local/cache-priv-key.pem" ];
+
   services.prometheus.exporters.node.enable = true;
   services.prometheus.exporters.node.enabledCollectors = [ "ethtool" "qdisc" "systemd" "wifi"
     #"perf"
