@@ -21,8 +21,6 @@ in {
     "/dev/sdb"
     "/dev/sdc"
   ];
-  boot.loader.grub.extraInstallCommands = ''
-  '';
 
   environment.systemPackages = with pkgs; [
     iptables

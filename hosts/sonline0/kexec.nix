@@ -1,5 +1,11 @@
 { pkgs, ... }:
 let
+  #NOTE We probably don't need this because `systemctl kexec` might just work:
+  #     https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/system/boot/kexec.nix
+  #     -> not automatically but with: systemctl start prepare-kexec
+  #     -> but it uses $profile/initrd, i.e. it won't work with secrets in the initrd
+  # -> use our script
+
   kexecSystem = pkgs.writeShellScriptBin "kexec-system" ''
     set -e
     if [ -z "$1" ] ; then
@@ -19,13 +25,16 @@ let
 
     # see https://github.com/NixOS/nixpkgs/blob/nixos-22.11/nixos/modules/system/boot/loader/systemd-boot/systemd-boot-builder.py
     kernel_params="init=$(realpath "$system/init") $(cat "$system/kernel-params")"
-    initrd=$(umask 077; mktemp initrd-secrets.XXXXXXXXXX -p)
-    "$system/append-initrd-secrets"
+    initrd=$(umask 077; mktemp initrd-secrets.XXXXXXXXXX --tmpdir)
+    "$system/append-initrd-secrets" "$initrd"
     ( set -x; kexec --load --initrd="$initrd" --append "$kernel_params" "$system/kernel" )
     rm "$initrd"
-    echo "Run `kexec --exec` (will not shutdown before) or `systemctl kexec` to start the new kernel."
+    echo 'Run `kexec --exec` (will not shutdown before) or `systemctl kexec` to start the new kernel.'
   '';
 in
 {
   environment.systemPackages = [ kexecSystem ];
+
+  # This increases the chance of kexec working fine - or at least we will see the error message.
+  boot.kernelParams = [ "nomodeset" ];
 }

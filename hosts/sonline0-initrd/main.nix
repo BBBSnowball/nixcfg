@@ -5,8 +5,14 @@ let
   inherit (privateValues) secretDir;
   iface = if testInQemu then "ens3" else "enp1s0f0";
 
-  passphrase = pkgs.writeShellScriptBin "passphrase" ''
+  # We don't use writeShellScriptBin because extra-utils would break the path to bash in the she-bang.
+  passphrase = pkgs.writeScriptBin "passphrase" ''
+    #! /bin/sh
     echo "$1" >/crypt-ramfs/passphrase
+    #NOTE This will only get us some of the messages because the `tee` is still reading from the
+    #     same fifo. We could use `dmesg -f` instead but the busybox dmesg doesn't support `--follow`.
+    set -x
+    cat /tmp/stage-1-init.log.fifo
   '';
 in
 {
@@ -29,6 +35,7 @@ in
       lshw
       (usbutils // { meta.mainProgram = "lsusb"; })
       (util-linux // { meta.mainProgram = "lsblk"; })
+      passphrase
     ];
     # extraBin adds them without the replaced paths for some reason so we add them in postCommands, instead.
     extraBin2 = if !withNix then [] else with pkgs; [
@@ -48,7 +55,6 @@ in
       duplicity
       gnupg
       grub2
-      passphrase
     ];
   in {
     network.enable = true;
