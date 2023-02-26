@@ -8,25 +8,25 @@
     [ (modulesPath + "/installer/scan/not-detected.nix")
     ];
 
-  boot.initrd.availableKernelModules = [ "xhci_pci" "ahci" "usbhid" "sd_mod" "igb" "dm-snapshot" ];
+  boot.initrd.availableKernelModules = [ "xhci_pci" "ahci" "usbhid" "sd_mod" "igb" "dm-snapshot" "dm-crypt" "xts" "aesni-intel" ];
   boot.initrd.kernelModules = [ ];
   boot.kernelModules = [ "kvm-intel" ];
   boot.extraModulePackages = [ ];
 
-  #fileSystems."/" =
-  #  { device = "/dev/disk/by-uuid/096c8370-aac9-470e-9dd0-d77295caaedc";
-  #    fsType = "xfs";
-  #  };
+  fileSystems."/" =
+    { device = "/dev/disk/by-uuid/20dea332-1690-4e8c-b3e6-10d950f273c0";
+      fsType = "btrfs";
+    };
 
-  #fileSystems."/boot" =
-  #  { device = "/dev/disk/by-uuid/d4499cda-01bd-4523-a0cb-e96ef9f9f81f";
-  #    fsType = "ext4";
-  #  };
+  fileSystems."/boot" =
+    { device = "/dev/disk/by-id/md-uuid-9e473c3d:26cd356d:013530cd:071b5881";
+      fsType = "ext4";
+    };
 
-  #fileSystems."/data" =
-  #  { device = "/dev/disk/by-uuid/6c2f3c6d-fc0a-4f7a-b0cf-10b15b6095f5";
-  #    fsType = "ext4";
-  #  };
+  fileSystems."/nix" =
+    { device = "/dev/disk/by-uuid/7f666dc2-7542-4e10-8d17-f5c5a97012f0";
+      fsType = "btrfs";
+    };
 
   swapDevices = [ ];
 

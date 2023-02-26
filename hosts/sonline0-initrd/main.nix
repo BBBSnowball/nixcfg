@@ -24,6 +24,7 @@ in
       (kexec-tools // { meta.mainProgram = "kexec"; })
       lshw
       (usbutils // { meta.mainProgram = "lsusb"; })
+      (util-linux // { meta.mainProgram = "lsblk"; })
     ];
     # extraBin adds them without the replaced paths for some reason so we add them in postCommands, instead.
     extraBin2 = if !withNix then [] else with pkgs; [
@@ -32,6 +33,17 @@ in
       config.system.build.nixos-install
       curl
       #strace
+      libxfs.bin  # makeBinPath would choose .dev
+      e2fsprogs
+      tmux
+      byobu
+      gnupg
+      duplicity
+      btrfs-progs
+      util-linux  # fdisk
+      duplicity
+      gnupg
+      grub2
     ];
   in {
     network.enable = true;
@@ -46,7 +58,7 @@ in
       '' + (if extraBin2 == [] then "" else ''
         #NOTE We have to set it here because /etc/profile will not be evaluated in a non-interactive shell
         #     and we need nix-store on the path for nix-copy-closure.
-        SetEnv PATH=/bin:${nixpkgs.lib.makeBinPath extraBin2}
+        SetEnv PATH=${nixpkgs.lib.makeBinPath extraBin2}:/bin
         #SetEnv LD_LIBRARY_PATH=''${extraUtils}/lib  # would cause infinite recursion
       '');
     };
@@ -59,6 +71,10 @@ in
     availableKernelModules = [
       "sd_mod" "igb" "dm-snapshot"
       "ipmi_devintf" "ipmi_si" "ipmi_ssif"
+      "btrfs"
+      "dm_mod" "dm_crypt" "cryptd" "input_leds"  # luks
+      "aesni_intel" "crc32c_intel" # high-speed crypto
+      "usb_storage" "isofs"  # supermicro virtual drive
     ] ++ (if !testInQemu then [] else [
       # for testing in qemu
       "virtio_pci" "virtio_blk" "virtio_net"
@@ -73,7 +89,7 @@ in
       #NOTE nix will not be fully functional because it fails to do its /real-root mount
       #     tricks with the initramfs:
       #     error: cannot pivot old root directory onto '/nix/store/*.drv.chroot/real-root': Invalid argument
-      export PATH=$PATH:${nixpkgs.lib.makeBinPath extraBin2}
+      export PATH=${nixpkgs.lib.makeBinPath extraBin2}:$PATH
 
       mkdir -p /etc/ssl/certs
       ln -s ${pkgs.cacert.out}/etc/ssl/certs/ca-bundle.crt $out/etc/ssl/certs/
@@ -101,6 +117,13 @@ in
 
       sleep inf
     '')];
+
+    luks.devices = lib.listToAttrs (lib.imap1 (i: id: lib.nameValuePair "luks${toString i}" {
+      device = "/dev/disk/by-id/${id}-part2";
+      allowDiscards = true;
+      # https://wiki.archlinux.org/title/Dm-crypt/Specialties#Disable_workqueue_for_increased_solid_state_drive_(SSD)_performance
+      bypassWorkqueues = true;
+    }) privateValues.disk-ids);
   };
 }
 
@@ -116,6 +139,7 @@ in
 #     port = 22;
 #     authorizedKeys = [ "ssh-rsa ..." ];
 #     secretDir = "/etc/nixos/secret/by-host/sonline0-initrd";  # make sure to specify it as a string
+#     disk-ids = [ "ata-something-something" ];  # name in /dev/disk/by-id
 #   }
 
 # How to use nix-copy-closure:
@@ -123,4 +147,6 @@ in
 # NIX_SSHOPTS="-F result-initrd-test/ssh_config -i ~/.ssh/id_sonline0" nix copy --to ssh://initrd-test path
 # This one would be very useful but it doesn't work:
 # NIX_SSHOPTS="-F result-initrd-test/ssh_config -i ~/.ssh/id_sonline0" nix copy --to ssh://initrd-test?store=/mnt/nix path
+#
+# NIX_SSHOPTS="-F result-initrd/ssh_config -i ~/.ssh/id_sonline0" nix copy --to ssh://initrd nixpkgs#lftp
 
