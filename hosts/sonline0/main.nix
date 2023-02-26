@@ -32,6 +32,72 @@ in {
 
   boot.kernel.sysctl."net.ipv4.ip_forward" = "1";
 
+  systemd.network = {
+    enable = true;
+    wait-online.ignoredInterfaces = [ "enp1s0f1" "br84" ];
+
+    # I wanted to change the actual name for iptables but that didn't work.
+    # The alias does work after kicking udev
+    # (udevadm trigger -c add sys-subsystem-net-devices-enp1s0f0.device).
+    # It might work after a reboot or we might have to use udev rules like
+    # we did on the old Debian system.
+    # (see /media/restore/x/etc/udev/rules.d/70-persistent-net.rules)
+    # -> It seems easier to change the iptables rules rather than banging our
+    #    heads against this any further.
+    # -> We deactivate the "Name=..." because we don't want it to unexpectedly
+    #    start working at some point.
+    links."10-eth0" = {
+      matchConfig.OriginalName = "enp1s0f0";
+      #matchConfig.MACAddress = "...";
+      #linkConfig.Name = "eth0";
+      linkConfig.Alias = "eth0";
+    };
+    links."10-eth1" = {
+      matchConfig.OriginalName = "enp1s0f1";
+      #matchConfig.OriginalName = "*";
+      #matchConfig.MACAddress = "...";
+      #linkConfig.Name = "eth1";
+      linkConfig.Alias = "eth1";
+    };
+
+    networks.enp1s0f0 = {
+      name = "enp1s0f0";
+      address = [
+        "${privateValues.net.ip0}/24"
+        "${privateValues.net.ip1}/32"
+        "${privateValues.net.ip2}/32"
+        "${privateValues.net.ipv6}"
+      ];
+      gateway = [ privateValues.net.gw ];
+      extraConfig = ''
+        [Network]
+        IPv6AcceptRA=true
+      '';
+    };
+
+    networks.vm = {
+      name = "vm-*";
+      bridge = [ "br84" ];
+    };
+
+    networks.br84 = {
+      name = "br84";
+      address = [
+        "${privateValues.net.internalPrefix}.129/24"
+      ];
+      extraConfig = ''
+        [Bridge]
+        HairPin=true
+      '';
+    };
+    netdevs.br84 = {
+      netdevConfig = {
+        Kind = "bridge";
+        Name = "br84";
+      };
+    };
+  };
+
   users.mutableUsers = false;
   # generate contents with `mkpasswd -m sha-512`
   users.users.root.passwordFile = "/etc/nixos/secret/by-host/${config.networking.hostName}/rootpw";

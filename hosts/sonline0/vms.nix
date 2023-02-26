@@ -8,7 +8,7 @@ let
     m=`sed -nr '/^\[memory\]\s*$/,/^\[/ s/^\s*size\s*=\s*\"?([^"]*)\"?\s*$/\1/p' "/var/vms/$INST.cfg"`
     if [ -z "$m" ] ; then m=128 ; fi
     
-    exec /usr/bin/qemu-system-x86_64 \
+    exec qemu-system-x86_64 \
             -enable-kvm -nographic -runas nobody -name "$INST" \
             -pidfile "/run/qemu/$INST.pid" \
             -monitor unix:/run/qemu/$INST.monitor,server,nowait \
@@ -20,12 +20,13 @@ let
   '';
 in
 {
-  systemd.services."kvm@.service" = {
+  systemd.services."kvm@" = {
     # inspired by https://github.com/rafaelmartins/kvm-systemd/blob/master/systemd/system/kvm%40.service
     description = "Start virtual machine %I";
     wants = [ "network.target" ];
     after = [ "network.target" ];
     environment.INST = "%I";
+    path = with pkgs; [ gnused bash qemu_kvm socat bridge-utils iproute2 ];
 
     serviceConfig = {
       Type = "simple";
@@ -41,7 +42,7 @@ in
     };
 
     postStart = ''
-      ${pkgs.gnused}/bin/sed -rn "s/#\s*POST_START:\s+//p" /var/vms/$INST.cfg | bash -
+      sed -rn "s/#\s*POST_START:\s+//p" /var/vms/$INST.cfg | bash -
     '';
 
     #TODO:
@@ -53,5 +54,25 @@ in
     #     -> some sed magic solves that one.
     #  4. Add -smp option (processor count).
     #     -> can be specified in config file
+  };
+
+  environment.etc."qemu-ifup-br84" = {
+    source = pkgs.writeShellScript "qemu-ifup-br84" ''
+      # Script to bring a network (tap) device for qemu up.
+      # The idea is to add the tap device to the same bridge
+      # as we have default routing to.
+      
+      # always use the same bridge
+      br=br84
+      
+      ip link set "$1" up
+      
+      # We enable hairpin mode because we use hairpin DNAT so a packet may exit through the
+      # same port that it came through if the VM tries to talk to itself via the external IP
+      # (which is allowed and useful).
+      #ip link set "$1" master "$br" hairpin on  # -> doesn't work
+      ip link set "$1" master "$br"
+      ip link set "$1" type bridge_slave hairpin on
+    '';
   };
 }
