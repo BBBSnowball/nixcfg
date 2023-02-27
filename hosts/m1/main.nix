@@ -18,7 +18,7 @@ in
       allowUnfree
     ] ++
     [ ./hardware-configuration.nix
-      "${nixos-m1}/nix/m1-support"
+      nixos-m1.nixosModules.apple-silicon-support
       ./pipewire.nix
       ./users.nix
       ./bluetooth.nix

@@ -53,7 +53,7 @@
     },
     "nix-bundle": {
       "inputs": {
-        "nixpkgs": "nixpkgs_2"
+        "nixpkgs": "nixpkgs_3"
       },
       "locked": {
         "lastModified": 1611019385,
@@ -85,13 +85,16 @@
       }
     },
     "nixos-m1": {
-      "flake": false,
+      "inputs": {
+        "nixpkgs": "nixpkgs",
+        "rust-overlay": "rust-overlay"
+      },
       "locked": {
-        "lastModified": 1674098029,
-        "narHash": "sha256-o7CNhxCl8LVd62bunIAuxPv7rh8Kivu8FAZfXSod3/4=",
+        "lastModified": 1677216540,
+        "narHash": "sha256-t7vsvKalN24LUrIABHk3OlzpXhrTfS40AdP6whv3C9I=",
         "owner": "tpwrules",
         "repo": "nixos-m1",
-        "rev": "fe4fff71fd1dbd8733512d0a2b83a84e3cfdc2bd",
+        "rev": "e79177006306ae592bc865b03667af4229620461",
         "type": "github"
       },
       "original": {
@@ -101,6 +104,22 @@
       }
     },
     "nixpkgs": {
+      "locked": {
+        "lastModified": 1677063315,
+        "narHash": "sha256-qiB4ajTeAOVnVSAwCNEEkoybrAlA+cpeiBxLobHndE8=",
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "988cc958c57ce4350ec248d2d53087777f9e1949",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "988cc958c57ce4350ec248d2d53087777f9e1949",
+        "type": "github"
+      }
+    },
+    "nixpkgs_2": {
       "locked": {
         "lastModified": 1670009809,
         "narHash": "sha256-yt/dQ32Vz4WenDLu4XeHbnXFxiHbTcnU0WwiLW5Ce6c=",
@@ -116,7 +135,7 @@
         "type": "github"
       }
     },
-    "nixpkgs_2": {
+    "nixpkgs_3": {
       "locked": {
         "lastModified": 1620055814,
         "narHash": "sha256-8LEHoYSJiL901bTMVatq+rf8y7QtWuZhwwpKE2fyaRY=",
@@ -153,7 +172,7 @@
         "flake-registry": "flake-registry",
         "nixos-hardware": "nixos-hardware",
         "nixos-m1": "nixos-m1",
-        "nixpkgs": "nixpkgs",
+        "nixpkgs": "nixpkgs_2",
         "routeromen": "routeromen"
       }
     },
@@ -178,6 +197,22 @@
       "original": {
         "owner": "BBBSnowball",
         "repo": "nixcfg",
+        "type": "github"
+      }
+    },
+    "rust-overlay": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1675132198,
+        "narHash": "sha256-izOVjdIfdv0OzcfO9rXX0lfGkQn4tdJ0eNm3P3LYo/o=",
+        "owner": "oxalica",
+        "repo": "rust-overlay",
+        "rev": "48b1403150c3f5a9aeee8bc4c77c8926f29c6501",
+        "type": "github"
+      },
+      "original": {
+        "owner": "oxalica",
+        "repo": "rust-overlay",
         "type": "github"
       }
     }
