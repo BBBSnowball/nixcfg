@@ -1,12 +1,13 @@
 { config, pkgs, lib, private, nixpkgsLetsmeet, ... }:
 let
   useOldNixpkgs = true;
+  privateForHost = "${private}/by-host/${config.networking.hostName}";
   pkgs2 = if useOldNixpkgs
-    then import nixpkgsLetsmeet { overlays = [ (import ./overlay.nix private) ]; system = pkgs.system; }
+    then import nixpkgsLetsmeet { overlays = [ (import ./overlay.nix privateForHost) ]; system = pkgs.system; }
     else pkgs;
   pkg = pkgs2.edumeet-server;
 in {
-  nixpkgs.overlays = lib.mkIf (!useOldNixpkgs) [ (import ./overlay.nix private) ];
+  nixpkgs.overlays = lib.mkIf (!useOldNixpkgs) [ (import ./overlay.nix privateForHost) ];
   # make edumeet-connect available to the user
   environment.systemPackages = [ pkg ];
 

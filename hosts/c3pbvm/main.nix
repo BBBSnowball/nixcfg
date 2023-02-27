@@ -1,8 +1,7 @@
-# Edit this configuration file to define what should be installed on
-# your system.  Help is available in the configuration.nix(5) man page
-# and in the NixOS manual (accessible by running ‘nixos-help’).
-
 { config, pkgs, lib, routeromen, private, withFlakeInputs, ... }:
+let
+  privateForHost = "${private}/by-host/${config.networking.hostName}";
+in
 {
   imports =
     [ # Include the results of the hardware scan.
@@ -15,9 +14,9 @@
 
   networking.upstreamIp = "192.168.84.135";
   users.users.root.openssh.authorizedKeys.keyFiles = [
-    "${private}/ssh-laptop.pub"
-    "${private}/ssh-dom0.pub"
-    "${private}/ssh-routeromen.pub"
+    "${privateForHost}/ssh-laptop.pub"
+    "${privateForHost}/ssh-dom0.pub"
+    "${privateForHost}/ssh-routeromen.pub"
   ];
 
   # List packages installed in system profile. To search, run:

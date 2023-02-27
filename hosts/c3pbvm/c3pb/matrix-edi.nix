@@ -3,9 +3,13 @@ let
   test = config.services.matrix-synapse.isTestInstance;
   name = "matrix-edi";
 
+  privateForHost = "${private}/by-host/${config.networking.hostName}";
+  deployToken = (import "${privateForHost}/deploy-tokens.nix").matrix-edi;
+  channelIds = import "${privateForHost}/matrix-channel-ids.nix";
+
   python = pkgs.python3.withPackages (p: with p; [matrix-client amqplib]);
   src = pkgs.fetchgit {
-    url = "https://${(import "${private}/deploy-tokens.nix").matrix-edi}@git.c3pb.de/edi/edi-bot-matrix";
+    url = "https://${deployToken}@git.c3pb.de/edi/edi-bot-matrix";
     rev = "73778f7ecffef3024065bc5bfc4b520f5e30c508";
     sha256 = "sha256-Shjl8o+wqFi0cHyzITBwV89uhLpKKm4geYGHfa0EnwI=";
   };
@@ -24,8 +28,8 @@ let
         "username": "${botName}",
         "passwd" : "",
         "broadcastActionChannels": [
-            "${(import "${private}/matrix-channel-ids.nix").spielwiese}", # #spielwiese
-            "${(import "${private}/matrix-channel-ids.nix").subraum}", # #subraum
+            "${channelIds.spielwiese}", # #spielwiese
+            "${channelIds.subraum}", # #subraum
         ],
         #FIXME remove?
         "channels" : {"_channel_" : "#subraum",

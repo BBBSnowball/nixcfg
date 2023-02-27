@@ -3,7 +3,8 @@ let
   test = config.services.matrix-synapse.isTestInstance;
   name = "mautrix-telegram";
 
-  replaceDomain = input: import ../substitute.nix pkgs input "--replace @trueDomain@ ${lib.fileContents "${private}/trueDomain.txt"}";
+  privateForHost = "${private}/by-host/${config.networking.hostName}";
+  replaceDomain = input: import ../substitute.nix pkgs input "--replace @trueDomain@ ${lib.fileContents "${privateForHost}/trueDomain.txt"}";
 
   pythonWithPkgs = import ./requirements.nix { inherit pkgs lib; };
   mautrixTelegram = pkgs.callPackage ./mautrix-telegram-pkg.nix { inherit pythonWithPkgs; };
