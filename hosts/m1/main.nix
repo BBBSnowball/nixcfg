@@ -36,7 +36,9 @@ in
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = false;
 
-  networking.useNetworkd = true;
+  #networking.useNetworkd = true;
+  #systemd.network.wait-online.anyInterface = true;  # WiFi or ethernet is fine - we don't need both
+  # -> We are using NetworkManger to manage network.
 
   networking.useDHCP = false;
 
