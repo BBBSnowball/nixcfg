@@ -14,6 +14,7 @@ in {
       routeromen.nixosModules.snowball-headless
       ./vms.nix
       ./kexec.nix
+      ./ipv6.nix
       ./backup.nix
     ];
 
@@ -25,6 +26,8 @@ in {
 
   environment.systemPackages = with pkgs; [
     iptables
+    ruby
+    tcpdump
   ];
 
   #networking.firewall.enable = true;
@@ -63,6 +66,8 @@ in {
 
     networks.enp1s0f0 = {
       name = "enp1s0f0";
+      # all static, nothing from DHCP - We don't want to find out the hard way
+      # whether the infra protects us against DHCP spoofing.
       address = [
         "${privateValues.net.ip0}/24"
         "${privateValues.net.ip1}/32"
@@ -70,6 +75,9 @@ in {
         "${privateValues.net.ipv6}"
       ];
       gateway = [ privateValues.net.gw ];
+      dns = privateValues.net.nameservers;
+      # Well, that's what Scaleway says we have to do. Let's hope that spoofing
+      # isn't possible.
       extraConfig = ''
         [Network]
         IPv6AcceptRA=true
@@ -97,6 +105,14 @@ in {
         Name = "br84";
       };
     };
+  };
+  # Let's not trust our neighbors to do name resolution for us.
+  # Check with: systemd-resolve --status
+  services.resolved = {
+    llmnr = "false";
+    extraConfig = ''
+      MulticastDNS=false
+    '';
   };
 
   virtualisation.kvm.autoStart = [ "mailinabox" "nixos" "c3pb" ];
