@@ -14,6 +14,7 @@ in {
       routeromen.nixosModules.snowball-headless
       ./vms.nix
       ./kexec.nix
+      ./backup.nix
     ];
 
   boot.loader.grub.devices = [
