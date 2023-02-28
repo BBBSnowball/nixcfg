@@ -98,6 +98,8 @@ in {
     };
   };
 
+  virtualisation.kvm.autoStart = [ "mailinabox" "nixos" "c3pb" ];
+
   users.mutableUsers = false;
   # generate contents with `mkpasswd -m sha-512`
   users.users.root.passwordFile = "/etc/nixos/secret/by-host/${config.networking.hostName}/rootpw";

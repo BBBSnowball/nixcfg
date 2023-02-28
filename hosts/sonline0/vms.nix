@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ lib, pkgs, config, ... }:
 let
   kvmStart = pkgs.writeShellScript "kvm-start.sh" ''
     #!/bin/bash -e
@@ -18,9 +18,8 @@ let
             -readconfig "/var/vms/$INST.cfg" \
             `sed -rn "s/#\s*EXTRA_ARGS:\s+//p" "/var/vms/$INST.cfg"`
   '';
-in
-{
-  systemd.services."kvm@" = {
+
+  kvmTemplateUnit = {
     # inspired by https://github.com/rafaelmartins/kvm-systemd/blob/master/systemd/system/kvm%40.service
     description = "Start virtual machine %I";
     wants = [ "network.target" ];
@@ -34,6 +33,8 @@ in
       TimeoutStopSec = "20";
       UMask = "077";
       RuntimeDirectory = "qemu";
+      RuntimeDirectoryPreserve = true;  # used by multiple service instances so don't delete when one is stopped
+      RuntimeDirectoryMode = "0700";
 
       ExecStart = "${kvmStart} \"%I\"";
       #ExecStartPre = "${pkgs.coreutils}/bin/mkdir -p /run/qemu";
@@ -56,8 +57,27 @@ in
     #     -> can be specified in config file
   };
 
-  environment.etc."qemu-ifup-br84" = {
-    source = pkgs.writeShellScript "qemu-ifup-br84" ''
+  # https://github.com/NixOS/nixpkgs/issues/80933#issuecomment-1295396500
+  autoStartUnits = lib.genAttrs (builtins.map (name: "kvm@${name}") config.virtualisation.kvm.autoStart) (_: {
+    wantedBy = [ "machines.target" ];
+    overrideStrategy = "asDropin";
+    # NixOS would override this, which we undo here.
+    inherit (kvmTemplateUnit) path;
+  });
+in
+{
+  options = {
+    virtualisation.kvm.autoStart = with lib; mkOption {
+      default = [];
+      type = with types; listOf str;
+      description = "List of virtual machines (kvm@... units) to start after boot.";
+    };
+  };
+
+  config.systemd.services = autoStartUnits // { "kvm@" = kvmTemplateUnit; };
+
+  config.environment.etc = {
+    "qemu-ifup-br84".source = pkgs.writeShellScript "qemu-ifup-br84" ''
       # Script to bring a network (tap) device for qemu up.
       # The idea is to add the tap device to the same bridge
       # as we have default routing to.
@@ -74,5 +94,17 @@ in
       ip link set "$1" master "$br"
       ip link set "$1" type bridge_slave hairpin on
     '';
+    # Default scripts for qemu-ifdown - just as it is on Debian, i.e. doing nothing.
+    # This must exist to avoid an error message when shutting down a VM.
+    "qemu-ifdown".source = pkgs.writeShellScript "qemu-ifdown" ''
+      # Script to shut down a network (tap) device for qemu.
+      # Initially this script is empty, but you can configure,
+      # for example, accounting info here.
+      
+      :
+    '';
+    # We don't add the qemu-ifup script because we will always use the one above.
+    # Let's symlink it in case we forget to override it for a new VM.
+    "qemu-ifup".source = "/etc/qemu-ifup-br84";
   };
 }
