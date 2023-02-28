@@ -27,6 +27,10 @@ let
     environment.INST = "%I";
     path = with pkgs; [ gnused bash qemu_kvm socat bridge-utils iproute2 ];
 
+    # We usually don't want to reboot the VM when the service changes.
+    stopIfChanged = false;
+    restartIfChanged = false;
+
     serviceConfig = {
       Type = "simple";
       PIDFile = "/run/qemu/%I.pid";
@@ -63,6 +67,9 @@ let
     overrideStrategy = "asDropin";
     # NixOS would override this, which we undo here.
     inherit (kvmTemplateUnit) path;
+    # We usually don't want to reboot the VM when the service changes.
+    stopIfChanged = false;
+    restartIfChanged = false;
   });
 in
 {
