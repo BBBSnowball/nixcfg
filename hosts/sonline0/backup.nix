@@ -1,6 +1,12 @@
 { pkgs, ... }:
 {
-  environment.systemPackages = with pkgs; [ duplicity lftp ];
+  environment.systemPackages = with pkgs; [
+    duplicity lftp
+    (pkgs.runCommand "backup" {} ''
+      mkdir -p $out/bin
+      ln -s ${./backup.sh} $out/bin/backup
+    '')
+  ];
 
   systemd.timers.backup = {
     wantedBy = [ "timers.target" ];
@@ -17,7 +23,7 @@
     description = "Backup whole system with duplicity";
     path = with pkgs; [ bash duplicity procps lftp ];
     serviceConfig.Type = "oneshot";
-    serviceConfig.ExecStart = "/root/backup.sh cron";
+    serviceConfig.ExecStart = "${./backup.sh} cron";
     restartIfChanged = false;
   };
 }
