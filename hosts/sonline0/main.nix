@@ -12,6 +12,7 @@ in {
       #namedFirewallPorts
       ./firewall-iptables-restore-simple.nix
       routeromen.nixosModules.snowball-headless
+      routeromen.nixosModules.nixcfg-sync
       ./vms.nix
       ./kexec.nix
       ./ipv6.nix
