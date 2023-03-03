@@ -1,6 +1,7 @@
 { config, lib, pkgs, modules, private, ... }:
 let
   privateForHost = "${private}/by-host/${config.networking.hostName}";
+  secretForHost = "/etc/nixos/secret/by-host/${config.networking.hostName}";
 
   ports = config.networking.firewall.allowedPorts;
   mysqlPort = 3308;
@@ -37,7 +38,7 @@ in {
           #port = mysqlPort;
           socket = "/run/mysqld/mysqld.sock";
           name = "wordpress";
-          #passwordFile = "/etc/nixos/secret/${name}-wordpress-db-password";  # not allowed because createLocally manages it
+          #passwordFile = "${secretForHost}/${name}-wordpress-db-password";  # not allowed because createLocally manages it
           createLocally = true;
         };
         extraConfig = ''
@@ -74,7 +75,7 @@ in {
           auth = true;
           host = "192.168.84.130";
           port = "587";
-          passwordeval = "cat /etc/nixos/secret/smtp-password.txt";
+          passwordeval = "cat ${secretForHost}/smtp-password.txt";
           user = "noreply@${url1}";
           from = "noreply@${url1}";
           tls = "on";
@@ -84,10 +85,10 @@ in {
 
       systemd.services."phpfpm-wordpress-${name}" = {
         preStart = ''
-          chmod 440 /etc/nixos/secret/{smtp-password.txt,${name}-wordpress-db-password}
-          chown wordpress:root /etc/nixos/secret/${name}-wordpress-db-password
-          chown root:wwwrun /etc/nixos/secret/smtp-password.txt
-          chmod 711 /etc/nixos/secret
+          chmod 440 ${secretForHost}/{smtp-password.txt,${name}-wordpress-db-password}
+          chown wordpress:root ${secretForHost}/${name}-wordpress-db-password
+          chown root:wwwrun ${secretForHost}/smtp-password.txt
+          chmod 711 ${secretForHost}
         '';
         serviceConfig.PermissionsStartOnly = true;
       };
@@ -99,11 +100,11 @@ in {
   systemd.services."container@${name}-wordpress" = {
     path = with pkgs; [ gnutar which ];
     preStart = ''
-      chmod 600 /etc/nixos/secret/{smtp-password.txt,${name}-wordpress-db-password}
+      chmod 600 ${secretForHost}/{smtp-password.txt,${name}-wordpress-db-password}
       systemd-nspawn -D "$root" --bind-ro=/nix/store:/nix/store --pipe -- `which mkdir` -p -m 0755 "/etc/nixos"
-      systemd-nspawn -D "$root" --bind-ro=/nix/store:/nix/store --pipe -- `which mkdir` -p -m 0711 "/etc/nixos/secret"
-      tar -C /etc/nixos/secret -c smtp-password.txt ${name}-wordpress-db-password \
-        | systemd-nspawn -D "$root" --bind-ro=/nix/store:/nix/store --pipe -- `which tar` -C /etc/nixos/secret -x
+      systemd-nspawn -D "$root" --bind-ro=/nix/store:/nix/store --pipe -- `which mkdir` -p -m 0711 "${secretForHost}"
+      tar -C ${secretForHost} -c smtp-password.txt ${name}-wordpress-db-password \
+        | systemd-nspawn -D "$root" --bind-ro=/nix/store:/nix/store --pipe -- `which tar` -C ${secretForHost} -x
     '';
   };
 }

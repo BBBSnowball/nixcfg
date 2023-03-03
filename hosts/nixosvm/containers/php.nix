@@ -1,6 +1,7 @@
 { config, lib, modules, private, ... }:
 let
   privateForHost = "${private}/by-host/${config.networking.hostName}";
+  secretForHost = "/etc/nixos/secret/by-host/${config.networking.hostName}";
   ports = config.networking.firewall.allowedPorts;
   url1 = lib.fileContents "${privateForHost}/janina/url1.txt";
 in {
@@ -61,7 +62,7 @@ in {
           auth = true;
           host = "192.168.84.130";
           port = "587";
-          passwordeval = "cat /etc/nixos/secret/smtp-password.txt";
+          passwordeval = "cat ${secretForHost}/smtp-password.txt";
           user = "noreply@${url1}";
           from = "noreply@${url1}";
           tls = "on";
