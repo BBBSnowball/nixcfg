@@ -323,15 +323,10 @@ if [ ! -e $secrets_shared_repo ] ; then
 fi
 
 sparse_list=$secrets_shared_repo/sparse-configs-for-private/"$hostname"
-sparse_list=$secrets_shared_repo/sparse-configs-for-private/TEMPLATE
+sparse_template=$secrets_shared_repo/sparse-configs-for-private/TEMPLATE
 if [ ! -e "$sparse_list" ] ; then
   mkdir -p $secrets_shared_repo/sparse-configs-for-private
-  sed 's/^    //' <<"EOF" >"$sparse_list"
-    !/*
-    /.decryption_test
-    /.gitattributes
-    #/.git-crypt
-EOF
+  sed 's/^    //' <"$sparse_template" >"$sparse_list"
   if [ -e "$sparse_template" ] ; then
     sed "s/{HOST}/$hostname/" <$sparse_template >"$sparse_list"
   fi
