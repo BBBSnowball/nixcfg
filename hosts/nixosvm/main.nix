@@ -21,6 +21,7 @@ in {
       ./hardware-configuration.nix
       routeromen.nixosModules.auto-upgrade
       routeromen.nixosModules.snowball-vm-sonline0
+      routeromen.nixosModules.nixcfg-sync
       namedFirewallPorts
       (withFlakeInputs ./services/taskserver.nix)
       ./services/openvpn.nix

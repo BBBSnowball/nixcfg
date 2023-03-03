@@ -10,6 +10,7 @@ in
       routeromen.nixosModules.extra-container
       routeromen.nixosModules.auto-upgrade
       routeromen.nixosModules.snowball-vm-sonline0
+      routeromen.nixosModules.nixcfg-sync
     ];
 
   networking.upstreamIp = "192.168.84.135";
