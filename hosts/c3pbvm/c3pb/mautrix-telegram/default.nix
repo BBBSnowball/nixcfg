@@ -2,6 +2,7 @@
 let
   test = config.services.matrix-synapse.isTestInstance;
   name = "mautrix-telegram";
+  secretForHost = "/etc/nixos/secret/by-host/${config.networking.hostName}";
 
   privateForHost = "${private}/by-host/${config.networking.hostName}";
   replaceDomain = input: import ../substitute.nix pkgs input "--replace @trueDomain@ ${lib.fileContents "${privateForHost}/trueDomain.txt"}";
@@ -11,9 +12,9 @@ let
   python = pythonWithPkgs.interpreterWithPackages (_: [ mautrixTelegram pythonWithPkgs.packages.alembic ]);
   configPatches = [
     (replaceDomain ./config-public.patch)
-    /etc/nixos/secret/mautrix-telegram/config-secret.patch
+    ${secretForHost}/mautrix-telegram/config-secret.patch
   ] ++ (if test then [
-    /etc/nixos/secret/mautrix-telegram/config-test.patch
+    ${secretForHost}/mautrix-telegram/config-test.patch
   ] else []);
   makeConfig = pkgs.writeShellScript "mautrix-telegram-config" ''
     set -e

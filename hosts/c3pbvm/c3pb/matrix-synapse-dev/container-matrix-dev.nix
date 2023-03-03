@@ -7,8 +7,8 @@ with lib;
   containers.matrix-dev = {
     privateNetwork = false;
     bindMounts.nixos-secret = {
-      hostPath   = "/etc/nixos/secret/matrix-synapse-dev";
-      mountPoint = "/etc/nixos/secret/matrix-synapse-dev";
+      hostPath   = "${secretForHost}/matrix-synapse-dev";
+      mountPoint = "${secretForHost}/matrix-synapse-dev";
     };
     bindMounts.nixChannel = {
       hostPath   = "/nix/var/nix/profiles/per-user/root/channels/nixos";

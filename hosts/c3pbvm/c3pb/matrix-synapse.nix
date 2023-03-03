@@ -5,6 +5,7 @@ let
   domainTestPrefix = if isTestInstance then "test." else "";
   privateForHost = "${private}/by-host/${config.networking.hostName}";
   domain = lib.fileContents "${privateForHost}/trueDomain.txt";
+  secretForHost = "/etc/nixos/secret/by-host/${config.networking.hostName}";
 in {
   options = with lib; {
     services.matrix-synapse = {
@@ -77,18 +78,30 @@ in {
       settings.group_creation_prefix = "unofficial/";
       settings.acme.enabled = false;
       extraConfigFiles = [
-        "/etc/nixos/secret/matrix-synapse/homeserver-secret.yaml"
-        "/etc/nixos/secret/matrix-synapse/oidc-config.yaml"
+        "/\${CREDENTIALS_DIRECTORY}/homeserver-secret.yaml"
+        "/\${CREDENTIALS_DIRECTORY}/oidc-config.yaml"
       ];
       settings.app_service_config_files = [
         #"/etc/matrix-synapse/matrix_irc_hackint.yaml"
-        (if isTestInstance
-          then "/etc/nixos/secret/matrix-synapse/mautrix-telegram-test.yaml"
-          else "/etc/nixos/secret/matrix-synapse/mautrix-telegram.yaml")
+        #(if isTestInstance
+        #  then "${secretForHost}/matrix-synapse/mautrix-telegram-test.yaml"
+        #  else "${secretForHost}/matrix-synapse/mautrix-telegram.yaml")
+        "/var/data/matrix-synapse/mautrix-telegram.yaml"
       ];
     };
 
     systemd.services.matrix-synapse.restartTriggers = with config.services.matrix-synapse; extraConfigFiles ++ settings.app_service_config_files;
+
+    systemd.services.matrix-synapse.serviceConfig.LoadCredential = [
+      "homeserver-secret.yaml:${secretForHost}/matrix-synapse/homeserver-secret.yaml"
+      "oidc-config.yaml:${secretForHost}/matrix-synapse/oidc-config.yaml"
+      (if isTestInstance
+        then "mautrix-telegram.yaml:${secretForHost}/matrix-synapse/mautrix-telegram-test.yaml"
+        else "mautrix-telegram.yaml:${secretForHost}/matrix-synapse/mautrix-telegram.yaml")
+    ];
+    systemd.services.matrix-synapse.serviceConfig.ExecStartPre = [
+      "${pkgs.coreutils}/bin/ln -sfT \${CREDENTIALS_DIRECTORY}/mautrix-telegram.yaml /var/data/matrix-synapse/mautrix-telegram.yaml"
+    ];
 
     #NOTE This should keep it from being started but it doesn't.
     #systemd.services.matrix-synapse.wantedBy = lib.mkForce [];

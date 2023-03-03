@@ -2,6 +2,7 @@
 let
   privateForHost = "${private}/by-host/${config.networking.hostName}";
   domain = lib.fileContents "${privateForHost}/mumble-domain-c3pb.txt";
+  secretForHost = "/etc/nixos/secret/by-host/${config.networking.hostName}";
 
   #FIXME build this with Nix
   mumbleWebDist = pkgs.stdenv.mkDerivation {
@@ -26,8 +27,13 @@ in {
     serviceConfig = {
       Type = "simple";
       ExecStart = "${pkgs.pythonPackages.websockify}/bin/websockify --ssl-target --web=${mumbleWebDist} --cert=server.crt --key=server.key 64737 ${domain}:64738";
-      #WorkingDirectory = "/home/mumble";
-      WorkingDirectory = "/etc/nixos/secret/mumble-web";
+      RuntimeDirectory = "mumbleweb";
+      ExecStartPre = [
+        #NOTE untested!
+        "!${pkgs.coreutils}/bin/install -m 0700 -o mumbleweb -d /run/mumbleweb/keys"
+        "!${pkgs.coreutils}/bin/cp ${secretForHost}/mumble-web/ /run/mumbleweb/keys"
+      ];
+      WorkingDirectory = "/run/mumbleweb/keys";
       User = "mumbleweb";
       Restart = "always";
       RestartSec = 10;

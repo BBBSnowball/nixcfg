@@ -6,6 +6,7 @@ let
   privateForHost = "${private}/by-host/${config.networking.hostName}";
   deployToken = (import "${privateForHost}/deploy-tokens.nix").matrix-edi;
   channelIds = import "${privateForHost}/matrix-channel-ids.nix";
+  secretForHost = "/etc/nixos/secret/by-host/${config.networking.hostName}";
 
   python = pkgs.python3.withPackages (p: with p; [matrix-client amqplib]);
   src = pkgs.fetchgit {
@@ -57,7 +58,7 @@ let
       ${pkgs.sqlite}/bin/sqlite3 ${matrixServerDatabase} "select token from access_tokens where user_id='${botUserId}'" >authtoken.tmp
       if [ -z "$(cat authtoken.tmp)" ] ; then
         pw=$(${pkgs.pwgen}/bin/pwgen -s1 42)
-        echo -e "$pw\n$pw" | ${pkgs.matrix-synapse}/bin/register_new_matrix_user -u ${botName} --no-admin -c /etc/nixos/secret/matrix-synapse/homeserver-secret.yaml
+        echo -e "$pw\n$pw" | ${pkgs.matrix-synapse}/bin/register_new_matrix_user -u ${botName} --no-admin -c $CREDENTIALS_DIRECTORY/homeserver-secret.yaml
       fi
       ${pkgs.sqlite}/bin/sqlite3 ${matrixServerDatabase} "select token from access_tokens where user_id='${botUserId}' order by id desc limit 1" >authtoken.tmp
       if [ -n "$(cat authtoken.tmp)" ] ; then
@@ -92,6 +93,7 @@ in {
       User = "${name}";
       Restart = "always";
       RestartSec = 10;
+      LoadCredential = "homeserver-secret.yaml:${secretForHost}/matrix-synapse/homeserver-secret.yaml";
     };
     restartTriggers = [src python];
     wantedBy = [ "multi-user.target" ];
