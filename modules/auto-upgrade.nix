@@ -9,7 +9,7 @@ in
   system.autoUpgrade.flake = "/etc/nixos/flake#${hostName}";
   #system.autoUpgrade.flake = "/etc/nixos/flake/hosts/${hostName}#${hostName}";  # doesn't have the `private` input
   system.autoUpgrade.flags = [
-    "--override-input" "private" "path:/etc/nixos/hosts/${hostName}/private"
+    "--override-input" "private" "path:/etc/nixos/hosts/${hostName}/private/data/"
     # This would update the outer flake, which is not what we want:
     #"--update-input" "nixpkgs" "--commit-lock-file"
   ];
