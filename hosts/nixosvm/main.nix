@@ -34,6 +34,7 @@ in {
       (withFlakeInputs ./containers/php.nix)
       (withFlakeInputs ./containers/janina-wordpress.nix)
       (withFlakeInputs ./containers/janina-komm-wordpress.nix)
+      (withFlakeInputs ./containers/weechat.nix)
       ./firewall-iptables-restore
     ];
 
