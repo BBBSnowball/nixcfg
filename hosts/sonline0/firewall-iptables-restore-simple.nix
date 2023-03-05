@@ -8,7 +8,7 @@ let
   firewall-update = pkgs.runCommand "firewall-update" {
     inherit (pkgs) runtimeShell;
     inherit (pkgs.stdenv) shellDryRun;
-    path = lib.makeBinPath (with pkgs; [ cfg-fw.package ruby ]);
+    path = lib.makeBinPath (with pkgs; [ cfg-fw.package ruby coreutils gnused bash ]);
     script_ipv4 = cfg.script-ipv4;
     script_ipv6 = cfg.script-ipv6;
   } ''

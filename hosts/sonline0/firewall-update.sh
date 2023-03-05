@@ -2,7 +2,10 @@
 
 #NOTE This is rather similar to iptables-apply.
 
+# Most tools are taken from a fixed path but systemd-nspawn comes from $PATH because it should match
+# the systemd version of the current system.
 export PATH="@path@:$PATH"
+
 CONFIG_DIR=/etc/nixos/secret/by-host/$HOSTNAME/firewall
 IP4TABLES_SCRIPT=@script_ipv4@
 IP6TABLES_SCRIPT=@script_ipv6@
@@ -14,7 +17,9 @@ if [ -z "$tmp" -o ! -d "$tmp" ] ; then
 fi
 
 cleanup() {
-  rm -f "$tmp"/{rules.v?,old.v?,diff}
+  set +e
+  rm -rf "$tmp/tmp-container-root"
+  rm -f "$tmp"/{*.v?,diff,ok}
   rmdir "$tmp"
 }
 trap cleanup EXIT HUP INT QUIT ILL TRAP ABRT BUS FPE USR1 SEGV USR2 PIPE ALRM TERM     
@@ -30,19 +35,40 @@ cp "$CONFIG_DIR/rules.v6" "$tmp/rules.v6"
 ( set -x; iptables-save >"$tmp/old.v4" )
 ( set -x; ip6tables-save >"$tmp/old.v6" )
 
+# Make some dummy rules (which only set counters) so our temporary container will
+# not omit the nat table for IPv6.
+echo "*nat" >"$tmp/dummy.v6"
+echo ":PREROUTING ACCEPT [42:42]" >>"$tmp/dummy.v6"
+echo "COMMIT" >>"$tmp/dummy.v6"
+
+# apply rules in temporary container so we can compare them to the current state
+mkdir "$tmp/tmp-container-root"
+systemd-nspawn --private-network --ephemeral -D "$tmp/tmp-container-root" --bind-ro /nix/store --bind "$tmp" --chdir "$tmp" \
+  -E "PATH=@path@" \
+  @runtimeShell@ -c \
+  "set -x; iptables-restore rules.v4 && iptables-save >new.v4 && ip6tables-restore dummy.v6 && ip6tables-restore rules.v6 && ip6tables-save >new.v6 && touch ok"
+if [ ! -e "$tmp/ok" ] ; then
+  echo "Something went wrong in our temporary container. See above." >&2
+  exit 1
+fi
+
+# remove counters and dates so they won't swamp our diff
+cp "$tmp/old.v4" "$tmp/old2.v4"
+cp "$tmp/old.v6" "$tmp/old2.v6"
+sed -i 's/^\(:.*\) \[[0-9:]*\]$/\1/; s/^\(#.* on \).*/\1<date>/' "$tmp"/{old2.v4,old2.v6,new.v4,new.v6}
+
 # diff to previous script and current firewall
 (
-  diff --color=always -u "$IP4TABLES_SCRIPT" "$tmp/rules.v4" || true
-  #diff --color=always -u "$tmp/old.v4" "$tmp/rules.v4" || true  # too verbose
-  diff --color=always -u "$IP6TABLES_SCRIPT" "$tmp/rules.v6" || true
-  #diff --color=always -u "$tmp/old.v6" "$tmp/rules.v6" || true
+  echo "=== changes between old scripts and new scripts ==="
+  diff --color=always -u "$IP4TABLES_SCRIPT" "$tmp/rules.v4" && echo "IPv4 is unchanged." || true
+  diff --color=always -u "$IP6TABLES_SCRIPT" "$tmp/rules.v6" && echo "IPv6 is unchanged." || true
+  echo "=== changes between current firewall and new rules (as applied in a temporary container) ==="
+  diff --color=always -u "$tmp/old2.v4" "$tmp/new.v4" && echo "IPv4 is unchanged." || true
+  diff --color=always -u "$tmp/old2.v6" "$tmp/new.v6" && echo "IPv6 is unchanged." || true
 ) >"$tmp/diff"
 cnt="$(wc -l "$tmp/diff")"
 read cnt _ <<<"$cnt"
-if [ "$cnt" == "0" ] ; then
-  cat "$tmp/diff"  ;# should be empty but just in case
-  echo "There aren't any changes compared to the previous scripts."
-elif [ "$cnt" -gt 40 ] ; then
+if [ "$cnt" -gt 40 ] ; then
   less -R "$tmp/diff"
 else
   cat "$tmp/diff"
