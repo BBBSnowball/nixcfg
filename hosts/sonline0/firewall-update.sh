@@ -89,8 +89,24 @@ set +e
 #     not be harmful, i.e. it will not happen that we produce some output and then we will
 #     hang (and not restore) because SSH cannot send that output to the client anymore.
 
+# apply the new firewall rules
 ( set -x; iptables-restore "$tmp/rules.v4" )
 ( set -x; ip6tables-restore "$tmp/rules.v6" )
+
+# Connct to ourselves via a remote jump host.
+# - The remote host must have our SSH key added with these options: restrict,permitopen="our-ip:*",port-forwarding ssh-rsa ...
+# - Our host must have the SSH key added with a forced command: restrict,command="echo ok" ssh-rsa ...
+# - (It could be without any restrictions in both cases but we don't want that for a test key.)
+# - ssh_check_config should look like this:
+#   Host check
+#     HostName ourselves
+#     Port 22
+#     User user
+#     ProxyJump user@remote_host
+#   Host *
+#     # This must be here rather than on the command line because we also need it for the ProxyJump.
+#     IdentityFile /etc/nixos/secret/by-host/sonline0/firewall
+( set -x; timeout 5 ssh -F "$CONFIG_DIR/ssh_check_config" check echo ok )
 
 read -t 30 -p "Keep these changes for now? Automatic revert in 30 sec. [y/N] " x || true
 echo ""  ;# newline after prompt in case of timeout

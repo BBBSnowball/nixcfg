@@ -127,6 +127,9 @@ in {
       "${privateForHost}/ssh-laptop.pub"
       "${privateForHost}/ssh-routeromen.pub"
     ];
+    openssh.authorizedKeys.keys = [
+      "restrict,command=\"echo ok\" ${builtins.readFile "${privateForHost}/ssh-sonline-ssh-check.pub"}"
+    ];
     extraGroups = [ "wheel" ];
   };
   users.users.portfwd = {
