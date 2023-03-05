@@ -24,11 +24,21 @@ rec {
          + "\nIf this is for a sub-flake, override routeromen/private instead."));
 
   mkFlakeForHostConfig = hostname: system: mainConfigFile: flakeInputs@{ self, nixpkgs, ... }: let
-     extraArgs = flakeInputs // { inherit withFlakeInputs private; modules = self.nixosModules; };
-     withFlakeInputs = provideArgsToModule extraArgs;
-     mainModule = withFlakeInputs mainConfigFile;
-     private = getPrivateData flakeInputs hostname;
-   in {
+    extraArgs = rec {
+      modules = self.nixosModules;
+      private = getPrivateData flakeInputs hostname;
+      privateForHost = let
+        outPath = "${private}/by-host/${hostname}";
+        #FIXME make config available to a function in values
+        values = if builtins.pathExists "${outPath}/default.nix" then import outPath else {};
+      in values // { inherit outPath; };
+      secretForHost = "/etc/nixos/secret/by-host/${hostname}";
+      inherit withFlakeInputs withFlakeInputs';
+    };
+    withFlakeInputs' = moreArgs: provideArgsToModule (flakeInputs // extraArgs // moreArgs);
+    withFlakeInputs = withFlakeInputs' {};
+    mainModule = withFlakeInputs mainConfigFile;
+  in {
      lib.withFlakeInputs = withFlakeInputs;
 
      nixosModule = mainModule;
@@ -42,5 +52,5 @@ rec {
            { networking.hostName = hostname; }
          ];
      };
-   };
+  };
 }

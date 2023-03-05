@@ -1,10 +1,8 @@
-{ config, pkgs, lib, private, ... }:
+{ config, pkgs, lib, privateForHost, secretForHost, ... }:
 let
   test = config.services.matrix-synapse.isTestInstance;
   name = "mautrix-telegram";
-  secretForHost = "/etc/nixos/secret/by-host/${config.networking.hostName}";
 
-  privateForHost = "${private}/by-host/${config.networking.hostName}";
   replaceDomain = input: import ../substitute.nix pkgs input "--replace @trueDomain@ ${lib.fileContents "${privateForHost}/trueDomain.txt"}";
 
   pythonWithPkgs = import ./requirements.nix { inherit pkgs lib; };

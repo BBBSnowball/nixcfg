@@ -1,7 +1,5 @@
-{ config, lib, modules, private, ... }:
+{ config, lib, modules, privateForHost, secretForHost, ... }:
 let
-  privateForHost = "${private}/by-host/${config.networking.hostName}";
-  secretForHost = "/etc/nixos/secret/by-host/${config.networking.hostName}";
   ports = config.networking.firewall.allowedPorts;
   url1 = lib.fileContents "${privateForHost}/janina/url1.txt";
 in {

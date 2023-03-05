@@ -1,8 +1,8 @@
-{ pkgs, private, ... }:
+{ pkgs, private, secretForHost, ... }:
 let
   basicUser = {
     # generate contents with `mkpasswd -m sha-512`
-    passwordFile = "/etc/nixos/secret/rootpw";
+    passwordFile = "${secretForHost}/rootpw";
 
     openssh.authorizedKeys.keyFiles = [ "${private}/ssh-laptop.pub" ];
   };

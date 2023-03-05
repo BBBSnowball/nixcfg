@@ -1,7 +1,5 @@
-{ pkgs, config, lib, private, ... }:
-let
-  privateForHost = "${private}/by-host/${config.networking.hostName}";
-in {
+{ pkgs, config, lib, privateForHost, ... }:
+{
   services.autossh.sessions = [
     {
       name = "amqp";

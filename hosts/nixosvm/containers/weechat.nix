@@ -1,6 +1,5 @@
-{ config, lib, modules, pkgs, private, ... }:
+{ config, lib, modules, pkgs, privateForHost, ... }:
 let
-  privateForHost = "${private}/by-host/${config.networking.hostName}";
   ports = config.networking.firewall.allowedPorts;
 in {
   containers.weechat = {

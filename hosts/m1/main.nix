@@ -1,7 +1,6 @@
 { config, pkgs, lib, rockpro64Config, routeromen, withFlakeInputs, private, nixos-m1, ... }@args:
 let
   modules = args.modules or (import ./modules.nix {});
-  hostSpecificValue = path: import "${private}/by-host/${config.networking.hostName}${path}";
   #tinc-a-address = "192.168.83.139";
 in
 {

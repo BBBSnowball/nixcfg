@@ -1,6 +1,5 @@
-{ config, lib, modules, private, ... }:
+{ config, lib, modules, privateForHost, ... }:
 let
-  privateForHost = "${private}/by-host/${config.networking.hostName}";
   ports = config.networking.firewall.allowedPorts;
 in {
   containers.mate = {

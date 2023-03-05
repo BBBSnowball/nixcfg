@@ -2,11 +2,9 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, lib, routeromen, private, withFlakeInputs, ... }:
+{ config, pkgs, lib, routeromen, privateForHost, withFlakeInputs, ... }:
 
 let
-  privateForHost = "${private}/by-host/${config.networking.hostName}";
-
   serverExternalIp = config.networking.externalIp;
   upstreamIP = config.networking.upstreamIp;
   tincIP     = (builtins.head config.networking.interfaces."tinc.bbbsnowbal".ipv4.addresses).address;
@@ -19,24 +17,26 @@ in {
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
-      routeromen.nixosModules.auto-upgrade
-      routeromen.nixosModules.snowball-vm-sonline0
-      routeromen.nixosModules.nixcfg-sync
       namedFirewallPorts
-      (withFlakeInputs ./services/taskserver.nix)
+    ] ++ (with routeromen.nixosModules; [
+      auto-upgrade
+      snowball-vm-sonline0
+      nixcfg-sync
+    ]) ++ (map withFlakeInputs [
+      ./services/taskserver.nix
       ./services/openvpn.nix
-      (withFlakeInputs ./services/tinc.nix)
-      (withFlakeInputs ./containers/feg.nix)
-      (withFlakeInputs ./containers/git.nix)
-      (withFlakeInputs ./containers/mate.nix)
-      (withFlakeInputs ./containers/notes.nix)
-      (withFlakeInputs ./containers/rss.nix)
-      (withFlakeInputs ./containers/php.nix)
-      (withFlakeInputs ./containers/janina-wordpress.nix)
-      (withFlakeInputs ./containers/janina-komm-wordpress.nix)
-      (withFlakeInputs ./containers/weechat.nix)
+      ./services/tinc.nix
+      ./containers/feg.nix
+      ./containers/git.nix
+      ./containers/mate.nix
+      ./containers/notes.nix
+      ./containers/rss.nix
+      ./containers/php.nix
+      ./containers/janina-wordpress.nix
+      ./containers/janina-komm-wordpress.nix
+      ./containers/weechat.nix
       ./firewall-iptables-restore
-    ];
+    ]);
 
   networking.upstreamIp = "192.168.84.133";
   users.users.root.openssh.authorizedKeys.keyFiles = [

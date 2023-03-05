@@ -1,4 +1,4 @@
-{ config, pkgs, lib, modulesPath, ... }:
+{ config, pkgs, lib, modulesPath, secretForHost, ... }:
 with lib;
 with builtins;
 let
@@ -8,6 +8,7 @@ let
   firewall-update = pkgs.runCommand "firewall-update" {
     inherit (pkgs) runtimeShell;
     inherit (pkgs.stdenv) shellDryRun;
+    inherit secretForHost;
     path = lib.makeBinPath (with pkgs; [ cfg-fw.package ruby coreutils gnused bash ]);
     script_ipv4 = cfg.script-ipv4;
     script_ipv6 = cfg.script-ipv6;
@@ -17,7 +18,8 @@ let
       --subst-var runtimeShell \
       --subst-var path \
       --subst-var script_ipv4 \
-      --subst-var script_ipv6
+      --subst-var script_ipv6 \
+      --subst-var secretForHost
     chmod +x $out/bin/firewall-update
     $shellDryRun $out/bin/firewall-update
   '';

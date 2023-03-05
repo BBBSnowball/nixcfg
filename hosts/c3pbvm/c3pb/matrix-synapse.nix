@@ -1,11 +1,9 @@
-{ pkgs, config, lib, private, ... }:
+{ pkgs, config, lib, privateForHost, secretForHost, ... }:
 let
   isTestInstance = config.services.matrix-synapse.isTestInstance;
   portOffset = if isTestInstance then 1 else 0;
   domainTestPrefix = if isTestInstance then "test." else "";
-  privateForHost = "${private}/by-host/${config.networking.hostName}";
   domain = lib.fileContents "${privateForHost}/trueDomain.txt";
-  secretForHost = "/etc/nixos/secret/by-host/${config.networking.hostName}";
 in {
   options = with lib; {
     services.matrix-synapse = {

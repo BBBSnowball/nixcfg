@@ -1,4 +1,4 @@
-{ lib, config, private, ... }:
+{ lib, config, secretForHost, ... }:
 {
   assertions = [ {
     assertion = config.systemd.network.enable;
@@ -53,7 +53,7 @@
       # Copy our DUID to /var/db so dhcpcd will use it instead of generating one.
       [ -e /var/db ] || install -o root -g root -m 0755 -d /var/db
       install -o root -g root -m 0750 -d /var/db/dhcpcd
-      install -m 0400 /etc/nixos/secret/by-host/sonline0-initrd/duid /var/db/dhcpcd/duid
+      install -m 0400 ${secretForHost}/duid /var/db/dhcpcd/duid
     '';
   };
 }

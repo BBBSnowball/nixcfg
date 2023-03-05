@@ -1,12 +1,10 @@
-{ config, pkgs, lib, private, ... }:
+{ config, pkgs, lib, privateForHost, secretForHost, ... }:
 let
   test = config.services.matrix-synapse.isTestInstance;
   name = "matrix-edi";
 
-  privateForHost = "${private}/by-host/${config.networking.hostName}";
   deployToken = (import "${privateForHost}/deploy-tokens.nix").matrix-edi;
   channelIds = import "${privateForHost}/matrix-channel-ids.nix";
-  secretForHost = "/etc/nixos/secret/by-host/${config.networking.hostName}";
 
   python = pkgs.python3.withPackages (p: with p; [matrix-client amqplib]);
   src = pkgs.fetchgit {

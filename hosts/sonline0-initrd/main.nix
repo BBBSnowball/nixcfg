@@ -1,7 +1,7 @@
-{ lib, pkgs, config, private, nixpkgs, ... }:
+{ lib, pkgs, config, privateForHost, nixpkgs, ... }:
 let
   inherit (config.boot.initrd) testInQemu withNix;
-  privateValues = import "${private}/by-host/${config.networking.hostName}/initrd.nix" { inherit testInQemu; };
+  privateValues = import "${privateForHost}/initrd.nix" { inherit testInQemu; };
   inherit (privateValues) secretDir;
   iface = if testInQemu then "ens3" else "enp1s0f0";
 

@@ -1,7 +1,6 @@
-{ config, pkgs, lib, private, nixpkgsLetsmeet, ... }:
+{ config, pkgs, lib, privateForHost, nixpkgsLetsmeet, ... }:
 let
   useOldNixpkgs = true;
-  privateForHost = "${private}/by-host/${config.networking.hostName}";
   pkgs2 = if useOldNixpkgs
     then import nixpkgsLetsmeet { overlays = [ (import ./overlay.nix privateForHost) ]; system = pkgs.system; }
     else pkgs;

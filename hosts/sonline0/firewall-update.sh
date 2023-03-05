@@ -6,7 +6,7 @@
 # the systemd version of the current system.
 export PATH="@path@:$PATH"
 
-CONFIG_DIR=/etc/nixos/secret/by-host/$HOSTNAME/firewall
+CONFIG_DIR=@secretForHost@/firewall
 IP4TABLES_SCRIPT=@script_ipv4@
 IP6TABLES_SCRIPT=@script_ipv6@
 

@@ -1,7 +1,5 @@
-{ config, pkgs, lib, private, ... }:
+{ config, pkgs, lib, privateForHost, ... }:
 let
-  privateForHost = "${private}/by-host/${config.networking.hostName}";
-
   extractTarball = tarball: builtins.derivation {
     name = builtins.baseNameOf tarball;
     builder = pkgs.writeShellScript "extract-tar" ''

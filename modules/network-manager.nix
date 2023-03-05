@@ -1,11 +1,14 @@
-{ pkgs, ... }:
+{ pkgs, config, ... }:
+let
+  secretForHost = "/etc/nixos/secret/by-host/${config.networking.hostName}";
+in
 {
   networking.networkmanager.enable = true;
 
   systemd.services.NetworkManager.preStart = ''
-    if [ -d /etc/nixos/secret/nm-system-connections ] ; then
+    if [ -d ${secretForHost}/nm-system-connections ] ; then
       mkdir -p /etc/NetworkManager/system-connections/
-      install -m 600 -t /etc/NetworkManager/system-connections/ /etc/nixos/secret/nm-system-connections/*
+      install -m 600 -t /etc/NetworkManager/system-connections/ ${secretForHost}/nm-system-connections/*
     fi
   '';
 

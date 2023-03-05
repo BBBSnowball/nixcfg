@@ -1,7 +1,4 @@
-{ lib, config, private, ... }:
-let
-  privateForHost = "${private}/by-host/${config.networking.hostName}";
-in
+{ lib, config, privateForHost, ... }:
 {
   services.taskserver.enable = true;
   services.taskserver.fqdn = lib.fileContents "${privateForHost}/taskserver-fqdn.txt";

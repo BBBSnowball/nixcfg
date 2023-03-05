@@ -1,8 +1,6 @@
-{ config, pkgs, lib, rockpro64Config, routeromen, withFlakeInputs, private, nixos-hardware, ... }@args:
+{ config, pkgs, lib, rockpro64Config, routeromen, withFlakeInputs, privateForHost, nixos-hardware, ... }@args:
 let
   modules = args.modules or (import ./modules.nix {});
-  hostSpecificPath = path: "${private}/by-host/${config.networking.hostName}${path}";
-  hostSpecificValue = path: import (hostSpecificPath path);
   tinc-a-address = "192.168.83.139";
 in
 {
@@ -125,7 +123,7 @@ in
 
   programs.git.enable = true;
   programs.git.config = let
-    p = hostSpecificValue "/git";
+    p = import "${privateForHost}/git";
   in {
     user.name = p.name;
     user.email = p.email;
@@ -141,9 +139,9 @@ in
     #https://git-scm.com/book/en/v2/Git-Tools-Signing-Your-Work
     alias.logs = "log --pretty=\\\"format:%h %G? %<(8)%GS %<(15)%aN  %s\\\"";
   };
-  environment.etc."git/allowed_signers".source = hostSpecificPath "/git/allowed_signers";
-  environment.etc."git/id_ed25519_sk.pub".source = hostSpecificPath "/git/id_ed25519_sk.pub";
-  #environment.etc."git/id_ed25519_sk".source = hostSpecificPath "/git/id_ed25519_sk";  # -> totally save for sk keys but still not accepted
+  environment.etc."git/allowed_signers".source = "${privateForHost}/git/allowed_signers";
+  environment.etc."git/id_ed25519_sk.pub".source = "${privateForHost}/git/id_ed25519_sk.pub";
+  #environment.etc."git/id_ed25519_sk".source = "${privateForHost}/git/id_ed25519_sk";  # -> totally save for sk keys but still not accepted
 
   environment.systemPackages = with pkgs; [
     mumble

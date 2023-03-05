@@ -1,13 +1,11 @@
-{ pkgs, config, lib, private, ... }:
+{ pkgs, config, lib, privateForHost, secretForHost, ... }:
 let
-  privateForHost = "${private}/by-host/${config.networking.hostName}";
   deployToken = (import "${privateForHost}/deploy-tokens.nix").inventory;
   dingeSrc = pkgs.fetchgit {
     url = "https://${deployToken}@git.c3pb.de/c3pb/inventory";
     rev = "f230b875d70eafe8318f249059dda87f348884f6";
     sha256 = "0higbr624n2hshgp7h33dgm51w6ml556jfna4m0rq0hm7zlscqd1";
   };
-  secretForHost = "/etc/nixos/secret/by-host/${config.networking.hostName}";
   nodejs = pkgs."nodejs-14_x";
   nodeDeps = (import ./dinge-info-dependencies {
     inherit pkgs nodejs;

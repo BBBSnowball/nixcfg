@@ -1,7 +1,5 @@
-{ config, pkgs, lib, private, ... }:
+{ config, pkgs, lib, private, privateForHost, ... }:
 let
-  privateForHost = "${private}/by-host/${config.networking.hostName}";
-
   readKeys = dir: with builtins; with lib;
     attrsets.filterAttrs (name: value: ! isNull value)
     (mapAttrs (name: type: if type == "regular" && ! strings.hasSuffix ".old" name then readFile (dir + "/${name}") else null)
@@ -60,6 +58,7 @@ in
   networking.firewall.allowedPorts.tinc-udp-a = { port = 657; type = "udp"; };
 
   # I want persistent tinc keys even in case of a complete rebuild.
+  #FIXME change secret to secret_local !!
   systemd.services."tinc.bbbsnowball".preStart = lib.mkBefore ''
     mkdir -p /etc/tinc/bbbsnowball
     ( umask 077; cp -u /etc/nixos/secret/tinc-bbbsnowball-rsa_key.priv /etc/tinc/bbbsnowball/rsa_key.priv )

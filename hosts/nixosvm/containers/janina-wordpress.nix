@@ -1,8 +1,5 @@
-{ config, lib, pkgs, modules, private, ... }:
+{ config, lib, pkgs, modules, privateForHost, secretForHost, ... }:
 let
-  privateForHost = "${private}/by-host/${config.networking.hostName}";
-  secretForHost = "/etc/nixos/secret/by-host/${config.networking.hostName}";
-
   ports = config.networking.firewall.allowedPorts;
   mysqlPort = 3307;
   url1 = lib.fileContents "${privateForHost}/janina/url1.txt";

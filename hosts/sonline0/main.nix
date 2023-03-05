@@ -1,21 +1,20 @@
-{ config, pkgs, lib, routeromen, private, withFlakeInputs, ... }:
+{ config, pkgs, lib, routeromen, private, privateForHost, secretForHost, withFlakeInputs, ... }:
 
 let
-  privateForHost = "${private}/by-host/${config.networking.hostName}";
   privateInitrd = import "${privateForHost}/initrd.nix" { testInQemu = false; };
-  privateValues = import privateForHost;
+  privateValues = privateForHost;
 
   serverExternalIp = config.networking.externalIp;
 in {
   imports =
     [ (withFlakeInputs ../sonline0-initrd/main.nix)
       #namedFirewallPorts
-      ./firewall-iptables-restore-simple.nix
+      (withFlakeInputs ./firewall-iptables-restore-simple.nix)
       routeromen.nixosModules.snowball-headless
       routeromen.nixosModules.nixcfg-sync
       ./vms.nix
       ./kexec.nix
-      ./ipv6.nix
+      (withFlakeInputs ./ipv6.nix)
       ./backup.nix
     ];
 
@@ -120,7 +119,7 @@ in {
 
   users.mutableUsers = false;
   # generate contents with `mkpasswd -m sha-512`
-  users.users.root.passwordFile = "/etc/nixos/secret/by-host/${config.networking.hostName}/rootpw";
+  users.users.root.passwordFile = "${secretForHost}/rootpw";
   users.users.${privateValues.userName} = {
     isNormalUser = true;
     openssh.authorizedKeys.keyFiles = [

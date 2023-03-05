@@ -1,13 +1,10 @@
-{ pkgs, config, private, ... }:
+{ pkgs, config, privateForHost, secretForHost, ... }:
 let
-  hostSpecificPath = path: "${private}/by-host/${config.networking.hostName}${path}";
-  hostSpecificValue = path: import (hostSpecificPath path);
-
   basicUser = {
     # generate contents with `mkpasswd -m sha-512`
-    passwordFile = "/etc/nixos/secret/by-host/${config.networking.hostName}/rootpw";
+    passwordFile = "${secretForHost}/rootpw";
 
-    openssh.authorizedKeys.keyFiles = [ (hostSpecificPath "/ssh-laptop.pub") ];
+    openssh.authorizedKeys.keyFiles = [ "${privateForHost}/ssh-laptop.pub" ];
   };
   rootUser = basicUser;
   guiUser = basicUser // {

@@ -1,7 +1,4 @@
-{ config, pkgs, lib, routeromen, private, withFlakeInputs, ... }:
-let
-  privateForHost = "${private}/by-host/${config.networking.hostName}";
-in
+{ config, pkgs, lib, routeromen, privateForHost, withFlakeInputs, ... }:
 {
   imports =
     [ # Include the results of the hardware scan.
