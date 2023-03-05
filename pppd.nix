@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, secretForHost, ... }:
 let
   ipUpScript = pkgs.writeShellScript "pppd-ip-up" ''
     # args are: interface-name tty-device speed local-IP-address remote-IP-address ipparam
@@ -65,7 +65,7 @@ in
       # option. I assume because the interface doesn't exist at that time.
       nic-upstream-7
 
-      file /etc/nixos/secret/pppd-secret.conf
+      file ${secretForHost}/pppd-secret.conf
     ";
   };
 

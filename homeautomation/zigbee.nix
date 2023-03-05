@@ -1,11 +1,11 @@
-{ config, pkgs, ... }:
+{ config, pkgs, secretForHost, ... }:
 # I use this Zigbee coordinator:
 # https://www.tindie.com/products/slaesh/cc2652-zigbee-coordinator-or-openthread-router/#
 # https://www.zigbee2mqtt.io/information/supported_adapters.html#slaeshs-cc2652rb-stick
 
 # Listen to all messages: mosquitto_sub -t "zigbee2mqtt/#" -v
 
-# Copy secret config after first start: cp /var/lib/zigbee2mqtt/secret.yaml /etc/nixos/secret/zigbee2mqtt.yaml
+# Copy secret config after first start: cp /var/lib/zigbee2mqtt/secret.yaml /etc/nixos/secret/by-host/routeromen/zigbee2mqtt.yaml
 {
   options = {};
 
@@ -45,9 +45,9 @@
     };
     systemd.services.zigbee2mqtt.path = with pkgs; [ utillinux ];
     systemd.services.zigbee2mqtt.preStart = ''
-      if [ -e /etc/nixos/secret/zigbee2mqtt.yaml ] ; then
-        #ln -s /etc/nixos/secret/zigbee2mqtt.yaml ${config.services.zigbee2mqtt.dataDir}/secret.yaml
-        install -m 400 -o zigbee2mqtt /etc/nixos/secret/zigbee2mqtt.yaml ${config.services.zigbee2mqtt.dataDir}/secret.yaml
+      if [ -e ${secretForHost}/zigbee2mqtt.yaml ] ; then
+        #ln -s ${secretForHost}/zigbee2mqtt.yaml ${config.services.zigbee2mqtt.dataDir}/secret.yaml
+        install -m 400 -o zigbee2mqtt ${secretForHost}/zigbee2mqtt.yaml ${config.services.zigbee2mqtt.dataDir}/secret.yaml
       elif [ ! -e ${config.services.zigbee2mqtt.dataDir}/secret.yaml ] ; then
         umask 077
         (

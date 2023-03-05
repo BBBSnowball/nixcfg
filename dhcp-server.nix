@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, privateForHost, ... }:
 let
   self = config.networking.hostName;
   downstreamIP = (builtins.head config.networking.interfaces.br0.ipv4.addresses).address;
@@ -64,7 +64,7 @@ in
       dhcp-boot=tag:bios,grub/booti386,${self}
 
       # static IPs are defined in this file
-      conf-file=/etc/nixos/private/private/by-host/routeromen/dhcp-static-hosts.conf
+      conf-file=${privateForHost}/dhcp-static-hosts.conf
 
 
       # DNS config

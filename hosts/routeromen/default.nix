@@ -4,13 +4,13 @@
 
 { config, pkgs, lib, private, ... }@args:
 let
+  privateForHost = "${private}/by-host/routeromen";
+  secretForHost = "/etc/nixos/secret/by-host/routeromen";
   modules = args.modules or (import ./modules.nix {});
-  hostSpecificPath = "${private}/by-host/${config.networking.hostName}";
-  hostSpecificValue = path: import "${hostSpecificPath}${path}";
-  sshPublicPort = hostSpecificValue "/sshPublicPort.nix";
+  sshPublicPort = import "${privateForHost}/sshPublicPort.nix";
 in {
   imports =
-    [ # Include the results of the hardware scan.
+    (with modules; [
       ./hardware-configuration.nix
       ../../wifi-ap-eap/default.nix
       #../../sound.nix
@@ -18,7 +18,7 @@ in {
       ../../ntopng.nix
       ../../samba.nix
       ../../tinc.nix
-      modules.shorewall
+      shorewall
       ../../dhcp-server.nix
       ../../pppd.nix
       ../../bbverl/syslog-udp.nix
@@ -26,9 +26,13 @@ in {
       ../../bbverl/fhem.nix
       ../../bbverl/ddclient.nix
       ../../homeautomation
-      modules.snowball-headless-big
-      modules.hotfixes
-    ];
+      snowball-headless-big
+      hotfixes
+    ]);
+
+  _module.args = {
+    inherit private privateForHost secretForHost;
+  };
 
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
@@ -41,7 +45,7 @@ in {
 
   networking.hostName = "routeromen";
   networking.domain = "local";
-  networking.hostId = hostSpecificValue "/hostId.nix";
+  networking.hostId = import "${privateForHost}/hostId.nix";
   networking.wireless.enable = false;
 
   # The global useDHCP flag is deprecated, therefore explicitly set to false here.
@@ -192,18 +196,18 @@ in {
   users.users.benny = {
     isNormalUser = true;
     extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
-    hashedPassword = hostSpecificValue "/hashedPassword.nix";
-    openssh.authorizedKeys.keyFiles = [ "${hostSpecificPath}/ssh-laptop.pub" ];
+    hashedPassword = import "${privateForHost}/hashedPassword.nix";
+    openssh.authorizedKeys.keyFiles = [ "${privateForHost}/ssh-laptop.pub" ];
   };
   users.users.root = {
-    hashedPassword = hostSpecificValue "/hashedPassword.nix";
-    openssh.authorizedKeys.keyFiles = [ "${hostSpecificPath}/ssh-laptop.pub" ];
+    hashedPassword = import "${privateForHost}/hashedPassword.nix";
+    openssh.authorizedKeys.keyFiles = [ "${privateForHost}/ssh-laptop.pub" ];
   };
   users.groups.test = {};
   users.users.test = {
     isNormalUser = true;
-    hashedPassword = hostSpecificValue "/hashedPassword.nix";
-    openssh.authorizedKeys.keyFiles = [ "${hostSpecificPath}/ssh-laptop.pub" ];
+    hashedPassword = import "${privateForHost}/hashedPassword.nix";
+    openssh.authorizedKeys.keyFiles = [ "${privateForHost}/ssh-laptop.pub" ];
     packages = with pkgs; [
       anbox apktool
       android-studio # unfree :-(
@@ -226,12 +230,12 @@ in {
   users.users.remoteBuild = {
     isNormalUser = true;
     hashedPassword = "!";
-    openssh.authorizedKeys.keyFiles = [ "${hostSpecificPath}/ssh-laptop.pub" "${hostSpecificPath}/ssh-gpd.pub" ];
+    openssh.authorizedKeys.keyFiles = [ "${privateForHost}/ssh-laptop.pub" "${privateForHost}/ssh-gpd.pub" ];
   };
   users.users.test_nonet = {
     isNormalUser = true;
-    hashedPassword = hostSpecificValue "/hashedPassword.nix";
-    openssh.authorizedKeys.keyFiles = [ "${hostSpecificPath}/ssh-laptop.pub" ];
+    hashedPassword = import "${privateForHost}/hashedPassword.nix";
+    openssh.authorizedKeys.keyFiles = [ "${privateForHost}/ssh-laptop.pub" ];
     extraGroups = [
       "test"
     ];

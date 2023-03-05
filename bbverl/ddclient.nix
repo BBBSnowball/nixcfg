@@ -1,8 +1,8 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, secretForHost, ... }:
 {
   services.ddclient = {
     enable = true;
-    configFile = "/etc/nixos/secret/by-host/${config.networking.hostName}/ddclient.conf";
+    configFile = "${secretForHost}/ddclient.conf";
   };
 
   # The NixOS service uses ExecStartPre (or preStart) to install the config to the services run directory. We do the same but make sure
