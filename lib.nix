@@ -25,19 +25,22 @@ rec {
 
   mkFlakeForHostConfig = hostname: system: mainConfigFile: flakeInputs@{ self, nixpkgs, ... }: let
     extraArgs = rec {
-      modules = self.nixosModules;
       private = getPrivateData flakeInputs hostname;
-      privateForHost = let
-        outPath = "${private}/by-host/${hostname}";
-        #FIXME make config available to a function in values
-        values = if builtins.pathExists "${outPath}/default.nix" then import outPath else {};
-      in values // { inherit outPath; };
-      secretForHost = "/etc/nixos/secret/by-host/${hostname}";
+    };
+    # We can mostly use config._module.args instead of this but that won't work for `modules`
+    # because we need that before config is available.
+    extraArgsForImports = {
+      modules = self.nixosModules;
       inherit withFlakeInputs withFlakeInputs';
     };
-    withFlakeInputs' = moreArgs: provideArgsToModule (flakeInputs // extraArgs // moreArgs);
+    withFlakeInputs' = moreArgs: provideArgsToModule (flakeInputs // extraArgs // extraArgsForImports // moreArgs);
     withFlakeInputs = withFlakeInputs' {};
-    mainModule = withFlakeInputs mainConfigFile;
+    mainModule = {
+      imports = [
+        (withFlakeInputs mainConfigFile)
+        { _module.args = extraArgs; }
+      ];
+    };
   in {
      lib.withFlakeInputs = withFlakeInputs;
 

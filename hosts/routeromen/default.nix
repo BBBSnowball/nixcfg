@@ -2,11 +2,9 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, lib, private, ... }@args:
+{ config, pkgs, lib, privateForHost, ... }@args:
 let
-  privateForHost = "${private}/by-host/routeromen";
-  secretForHost = "/etc/nixos/secret/by-host/routeromen";
-  modules = args.modules or (import ./modules.nix {});
+  modules = args.modules or (import ../../modules.nix {});
   sshPublicPort = import "${privateForHost}/sshPublicPort.nix";
 in {
   imports =
@@ -29,10 +27,6 @@ in {
       snowball-headless-big
       hotfixes
     ]);
-
-  _module.args = {
-    inherit private privateForHost secretForHost;
-  };
 
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;

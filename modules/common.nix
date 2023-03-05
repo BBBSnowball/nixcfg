@@ -2,6 +2,7 @@
 {
   imports =
     [
+      modules.args
       modules.zsh
       ./loginctl-linger.nix
       ./fix-sudo.nix

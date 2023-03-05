@@ -15,17 +15,17 @@ let
   ports = config.networking.firewall.allowedPorts;
 in {
   imports =
-    [ # Include the results of the hardware scan.
+    with routeromen.nixosModules; [
       ./hardware-configuration.nix
       namedFirewallPorts
-    ] ++ (with routeromen.nixosModules; [
       auto-upgrade
       snowball-vm-sonline0
       nixcfg-sync
-    ]) ++ (map withFlakeInputs [
       ./services/taskserver.nix
       ./services/openvpn.nix
       ./services/tinc.nix
+      ./firewall-iptables-restore
+    ] ++ (map withFlakeInputs [
       ./containers/feg.nix
       ./containers/git.nix
       ./containers/mate.nix
@@ -35,7 +35,6 @@ in {
       ./containers/janina-wordpress.nix
       ./containers/janina-komm-wordpress.nix
       ./containers/weechat.nix
-      ./firewall-iptables-restore
     ]);
 
   networking.upstreamIp = "192.168.84.133";

@@ -20,12 +20,17 @@
   outputs = inputs1: let outputFunction = { self, nixpkgs, nix-bundle, flake-compat, private, ... }: (let
     nixosSystemModule = path: {
       imports =
-        [ (self.lib.provideArgsToModule (self.inputs // { modules = self.nixosModules; inherit self; }) path)
+        [ (self.lib.provideArgsToModule ({ modules = self.nixosModules; }) path)
           ({ pkgs, ... }: {
             _file = "${self}/flake.nix#inline-config";
             # Let 'nixos-version --json' know about the Git revision
             # of this flake.
             system.configurationRevision = nixpkgs.lib.mkIf (self ? rev) self.rev;
+
+            _module.args = self.inputs // {
+              modules = self.nixosModules;
+              inherit self;
+            };
           })
         ];
     };

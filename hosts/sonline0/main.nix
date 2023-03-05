@@ -1,4 +1,4 @@
-{ config, pkgs, lib, routeromen, private, privateForHost, secretForHost, withFlakeInputs, ... }:
+{ config, pkgs, lib, routeromen, private, privateForHost, secretForHost, ... }:
 
 let
   privateInitrd = import "${privateForHost}/initrd.nix" { testInQemu = false; };
@@ -7,14 +7,14 @@ let
   serverExternalIp = config.networking.externalIp;
 in {
   imports =
-    [ (withFlakeInputs ../sonline0-initrd/main.nix)
+    [ ../sonline0-initrd/main.nix
       #namedFirewallPorts
-      (withFlakeInputs ./firewall-iptables-restore-simple.nix)
+      ./firewall-iptables-restore-simple.nix
       routeromen.nixosModules.snowball-headless
       routeromen.nixosModules.nixcfg-sync
       ./vms.nix
       ./kexec.nix
-      (withFlakeInputs ./ipv6.nix)
+      ./ipv6.nix
       ./backup.nix
     ];
 
