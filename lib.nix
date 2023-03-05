@@ -26,6 +26,8 @@ rec {
   mkFlakeForHostConfig = hostname: system: mainConfigFile: flakeInputs@{ self, nixpkgs, ... }: let
     extraArgs = rec {
       private = getPrivateData flakeInputs hostname;
+      subFlake = self;
+      mainFlake = flakeInputs.routeromen;
     };
     # We can mostly use config._module.args instead of this but that won't work for `modules`
     # because we need that before config is available.
@@ -38,7 +40,7 @@ rec {
     mainModule = {
       imports = [
         (withFlakeInputs mainConfigFile)
-        { _module.args = extraArgs; }
+        { _module.args = flakeInputs // extraArgs; }
       ];
     };
   in {

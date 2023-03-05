@@ -30,6 +30,7 @@
             _module.args = self.inputs // {
               modules = self.nixosModules;
               inherit self;
+              mainFlake = self;
             };
           })
         ];
