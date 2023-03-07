@@ -10,6 +10,7 @@
       snowball-vm-sonline0
       nixcfg-sync
       ssh-github
+      ./chatgpt-telegram-bot.nix
     ];
 
   networking.upstreamIp = "192.168.84.135";

@@ -1,5 +1,24 @@
 {
   "nodes": {
+    "chatgpt-telegram-bot": {
+      "inputs": {
+        "nixpkgs": "nixpkgs",
+        "pnpm2nix": "pnpm2nix"
+      },
+      "locked": {
+        "lastModified": 1678154294,
+        "narHash": "sha256-InCVAJPptmXySgD2AF5MFofqIJjzpJNnleJLYZpdnOk=",
+        "owner": "BBBSnowball",
+        "repo": "chatgpt-telegram-bot",
+        "rev": "77bae7b5565f028a85ef68de6a6f0560789a9f8c",
+        "type": "github"
+      },
+      "original": {
+        "owner": "BBBSnowball",
+        "repo": "chatgpt-telegram-bot",
+        "type": "github"
+      }
+    },
     "flake-compat": {
       "flake": false,
       "locked": {
@@ -37,7 +56,7 @@
     },
     "nix-bundle": {
       "inputs": {
-        "nixpkgs": "nixpkgs_2"
+        "nixpkgs": "nixpkgs_3"
       },
       "locked": {
         "lastModified": 1611019385,
@@ -57,16 +76,13 @@
       "locked": {
         "lastModified": 1677779205,
         "narHash": "sha256-6DBjL9wjq86p2GczmwnHtFRnWPBPItc67gapWENBgX8=",
-        "owner": "NixOS",
-        "repo": "nixpkgs",
+        "path": "/nix/store/mh2gsjjpvckd42b205h9g2fjypximf9d-source",
         "rev": "96e18717904dfedcd884541e5a92bf9ff632cf39",
-        "type": "github"
+        "type": "path"
       },
       "original": {
-        "owner": "NixOS",
-        "ref": "nixos-22.11",
-        "repo": "nixpkgs",
-        "type": "github"
+        "id": "nixpkgs",
+        "type": "indirect"
       }
     },
     "nixpkgsLetsmeet": {
@@ -87,6 +103,22 @@
     },
     "nixpkgs_2": {
       "locked": {
+        "lastModified": 1677779205,
+        "narHash": "sha256-6DBjL9wjq86p2GczmwnHtFRnWPBPItc67gapWENBgX8=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "96e18717904dfedcd884541e5a92bf9ff632cf39",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixos-22.11",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs_3": {
+      "locked": {
         "lastModified": 1620055814,
         "narHash": "sha256-8LEHoYSJiL901bTMVatq+rf8y7QtWuZhwwpKE2fyaRY=",
         "owner": "NixOS",
@@ -98,6 +130,22 @@
         "id": "nixpkgs",
         "ref": "nixos-20.03-small",
         "type": "indirect"
+      }
+    },
+    "pnpm2nix": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1594396611,
+        "narHash": "sha256-UXOUQ+2A89/zaxYhTHiRrRBU5exbUWrg+FoJYMcNwuI=",
+        "owner": "nix-community",
+        "repo": "pnpm2nix",
+        "rev": "f67be0925a91b92f54d99dbdead7a06920b979ac",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-community",
+        "repo": "pnpm2nix",
+        "type": "github"
       }
     },
     "private": {
@@ -119,11 +167,12 @@
     },
     "root": {
       "inputs": {
+        "chatgpt-telegram-bot": "chatgpt-telegram-bot",
         "flake-compat": [
           "routeromen",
           "flake-compat"
         ],
-        "nixpkgs": "nixpkgs",
+        "nixpkgs": "nixpkgs_2",
         "nixpkgsLetsmeet": "nixpkgsLetsmeet",
         "routeromen": "routeromen"
       }
