@@ -1,13 +1,15 @@
 { config, pkgs, lib, routeromen, privateForHost, withFlakeInputs, ... }:
 {
   imports =
+    with routeromen.nixosModules;
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
       (withFlakeInputs ./c3pb)
-      routeromen.nixosModules.extra-container
-      routeromen.nixosModules.auto-upgrade
-      routeromen.nixosModules.snowball-vm-sonline0
-      routeromen.nixosModules.nixcfg-sync
+      extra-container
+      auto-upgrade
+      snowball-vm-sonline0
+      nixcfg-sync
+      ssh-github
     ];
 
   networking.upstreamIp = "192.168.84.135";
