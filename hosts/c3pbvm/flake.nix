@@ -5,6 +5,7 @@
   inputs.routeromen.inputs.nixpkgs.follows = "nixpkgs";
   inputs.nixpkgsLetsmeet.url = "github:NixOS/nixpkgs/nixos-21.11";
   inputs.chatgpt-telegram-bot.url = "github:BBBSnowball/chatgpt-telegram-bot";
+  inputs.chatgpt-telegram-bot.inputs.nixpkgs.follows = "nixpkgs";
 
   outputs = { self, nixpkgs, routeromen, ... }@flakeInputs:
     routeromen.lib.mkFlakeForHostConfig "c3pbvm" "x86_64-linux" ./main.nix flakeInputs;
