@@ -8,11 +8,11 @@
         "pnpm2nix": "pnpm2nix"
       },
       "locked": {
-        "lastModified": 1678154294,
-        "narHash": "sha256-InCVAJPptmXySgD2AF5MFofqIJjzpJNnleJLYZpdnOk=",
+        "lastModified": 1679091333,
+        "narHash": "sha256-tDBOf9ZOlpK8uYZqXsuX8eS+j3UuPg3IBiZf1VKvkIY=",
         "owner": "BBBSnowball",
         "repo": "chatgpt-telegram-bot",
-        "rev": "77bae7b5565f028a85ef68de6a6f0560789a9f8c",
+        "rev": "c70d5c93faabd60216714d857451fe900d631fd0",
         "type": "github"
       },
       "original": {
