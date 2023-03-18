@@ -1,4 +1,4 @@
-{ config, pkgs, lib, rockpro64Config, routeromen, withFlakeInputs, private, nixos-m1, ... }@args:
+{ config, pkgs, lib, rockpro64Config, routeromen, withFlakeInputs, privateForHost, nixos-m1, ... }@args:
 let
   modules = args.modules or (import ./modules.nix {});
   #tinc-a-address = "192.168.83.139";
@@ -20,12 +20,12 @@ in
     [ ./hardware-configuration.nix
       "${nixos-m1}/nix/m1-support"
       ./pipewire.nix
-      (import ./users.nix { inherit pkgs private; })
+      ./users.nix
       ./bluetooth.nix
     ];
 
   hardware.asahi = {
-    peripheralFirmwareDirectory = "${private}/asahi-firmware";
+    peripheralFirmwareDirectory = "${privateForHost}/asahi-firmware";
     # slower but better compatibility
     #use4KPages = true;
   };

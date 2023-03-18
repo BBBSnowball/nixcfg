@@ -20,7 +20,7 @@ in
     [ ./hardware-configuration.nix
       ./pipewire.nix
       ./mcu-dev.nix
-      (import ./users.nix { inherit pkgs config private; })
+      ./users.nix
       ./bluetooth.nix
       nixos-hardware.nixosModules.framework
       #./virtmanager.nix

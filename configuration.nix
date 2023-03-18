@@ -10,5 +10,5 @@ in
   if pathExists "${hostdir}/configuration.nix"
   then import "${hostdir}/configuration.nix"
   else if pathExists "${hostdir}/flake.nix"
-  then hostdirFlake.defaultNix.nixosModule
-  else flake.defaultNix.nixosModules."hosts-${hostname}" or flake.defaultNix.nixosModule
+  then hostdirFlake.defaultNix.nixosModules.default
+  else flake.defaultNix.nixosModules."hosts-${hostname}" or flake.defaultNix.nixosModules.default

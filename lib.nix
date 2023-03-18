@@ -46,7 +46,7 @@ rec {
   in {
      lib.withFlakeInputs = withFlakeInputs;
 
-     nixosModule = mainModule;
+     nixosModules.default = mainModule;
      nixosModules.main = mainModule;
 
      nixosConfigurations.${hostname} = nixpkgs.lib.nixosSystem {

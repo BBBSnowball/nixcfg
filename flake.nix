@@ -52,10 +52,9 @@
       hosts-routeromen = nixosSystemModule hosts/routeromen;
       raspi-zero-usbboot = import ./raspi-zero/usbboot.nix;
       raspi-pico = import ./raspi-pico;
+      # The common module includes all the settings and modules that I want to apply to all systems.
+      default = self.nixosModules.common;
     };
-
-    # The common module includes all the settings and modules that I want to apply to all systems.
-    nixosModule = self.nixosModules.common;
  
     nixosConfigurations.routeromen = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
@@ -77,7 +76,7 @@
   } // (let
     supportedSystems = [ "x86_64-linux" "i686-linux" "aarch64-linux" ];
     forAllSystems = nixpkgs.lib.genAttrs supportedSystems;
-    darwinSystems = [ "aarch64-darwin" "x64_86-darwin" ];  #NOTE I only have an aarch64-darwin so x86 is completely untested!
+    darwinSystems = [ "aarch64-darwin" "x86_64-darwin" ];  #NOTE I only have an aarch64-darwin so x86 is completely untested!
     forDarwinSystems = nixpkgs.lib.genAttrs darwinSystems;
     gd32 = forAllSystems (system: import ./riscv/compiler.nix { inherit nixpkgs system; });
     rppico = forAllSystems (system: import ./raspi-pico/toolchain.nix { inherit nixpkgs system; });
@@ -174,9 +173,10 @@
     inherit (nix-bundle) bundlers defaultBundler;
   }) // {
     checks.x86_64-linux = {
-      host-routeromen = self.nixosConfigurations.routeromen.config.system.build.toplevel;
       #host-rockpro64-snowball = nixpkgs.legacyPackages.x86_64-linux.runCommand "drv" { target = self.nixosConfigurations.rockpro64-snowball.config.system.build.toplevel.drvPath; } ''ln -s $target $out'';
-    } // self.packages.x86_64-linux;
+    } // self.packages.x86_64-linux // nixpkgs.lib.mapAttrs (_: v: v.config.system.build.toplevel) {
+      inherit (self.nixosConfigurations) routeromen c3pbvm hetzner-temp nixosvm orangepi-remoteadmin sonline0;
+    };
     checks.aarch64-linux = {
       host-rockpro64-snowball = self.nixosConfigurations.rockpro64-snowball.config.system.build.toplevel;
     } // self.packages.aarch64-linux;

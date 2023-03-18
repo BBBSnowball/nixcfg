@@ -50,7 +50,7 @@ in
     # lp: I couldn't get the Brother QL-500 to work through cups and the
     # web interface can only do text so we have to access it directly.
     extraGroups = [ "dialout" "wheel" "lp" ];
-    openssh.authorizedKeys.keyFiles = [ "${private}/ssh-laptop.pub" ];
+    openssh.authorizedKeys.keyFiles = [ "${privateForHost}/ssh-laptop.pub" ];
 
     packages = with pkgs; [
       # GraphViz is used for dependency tree in FreeCAD.
@@ -78,7 +78,7 @@ in
     # generate contents with `mkpasswd -m sha-512`
     passwordFile = "/etc/nixos/secret/rootpw";
 
-    openssh.authorizedKeys.keyFiles = [ "${private}/ssh-laptop.pub" ];
+    openssh.authorizedKeys.keyFiles = [ "${privateForHost}/ssh-laptop.pub" ];
   };
 
   services.xrdp.enable = true;

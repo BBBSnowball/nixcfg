@@ -5,4 +5,4 @@ let
     sha256 = lock.nodes.flake-compat.locked.narHash;
   };
   flake = import flake-compat { src = ./.; };
-in flake.defaultNix.nixosModule
+in flake.defaultNix.nixosModules.default

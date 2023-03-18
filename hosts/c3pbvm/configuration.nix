@@ -1,3 +1,3 @@
 let
   flake = import ../../flake-compat.nix { src = ./.; };
-in flake.defaultNix.nixosModule
+in flake.defaultNix.nixosModules.default

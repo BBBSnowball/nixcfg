@@ -49,7 +49,7 @@ self: super: {
       system = self.stdenv.buildPlatform.system;
       configuration = ../hosts/raspi-zero/main.nix;
     };
-  in super.runCommand "rpibootfiles" (with self.rpiConfig.pkgs; {
+  in super.runCommand "rpibootfiles" (with rpiConfig.pkgs; {
     inherit raspberrypifw;
     inherit (self) rpiboot;
     uboot = ubootRaspberryPiZero;
@@ -80,9 +80,9 @@ self: super: {
     cp $rpiboot/share/rpiboot/msd/bootcode.bin $out/bootcode.bin
     cp $uboot/u-boot.bin $out/
     cp $configTxt $out/config.txt
-    #''${self.rpiConfig.config.boot.loader.generic-extlinux-compatible.populateCmd} -c ''${self.rpiConfig.config.system.build.toplevel} -d ./files/boot
-    cp ${self.rpiConfig.config.system.build.kernel}/zImage $out/
-    cp ${self.rpiConfig.config.system.build.initialRamdisk}/* $out/
-    echo "${self.lib.strings.concatStringsSep " " self.rpiConfig.config.boot.kernelParams}" >$out/cmdline.txt
+    #''${rpiConfig.config.boot.loader.generic-extlinux-compatible.populateCmd} -c ''${rpiConfig.config.system.build.toplevel} -d ./files/boot
+    cp ${rpiConfig.config.system.build.kernel}/zImage $out/
+    cp ${rpiConfig.config.system.build.initialRamdisk}/* $out/
+    echo "${self.lib.strings.concatStringsSep " " rpiConfig.config.boot.kernelParams}" >$out/cmdline.txt
   '';
 }

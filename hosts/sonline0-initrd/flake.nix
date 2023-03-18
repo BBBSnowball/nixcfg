@@ -15,8 +15,8 @@
     addSuffix = suffix: nixpkgs.lib.mapAttrs' (k: nixpkgs.lib.nameValuePair (k+suffix));
 
     ourPkgs = config: let
-      mod = { withFlakeInputs, ... }: {
-        imports = [ (withFlakeInputs ./main.nix) ];
+      mod = {
+        imports = [ routeromen.nixosModules.args ./main.nix ];
         boot.initrd = config;
       };
       cfg = (routeromen.lib.mkFlakeForHostConfig "sonline0" "x86_64-linux" mod flakeInputs).nixosConfigurations.sonline0;
