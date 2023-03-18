@@ -85,14 +85,14 @@
   in {
     packages = forAllSystems (system: let pkgs = nixpkgs.legacyPackages.${system}; in {
       nrfjprog = pkgs.callPackage ./embedded/nrfjprog.nix {};
-      apio = pkgs.callPackage ./embedded/apio.nix {};
+      #apio = pkgs.callPackage ./embedded/apio.nix {};
       wlay = pkgs.callPackage ./pkgs/wlay.nix {};
       GetThermal = pkgs.libsForQt5.callPackage ./pkgs/GetThermal.nix {};
       purethermal-firmware = purethermal.${system}.firmware;
       purethermal-firmware-upstream = purethermal.${system}.firmware-upstream;
       purethermal-firmware-original-bin = purethermal.${system}.firmware-original-bin;
       flipperzero-firmware = flipperzero.${system};
-      pip2nix = pkgs.callPackage ./pkgs/pip2nix.nix { inherit pkgs; nixpkgs = "blub"; };
+      #pip2nix = pkgs.callPackage ./pkgs/pip2nix.nix { inherit pkgs; nixpkgs = "blub"; };  # broken
       openups = pkgs.callPackage ./pkgs/openups.nix {};
       openups-aarch64-static = let p = pkgs.pkgsCross.aarch64-multiplatform-musl.pkgsStatic; in
       (p.callPackage ./pkgs/openups.nix {}).overrideAttrs (old: {
@@ -132,7 +132,7 @@
       rustc-gd32 = { type = "app"; program = "${self.packages.${system}.rustc-gd32}/bin/rustc"; };
       cargo-gd32 = { type = "app"; program = "${self.packages.${system}.cargo-gd32}/bin/cargo"; };
       nrfjprog   = { type = "app"; program = "${self.packages.${system}.nrfjprog}/bin/nrfjprog"; };
-      apio       = { type = "app"; program = "${self.packages.${system}.apio}/bin/apio"; };
+      #apio       = { type = "app"; program = "${self.packages.${system}.apio}/bin/apio"; };
       openups    = { type = "app"; program = "${self.packages.${system}.openups}/bin/openups"; };
 
       bundle = { type = "app"; program = builtins.toString (with nixpkgs.legacyPackages.${system}; writeShellScript "nix-bundle-routeromen" ''

@@ -26,7 +26,7 @@ let
       };
 
       # patches in old.patches are already applied to that version
-      patches = [ ./openocd-optimize.patch ];
+      patches = [ ./openocd-optimize.patch ./openocd-nuclei--fix.patch ];
 
       # autotools are required because we are building from git rather than source download; tcl is useful to avoid
       # bootstrapping when cross-compiling

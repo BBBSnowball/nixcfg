@@ -53,7 +53,7 @@
   } else if super.stdenv.buildPlatform == super.stdenv.hostPlatform then {
     python3 = pkgs.pkgsBuildBuild.python3;
     python3Packages = pkgs.pkgsBuildBuild.python3Packages;
-  } else (let dummy = pkgs.writeText "dummy" ""; in {
+  } else (let dummy = pkgs.writeText "dummy" "" // { pname = "dummy"; }; in {
     python3 = dummy // { pkgs.buildPythonApplication = _: dummy; sitePackages = "dummy"; pythonForBuild = dummy; };
     python3Packages = {};
     python37 = dummy // { pkgs.buildPythonApplication = _: dummy; sitePackages = "dummy"; pythonForBuild = dummy; };
