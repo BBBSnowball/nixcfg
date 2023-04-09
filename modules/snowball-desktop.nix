@@ -28,6 +28,7 @@
     gitui gitg
     gnome.gnome-screenshot
     iw wirelesstools
+    qrencode  # also useful for cli with `-t ANSI` but I will prefer SSH/SFTP for headless systems
   ] ++ (builtins.filter (p: p.meta.available) [
     # These are not available for aarch64-linux at the moment.
     mplayer
