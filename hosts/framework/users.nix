@@ -35,7 +35,7 @@ in
   };
 
   users.users.user2 = guiUser // {
-    extraGroups = [ ];
+    extraGroups = [ "dialout" ];
   };
 
   users.users.gos = basicUser // {

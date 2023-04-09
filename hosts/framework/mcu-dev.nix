@@ -33,6 +33,9 @@ in
 
     # OpenUPS
     ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="04d8", ATTR{idProduct}=="d004", GROUP="dialout"
+
+    # fastboot (e.g. u-boot for bl808)
+    ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="18d1", ATTR{idProduct}=="4e40", GROUP="dialout"
   '';
 
   services.udev.packages = [ openfpgaloaderRules ];

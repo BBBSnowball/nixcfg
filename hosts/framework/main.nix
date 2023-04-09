@@ -24,6 +24,7 @@ in
       ./bluetooth.nix
       nixos-hardware.nixosModules.framework
       #./virtmanager.nix
+      ./bl808-netboot.nix
     ];
 
   networking.hostName = "fw";
