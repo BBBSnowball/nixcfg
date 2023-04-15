@@ -155,6 +155,18 @@ in
     zgrviewer graphviz
     yubikey-manager yubikey-manager-qt yubikey-personalization
     cura freecad kicad graphviz blender
+    libxslt zip  # used by Kicad
+    unzip
+    inkscape
+    wine
+    android-tools
+    virt-manager
+    tigervnc
+    tcpdump
+    meld
+    dfu-util
+    zgrviewer
+    lshw
   ];
 
   services.printing.drivers = [
