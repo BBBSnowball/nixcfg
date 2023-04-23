@@ -36,6 +36,7 @@ in
   nixpkgs.allowUnfreeByName = [
     "memtest86-efi"
     "mfc9142cdnlpr"
+    "helvetica-neue-lt-std"
   ];
 
   networking.useNetworkd = true;
@@ -196,6 +197,11 @@ in
 
   # enabled by nixos-hardware but causes multi-second delays for login manager and swaylock
   services.fprintd.enable = false;
+
+  fonts.fonts = with pkgs; [
+    # needed for KiBot with rsvg
+    helvetica-neue-lt-std
+  ];
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
