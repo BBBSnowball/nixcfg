@@ -1,4 +1,4 @@
-{ lib, config, pkgs, modules, ... }:
+{ lib, config, pkgs, modules, self, ... }:
 {
   imports = with modules; [
     snowball-big
@@ -29,6 +29,7 @@
     gnome.gnome-screenshot
     iw wirelesstools
     qrencode  # also useful for cli with `-t ANSI` but I will prefer SSH/SFTP for headless systems
+    (self.packages.${pkgs.stdenv.hostPlatform.system}.add_recently_used or self.inputs.routeromen.packages.${pkgs.stdenv.hostPlatform.system}.add_recently_used)
   ] ++ (builtins.filter (p: p.meta.available) [
     # These are not available for aarch64-linux at the moment.
     mplayer
