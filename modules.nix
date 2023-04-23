@@ -10,7 +10,7 @@ let
     then { name = head (match "([^.].*)[.]nix" name); value = withInputs (dir + "/${name}"); }
     else if type == "directory" && ! isNull (match "[^.].*" name)
     then { inherit name; value = modulesFromDir (dir + "/${name}"); }
-    else null;
+    else { inherit name; value = null; };
     in lib.attrsets.filterAttrs (name: value: ! isNull value) (lib.attrsets.mapAttrs' f (builtins.readDir dir));
   internalModules = {
   };
