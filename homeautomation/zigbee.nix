@@ -16,12 +16,14 @@
   config = {
     environment.systemPackages = with pkgs; [
       (pkgs.callPackage (import ./flash-cc2652-firmware.nix) {})
+      (pkgs.callPackage (import ./flash-zbdongle-p-firmware.nix) {})
       mosquitto
       (pkgs.writeScriptBin "z2mctl" (builtins.readFile ./z2mctl.sh))
     ];
 
     services.udev.extraRules = ''
       ATTRS{interface}=="slae.sh cc2652rb stick - slaesh's iot stuff", SYMLINK+="ttyZigbee", GROUP="zigbee2mqtt", TAG+="systemd", ENV{SYSTEMD_WANTS}="zigbee2mqtt.service", ENV{SYSTEMD_ALIAS}="/sys/devices/ttyZigbee"
+      ATTRS{interface}=="Sonoff Zigbee 3.0 USB Dongle Plus", SYMLINK+="ttyZigbee", GROUP="zigbee2mqtt", TAG+="systemd", ENV{SYSTEMD_WANTS}="zigbee2mqtt.service", ENV{SYSTEMD_ALIAS}="/sys/devices/ttyZigbee"
     '';
     systemd.services.zigbee2mqtt.bindsTo = [ "sys-devices-ttyZigbee.device" ];
     systemd.services.zigbee2mqtt.after   = [ "sys-devices-ttyZigbee.device" ];

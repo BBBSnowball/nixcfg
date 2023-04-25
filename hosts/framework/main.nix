@@ -25,6 +25,7 @@ in
       nixos-hardware.nixosModules.framework
       #./virtmanager.nix
       ./bl808-netboot.nix
+      ./test-zigbee.nix
     ];
 
   networking.hostName = "fw";
