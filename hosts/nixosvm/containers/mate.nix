@@ -69,6 +69,12 @@ in {
 
           ProxyPass        /recent-orders.txt  http://localhost:${toString ports.pizzaimap.port}/recent-orders.txt
           ProxyPassReverse /recent-orders.txt  http://localhost:${toString ports.pizzaimap.port}/recent-orders.txt
+
+          # set cache control so the Android tablet that has replaced hackpad won't cache it forever
+          # (but not for the images because there are many of them and we can change the filename if necessary)
+          <FilesMatch ".(js|css|html)$">
+            Header set Cache-Control "max-age=600, must-revalidate"
+          </FilesMatch>
         '';
       };
     };
