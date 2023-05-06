@@ -12,6 +12,20 @@ let
       cp $src $out/etc/udev/rules.d/99-openfpgaloader.rules
     '';
   };
+
+  platformioRules = pkgs.stdenv.mkDerivation rec {
+    pname = "platformio-udev";
+    version = "6.1.6";
+    src = pkgs.fetchurl {
+      url = "https://github.com/platformio/platformio-core/raw/v${version}/platformio/assets/system/99-platformio-udev.rules";
+      hash = "sha256-QTXhuF1oko2suHYCPwsRoaFvZ169Nvp9Z3hnqCHWJH4=";
+    };
+    buildCommand = ''
+      mkdir -p $out/etc/udev/rules.d
+      substitute $src $out/etc/udev/rules.d/99-platformio-udev.rules \
+        --replace 'MODE="0666"' 'MODE="664", GROUP="plugdev", TAG+="uaccess"'
+    '';
+  };
 in
 {
   users.users.user.packages = with pkgs; [
@@ -38,7 +52,7 @@ in
     ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="18d1", ATTR{idProduct}=="4e40", GROUP="dialout"
   '';
 
-  services.udev.packages = [ openfpgaloaderRules ];
+  services.udev.packages = [ openfpgaloaderRules platformioRules ];
 
   users.groups.plugdev = {};
 }
