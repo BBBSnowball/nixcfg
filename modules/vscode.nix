@@ -24,6 +24,13 @@
       "libkrb5"
       "lttng-ust"  # cpptools wants liblttng-ust.so.0 but this has liblttng-ust.so.1
       "lttng-ust_2_12.out"  # This one has liblttng-ust.so.0.
+      # Java extension wants X11 libs.
+      "xorg.libXext"
+      "xorg.libX11"
+      "xorg.libXrender"
+      "xorg.libXi"
+      "xorg.libXtst"
+      "alsa-lib"
     ];
     missingPioLibs = lib.lists.filter (name: !lib.attrsets.hasAttrByPath (lib.strings.splitString "." name) pkgs) pioLibs;
     pioLibsForNixShell =

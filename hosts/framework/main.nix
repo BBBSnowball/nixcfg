@@ -24,6 +24,8 @@ in
       ./bluetooth.nix
       nixos-hardware.nixosModules.framework
       #./virtmanager.nix
+      ./bl808-netboot.nix
+      ./test-zigbee.nix
     ];
 
   networking.hostName = "fw";
@@ -35,6 +37,7 @@ in
   nixpkgs.allowUnfreeByName = [
     "memtest86-efi"
     "mfc9142cdnlpr"
+    "helvetica-neue-lt-std"
   ];
 
   networking.useNetworkd = true;
@@ -154,6 +157,18 @@ in
     zgrviewer graphviz
     yubikey-manager yubikey-manager-qt yubikey-personalization
     cura freecad kicad graphviz blender
+    libxslt zip  # used by Kicad
+    unzip
+    inkscape
+    wine
+    android-tools
+    virt-manager
+    tigervnc
+    tcpdump
+    meld
+    dfu-util
+    zgrviewer
+    lshw
   ];
 
   services.printing.drivers = [
@@ -183,6 +198,11 @@ in
 
   # enabled by nixos-hardware but causes multi-second delays for login manager and swaylock
   services.fprintd.enable = false;
+
+  fonts.fonts = with pkgs; [
+    # needed for KiBot with rsvg
+    helvetica-neue-lt-std
+  ];
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions

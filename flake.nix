@@ -104,6 +104,7 @@
           sed -i 's/#undef DEBUG_RECV/#define DEBUG_RECV 1/' src/lib/usbhid.cpp
         '';
       });
+      add_recently_used = pkgs.callPackage ./pkgs/add_recently_used.nix {};
     } // (with gd32.${system}; {
       gcc-gd32 = gcc; binutils-gd32 = binutils; openocd-gd32 = openocd-nuclei; gdb-gd32 = gdb-nuclei;
       rustc-gd32 = rustc; cargo-gd32 = cargo;
