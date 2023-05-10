@@ -104,6 +104,11 @@ esac
 
 if [ $needSshToTarget -ne 0 -a -n "$targetHost" ] ; then
   hosts=(--target-host "$targetHost" --build-host localhost)
+  case "$hostname" in
+    sonline0)
+      hosts+=(--use-remote-sudo)
+      ;;
+  esac
 else
   # don't set --target-host if we only want to build because nixos-rebuild would try to connect to it
   hosts=()
