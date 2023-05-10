@@ -42,6 +42,26 @@ else
   hostname="$targetHost"
 fi
 
+echo "hostname: $hostname"
+
+overrideInput=()
+for x in \
+  "./hosts/$hostname/private/private" \
+  "./hosts/$hostname/private/data" \
+  "./hosts/$hostname/private"
+do
+  if [ -d "$x/.git" ] ; then
+    # We will only get here for a real .git directory. If this is a worktree with a .git file,
+    # that's not great (hash may differ if we build this on more than one machine) but we don't
+    # leak any sensitive or large information.
+    # In any case, use a data subdir to avoid this.
+    echo "Refusing to use this private dir because it contains a .git directory: $x" >&2
+  elif [ -e "$x" ] ; then
+    overrideInput=(--override-input private "path:$x")
+    break
+  fi
+done
+
 post_cmd=
 #extraBuildFlags=(-o "result-$targetHost")
 extraBuildFlags=()
@@ -62,12 +82,12 @@ case "$action" in
     ;;
   build-drv)
     exec nix --experimental-features 'nix-command flakes' --log-format bar-with-logs \
-      eval --raw "$flake#nixosConfigurations.$hostname.config.system.build.toplevel.drvPath" "$@"
+      eval ${overrideInput[@]} --raw "$flake#nixosConfigurations.$hostname.config.system.build.toplevel.drvPath" "$@"
     ;;
   diff-drv)
     currentDrv="$(targetHostCmd 'nix-store --query --deriver $(readlink -f /run/current-system)')"
     newDrv="$(nix --experimental-features 'nix-command flakes' --log-format bar-with-logs \
-      eval --raw "$flake#nixosConfigurations.$hostname.config.system.build.toplevel.drvPath" "$@")"
+      eval ${overrideInput[@]} --raw "$flake#nixosConfigurations.$hostname.config.system.build.toplevel.drvPath" "$@")"
     if [ -e "$currentDrv" -o -z "$targetHost" ] ; then
       nix-shell -p nix-diff --run "nix-diff $currentDrv $newDrv"
     else
@@ -81,26 +101,6 @@ case "$action" in
     action=build
     ;;
 esac
-
-echo "hostname: $hostname"
-
-overrideInput=()
-for x in \
-  "./hosts/$hostname/private/private" \
-  "./hosts/$hostname/private/data" \
-  "./hosts/$hostname/private"
-do
-  if [ -d "$x/.git" ] ; then
-    # We will only get here for a real .git directory. If this is a worktree with a .git file,
-    # that's not great (hash may differ if we build this on more than one machine) but we don't
-    # leak any sensitive or large information.
-    # In any case, use a data subdir to avoid this.
-    echo "Refusing to use this private dir because it contains a .git directory: $x" >&2
-  elif [ -e "$x" ] ; then
-    overrideInput=(--override-input private "path:$x")
-    break
-  fi
-done
 
 if [ $needSshToTarget -ne 0 -a -n "$targetHost" ] ; then
   hosts=(--target-host "$targetHost" --build-host localhost)
