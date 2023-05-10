@@ -91,7 +91,7 @@ case "$action" in
     if [ -e "$currentDrv" -o -z "$targetHost" ] ; then
       nix-shell -p nix-diff --run "nix-diff $currentDrv $newDrv"
     else
-      nix-copy-closure --to "$targetHost" "$newDrv"
+      nix-copy-closure --to "$targetHost" --use-substitutes "$newDrv"
       targetHostCmd nix-shell -p nix-diff --run "\"nix-diff $currentDrv $newDrv\""
     fi
     exit
@@ -104,6 +104,7 @@ esac
 
 if [ $needSshToTarget -ne 0 -a -n "$targetHost" ] ; then
   hosts=(--target-host "$targetHost" --build-host localhost)
+  hosts+=(--use-substitutes)
   case "$hostname" in
     sonline0)
       hosts+=(--use-remote-sudo)
@@ -162,7 +163,7 @@ case "$post_cmd" in
     ;;
   diff-cl|diff-closures)
     if [ -n "$targetHost" ] ; then
-      nix-copy-closure --to "$targetHost" "$pathToConfig"
+      nix-copy-closure --to "$targetHost" --use-substitutes "$pathToConfig"
     fi
     if targetHostCmd nix store --help &>/dev/null ; then
       targetHostCmd nix store diff-closures /run/current-system "$(readlink -f "$pathToConfig")"
