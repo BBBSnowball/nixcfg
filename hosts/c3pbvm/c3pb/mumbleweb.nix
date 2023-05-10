@@ -1,6 +1,6 @@
 { pkgs, config, lib, privateForHost, secretForHost, ... }:
 let
-  domain = lib.fileContents "${privateForHost}/mumble-domain-c3pb.txt";
+  domain = privateForHost.mumble-domain-c3pb;
 
   #FIXME build this with Nix
   mumbleWebDist = pkgs.stdenv.mkDerivation {

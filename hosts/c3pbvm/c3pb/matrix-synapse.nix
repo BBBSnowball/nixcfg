@@ -3,7 +3,7 @@ let
   isTestInstance = config.services.matrix-synapse.isTestInstance;
   portOffset = if isTestInstance then 1 else 0;
   domainTestPrefix = if isTestInstance then "test." else "";
-  domain = lib.fileContents "${privateForHost}/trueDomain.txt";
+  domain = privateForHost.trueDomain;
 in {
   options = with lib; {
     services.matrix-synapse = {

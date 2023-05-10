@@ -1,8 +1,8 @@
-{ config, modules, ... }:
+{ config, modules, privateForHost, ... }:
 {
   imports = [ modules.snowball-vm ];
 
-  networking.externalIp = "163.172.39.101";
+  networking.externalIp = privateForHost.serverExternalIp;
 
   networking.interfaces.ens3.ipv4.addresses = [ {
     address = config.networking.upstreamIp;
