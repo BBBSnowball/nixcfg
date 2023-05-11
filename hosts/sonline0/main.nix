@@ -14,7 +14,8 @@ in {
       routeromen.nixosModules.nixcfg-sync
       ./vms.nix
       ./kexec.nix
-      ./ipv6.nix
+      #./ipv6.nix
+      ./ipv6-dhclient.nix
       ./backup.nix
     ];
 
