@@ -1,4 +1,4 @@
-{ config, pkgs, secretForHost, ... }:
+{ lib, config, pkgs, secretForHost, ... }:
 # I use this Zigbee coordinator:
 # https://www.tindie.com/products/slaesh/cc2652-zigbee-coordinator-or-openthread-router/#
 # https://www.zigbee2mqtt.io/information/supported_adapters.html#slaeshs-cc2652rb-stick
@@ -27,6 +27,8 @@
     '';
     systemd.services.zigbee2mqtt.bindsTo = [ "sys-devices-ttyZigbee.device" ];
     systemd.services.zigbee2mqtt.after   = [ "sys-devices-ttyZigbee.device" ];
+    # don't start it by default because it would wait for the device
+    systemd.services.zigbee2mqtt.wantedBy = lib.mkForce [ ];
 
     services.zigbee2mqtt.enable = true;
     services.zigbee2mqtt.settings = {
