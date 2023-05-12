@@ -1,4 +1,4 @@
-{ pkgs, config, privateForHost, secretForHost, ... }:
+{ pkgs, config, privateForHost, secretForHost, nixpkgs-unstable, ... }:
 let
   basicUser = {
     # generate contents with `mkpasswd -m sha-512`
@@ -17,7 +17,9 @@ let
       libreoffice gimp
       gnome.eog gnome.evince
       x11vnc
-      vscode  # We need MS C++ Extension for PlatformIO.
+      #vscode-fhs  # We need MS C++ Extension for PlatformIO.
+      #nixpkgs-unstable.legacyPackages.x86_64-linux.vscode-fhs
+      (import nixpkgs-unstable { system = pkgs.stdenv.hostPlatform.system; config = { allowUnfree = true; }; }).vscode-fhs
       python3 # for PlatformIO
       w3m
       kupfer
