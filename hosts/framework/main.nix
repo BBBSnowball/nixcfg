@@ -169,6 +169,7 @@ in
     dfu-util
     zgrviewer
     lshw
+    rustup gcc
   ];
 
   services.printing.drivers = [
