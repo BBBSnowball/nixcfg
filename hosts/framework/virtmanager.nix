@@ -35,5 +35,13 @@
   #     <filterref filter='home-assistant-open-ports'/>  <!-- add this line -->
   #     ...
   #   </interface>
+  # Edit network (virsh net-edit --network default)
+  # <network xmlns:dnsmasq='http://libvirt.org/schemas/network/dnsmasq/1.0'>
+  #   ...
+  #   <dnsmasq:options>
+  #     <dnsmasq:option value="interface=virbr0"/>
+  #     <dnsmasq:option value="bind-interfaces"/>
+  #   </dnsmasq:options>
+  # </network>
 }
 

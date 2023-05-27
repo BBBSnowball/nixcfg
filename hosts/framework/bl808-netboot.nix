@@ -1,6 +1,8 @@
-{ ... }:
+{ lib, ... }:
 let
   ourIp = "192.168.178.29";
+  #iface = "enp0s13f0u4u4";
+  iface = "enp0s13f0u3u4";
 in
 {
   services.dnsmasq = {
@@ -13,7 +15,7 @@ in
       dhcp-no-override
       dhcp-range=${ourIp},proxy
 
-      enable-tftp=enp0s13f0u4u4
+      enable-tftp=${iface}
       tftp-root=/tftpboot
       tftp-port-range=10000,10100
 
@@ -27,9 +29,27 @@ in
       # This is supposed to show a menu but I don't think that this will work here.
       pxe-prompt="Booting bl808 kernel", 1
       pxe-service=x86PC,"Boot bl808",bl808b.kpxe
+
+      # be able to run in parallel with libvirt's dnsmasq
+      #FIXME dnsmasq refuses to start because "unknown interface enp0s13f0u3u4" - but the interface exists. Well, that's a problem for later.
+      interface=${iface}
+      bind-interfaces
     '';
   };
 
   networking.firewall.allowedUDPPorts = [ 67 69 ];
   networking.firewall.allowedUDPPortRanges = [ { from = 10000; to = 10100; } ];
+
+  systemd.services.dnsmasq = {
+    bindsTo = [ "sys-subsystem-net-devices-${iface}.device" ];
+    after = [ "sys-subsystem-net-devices-${iface}.device" ];
+    # don't start it by default because it would wait for the device
+    wantedBy = lib.mkForce [ ];
+
+    serviceConfig.RestartSec = 5;
+  };
+
+  services.udev.extraRules = ''
+    ACTION=="add", SUBSYSTEM=="net", ATTR{INTERFACE}=="${iface}", TAG+="systemd", ENV{SYSTEMD_WANTS}="dnsmasq.service"
+  '';
 }
