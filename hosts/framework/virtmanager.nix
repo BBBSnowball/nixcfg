@@ -23,6 +23,17 @@
     iptables -I FORWARD -o virbr0 -p tcp --dport 8123 -j ACCEPT
   '';
 
-  networking.firewall.logRefusedPackets = true;
+  #networking.firewall.logRefusedPackets = true;
+
+  # How to setup Home Assistant:
+  # see https://www.home-assistant.io/installation/linux
+  # see https://myme.no/posts/2021-11-25-nixos-home-assistant.html (useful info but I didn't use any of it in the end)
+  #
+  # virsh nwfilter-define home-assistant-open-ports.xml
+  # Edit VM:
+  #   <interface type='network'>
+  #     <filterref filter='home-assistant-open-ports'/>  <!-- add this line -->
+  #     ...
+  #   </interface>
 }
 
