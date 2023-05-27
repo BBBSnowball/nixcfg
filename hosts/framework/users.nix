@@ -19,7 +19,7 @@ let
       x11vnc
       #vscode-fhs  # We need MS C++ Extension for PlatformIO.
       #nixpkgs-unstable.legacyPackages.x86_64-linux.vscode-fhs
-      (import nixpkgs-unstable { system = pkgs.stdenv.hostPlatform.system; config = { allowUnfree = true; }; }).vscode-fhs
+      (import nixpkgs-unstable { system = pkgs.stdenv.hostPlatform.system; config = { allowUnfree = true; }; }).vscode
       python3 # for PlatformIO
       w3m
       kupfer
