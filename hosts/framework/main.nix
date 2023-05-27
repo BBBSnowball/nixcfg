@@ -23,7 +23,7 @@ in
       ./users.nix
       ./bluetooth.nix
       nixos-hardware.nixosModules.framework
-      #./virtmanager.nix
+      ./virtmanager.nix
       ./bl808-netboot.nix
       ./test-zigbee.nix
     ];

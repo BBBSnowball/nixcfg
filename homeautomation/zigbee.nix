@@ -46,6 +46,11 @@
       frontend.port = 8086;  # default is 8080
       #FIXME This does *NOT* work. It is used as the auth token! -> disable auth, for now; port is behind firewall anyway
       #frontend.auth_token = "!secret auth_token";
+
+      #homeassistant = true;
+      homeassistant = {
+        status_topic = "homeassistant/status";
+      };
     };
     systemd.services.zigbee2mqtt.path = with pkgs; [ utillinux ];
     systemd.services.zigbee2mqtt.preStart = ''
