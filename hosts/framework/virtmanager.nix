@@ -20,6 +20,7 @@
   networking.firewall.extraCommands = ''
     # forward port 8123 to HomeAssistant VM
     iptables -t nat -I PREROUTING -i wlp170s0 -p tcp --dport 8123 -j DNAT --to-destination 192.168.122.40
+    iptables -t nat -I PREROUTING -i enp0s13f0u1u4 -p tcp --dport 8123 -j DNAT --to-destination 192.168.122.40
     iptables -I FORWARD -o virbr0 -p tcp --dport 8123 -j ACCEPT
   '';
 
@@ -40,8 +41,20 @@
   #   ...
   #   <dnsmasq:options>
   #     <dnsmasq:option value="interface=virbr0"/>
-  #     <dnsmasq:option value="bind-interfaces"/>
+  #     <dnsmasq:option value="bind-interfaces"/>  <!-- removed later because not accepted -->
   #   </dnsmasq:options>
   # </network>
+
+  #networking.bridges.virbr0 = {
+  #  interfaces = [];
+  #};
+  #networking.interfaces.virbr0 = {
+  #  ipv4.addresses = [ {
+  #    address = "192.168.122.1";
+  #    prefixLength = 24;
+  #  } ];
+  #};
+  #
+  # -> won't work, we have to use: virsh net-start default
 }
 
