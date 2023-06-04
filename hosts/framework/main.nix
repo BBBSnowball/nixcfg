@@ -13,7 +13,7 @@ in
       tinc-client-a
       vscode
       ssh-github
-      xonsh
+      #xonsh
       flir
       allowUnfree
     ] ++
@@ -26,6 +26,7 @@ in
       ./virtmanager.nix
       ./bl808-netboot.nix
       ./test-zigbee.nix
+      ./hidpi.nix
     ];
 
   networking.hostName = "fw";
