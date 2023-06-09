@@ -49,7 +49,11 @@ in
     serviceConfig.RestartSec = 5;
   };
 
-  services.udev.extraRules = ''
-    ACTION=="add", SUBSYSTEM=="net", ATTR{INTERFACE}=="${iface}", TAG+="systemd", ENV{SYSTEMD_WANTS}="dnsmasq.service"
-  '';
+  # disabled for now because it conflicts with libvirt's dnsmasq and I do use the USB
+  # ethernet device for other purposes, as well (i.e. this is not a good indicator of
+  # whether we want to start the service or not)
+  #
+  #services.udev.extraRules = ''
+  #  ACTION=="add", SUBSYSTEM=="net", ATTR{INTERFACE}=="${iface}", TAG+="systemd", ENV{SYSTEMD_WANTS}="dnsmasq.service"
+  #'';
 }

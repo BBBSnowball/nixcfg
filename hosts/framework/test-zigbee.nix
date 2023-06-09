@@ -1,3 +1,4 @@
+{ lib, ... }:
 {
   imports = [
     ../../homeautomation
@@ -17,4 +18,10 @@
       users.guest.acl = [ "readwrite #" ];
     } ];
   };
+
+  # only start if network device is available
+  systemd.services.mosquitto.wantedBy = lib.mkForce [ ];
+  services.udev.extraRules = ''
+    ACTION=="add", SUBSYSTEM=="net", ATTR{INTERFACE}=="virbr0", TAG+="systemd", ENV{SYSTEMD_WANTS}="mosquitto.service"
+  '';
 }
