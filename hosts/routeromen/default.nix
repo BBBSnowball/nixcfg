@@ -26,6 +26,7 @@ in {
       ../../homeautomation
       snowball-headless-big
       hotfixes
+      ./msmtp.nix
     ]);
 
   # Use the systemd-boot EFI boot loader.
