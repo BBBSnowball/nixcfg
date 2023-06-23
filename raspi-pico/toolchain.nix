@@ -73,7 +73,7 @@ let
         ./bootstrap nosubmodule
       '';
 
-      NIX_CFLAGS_COMPILE = old.NIX_CFLAGS_COMPILE ++ [ "-Wno-error=maybe-uninitialized" "-Wno-error=format" ];
+      #NIX_CFLAGS_COMPILE = old.NIX_CFLAGS_COMPILE ++ [ "-Wno-error=maybe-uninitialized" "-Wno-error=format" ];
       configureFlags = old.configureFlags ++ [
         "--enable-usbprog" "--enable-rlink" "--enable-armjtagew"
         "--enable-ftdi" "--enable-sysfsgpio" "--enable-bcm2835gpio"
