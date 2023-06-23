@@ -3,7 +3,7 @@ let
   lib = pkgs.lib;
   inherit (lib) isFunction isAttrs;
 
-  isAtLeast23_05 = lib.versionAtLeast lib.version "23.05";
+  isAtLeast23_05 = lib.versionAtLeast lib.version "23.04";
 in
 rec {
   # copied from nixpkgs because they have deprecated the export
