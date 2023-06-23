@@ -2,13 +2,15 @@
 let
   lib = pkgs.lib;
   inherit (lib) isFunction isAttrs;
+
+  isAtLeast23_05 = lib.versionAtLeast lib.version "23.05";
 in
 rec {
   # copied from nixpkgs because they have deprecated the export
   # https://github.com/NixOS/nixpkgs/blob/f47f0a525cac079318e62fef27439f17afa18e7a/lib/modules.nix#LL456C1-L490C9
   /* Massage a module into canonical form, that is, a set consisting
      of ‘options’, ‘config’ and ‘imports’ attributes. */
-  unifyModuleSyntax = file: key: m:
+  unifyModuleSyntax_copy = file: key: m:
     with lib;
     let
       addMeta = config: if m ? meta
@@ -43,7 +45,7 @@ rec {
         config = addFreeformType (removeAttrs m ["_class" "_file" "key" "disabledModules" "require" "imports" "freeformType"]);
       };
 
-  applyModuleArgsIfFunction = key: f: args@{ config, options, lib, ... }:
+  applyModuleArgsIfFunction_copy = key: f: args@{ config, options, lib, ... }:
     if isFunction f then applyModuleArgs key f args else f;
 
   applyModuleArgs = key: f: args@{ config, options, lib, ... }:
@@ -73,8 +75,11 @@ rec {
     in f (args // extraArgs);
 
 
-  
-  provideArgsToModule = args: m: args2@{ ... }: with pkgs.lib;
+  # The copy above only works for 23.05 so we use the old code for 22.11.
+  applyModuleArgsIfFunction = if isAtLeast23_05 then applyModuleArgsIfFunction_copy else lib.applyIfFunction or lib.applyModuleArgsIfFunction;
+  unifyModuleSyntax  = if isAtLeast23_05 then unifyModuleSyntax_copy else lib.unifyModuleSyntax;
+
+  provideArgsToModule = args: m: args2@{ ... }:
     # see https://github.com/NixOS/nixpkgs/blob/c45ccae27bb29fd398261c3c915d5a94e422ffef/lib/modules.nix#L377
     if isFunction m || isAttrs m
       then unifyModuleSyntax "<unknown-file>" "" (applyModuleArgsIfFunction "" m (args // args2))
