@@ -171,7 +171,10 @@
       purethermal = purethermal.${system}.shell;
       flipperzero = flipperzero.${system}.shell;
     });
-    inherit (nix-bundle) bundlers defaultBundler;
+    # This doesn't conform to the new API anymore.
+    # old: defaultBundler { system = system; program = "${drv}/bin/${name}; }
+    # new: defaultBundler.${system} (drv // { name = name; })
+    #inherit (nix-bundle) bundlers defaultBundler;
   }) // {
     checks.x86_64-linux = {
       #host-rockpro64-snowball = nixpkgs.legacyPackages.x86_64-linux.runCommand "drv" { target = self.nixosConfigurations.rockpro64-snowball.config.system.build.toplevel.drvPath; } ''ln -s $target $out'';
