@@ -49,7 +49,7 @@ let
     { name = "Telia, London";  host = "slou-b1.ip.twelve99.net"; }
   ];
   completeHost = x: rec {
-    key    = x.key or (lib.strings.replaceChars ["." "," " "] ["_" "_" ""] name);
+    key    = x.key or (lib.strings.replaceStrings ["." "," " "] ["_" "_" ""] name);
     host   = x.host;
     name   = x.name or x.host;
     title  = x.title or (if host == name then name else "${name} (${host})");
@@ -87,7 +87,7 @@ in
   nixpkgs.overlays = [
     (self: super: {
       smokeping = super.smokeping.overrideAttrs (old: {
-        patches = (old.patches or []) ++ [
+        patches = (old.patches or []) ++ lib.optionals (! lib.versionAtLeast super.smokeping.version "2.8.2") [
           ./smokeping-drop-rsa1.patch
           smokepingLargeValuesPatch
         ];

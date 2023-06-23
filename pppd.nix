@@ -60,7 +60,8 @@ in
       #ipv6-down-script /lib/netifd/ppp-down
       mtu 1492
       mru 1492
-      plugin rp-pppoe.so
+      #plugin rp-pppoe.so
+      plugin pppoe.so
       # name of the network interface. pppd sometimes claims that this is an invalid
       # option. I assume because the interface doesn't exist at that time.
       nic-upstream-7
