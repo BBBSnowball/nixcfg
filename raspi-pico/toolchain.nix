@@ -80,15 +80,28 @@ let
       ] ++ (if enablePicoprobe then [ "--enable-picoprobe" ] else []);
     });
 
-  picosdk = { stdenv, fetchFromGitHub, python3, pkg-config, cmake, gnumake, gcc, doxygen, graphviz, picoexamples, which, picotool, pioasm, elf2uf2 }: stdenv.mkDerivation {
+  picosdk = { stdenv, fetchFromGitHub, python3, pkg-config, cmake, gnumake, gcc, doxygen, graphviz, picoexamples, which, picotool, pioasm, elf2uf2 }: stdenv.mkDerivation rec {
     pname = "pico-sdk";
-    version = "2021-01-23-0f3b79";
+    #version = "2021-01-23-0f3b79";
 
+    #src = fetchFromGitHub {
+    #  owner = "raspberrypi";
+    #  repo = "pico-sdk";
+    #  rev = "0f3b7951167cf672afdcb34a58ddd0e363ae886f";  # master
+    #  sha256 = "sha256-tOItVP54MooXDE6QsLDXVr4Kl1jw1tka2lo229A2Btc=";
+    #  fetchSubmodules = true;
+    #};
+
+    # nixpkgs does have pico-sdk, now, but they fetch it without submodules. Ouch!
+    #src = p1.pico-sdk.src;
+    #version = p1.pico-sdk.version;
+
+    version = "1.5.0";
     src = fetchFromGitHub {
       owner = "raspberrypi";
-      repo = "pico-sdk";
-      rev = "0f3b7951167cf672afdcb34a58ddd0e363ae886f";  # master
-      sha256 = "sha256-tOItVP54MooXDE6QsLDXVr4Kl1jw1tka2lo229A2Btc=";
+      repo = pname;
+      rev = version;
+      hash = "sha256-5p9r8HXnuGwUa/PAuBaYh+oEJf62Hy/4bFy1M2CTcW4=";
       fetchSubmodules = true;
     };
 
@@ -181,37 +194,39 @@ let
     '';
   };
 
-  picotool = { stdenv, fetchFromGitHub, cmake, picosdk, libusb, pkg-config }: stdenv.mkDerivation {
-    pname = "picotool";
-    version = "2021-01-22-c15ac2";
+  #picotool = { stdenv, fetchFromGitHub, cmake, picosdk, libusb, pkg-config }: stdenv.mkDerivation {
+  #  pname = "picotool";
+  #  version = "2021-01-22-c15ac2";
 
-    src = fetchFromGitHub {
-      owner = "raspberrypi";
-      repo = "picotool";
-      rev = "c15ac281581318b7e2fb55ff613f71c7bde0a788";
-      sha256 = "sha256-aXRKoHrfOXOze5yLNKFwfJoUGbT86Su4hVkzjnTRQbQ=";
-    };
+  #  src = fetchFromGitHub {
+  #    owner = "raspberrypi";
+  #    repo = "picotool";
+  #    rev = "c15ac281581318b7e2fb55ff613f71c7bde0a788";
+  #    sha256 = "sha256-aXRKoHrfOXOze5yLNKFwfJoUGbT86Su4hVkzjnTRQbQ=";
+  #  };
 
-    nativeBuildInputs = [ cmake pkg-config ];
-    buildInputs = [ libusb ];
+  #  nativeBuildInputs = [ cmake pkg-config ];
+  #  buildInputs = [ libusb ];
 
-    PICO_SDK_PATH = picosdk.src;
+  #  PICO_SDK_PATH = picosdk.src;
 
-    installPhase = ''
-      mkdir $out $out/bin
-      cp picotool $out/bin/
-    '';
-  };
+  #  installPhase = ''
+  #    mkdir $out $out/bin
+  #    cp picotool $out/bin/
+  #  '';
+  #};
+  picotool = p1.picotool;
 
   picoprobe = { stdenv, fetchFromGitHub, picosdk }: stdenv.mkDerivation {
     pname = "picoprobe";
-    version = "2021-01-20-f67a57";
+    version = "1.02";
 
     src = fetchFromGitHub {
       owner = "raspberrypi";
       repo = "picoprobe";
-      rev = "f67a57d2baf6caad5e9dc4ba5049595f2ebeb512";
-      sha256 = "sha256-guQgdH/YZUSjhOv50qo/KDM1dglC4ri8oGQbOPavi1c=";
+      rev = "picoprobe-cmsis-v1.02";
+      sha256 = "sha256-xylVO0PGkBLMNiIQdJhXhPWX5hlkpQBhU0ubu4Sbd5s=";
+      fetchSubmodules = true;
     };
 
     buildInputs = [ picosdk ];
@@ -298,7 +313,7 @@ let
     picosdk = self.callPackage picosdk {};
     pioasm = self.callPackage pioasm {};
     elf2uf2 = self.callPackage elf2uf2 {};
-    picotool = self.callPackage picotool {};
+    #picotool = self.callPackage picotool {};
     picoprobe = self.callPackage picoprobe {};
     picoexamples = self.callPackage picoexamples {};
     picoplayground = self.callPackage picoplayground {};
