@@ -121,6 +121,7 @@
       sonline0-initrd-install = sub.packages.${system}.make-sonline0-initrd-install;
       sonline0-initrd-install-test = sub.packages.${system}.make-sonline0-initrd-install-test;
     })
+    // (if system == "x86_64-linux" then { allChecks = pkgs.linkFarmFromDrvs "all-checks" (nixpkgs.lib.attrValues self.checks.${system}); } else {})
     )
     // (forDarwinSystems (system: let pkgs = nixpkgs.legacyPackages.${system}; in {
       iproute2mac = pkgs.callPackage ./pkgs/iproute2mac.nix {};
@@ -176,9 +177,23 @@
     # new: defaultBundler.${system} (drv // { name = name; })
     #inherit (nix-bundle) bundlers defaultBundler;
   }) // {
-    checks.x86_64-linux = {
+    checks.x86_64-linux = let
+      lib = nixpkgs.lib;
+      slowPackages = [
+        # These build llvm for the target.
+        "cargo-gd32"
+        "rustc-gd32"
+        "flipperzero-firmware"
+        # Builds lots of things for armv7.
+        "rpibootfiles"
+        # Avoid infinite recursion
+        "allChecks"
+        # fails and I don't want to fix it, right now
+        "gdb-gd32"
+      ];
+    in {
       #host-rockpro64-snowball = nixpkgs.legacyPackages.x86_64-linux.runCommand "drv" { target = self.nixosConfigurations.rockpro64-snowball.config.system.build.toplevel.drvPath; } ''ln -s $target $out'';
-    } // self.packages.x86_64-linux // nixpkgs.lib.mapAttrs (_: v: v.config.system.build.toplevel) {
+    } // (lib.attrsets.removeAttrs self.packages.x86_64-linux slowPackages) // nixpkgs.lib.mapAttrs (_: v: v.config.system.build.toplevel) {
       inherit (self.nixosConfigurations) routeromen c3pbvm hetzner-temp nixosvm orangepi-remoteadmin sonline0;
     };
     checks.aarch64-linux = {

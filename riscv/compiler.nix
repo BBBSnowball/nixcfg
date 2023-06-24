@@ -48,6 +48,7 @@ let
       '';
     });
 
+  # not working with current nixpkgs (because we are using the newer nixpkgs.gdb derivation with the old sources
   gdb-nuclei =
     { gdb, fetchFromGitHub }:
     gdb.overrideAttrs (old: {
@@ -61,7 +62,8 @@ let
         sha256 = "sha256-Oo6eU/iYXZa3yL+UcL5OspbF2N/0oEWCwvcq7c36OyE=";
       };
 
-      patches = [ ./gdb-nuclei--debug-info-from-env.patch ] ++ (builtins.filter (x: !p1.lib.hasSuffix "/debug-info-from-env.patch" (toString x)) old.patches);
+      #patches = [ ./gdb-nuclei--debug-info-from-env.patch ] ++ (builtins.filter (x: !p1.lib.hasSuffix "/debug-info-from-env.patch" (toString x)) old.patches);
+      patches = [ ./gdb-nuclei--debug-info-from-env.patch ];
 
       nativeBuildInputs = old.nativeBuildInputs ++ (with p.pkgsBuildBuild; [ flex bison ]);
       buildInputs = old.buildInputs ++ [ p.pkgsBuildHost.babeltrace ];

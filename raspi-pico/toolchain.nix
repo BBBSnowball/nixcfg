@@ -241,14 +241,19 @@ let
 
   picoexamples = { stdenv, fetchFromGitHub, picosdk }: stdenv.mkDerivation {
     pname = "picoexamples";
-    version = "2021-01-26-58f46b";
+    #version = "2021-01-26-58f46b";
+    version = "1.5.0";
 
     src = fetchFromGitHub {
       owner = "raspberrypi";
       repo = "pico-examples";
-      rev = "58f46b252629da33069bb5d04625c223b5262649";  # master
-      sha256 = "sha256-/lh5y38WxvVhg5xcBtyYS9mcx9Xs1AbAChHiDN9FXuk=";
+      #rev = "58f46b252629da33069bb5d04625c223b5262649";  # master
+      #sha256 = "sha256-/lh5y38WxvVhg5xcBtyYS9mcx9Xs1AbAChHiDN9FXuk=";
+      rev = "sdk-1.5.0";
+      hash = "sha256-nyfqTU2UgiX1crTMnwnh8dJ1DSdVDbpg1GYMbDemUIs=";
     };
+
+    hardeningDisable = [ "all" ];
 
     buildInputs = [ picosdk ];
 
@@ -262,13 +267,16 @@ let
 
   picoplayground = { stdenv, fetchFromGitHub, picosdk, picoextras }: stdenv.mkDerivation {
     pname = "picoplayground";
-    version = "2021-01-28-6288b0";
+    #version = "2021-01-28-6288b0";
+    version = "1.5.0";
 
     src = fetchFromGitHub {
       owner = "raspberrypi";
       repo = "pico-playground";
-      rev = "6288b02e9a35e9e4e9bf47844c6f4f34ae8906c6";  # master
-      sha256 = "sha256-BMHvXfONhnm91h5XsnOVAaiUBCUxtNjs4zD9s7yhEeY=";
+      #rev = "6288b02e9a35e9e4e9bf47844c6f4f34ae8906c6";  # master
+      #sha256 = "sha256-BMHvXfONhnm91h5XsnOVAaiUBCUxtNjs4zD9s7yhEeY=";
+      rev = "sdk-1.5.0";
+      hash = "sha256-Ab77Ol5T8IK1jhMduvWlXbg3w6jvUK1V8jcnzpPR1Dg=";
     };
 
     buildInputs = [ picosdk picoextras ];
@@ -282,13 +290,16 @@ let
 
   picoextras = { stdenv, fetchFromGitHub, picosdk }: stdenv.mkDerivation {
     pname = "picoextras";
-    version = "2021-01-28-f5c7be";
+    #version = "2021-01-28-f5c7be";
+    version = "1.5.0";
 
     src = fetchFromGitHub {
       owner = "raspberrypi";
       repo = "pico-extras";
-      rev = "f5c7be9a86e3131cd13d2cc3493b84b23676f8c4";  # master
-      sha256 = "sha256-MeoDMmGgVzbwP+Q2KH6YthZADcXAAf9GfcgVJAKeZVs=";
+      #rev = "f5c7be9a86e3131cd13d2cc3493b84b23676f8c4";  # master
+      #sha256 = "sha256-MeoDMmGgVzbwP+Q2KH6YthZADcXAAf9GfcgVJAKeZVs=";
+      rev = "sdk-1.5.0";
+      hash = "sha256-GK+ywG8+oLO8PSIuiJWgv6oAW3wlLh8qeWLPURUq7wY=";
       fetchSubmodules = true;
     };
 
