@@ -100,6 +100,9 @@ case "$action" in
     post_cmd="$action"
     action=build
     ;;
+  repl)
+    exec nix repl --extra-experimental-features 'flakes repl-flake' ${overrideInput[@]} $flake
+    ;;
 esac
 
 if [ $needSshToTarget -ne 0 -a -n "$targetHost" ] ; then
