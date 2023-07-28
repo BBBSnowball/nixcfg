@@ -247,16 +247,39 @@ bar {
 bindsym Shift+F12 exec dbus-send --dest=net.sourceforge.mumble.mumble --type=method_call / net.sourceforge.mumble.Mumble.setSelfMuted boolean:false
 bindsym F12       exec dbus-send --dest=net.sourceforge.mumble.mumble --type=method_call / net.sourceforge.mumble.Mumble.setSelfMuted boolean:true
 
-bindsym XF86MonBrightnessDown exec brightnessctl s 5%- -n 1
-bindsym XF86MonBrightnessUp   exec brightnessctl s 5%+ -n 1
+# --inhibited: ignore inhibit, e.g. run locally when remote desktop is active
+# --locked:    allow during screen lock
+bindsym --locked --inhibited XF86MonBrightnessDown exec brightnessctl s 1%- -n 1; exec notify-brightness
+bindsym --locked --inhibited XF86MonBrightnessUp   exec brightnessctl s 1%+ -n 1; exec notify-brightness
+
+#NOTE notify-brightness has to save the notification id in $XDG_RUN_DIRECTORY.
+#     If we ever want to make a daemon for that, we could listen for "bindings" events
+#     via sway-ipc and change the commands to "nop <magic> <command>".
+
+# https://wiki.archlinux.org/title/sway#Custom_keybindings
+bindsym --locked XF86AudioRaiseVolume exec pactl set-sink-volume @DEFAULT_SINK@ +1%; exec notify-volume
+bindsym --locked XF86AudioLowerVolume exec pactl set-sink-volume @DEFAULT_SINK@ -1%; exec notify-volume
+bindsym --locked --no-repeat XF86AudioMute exec pactl set-sink-mute @DEFAULT_SINK@ toggle; exec notify-volume
+bindsym --locked --no-repeat XF86AudioMicMute exec pactl set-source-mute @DEFAULT_SOURCE@ toggle; exec notify-volume
+bindsym --no-repeat XF86AudioPlay exec playerctl play-pause
+bindsym --no-repeat XF86AudioNext exec playerctl next
+bindsym --no-repeat XF86AudioPrev exec playerctl previous
+#bindsym XF86Search exec $menu
+# The "laptop"/display key is Super+p.
+#XF86RFKill
+#XF86AudioMedia
 
 # Alt=active, Control=select area, Shift=save to file
-bindsym Print               exec grimshot copy output
-bindsym Shift+Print         exec grimshot save output
-bindsym Alt+Print           exec grimshot copy active
-bindsym Shift+Alt+Print     exec grimshot save active
-bindsym Control+Print       exec grimshot copy area
-bindsym Shift+Control+Print exec grimshot save area
+bindsym Print               exec grimshot --notify copy output
+bindsym Shift+Print         exec grimshot --notify save output
+bindsym Alt+Print           exec grimshot --notify copy active
+bindsym Shift+Alt+Print     exec grimshot --notify save active
+bindsym Control+Print       exec grimshot --notify copy area
+bindsym Shift+Control+Print exec grimshot --notify save area
+
+# add shell to title if it isn't xdg_shell, e.g. for XWayland
+for_window [shell="."] title_format "%title (%shell)"
+for_window [shell="xdg_shell"] title_format "%title"
 
 # include config.d, which contains nixos.conf that forwards env variables to the session bus
 include /etc/sway/config.d/*
