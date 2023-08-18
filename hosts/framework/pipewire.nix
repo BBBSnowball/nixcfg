@@ -21,5 +21,7 @@
   };
 
   # NixOS has deprecated xdg.portal.gtkUsePortal but it works ok for me so let's keep the effect
-  environment.sessionVariables.GTK_USE_PORTAL = "1";
+  # -> This has been useful for a while longer but now it breaks things...
+  #    https://www.reddit.com/r/hyprland/comments/14bpjuy/no_such_interface_orgfreedesktopportalfilechooser/
+  #environment.sessionVariables.GTK_USE_PORTAL = "1";
 }
