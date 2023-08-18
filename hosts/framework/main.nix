@@ -181,6 +181,7 @@ in
     zgrviewer
     lshw
     rustup gcc
+    gqrx  # gnuradio
   ];
 
   services.printing.drivers = [
@@ -214,6 +215,7 @@ in
   fonts.fonts = with pkgs; [
     # needed for KiBot with rsvg
     helvetica-neue-lt-std
+    libre-franklin
   ];
 
   # This value determines the NixOS release from which the default
