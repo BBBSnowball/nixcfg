@@ -59,16 +59,15 @@ in
 
   # I want persistent tinc keys even in case of a complete rebuild.
   #FIXME change secret to secret_local !!
-  systemd.services."tinc.bbbsnowball".preStart = lib.mkBefore ''
-    mkdir -p /etc/tinc/bbbsnowball
-    ( umask 077; cp -u /etc/nixos/secret/tinc-bbbsnowball-rsa_key.priv /etc/tinc/bbbsnowball/rsa_key.priv )
-  '';
-  systemd.services."tinc.door".preStart = lib.mkBefore ''
-    mkdir -p /etc/tinc/door
-    ( umask 077; cp -u /etc/nixos/secret/tinc-door-rsa_key.priv /etc/tinc/door/rsa_key.priv )
-  '';
-  systemd.services."tinc.a".preStart = lib.mkBefore ''
-    mkdir -p /etc/tinc/a
-    ( umask 077; cp -u /etc/nixos/secret/tinc-a-rsa_key.priv /etc/tinc/a/rsa_key.priv )
-  '';
+  systemd.services = let
+    f = name: lib.nameValuePair "tinc.${name}" {
+      preStart = lib.mkMerge [ (lib.mkBefore ''
+        mkdir -p /etc/tinc/${name}
+        ( umask 077; cp -u /etc/nixos/secret/tinc-${name}-rsa_key.priv /etc/tinc/${name}/rsa_key.priv )
+      '')
+      #(lib.mkAfter ''
+      #  # abc
+      #'') ];
+    };
+  in builtins.listToAttrs (map f ["bbbsnowball" "door" "a"]);
 }
