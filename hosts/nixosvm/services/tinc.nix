@@ -57,17 +57,20 @@ in
   networking.firewall.allowedPorts.tinc-tcp-a = { port = 657; type = "tcp"; };
   networking.firewall.allowedPorts.tinc-udp-a = { port = 657; type = "udp"; };
 
-  # I want persistent tinc keys even in case of a complete rebuild.
-  #FIXME change secret to secret_local !!
+  # I want persistent tinc keys even in case of a complete rebuild
+  # and copy public keys from ${private} or ${privateForHost}.
   systemd.services = let
     f = name: lib.nameValuePair "tinc.${name}" {
-      preStart = lib.mkMerge [ (lib.mkBefore ''
-        mkdir -p /etc/tinc/${name}
-        ( umask 077; cp -u /etc/nixos/secret/tinc-${name}-rsa_key.priv /etc/tinc/${name}/rsa_key.priv )
-      '')
-      #(lib.mkAfter ''
-      #  # abc
-      #'') ];
+      preStart = lib.mkBefore ''
+        ${pkgs.coreutils}/bin/install -o root -m755 -d /etc/tinc/${name}
+        ${pkgs.coreutils}/bin/install -o tinc.${name} -m755 -d /etc/tinc/${name}/hosts
+        ${pkgs.coreutils}/bin/install -o root -m400 /etc/nixos/secret_local/tinc-${name}-rsa_key.priv /etc/tinc/${name}/rsa_key.priv
+        if [ -e "${privateForHost}/tinc-pubkeys/${name}" ] ; then
+          ${pkgs.rsync}/bin/rsync -r --delete --copy-links --perms --chmod=F444,D755 --chown=tinc.${name} ${privateForHost}/tinc-pubkeys/${name}/ /etc/tinc/${name}/hosts
+        else
+          ${pkgs.rsync}/bin/rsync -r --delete --copy-links --perms --chmod=F444,D755 --chown=tinc.${name} ${private}/tinc-pubkeys/${name}/ /etc/tinc/${name}/hosts
+        fi
+      '';
     };
   in builtins.listToAttrs (map f ["bbbsnowball" "door" "a"]);
 }
