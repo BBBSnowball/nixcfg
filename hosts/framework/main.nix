@@ -104,6 +104,16 @@ in
     #yubikey-agent
     #yubikey-touch-detector
     mako
+    pulseaudio
+    playerctl
+    libnotify
+    (pkgs.runCommand "notify-helpers" { inherit (pkgs) jq; } ''
+      mkdir $out/bin -p
+      cp ${./notify-brightness.sh} $out/bin/notify-brightness
+      substituteAll ${./notify-volume.sh} $out/bin/notify-volume
+      chmod +x $out/bin/*
+      patchShebangs $out/bin/*
+    '')
   ];
   environment.etc."sway/config".source = ./sway-config;
   environment.etc."alacritty.yml".source = ./alacritty.yml;
@@ -171,6 +181,7 @@ in
     zgrviewer
     lshw
     rustup gcc
+    gqrx  # gnuradio
   ];
 
   services.printing.drivers = [
@@ -204,6 +215,7 @@ in
   fonts.fonts = with pkgs; [
     # needed for KiBot with rsvg
     helvetica-neue-lt-std
+    libre-franklin
   ];
 
   # This value determines the NixOS release from which the default
