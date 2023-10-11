@@ -1,4 +1,4 @@
-{ lib, config, pkgs, secretForHost, ... }:
+{ lib, config, pkgs, nixpkgs-unstable, secretForHost, ... }:
 # I use this Zigbee coordinator:
 # https://www.tindie.com/products/slaesh/cc2652-zigbee-coordinator-or-openthread-router/#
 # https://www.zigbee2mqtt.io/information/supported_adapters.html#slaeshs-cc2652rb-stick
@@ -30,6 +30,7 @@
     # don't start it by default because it would wait for the device
     systemd.services.zigbee2mqtt.wantedBy = lib.mkForce [ ];
 
+    services.zigbee2mqtt.package = nixpkgs-unstable.legacyPackages.x86_64-linux.zigbee2mqtt;
     services.zigbee2mqtt.enable = true;
     services.zigbee2mqtt.settings = {
       serial.port = "/dev/ttyZigbee";
