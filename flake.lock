@@ -71,6 +71,21 @@
         "type": "github"
       }
     },
+    "nixpkgs-unstable": {
+      "locked": {
+        "lastModified": 1697158538,
+        "narHash": "sha256-TR02XPre2EcwU1kT4WXZWJOBi/B8C7P1xoywOUGkdDk=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "ee176b5fbb680864dcf80f9ca3f6f134d81331d8",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
     "private": {
       "flake": false,
       "locked": {
@@ -94,6 +109,7 @@
         "jens-dotfiles": "jens-dotfiles",
         "nix-bundle": "nix-bundle",
         "nixpkgs": "nixpkgs",
+        "nixpkgs-unstable": "nixpkgs-unstable",
         "private": "private"
       }
     }
