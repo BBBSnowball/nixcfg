@@ -99,10 +99,11 @@ let
   };
   fhemSrcHashes = {
     "6.0" = "sha256-X8ldXi/r/80nDDc2JXrljVPnAEAx/gkTO7G5mqg34Q8=";
+    "6.2" = "sha256-M24XCfnIqJBSYhTMPKlxOuhmS+79LTzR73hMrOFGn6Q=";
   };
   fhemPkg = pkgs.stdenv.mkDerivation rec {
     pname = "fhem";
-    version = "6.0";
+    version = "6.2";
     src = pkgs.fetchurl {
       url = "http://fhem.de/fhem-${version}.tar.gz";
       hash = fhemSrcHashes."${version}";
