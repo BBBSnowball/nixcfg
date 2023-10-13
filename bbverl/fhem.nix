@@ -156,6 +156,7 @@ in
   services.shorewall.rules.fhem-web = {
     proto = "tcp";
     destPort = [ 8083 8084 8085 ];
+    source = "loc,tinc:192.168.84.50";
   };
 
   services.udev.extraRules = ''
