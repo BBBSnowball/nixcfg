@@ -51,36 +51,8 @@ in
   } ];
 
   services.tinc.networks.a.extraConfig = let name = "a"; in ''
-    # tincd chroots into /etc/tinc/${name} so we cannot put the file into /run, as we usually would.
-    # Furthermore, tincd needs write access to the directory so we make a subdir.
-    GraphDumpFile = status/graph.dot
-
     ConnectTo=orangepi_remoteadmin
   '';
-  systemd.services."tinc.a" = let name = "a"; in {
-    preStart = ''
-      ${pkgs.coreutils}/bin/install -o tinc.${name} -m755 -d /etc/tinc/${name}/status
-    '';
-    serviceConfig.BindPaths = [
-      #"/etc/tinc/a/graph.dot=/run/tinc-${name}/graph.dot"
-    ];
-  };
-  # NixOS network config doesn't setup the interface if we restart the tinc daemon
-  # so let's add some redundancy:
-  environment.etc."tinc/a/tinc-up" = {
-    text = ''
-      #!/bin/sh
-      ${pkgs.nettools}/bin/ifconfig $INTERFACE ${tinc-a-address} netmask 255.255.255.0
-    '';
-    mode = "755";
-  };
-  environment.etc."tinc/a/tinc-down" = {
-    text = ''
-      #!/bin/sh
-      ${pkgs.nettools}/bin/ifconfig $INTERFACE down
-    '';
-    mode = "755";
-  };
 
   nix.registry.routeromen.flake = routeromen;
 
