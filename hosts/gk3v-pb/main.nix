@@ -22,6 +22,8 @@ in
       ./xrdp.nix
       ./brother_ql_service.nix
       ./iperf3.nix
+      ./virtmanager.nix
+      ./test-zigbee.nix
     ];
 
   disabledModules = [ "services/networking/xrdp.nix" ];

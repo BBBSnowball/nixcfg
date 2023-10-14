@@ -5,6 +5,7 @@
   inputs.routeromen.inputs.nixpkgs.follows = "nixpkgs";
   inputs.flake-registry.url = "github:NixOS/flake-registry";
   inputs.flake-registry.flake = false;
+  inputs.nixpkgs-unstable.follows = "routeromen/nixpkgs-unstable";
 
   #inputs.nixpkgs-unstable.url = "github:NixOS/nixpkgs";
 

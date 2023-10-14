@@ -124,6 +124,10 @@
       "inputs": {
         "flake-registry": "flake-registry",
         "nixpkgs": "nixpkgs",
+        "nixpkgs-unstable": [
+          "routeromen",
+          "nixpkgs-unstable"
+        ],
         "routeromen": "routeromen"
       }
     },
