@@ -123,6 +123,12 @@
       sonline0-initrd-install-test = sub.packages.${system}.make-sonline0-initrd-install-test;
     })
     // (if system == "x86_64-linux" then { allChecks = pkgs.linkFarmFromDrvs "all-checks" (nixpkgs.lib.attrValues self.checks.${system}); } else {})
+    // (if system == "x86_64-linux" then {
+      # no way to build this in pure (flake) land so we lie and say that the license was free
+      # hm, or maybe there is? `NIXPKGS_ALLOW_UNFREE=1 nix build --impure .#omada-controller-unfree` -> yes :-)
+      #omada-controller-unfree = pkgs.callPackage ./pkgs/omada-controller.nix { mongodb = pkgs.mongodb.overrideAttrs (old: { meta = { license.free = true; }; }); };
+      omada-controller-unfree = pkgs.callPackage ./pkgs/omada-controller.nix { };
+    } else {})
     )
     // (forDarwinSystems (system: let pkgs = nixpkgs.legacyPackages.${system}; in {
       iproute2mac = pkgs.callPackage ./pkgs/iproute2mac.nix {};

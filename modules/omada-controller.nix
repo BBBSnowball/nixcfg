@@ -6,6 +6,9 @@ let
   #chosen_jre = pkgs.jre8;
   chosen_jre = pkgs.openjdk;
 in {
+  #imports = [ routeromen.nixosModules.allowUnfree ];  # -> infinite recursion
+  imports = [ ./allowUnfree.nix ];
+
   options.services.omada-controller = with lib; {
     enable = mkEnableOption "Whether to enable Omada Software Controller";
     package = mkOption {
@@ -19,6 +22,7 @@ in {
   };
 
   config.nixpkgs.overlays = [ omadaControllerOverlay ];
+  config.nixpkgs.allowUnfreeByName = [ "mongodb" ];
 
   config.systemd.services.omada-controller = {
     description = "Omada Software Controller that controls Omada WiFi access points and SDN switches";
