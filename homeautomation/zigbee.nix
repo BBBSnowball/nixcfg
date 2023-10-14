@@ -73,11 +73,5 @@
     # only required while we manually import it from nixos-20.09
     ids.uids.zigbee2mqtt = 317;
     ids.gids.zigbee2mqtt = 317;
-
-    services.shorewall.rules.zigbee2mqtt = {
-      proto = "tcp";
-      destPort = [ config.services.zigbee2mqtt.settings.frontend.port ];
-      source = "loc,tinc:192.168.84.50";
-    };
   };
 }

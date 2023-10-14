@@ -270,6 +270,12 @@ in {
     MAILADDR root
   '';
 
+  services.shorewall.rules.zigbee2mqtt = {
+    proto = "tcp";
+    destPort = [ config.services.zigbee2mqtt.settings.frontend.port ];
+    source = "loc,tinc:192.168.84.50";
+  };
+
   # This value determines the NixOS release with which your system is to be
   # compatible, in order to avoid breaking some software such as database
   # servers. You should change this only after NixOS release notes say you
