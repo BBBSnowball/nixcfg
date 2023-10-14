@@ -99,7 +99,7 @@ in
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
-    telnet
+    inetutils  # telnet
     #nix-output-monitor
     mbuffer brotli zopfli
     tree
