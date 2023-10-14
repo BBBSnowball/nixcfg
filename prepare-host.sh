@@ -430,8 +430,9 @@ trust_key "$admin_gpg_key" "$fprint"
 
 if [ "$(is_key_signed $fprint $admin_gpg_key)" != "1" ] ; then
   echo "Our key is not yet signed by $admin_gpg_key  -> try to fetch repo and import key again (might have been updated)"
-  ( cd $secrets_shared_repo && git pull origin main )
-  gpg --import "$secrets_shared_repo/keys/$user@$hostname.gpg.pub"
+  ( cd $secrets_shared_repo && git pull origin main ) \
+  && gpg --import "$secrets_shared_repo/keys/$user@$hostname.gpg.pub" \
+  || echo "We couldn't fetch but we will continue to print the next messages."
 fi
 
 needs_action=0
