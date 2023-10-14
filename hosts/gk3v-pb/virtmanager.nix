@@ -1,10 +1,4 @@
 { pkgs, ... }:
-let
-  iface1 = "enp2s0";
-  iface2 = "wlp3s0";
-  vmIp = "192.168.122.40";
-  webPort = 8123;
-in
 {
   virtualisation.libvirtd = {
     enable = true;
@@ -13,25 +7,22 @@ in
   users.users.user.extraGroups = [ "libvirtd" ];
   users.users.user.packages = with pkgs; [ virtmanager ];
 
-  # not available anymore, it seems
-#  services.virtlyst.enable = true;
-#  services.virtlyst.adminPassword = "password";  # Well....
-#  # SSH doesn't seem to be tested - at least for the Nix package.
-#  # In addition, I had to create ~virtlyst/.ssh/{id_rsa,config,known_hosts}
-#  # with appropriate contents. I have set the user in the SSH config because
-#  # the user field on the web interface seems to be ignored (but I probably
-#  # could have added it to the hostname).
-#  systemd.services.virtlyst.path = [ pkgs.openssh ];
+  networking.firewall.extraCommands = ''
+    # mark packets that are coming in from a VM interface
+    if ebtables -N vm 2>/dev/null ; then
+      ebtables -I INPUT -j vm
+      ebtables -I FORWARD -j vm
+    else
+      ebtables -F vm
+    fi
+    ebtables -A vm -i vnet+ -j mark --mark-set 0xf0 --mark-target ACCEPT
 
-  # Home Assistant is allowed to access our MQTT broker.
-  #networking.firewall.interfaces.virbr0.allowedTCPPorts = [ 1883 ];
+    # allow access to MQTT for VMs
+    iptables -I nixos-fw 3 -i br0 -p tcp -m mark --mark 0xf0 -m tcp --dport 1883 -j ACCEPT
 
-  #networking.firewall.extraCommands = ''
-  #  # forward port 8123 to HomeAssistant VM
-  #  iptables -t nat -I PREROUTING -i ${iface1} -p tcp --dport ${webPort} -j DNAT --to-destination ${vmIp}
-  #  iptables -t nat -I PREROUTING -i ${iface2} -p tcp --dport ${webPort} -j DNAT --to-destination ${vmIp}
-  #  iptables -I FORWARD -o virbr0 -p tcp --dport ${webPort} -j ACCEPT
-  #'';
+    # allow access to z2m from fw via tinc
+    iptables -I nixos-fw 3 -s 192.168.83.139/32 -i tinc.a -p tcp -m tcp --dport 8086 -j ACCEPT
+  '';
 
   #networking.firewall.logRefusedPackets = true;
 
@@ -50,31 +41,14 @@ in
   # see https://www.home-assistant.io/installation/linux
   # see https://myme.no/posts/2021-11-25-nixos-home-assistant.html (useful info but I didn't use any of it in the end)
   #
-  # virsh nwfilter-define home-assistant-open-ports.xml
-  # Edit VM:
-  #   <interface type='network'>
-  #     <filterref filter='home-assistant-open-ports'/>  <!-- add this line -->
+  # We need UEFI. I couldn't set it in VirtManager but this works:
+  #   <os>
+  #     <type arch='x86_64' machine='pc-q35-8.0'>hvm</type>
+  #+    <loader readonly='yes' type='pflash'>/run/libvirt/nix-ovmf/OVMF_CODE.fd</loader>
+  #+    <nvram>/var/lib/libvirt/qemu/nvram/HomeAssistant_VARS.fd</nvram>
   #     ...
-  #   </interface>
-  # Edit network (virsh net-edit --network default)
-  # <network xmlns:dnsmasq='http://libvirt.org/schemas/network/dnsmasq/1.0'>
-  #   ...
-  #   <dnsmasq:options>
-  #     <dnsmasq:option value="interface=virbr0"/>
-  #     <dnsmasq:option value="bind-interfaces"/>  <!-- removed later because not accepted -->
-  #   </dnsmasq:options>
-  # </network>
-
-  #networking.bridges.virbr0 = {
-  #  interfaces = [];
-  #};
-  #networking.interfaces.virbr0 = {
-  #  ipv4.addresses = [ {
-  #    address = "192.168.122.1";
-  #    prefixLength = 24;
-  #  } ];
-  #};
+  #   </os>
   #
-  # -> won't work, we have to use: virsh net-start default
+  # We do not need to open any ports because we are bridging the VM to the network.
 }
 
