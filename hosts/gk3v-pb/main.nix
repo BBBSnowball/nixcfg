@@ -1,4 +1,4 @@
-{ config, pkgs, lib, rockpro64Config, routeromen, withFlakeInputs, privateForHost, ... }@args:
+{ config, pkgs, lib, rockpro64Config, routeromen, withFlakeInputs, privateForHost, secretForHost, ... }@args:
 let                                                                                                 
   modules = args.modules or (import ./modules.nix {});
 in
@@ -46,7 +46,7 @@ in
 
   users.users.user = {
     isNormalUser = true;
-    passwordFile = "/etc/nixos/secret/rootpw";
+    passwordFile = "${secretForHost}/rootpw";
     # lp: I couldn't get the Brother QL-500 to work through cups and the
     # web interface can only do text so we have to access it directly.
     extraGroups = [ "dialout" "wheel" "lp" ];
@@ -76,7 +76,7 @@ in
   };
   users.users.root = {
     # generate contents with `mkpasswd -m sha-512`
-    passwordFile = "/etc/nixos/secret/rootpw";
+    passwordFile = "${secretForHost}/rootpw";
 
     openssh.authorizedKeys.keyFiles = [ "${privateForHost}/ssh-laptop.pub" ];
   };
