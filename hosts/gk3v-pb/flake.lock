@@ -53,7 +53,10 @@
     },
     "nix-bundle": {
       "inputs": {
-        "nixpkgs": "nixpkgs_2"
+        "nixpkgs": [
+          "routeromen",
+          "nixpkgs"
+        ]
       },
       "locked": {
         "lastModified": 1611019385,
@@ -85,19 +88,19 @@
         "type": "github"
       }
     },
-    "nixpkgs_2": {
+    "nixpkgs-unstable": {
       "locked": {
-        "lastModified": 1620055814,
-        "narHash": "sha256-8LEHoYSJiL901bTMVatq+rf8y7QtWuZhwwpKE2fyaRY=",
+        "lastModified": 1697158538,
+        "narHash": "sha256-TR02XPre2EcwU1kT4WXZWJOBi/B8C7P1xoywOUGkdDk=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "1db42b7fe3878f3f5f7a4f2dc210772fd080e205",
+        "rev": "ee176b5fbb680864dcf80f9ca3f6f134d81331d8",
         "type": "github"
       },
       "original": {
-        "id": "nixpkgs",
-        "ref": "nixos-20.03-small",
-        "type": "indirect"
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "type": "github"
       }
     },
     "private": {
@@ -132,14 +135,15 @@
         "nixpkgs": [
           "nixpkgs"
         ],
+        "nixpkgs-unstable": "nixpkgs-unstable",
         "private": "private"
       },
       "locked": {
-        "lastModified": 1651547138,
-        "narHash": "sha256-Z6r3zYW81qZdKGfVqw6ImeRRL54mi5YkoKYofJWOMzY=",
+        "lastModified": 1697158637,
+        "narHash": "sha256-fDdn/tJnU3wuB6Fj4S5r48aNOUI4DLqxHWailafrOt8=",
         "owner": "BBBSnowball",
         "repo": "nixcfg",
-        "rev": "364b79bbef4e3644d640cced5765942d1c71fbbf",
+        "rev": "337593d423bca71b99e3fbeb0d71bdefe6ad042c",
         "type": "github"
       },
       "original": {
