@@ -34,6 +34,7 @@
     mosh
 
     ripgrep lf
+    mtr
   ] ++ (if system == "x86_64-linux" then [
     # only for x86, i.e. not useful and/or not available for aarch64
     cpufrequtils
