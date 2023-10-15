@@ -154,6 +154,7 @@ in
     lshw
     rustup gcc
     gqrx  # gnuradio
+    graph-easy  # dot graph to ascii graphic, e.g.: graph-easy /etc/tinc/$name/status/graph.dot
   ];
 
   services.printing.drivers = [
