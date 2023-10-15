@@ -1,7 +1,6 @@
-{ lib, config, pkgs, ... }:
+{ lib, config, pkgs, private, privateForHost, ... }:
 let
   name       = "a";
-  private    = "/etc/nixos/private/private";
   ifaceName  = builtins.substring 0 10 name;
   #tincIP     = (builtins.head config.networking.interfaces."tinc.${ifaceName}".ipv4.addresses).address;
   tincIPs    = map (x: "${x.address}/${toString x.prefixLength}") config.networking.interfaces."tinc.${ifaceName}".ipv4.addresses;
@@ -49,9 +48,9 @@ in
         ${pkgs.coreutils}/bin/install -o root -m400 /etc/nixos/secret/tinc-${name}-rsa_key.priv /etc/tinc/${name}/rsa_key.priv
       fi
   
-      if [ -e "${private}/by-host/${hostName}/tinc-pubkeys/${name}" ] ; then
+      if [ -e "${privateForHost}/tinc-pubkeys/${name}" ] ; then
         # We tell rsync to follow symlinks so the host-specific directory can refer to files in the common dir.
-        ${pkgs.rsync}/bin/rsync -r --delete -L "${private}/by-host/${hostName}/tinc-pubkeys/${name}/" /etc/tinc/${name}/hosts
+        ${pkgs.rsync}/bin/rsync -r --delete -L "${privateForHost}/tinc-pubkeys/${name}/" /etc/tinc/${name}/hosts
       else
         #${pkgs.coreutils}/bin/install -o tinc.${name} -m444 ${private}/tinc-pubkeys/${name}/* /etc/tinc/${name}/hosts/
         ${pkgs.rsync}/bin/rsync -r --delete ${private}/tinc-pubkeys/${name}/ /etc/tinc/${name}/hosts
