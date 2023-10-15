@@ -15,7 +15,7 @@ in {
       ../../smokeping.nix
       ../../ntopng.nix
       ../../samba.nix
-      ../../tinc.nix
+      ./tinc.nix
       shorewall
       ../../dhcp-server.nix
       ../../pppd.nix
