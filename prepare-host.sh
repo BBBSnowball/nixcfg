@@ -374,7 +374,7 @@ fi
 
 # $secrets_local_dir is probably not a git but then it will just be set on the parent repo, again.
 # (Setting gpg.format is optional because it is the default - unless we have changed it in the global git config.)
-for x in $nixos_dir $secrets_local_dir $secrets_shared_repo $private_repo ; do
+for x in $nixos_dir $nixos_dir/flake $secrets_local_dir $secrets_shared_repo $private_repo ; do
   ( set -x; cd $x && git config commit.gpgsign true && git config gpg.format openpgp && git config user.signingkey 0x$fprint )
 done
 
