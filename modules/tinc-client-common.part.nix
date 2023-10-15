@@ -17,7 +17,6 @@ in
     extraConfig = ''
       AddressFamily=ipv4
       Mode=switch
-      LocalDiscovery=yes
       ${extraConfig}
 
       # tincd chroots into /etc/tinc/${name} so we cannot put the file into /run, as we usually would.
