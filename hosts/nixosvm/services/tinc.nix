@@ -23,6 +23,7 @@ in
       AddressFamily=ipv4
       Mode=switch
       LocalDiscovery=no
+      Port=655
     '';
   };
 
