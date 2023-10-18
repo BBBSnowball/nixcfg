@@ -14409,7 +14409,7 @@ let
   args = {
     name = "edumeet";
     packageName = "edumeet";
-    version = "3.4.0";
+    version = "3.5.6";
     src = "${edumeetSrc}/app";
     dependencies = [
       sources."@babel/code-frame-7.10.4"

@@ -3031,13 +3031,8 @@ let
   args = {
     name = "edumeet-server";
     packageName = "edumeet-server";
-    version = "3.3.4";
-    src = "${edumeetSrc}/server";
-    postInstall= ''
-      echo postInstallHook
-      mv node_modules/mediasoup/worker/out/out/Release node_modules/mediasoup/worker/out/Release
-      find -name "*.o" -exec rm {} \+
-    '';
+    version = "3.5.6";
+    src = ./.;
     dependencies = [
       sources."@panva/asn1.js-1.0.0"
       sources."@sindresorhus/is-0.14.0"
