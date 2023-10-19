@@ -70,7 +70,7 @@ var config = {
 	screenResolution : 'veryhigh',
 
 	// The default screen sharing framerate.
-	screenSharingFrameRate : 5,
+	screenSharingFrameRate : 15,
 
 	// Enable or disable simulcast for webcam video.
 	simulcast : true,
@@ -287,13 +287,13 @@ var config = {
 	hideTimeout : 3000,
 
 	// The maximum number of participants that will be visible in as speaker.
-	lastN : 4,
+	lastN : 20,  // default: 4
 
 	// The maximum number of participants that will be visible in as speaker for mobile users.
 	mobileLastN : 1,
 
 	// The highest number of lastN the user can select manually in the user interface.
-	maxLastN : 5,
+	maxLastN : 50,  // default: 5
 
 	// If true, the users can not change the number of visible speakers.
 	lockLastN : false,
@@ -302,7 +302,7 @@ var config = {
 	logo : 'images/logo.edumeet.svg',
 
 	// The title to show if the logo is not specified.
-	title : 'edumeet',
+	title : 'treffnix',
 
 	// Informative text on the join page. If empty hidden.
 	infoTooltipText : '',
