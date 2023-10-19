@@ -81,7 +81,9 @@ in {
     '';
 
     #environment.DEBUG = "edumeet:*,config:*,config";
-    #environment.DEBUG = "*";
-    #environment.DEBUG_COLORS = "1";
+    environment.DEBUG = "*";
+    environment.DEBUG_COLORS = "1";
+    environment.DEBUG_DEPTH = "5";
+    #NOTE Same thing for the client: `window.localStorage.setItem('debug', '*');`
   };
 }
