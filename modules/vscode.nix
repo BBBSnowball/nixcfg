@@ -18,7 +18,7 @@
       "xorg.libxcb"
       "freetype"
       "fontconfig"
-      "python2"
+      "python3"
       "stdenv.cc.cc.lib"
       "musl"
       "libkrb5"
@@ -32,11 +32,16 @@
       "xorg.libXtst"
       "alsa-lib"
     ];
+    pioLibs2 = [
+      # remove meta.insecure attribute
+      # (xtensa-esp32s3-elf-gdb needs libpython2.7.so.1.0)
+      "(python2.overrideAttrs(_:{meta={};}))"
+    ];
     missingPioLibs = lib.lists.filter (name: !lib.attrsets.hasAttrByPath (lib.strings.splitString "." name) pkgs) pioLibs;
     pioLibsForNixShell =
       if missingPioLibs != []
       then builtins.abort "Missing packages for pioFix: ${builtins.toString missingPioLibs}"
-      else lib.strings.concatMapStringsSep " " (name: "-p ${name}") pioLibs;
+      else lib.strings.concatMapStringsSep " " (name: "-p \"${name}\"") (pioLibs ++ pioLibs2);
   in ''
     # works for AVR and ESP32-C3
     alias pioFix='nix-shell ${pioLibsForNixShell} --run "patchShebangs /home/user/.platformio/packages/tool-avrdude/avrdude && autoPatchelf ~/.platformio/packages/ ~/.vscode/extensions"'
