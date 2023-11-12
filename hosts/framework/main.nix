@@ -192,7 +192,7 @@ in
     libre-franklin
   ];
 
-  services.openssh.enable = lib.mkForce false;
+  services.openssh.enable = lib.mkForce true;
 
   programs.emacs.defaultEditor = lib.mkForce false;
   programs.vim.defaultEditor = true;
