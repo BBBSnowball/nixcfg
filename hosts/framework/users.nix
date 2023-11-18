@@ -26,6 +26,8 @@ let
       #(git.override { guiSupport = true; })
       gnome.gnome-screenshot
       gnome.gnome-tweaks
+      gnome.nautilus
+      git-annex
     ];
   };
 in
