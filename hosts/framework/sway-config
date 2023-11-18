@@ -66,6 +66,12 @@ exec mako
       middle_emulation enabled
   }
 
+  input "1133:16534:Logitech_ERGO_M575" {
+    #accel_profile adaptive
+    #accel_profile flat
+    pointer_accel +1
+  }
+
   input * {
     xkb_layout us
     xkb_variant "altgr-intl"
