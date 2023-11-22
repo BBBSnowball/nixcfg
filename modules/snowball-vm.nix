@@ -28,7 +28,7 @@
  
   config = {
     boot.loader.grub.enable = true;
-    boot.loader.grub.version = 2;
+    #boot.loader.grub.version = 2;
     boot.loader.grub.device = lib.mkDefault "/dev/vda";
   
     #headless = true;
