@@ -86,6 +86,10 @@ in {
         #  else "${secretForHost}/matrix-synapse/mautrix-telegram.yaml")
         "/var/data/matrix-synapse/mautrix-telegram.yaml"
       ];
+
+      settings.max_upload_size = "100M";
+
+      settings.log_config = ./matrix-synapse-log_config.yaml;
     };
 
     systemd.services.matrix-synapse.restartTriggers = with config.services.matrix-synapse; extraConfigFiles ++ settings.app_service_config_files;

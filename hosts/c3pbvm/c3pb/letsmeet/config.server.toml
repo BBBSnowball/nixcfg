@@ -1,0 +1,42 @@
+listeningPort = "8030"
+listeningRedirectPort = "8081"
+httpOnly = "true"
+#listeningHost = "@trueDomain@"
+fileTracker = "wss://tracker.openwebtorrent.com"
+#turnAPIKey = "Your API key"
+#turnAPIURI = "https://host.domain.tld/turn"
+
+[tls]
+cert = "/etc/edumeet/cert/fullchain.pem"
+key = "/etc/edumeet/cert/db.key"
+#cert = "./certs/edumeet-demo-cert.pem"
+#key = "./certs/edumeet-demo-key.pem"
+
+[[backupTurnServers]]
+#NOTE double brackets are important here ^^ (will be silently ignored otherwise because wrong type)
+#urls = [ "turn:@trueDomain@:3478?transport=tcp" ]
+username = ""
+credential = ""
+urls = [
+  "stun:@trueDomain@:3478?transport=tcp",
+  "turn:@trueDomain@:3478?transport=tcp"
+]
+
+[redisOptions]
+#host = "127.0.0.1"
+#port = "6379"
+#password = "_REDIS_PASSWORD_"
+# schema forbids these so we have to set them in config.js
+#path = "/run/redis/redis.sock"
+#socket.path = "/run/redis/redis.sock"
+
+[prometheus]
+enabled = "false"
+deidentify = "true"
+numeric = "true"
+listen = "host.domain.tld"
+
+[[mediasoup.webRtcTransport.listenIps]]
+ip = "192.168.84.135"
+announcedIp = "@serverExternalIp@"
+
