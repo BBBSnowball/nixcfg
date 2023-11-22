@@ -7,11 +7,10 @@ fileTracker = "wss://tracker.openwebtorrent.com"
 #turnAPIURI = "https://host.domain.tld/turn"
 
 [tls]
-#FIXME
-#cert: '/etc/edumeet/cert/fullchain.pem',
-#key: '/etc/edumeet/cert/db.key'
-cert = "./certs/edumeet-demo-cert.pem"
-key = "./certs/edumeet-demo-key.pem"
+cert = "/etc/edumeet/cert/fullchain.pem"
+key = "/etc/edumeet/cert/db.key"
+#cert = "./certs/edumeet-demo-cert.pem"
+#key = "./certs/edumeet-demo-key.pem"
 
 [[backupTurnServers]]
 #NOTE double brackets are important here ^^ (will be silently ignored otherwise because wrong type)
