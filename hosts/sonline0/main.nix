@@ -16,6 +16,7 @@ in {
       ./kexec.nix
       ./ipv6.nix
       ./backup.nix
+      ./coturn.nix
     ];
 
   boot.loader.grub.devices = [
