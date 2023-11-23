@@ -18,9 +18,12 @@ key = "/etc/edumeet/cert/db.key"
 username = ""
 credential = ""
 urls = [
-  "stun:@trueDomain@:3478?transport=tcp",
-  "turn:@trueDomain@:3478?transport=tcp"
+  "stun:@trueDomain@:3478?transport=udp",
 ]
+#urls = [
+#  "stun:@trueDomain@:3478?transport=tcp",
+#  "turn:@trueDomain@:3478?transport=tcp"
+#]
 
 [redisOptions]
 #host = "127.0.0.1"
@@ -35,6 +38,10 @@ enabled = "false"
 deidentify = "true"
 numeric = "true"
 listen = "host.domain.tld"
+
+[mediasoup.worker]
+rtcMinPort = 40000
+rtcMaxPort = 40999
 
 [[mediasoup.webRtcTransport.listenIps]]
 ip = "192.168.84.135"
