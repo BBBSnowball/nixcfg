@@ -31,6 +31,8 @@ const {
 module.exports =
 {
 	// Auth conf
+        // We need a bit of auth config for the auth handlers to be registered. Otherwise, /auth/check_login_status will return an HTML error instead of JSON.
+        auth : { local: { users : [] } },
 	/*
 	auth :
 	{
