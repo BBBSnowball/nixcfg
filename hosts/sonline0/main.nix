@@ -17,6 +17,7 @@ in {
       #./ipv6.nix
       ./ipv6-dhclient.nix
       ./backup.nix
+      ./coturn.nix
     ];
 
   boot.loader.grub.devices = [
