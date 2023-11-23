@@ -18,7 +18,8 @@ key = "/etc/edumeet/cert/db.key"
 username = ""
 credential = ""
 urls = [
-  "stun:@trueDomain@:3478?transport=udp",
+  #"stun:@trueDomain@:3478?transport=udp",
+  "stun:@trueDomain@:3478",
 ]
 #urls = [
 #  "stun:@trueDomain@:3478?transport=tcp",
