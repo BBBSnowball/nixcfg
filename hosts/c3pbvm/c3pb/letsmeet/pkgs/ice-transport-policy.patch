@@ -1,0 +1,24 @@
+https://github.com/edumeet/edumeet/issues/160#issuecomment-605509385
+
+diff --git a/app/src/RoomClient.js b/app/src/RoomClient.js
+index 121f3287..d09d3166 100644
+--- a/app/src/RoomClient.js
++++ b/app/src/RoomClient.js
+@@ -3773,7 +3773,7 @@ export default class RoomClient
+ 						dtlsParameters,
+ 						iceServers             : this._turnServers,
+ 						// TODO: Fix for issue #72
+-						iceTransportPolicy     : this._device.flag === 'firefox' && this._turnServers ? 'relay' : undefined,
++						//iceTransportPolicy     : this._device.flag === 'firefox' && this._turnServers ? 'relay' : undefined,
+ 						proprietaryConstraints : PC_PROPRIETARY_CONSTRAINTS
+ 					});
+ 
+@@ -3853,7 +3853,7 @@ export default class RoomClient
+ 					dtlsParameters,
+ 					iceServers         : this._turnServers,
+ 					// TODO: Fix for issue #72
+-					iceTransportPolicy : this._device.flag === 'firefox' && this._turnServers ? 'relay' : undefined,
++					//iceTransportPolicy : this._device.flag === 'firefox' && this._turnServers ? 'relay' : undefined,
+ 					additionalSettings : {
+ 						encodedInsertableStreams : insertableStreamsSupported && enableOpusDetails
+ 					},

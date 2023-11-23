@@ -46,6 +46,8 @@ in {
     installPhase = ''
       cp -r build $out
     '';
+
+    patches = [ pkgs/ice-transport-policy.patch ];
   };
 
   edumeet-server = self.stdenv.mkDerivation rec {
