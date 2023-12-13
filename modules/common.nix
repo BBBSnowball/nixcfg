@@ -102,4 +102,9 @@
     set log-options = --show-signature
     set diff-options = --show-signature
   '';
+
+  programs.git = {
+    enable = true;
+    lfs.enable = true;
+  };
 }
