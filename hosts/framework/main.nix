@@ -171,22 +171,28 @@ in
     '';
     target = "fwupd/remotes.d/lvfs-testing.conf";
   };
-  environment.etc."fwupd/uefi_capsule.conf".enable = false;
-  environment.etc."fwupd/uefi_capsule.conf2" = {
-    source = pkgs.runCommand "uefi_capsule.conf" {} ''
-      cat <${config.environment.etc."fwupd/uefi_capsule.conf".source} >$out
-      echo "" >>$out
-      echo '# description says that we should do this:' >>$out
-      echo '# https://fwupd.org/lvfs/devices/work.frame.Laptop.TGL.BIOS.firmware' >>$out
-      echo 'DisableCapsuleUpdateOnDisk=true' >>$out
-    '';
-    target = "fwupd/uefi_capsule.conf";
+#  environment.etc."fwupd/uefi_capsule.conf".enable = false;
+#  environment.etc."fwupd/uefi_capsule.conf2" = {
+#    source = pkgs.runCommand "uefi_capsule.conf" {} ''
+#      cat <${config.environment.etc."fwupd/uefi_capsule.conf".source} >$out
+#      echo "" >>$out
+#      echo '# description says that we should do this:' >>$out
+#      echo '# https://fwupd.org/lvfs/devices/work.frame.Laptop.TGL.BIOS.firmware' >>$out
+#      echo 'DisableCapsuleUpdateOnDisk=true' >>$out
+#    '';
+#    target = "fwupd/uefi_capsule.conf";
+#  };
+  services.fwupd.uefiCapsuleSettings = {
+    # description says that we should do this:
+    # https://fwupd.org/lvfs/devices/work.frame.Laptop.TGL.BIOS.firmware
+    DisableCapsuleUpdateOnDisk = true;
   };
 
   # enabled by nixos-hardware but causes multi-second delays for login manager and swaylock
   services.fprintd.enable = false;
 
-  fonts.fonts = with pkgs; [
+  #fonts.fonts = with pkgs; [
+  fonts.packages = with pkgs; [
     # needed for KiBot with rsvg
     helvetica-neue-lt-std
     libre-franklin

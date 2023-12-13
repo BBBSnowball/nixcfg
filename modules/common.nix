@@ -1,10 +1,10 @@
-{ config, pkgs, lib, modules, ... }:
+{ config, pkgs, lib, modules, nixpkgs, ... }:
 {
   imports =
     [
       modules.args
       modules.zsh
-      ./loginctl-linger.nix
+      (if nixpkgs.lib.versionAtLeast nixpkgs.lib.version "23.10" then {} else ./loginctl-linger.nix)
       ./fix-sudo.nix
       modules.enable-flakes
       modules.nvim

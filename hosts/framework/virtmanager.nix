@@ -2,7 +2,7 @@
 {
   virtualisation.libvirtd.enable = true;
   users.users.user.extraGroups = [ "libvirtd" ];
-  users.users.user.packages = with pkgs; [ virtmanager ];
+  users.users.user.packages = with pkgs; [ virt-manager ];
 
   # not available anymore, it seems
 #  services.virtlyst.enable = true;
