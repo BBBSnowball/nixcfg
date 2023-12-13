@@ -12,6 +12,7 @@
   services.pipewire = {
     enable = true;
     pulse.enable = lib.mkDefault false;
+    alsa.enable = true;
   };
 
   users.users.user = {
