@@ -27,6 +27,7 @@ in
       ./bl808-netboot.nix
       ./test-zigbee.nix
       ./hidpi.nix
+      ./wireguard-test.nix
     ];
 
   networking.hostName = "fw";
