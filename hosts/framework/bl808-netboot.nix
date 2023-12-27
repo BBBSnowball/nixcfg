@@ -1,8 +1,10 @@
-{ lib, ... }:
+{ lib, config, ... }:
 let
   ourIp = "192.168.178.29";
   #iface = "enp0s13f0u4u4";
   iface = "enp0s13f0u3u4";
+
+  moreSecure = config.environment.moreSecure;
 in
 {
   services.dnsmasq = {
@@ -37,8 +39,10 @@ in
     '';
   };
 
-  networking.firewall.allowedUDPPorts = [ 67 69 ];
-  networking.firewall.allowedUDPPortRanges = [ { from = 10000; to = 10100; } ];
+  networking.firewall = lib.mkIf (!moreSecure) {
+    allowedUDPPorts = [ 67 69 ];
+    allowedUDPPortRanges = [ { from = 10000; to = 10100; } ];
+  };
 
   systemd.services.dnsmasq = {
     bindsTo = [ "sys-subsystem-net-devices-${iface}.device" ];

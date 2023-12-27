@@ -2,6 +2,7 @@
 let
   modules = args.modules or (import ./modules.nix {});
   tinc-a-address = "192.168.83.139";
+  moreSecure = config.environment.moreSecure;
 in
 {
   imports =
@@ -27,9 +28,12 @@ in
       ./bl808-netboot.nix
       ./test-zigbee.nix
       ./hidpi.nix
+      ./moreSecure.nix
       ./teensy.nix
       ./wireguard-test.nix
     ];
+
+  environment.moreSecure = true;
 
   networking.hostName = "fw";
 
@@ -206,7 +210,7 @@ in
     libre-franklin
   ];
 
-  services.openssh.enable = lib.mkForce true;
+  services.openssh.enable = lib.mkForce (!moreSecure);
 
   programs.emacs.defaultEditor = lib.mkForce false;
   programs.vim.defaultEditor = true;

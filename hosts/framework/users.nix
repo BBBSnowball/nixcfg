@@ -1,8 +1,12 @@
 { pkgs, config, privateForHost, secretForHost, nixpkgs-unstable, ... }:
 let
+  moreSecure = config.environment.moreSecure;
+
   basicUser = {
     # generate contents with `mkpasswd -m sha-512`
-    hashedPasswordFile = "${secretForHost}/rootpw";
+    hashedPasswordFile = if moreSecure
+    then "${secretForHost}/rootpw2"
+    else "${secretForHost}/rootpw";
 
     openssh.authorizedKeys.keyFiles = [ "${privateForHost}/ssh-laptop.pub" ];
   };
