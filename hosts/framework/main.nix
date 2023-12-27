@@ -27,6 +27,7 @@ in
       ./bl808-netboot.nix
       ./test-zigbee.nix
       ./hidpi.nix
+      ./teensy.nix
       ./wireguard-test.nix
     ];
 
