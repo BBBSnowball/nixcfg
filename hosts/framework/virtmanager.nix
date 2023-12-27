@@ -4,6 +4,8 @@
   users.users.user.extraGroups = [ "libvirtd" ];
   users.users.user.packages = with pkgs; [ virt-manager ];
 
+  systemd.network.wait-online.ignoredInterfaces = [ "virbr0" ];
+
   # not available anymore, it seems
 #  services.virtlyst.enable = true;
 #  services.virtlyst.adminPassword = "password";  # Well....

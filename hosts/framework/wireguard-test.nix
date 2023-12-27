@@ -1,4 +1,4 @@
-{ ... }:
+{ pkgs, ... }:
 let
   port = 51820;
 in
@@ -25,4 +25,11 @@ in
       ];
     };
   };
+
+  systemd.network.wait-online.ignoredInterfaces = [ "wg0" ];
+  # https://github.com/NixOS/nixpkgs/issues/180175#issuecomment-1186152020
+  networking.networkmanager.unmanaged = [ "wg0" ];
+  # -> doesn't help, so...
+  systemd.services.NetworkManager-wait-online.enable = false;
+  #systemd.services.NetworkManager-wait-online.serviceConfig.ExecStart = "${pkgs.coreutils}/bin/true";
 }

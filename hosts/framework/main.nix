@@ -47,6 +47,10 @@ in
 
   networking.useDHCP = false;
 
+  # WIFI is "unmanaged" (NetworkManager) and all other won't necessarily be online.
+  #boot.initrd.systemd.network.wait-online.timeout = 0;
+  boot.initrd.systemd.network.wait-online.enable = false;
+
   networking.interfaces."tinc.a".ipv4.addresses = [ {
     address = tinc-a-address;
     prefixLength = 24;
@@ -55,6 +59,8 @@ in
   services.tinc.networks.a.extraConfig = let name = "a"; in ''
     ConnectTo=orangepi_remoteadmin
   '';
+
+  systemd.network.wait-online.ignoredInterfaces = [ "tinc.a" ];
 
   nix.registry.routeromen.flake = routeromen;
 
