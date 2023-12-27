@@ -52,8 +52,9 @@ in
   networking.useDHCP = false;
 
   # WIFI is "unmanaged" (NetworkManager) and all other won't necessarily be online.
-  #boot.initrd.systemd.network.wait-online.timeout = 0;
+  boot.initrd.systemd.network.wait-online.timeout = 1;
   boot.initrd.systemd.network.wait-online.enable = false;
+  systemd.services.systemd-networkd-wait-online.serviceConfig.ExecStart = lib.mkForce [ "" "${pkgs.coreutils}/bin/true" ];
 
   networking.interfaces."tinc.a".ipv4.addresses = [ {
     address = tinc-a-address;
