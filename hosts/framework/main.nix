@@ -33,7 +33,7 @@ in
       ./wireguard-test.nix
     ];
 
-  environment.moreSecure = true;
+  environment.moreSecure = false;
 
   networking.hostName = "fw";
 
@@ -168,6 +168,7 @@ in
     rustup gcc
     gqrx  # gnuradio
     graph-easy  # dot graph to ascii graphic, e.g.: graph-easy /etc/tinc/$name/status/graph.dot
+    rpi-imager
   ];
 
   services.printing.drivers = [
