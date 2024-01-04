@@ -106,7 +106,8 @@ case "$action" in
 esac
 
 if [ $needSshToTarget -ne 0 -a -n "$targetHost" ] ; then
-  hosts=(--target-host "$targetHost" --build-host localhost)
+  #hosts=(--target-host "$targetHost" --build-host localhost)
+  hosts=(--target-host "$targetHost")
   hosts+=(--use-substitutes)
   case "$hostname" in
     sonline0)
@@ -141,6 +142,7 @@ fi
 # `nixos-rebuild` doesn't pass through `--log-format bar-with-logs` or `--print-build-logs` but `-L` works.
 # Explicit build-host is required to work around a bug in nixos-rebuild: It would set buildHost=targetHost,
 # build on the local host anyway, omit copying to target.
+# -> That doesn't seem to be true anymore and `--build-host localhost` would use SSH to start the build.
 #NOTE If this fails because we don't have a nix with flake support (Nix 2.3), run it in a shell with nixFlakes
 #     and set _NIXOS_REBUILD_REEXEC=1 so it doesn't force use of its internal version.
 set -x
