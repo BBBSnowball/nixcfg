@@ -7,7 +7,7 @@ if [ $# -lt 2 -o "$1" == "--help" ] ; then
   echo "Usage: $0 hostname action [nix-build opts]" >&2
   echo "  action (like nixos-rebuild): test switch boot build dry-build dry-activate"
   echo "  more actions: reboot build-drv diff-drv diff-cl/diff-closures"
-  echo "  install actions: disko install"
+  echo "  install actions (target must be running the NixOS installer): disko install"
   echo "  set hostname to \"\" to build for the current host"
   exit 1
 fi
