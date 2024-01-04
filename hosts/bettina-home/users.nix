@@ -4,7 +4,10 @@ let
     # generate contents with `mkpasswd -m sha-512`
     hashedPasswordFile = "${secretForHost}/rootpw";
 
-    openssh.authorizedKeys.keyFiles = [ "${privateForHost}/ssh-laptop.pub" ];
+    openssh.authorizedKeys.keyFiles = [
+      "${privateForHost}/ssh-laptop.pub"
+      "${privateForHost}/ssh-fw.pub"
+    ];
   };
   rootUser = basicUser;
   guiUser = basicUser // {
