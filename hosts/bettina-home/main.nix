@@ -13,6 +13,7 @@ in
       allowUnfree
     ] ++
     [ ./hardware-configuration.nix
+      ./disko.nix
       ./users.nix
       ./virtmanager.nix
       #./test-zigbee.nix
