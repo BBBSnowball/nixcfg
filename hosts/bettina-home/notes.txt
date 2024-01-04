@@ -1,0 +1,26 @@
+name=bettina-home
+#target=bettina-wyse-pb
+target=$name
+
+cd /etc/nixos/flake/hosts/$name
+scp partitions-disko.nix root@$target:/tmp/
+ssh root@$target nix --experimental-features "nix-command flakes" run github:nix-community/disko/v1.2.0 -- --mode disko /tmp/partitions-disko.nix
+ssh root@$target nixos-generate-config --root /mnt
+scp root@$target:/mnt/etc/nixos/hardware-configuration.nix .
+
+cd /etc/nixos/secret
+./scripts/make-private-worktree.sh $name
+vi sparse-configs-for-private/$name
+cd /etc/nixos/hosts/$name/private/private
+git sparse-checkout reapply
+... copy/create files ...
+
+ssh root@$target mkdir -p /etc/nixos/secret/by-host/$name
+scp /etc/nixos/secret/by-host/framework/rootpw root@$target:/etc/nixos/secret/by-host/$name/
+
+/etc/nixos/nixos-rebuild.sh $name build
+# https://github.com/NixOS/nix/issues/2138#issuecomment-417493957
+nix copy --to ssh://root@$target?remote-store=local?root=/mnt/ /etc/nixos/result-$name
+system=$(realpath /etc/nixos/result-$name)
+ssh root@$target nixos-install --system $system --no-root-passwd
+

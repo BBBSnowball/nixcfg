@@ -38,6 +38,7 @@ in
 
   networking.useNetworkd = true;
   networking.useDHCP = false;
+  networking.interfaces.enp1s0.useDHCP = true;
 
   # WIFI is "unmanaged" (NetworkManager) and all other won't necessarily be online.
   #FIXME necessary here?
