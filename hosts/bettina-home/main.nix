@@ -28,6 +28,14 @@ in
     "memtest86-efi"
   ];
 
+  # Avoid seed being stored in word accessible location. These are the bootctl warnings for this:
+  #   Mount point '/boot' which backs the random seed file is world accessible, which is a security hole!
+  #   Random seed file '/boot/loader/random-seed' is world accessible, which is a security hole!
+  # see https://forum.endeavouros.com/t/bootctl-install-outputs-some-warnings-about-efi-mount-point-and-random-seed-file-in-the-terminal/43991/6
+  fileSystems."/boot".options = [
+    "fmask=0137,dmask=0027"
+  ];
+
   networking.useNetworkd = true;
   networking.useDHCP = false;
 
