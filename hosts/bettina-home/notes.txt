@@ -1,0 +1,40 @@
+name=bettina-home
+
+# create partitions
+/etc/nixos/nixos-rebuild.sh $name disko
+
+# create private files on this host
+cd /etc/nixos/secret
+./scripts/make-private-worktree.sh $name
+vi sparse-configs-for-private/$name
+cd /etc/nixos/hosts/$name/private/private
+git sparse-checkout reapply
+... copy/create files ...
+
+# create secret files on target host
+ssh root@$name install -m 0700 -d /mnt/etc/nixos/secret /mnt/etc/nixos/secret/by-host/$name
+scp /etc/nixos/secret/by-host/framework/rootpw root@$name:/mnt/etc/nixos/secret/by-host/$name/
+
+# build system, copy to target and run nixos-install
+/etc/nixos/nixos-rebuild.sh $name install
+
+
+...
+
+cd /var/lib/libvirt/images
+# https://github.com/home-assistant/operating-system/releases/
+wget https://github.com/home-assistant/operating-system/releases/download/11.3/haos_ova-11.3.qcow2.xz
+xz -d haos_ova-11.3.qcow2.xz
+
+virt-manager
+import with:
+- type linux2022
+- network bridge br0
+- all CPUs
+- 4 GB of RAM
+- important: change BIOS to UEFI (cannot be done later, it seems)
+
+...
+
+https://hacs.xyz/docs/setup/download
+

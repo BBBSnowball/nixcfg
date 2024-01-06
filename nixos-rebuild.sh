@@ -7,6 +7,7 @@ if [ $# -lt 2 -o "$1" == "--help" ] ; then
   echo "Usage: $0 hostname action [nix-build opts]" >&2
   echo "  action (like nixos-rebuild): test switch boot build dry-build dry-activate"
   echo "  more actions: reboot build-drv diff-drv diff-cl/diff-closures"
+  echo "  install actions (target must be running the NixOS installer): disko install"
   echo "  set hostname to \"\" to build for the current host"
   exit 1
 fi
@@ -103,10 +104,47 @@ case "$action" in
   repl)
     exec nix repl --extra-experimental-features 'flakes repl-flake' ${overrideInput[@]} $flake
     ;;
+  disko)
+    nix --experimental-features 'nix-command flakes' --log-format bar-with-logs \
+      build ${overrideInput[@]} "$flake#nixosConfigurations.$hostname.config.system.build.disko.diskoScript" \
+      --out-link "./result-$name-disko" "$@"
+    script="$(realpath "./result-$name-disko")"
+    echo "Script is $script"
+    nix-copy-closure --to "$targetHost" --use-substitutes "$script"
+    echo ""
+    echo "**************************************************************" >&2
+    echo "** This will delete the disk on target host '$targetHost'!" >&2
+    echo "**************************************************************" >&2
+    echo "We will run:" ssh $SSHOPTS "$targetHost" "$script" >&2
+    echo "" >&2
+    read -p "Type 'YES' to continue: " reply
+    if [ "$reply" != "YES" ] ; then
+      echo "Aborted." >&2
+      exit 1
+    else
+      ssh $SSHOPTS "$targetHost" "$script"
+      x="./flake/hosts/$targetHost"
+      if [ ! -d "$x" ] ; then
+        echo "WARN: Directory doesn't exist so we don't fetch new hardware config: $x" >&2
+      else
+        old="./flake/hosts/$targetHost/hardware-configuration.nix"
+        x="$old.new"
+        ssh $SSHOPTS "$targetHost" nixos-generate-config --root /mnt --show-hardware-config >"$x"
+        echo "New hardware config has been saved here: $x" >&2
+        ( set -x; mv -i "$x" "$old" )
+      fi
+    fi
+    exit 0
+    ;;
+  install)
+    post_cmd="$action"
+    action=build
+    ;;
 esac
 
 if [ $needSshToTarget -ne 0 -a -n "$targetHost" ] ; then
-  hosts=(--target-host "$targetHost" --build-host localhost)
+  #hosts=(--target-host "$targetHost" --build-host localhost)
+  hosts=(--target-host "$targetHost")
   hosts+=(--use-substitutes)
   case "$hostname" in
     sonline0)
@@ -141,11 +179,13 @@ fi
 # `nixos-rebuild` doesn't pass through `--log-format bar-with-logs` or `--print-build-logs` but `-L` works.
 # Explicit build-host is required to work around a bug in nixos-rebuild: It would set buildHost=targetHost,
 # build on the local host anyway, omit copying to target.
+# -> That doesn't seem to be true anymore and `--build-host localhost` would use SSH to start the build.
 #NOTE If this fails because we don't have a nix with flake support (Nix 2.3), run it in a shell with nixFlakes
 #     and set _NIXOS_REBUILD_REEXEC=1 so it doesn't force use of its internal version.
-set -x
-nixos-rebuild ${hosts[@]} --flake "$flake#$targetHost" "$action" -L ${overrideInput[@]} "${extraBuildFlags[@]}" "$@"
-set +x
+(
+  set -x
+  nixos-rebuild ${hosts[@]} --flake "$flake#$targetHost" "$action" -L ${overrideInput[@]} "${extraBuildFlags[@]}" "$@"
+)
 
 if [ $generatesResult -gt 0 ] ; then
     if [ -z "$targetHost" ] ; then
@@ -174,6 +214,14 @@ case "$post_cmd" in
       targetHostCmd nix diff-closures /run/current-system "$(readlink -f "$pathToConfig")"
     fi
     ;;
+
+  install)
+    system="$(readlink -f "$pathToConfig")"
+    # https://github.com/NixOS/nix/issues/2138#issuecomment-417493957
+    nix copy --to ssh://root@$targetHost?remote-store=local?root=/mnt/ "$system"
+    targetHostCmd nixos-install --system $system --no-root-passwd --no-channel-copy
+    ;;
+
   *)
     echo "ERROR: unsupported post_cmd: $post_cmd" >&2
     exit 1

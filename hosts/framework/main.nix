@@ -2,6 +2,7 @@
 let
   modules = args.modules or (import ./modules.nix {});
   tinc-a-address = "192.168.83.139";
+  moreSecure = config.environment.moreSecure;
 in
 {
   imports =
@@ -27,7 +28,12 @@ in
       ./bl808-netboot.nix
       ./test-zigbee.nix
       ./hidpi.nix
+      ./moreSecure.nix
+      ./teensy.nix
+      ./wireguard-test.nix
     ];
+
+  environment.moreSecure = false;
 
   networking.hostName = "fw";
 
@@ -41,9 +47,23 @@ in
     "helvetica-neue-lt-std"
   ];
 
+  # Avoid seed being stored in word accessible location. These are the bootctl warnings for this:
+  #   Mount point '/boot' which backs the random seed file is world accessible, which is a security hole!
+  #   Random seed file '/boot/loader/random-seed' is world accessible, which is a security hole!
+  # see https://forum.endeavouros.com/t/bootctl-install-outputs-some-warnings-about-efi-mount-point-and-random-seed-file-in-the-terminal/43991/6
+  fileSystems."/boot".options = [
+    #FIXME This is ignored here (but works for bettina-home). Why?!
+    "fmask=0137,dmask=0027"
+  ];
+
   networking.useNetworkd = true;
 
   networking.useDHCP = false;
+
+  # WIFI is "unmanaged" (NetworkManager) and all other won't necessarily be online.
+  boot.initrd.systemd.network.wait-online.timeout = 1;
+  boot.initrd.systemd.network.wait-online.enable = false;
+  systemd.services.systemd-networkd-wait-online.serviceConfig.ExecStart = lib.mkForce [ "" "${pkgs.coreutils}/bin/true" ];
 
   networking.interfaces."tinc.a".ipv4.addresses = [ {
     address = tinc-a-address;
@@ -53,6 +73,8 @@ in
   services.tinc.networks.a.extraConfig = let name = "a"; in ''
     ConnectTo=orangepi_remoteadmin
   '';
+
+  systemd.network.wait-online.ignoredInterfaces = [ "tinc.a" ];
 
   nix.registry.routeromen.flake = routeromen;
 
@@ -155,6 +177,7 @@ in
     rustup gcc
     gqrx  # gnuradio
     graph-easy  # dot graph to ascii graphic, e.g.: graph-easy /etc/tinc/$name/status/graph.dot
+    rpi-imager
   ];
 
   services.printing.drivers = [
@@ -171,28 +194,37 @@ in
     '';
     target = "fwupd/remotes.d/lvfs-testing.conf";
   };
-  environment.etc."fwupd/uefi_capsule.conf".enable = false;
-  environment.etc."fwupd/uefi_capsule.conf2" = {
-    source = pkgs.runCommand "uefi_capsule.conf" {} ''
-      cat <${config.environment.etc."fwupd/uefi_capsule.conf".source} >$out
-      echo "" >>$out
-      echo '# description says that we should do this:' >>$out
-      echo '# https://fwupd.org/lvfs/devices/work.frame.Laptop.TGL.BIOS.firmware' >>$out
-      echo 'DisableCapsuleUpdateOnDisk=true' >>$out
-    '';
-    target = "fwupd/uefi_capsule.conf";
+#  environment.etc."fwupd/uefi_capsule.conf".enable = false;
+#  environment.etc."fwupd/uefi_capsule.conf2" = {
+#    source = pkgs.runCommand "uefi_capsule.conf" {} ''
+#      cat <${config.environment.etc."fwupd/uefi_capsule.conf".source} >$out
+#      echo "" >>$out
+#      echo '# description says that we should do this:' >>$out
+#      echo '# https://fwupd.org/lvfs/devices/work.frame.Laptop.TGL.BIOS.firmware' >>$out
+#      echo 'DisableCapsuleUpdateOnDisk=true' >>$out
+#    '';
+#    target = "fwupd/uefi_capsule.conf";
+#  };
+  services.fwupd.uefiCapsuleSettings = {
+    # description says that we should do this:
+    # https://fwupd.org/lvfs/devices/work.frame.Laptop.TGL.BIOS.firmware
+    DisableCapsuleUpdateOnDisk = true;
   };
 
   # enabled by nixos-hardware but causes multi-second delays for login manager and swaylock
   services.fprintd.enable = false;
 
-  fonts.fonts = with pkgs; [
+  #fonts.fonts = with pkgs; [
+  fonts.packages = with pkgs; [
     # needed for KiBot with rsvg
     helvetica-neue-lt-std
     libre-franklin
   ];
 
-  services.openssh.enable = lib.mkForce false;
+  services.openssh.enable = lib.mkForce (!moreSecure);
+
+  programs.emacs.defaultEditor = lib.mkForce false;
+  programs.vim.defaultEditor = true;
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions

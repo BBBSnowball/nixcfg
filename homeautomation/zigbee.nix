@@ -45,7 +45,8 @@
       permit_join = false;
 
       frontend.port = 8086;  # default is 8080
-      #FIXME This does *NOT* work. It is used as the auth token! -> disable auth, for now; port is behind firewall anyway
+      # This does *NOT* work. It is used as the auth token! -> disable auth, for now; port is behind firewall anyway
+      # -> It does work, now, but we only enable it for some hosts.
       #frontend.auth_token = "!secret auth_token";
 
       #homeassistant = true;
@@ -54,11 +55,19 @@
       };
     };
     systemd.services.zigbee2mqtt.path = with pkgs; [ utillinux ];
+    systemd.services.zigbee2mqtt.serviceConfig.SetCredential = [ "secret:none" ];  # provide default to make missing file for LoadCredential not fatal
+    systemd.services.zigbee2mqtt.serviceConfig.LoadCredential = [ "secret:${secretForHost}/zigbee2mqtt.yaml" ];
     systemd.services.zigbee2mqtt.preStart = ''
-      if [ -e ${secretForHost}/zigbee2mqtt.yaml ] ; then
+      if [ -e $CREDENTIALS_DIRECTORY/secret ] && [ "$(cat $CREDENTIALS_DIRECTORY/secret)" != "none" ] ; then
+        echo "Using secrets from $CREDENTIALS_DIRECTORY/secret"
+        #install -m 400 -o zigbee2mqtt $CREDENTIALS_DIRECTORY/secret ${config.services.zigbee2mqtt.dataDir}/secret.yaml  # not allowed b/c of system call filters
+        install -m 400 $CREDENTIALS_DIRECTORY/secret ${config.services.zigbee2mqtt.dataDir}/secret.yaml
+      elif [ -e ${secretForHost}/zigbee2mqtt.yaml ] ; then
+        echo "Using secrets from ${secretForHost}/zigbee2mqtt.yaml"
         #ln -s ${secretForHost}/zigbee2mqtt.yaml ${config.services.zigbee2mqtt.dataDir}/secret.yaml
         install -m 400 -o zigbee2mqtt ${secretForHost}/zigbee2mqtt.yaml ${config.services.zigbee2mqtt.dataDir}/secret.yaml
       elif [ ! -e ${config.services.zigbee2mqtt.dataDir}/secret.yaml ] ; then
+        echo "Generating secrets at ${config.services.zigbee2mqtt.dataDir}/secret.yaml"
         umask 077
         (
           echo "user: guest"

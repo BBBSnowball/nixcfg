@@ -13,12 +13,15 @@ let
     '';
   };
 
+  # We could replace this by platformio-core.udev but we currently need a rather new version for ESP32-S3.
   platformioRules = pkgs.stdenv.mkDerivation rec {
     pname = "platformio-udev";
-    version = "6.1.6";
+    #version = "6.1.11";
+    version = "5f8c15b96a0fe4d2f9dd490c34834f0fa17295fa";
     src = pkgs.fetchurl {
-      url = "https://github.com/platformio/platformio-core/raw/v${version}/platformio/assets/system/99-platformio-udev.rules";
-      hash = "sha256-QTXhuF1oko2suHYCPwsRoaFvZ169Nvp9Z3hnqCHWJH4=";
+      #url = "https://github.com/platformio/platformio-core/raw/v${version}/platformio/assets/system/99-platformio-udev.rules";
+      url = "https://raw.githubusercontent.com/platformio/platformio-core/${version}/platformio/assets/system/99-platformio-udev.rules";
+      hash = "sha256-tbFYSqM6jomCETNul17th8Y0Ou5WXXdmLT33lMyj3g4=";
     };
     buildCommand = ''
       mkdir -p $out/etc/udev/rules.d
@@ -31,7 +34,18 @@ in
   users.users.user.packages = with pkgs; [
     vscode  # We need MS C++ Extension for PlatformIO.
     openocd gdb
+
+    # set this in vscode:
+    # "platformio-ide.disablePIOHomeStartup": true
+    # "platformio-ide.useBuiltinPIOCore": false
+    # "platformio-ide.useBuiltinPython": false
+    #FIXME VS Code won't like either of them but it works fine when started from `nix-shell -p platformio-core`. It probably tries to guess some paths based on `which platformio`.
+    platformio-core
+    #platformio # fhsUserEnv with platformio-core --> VS Code refuses to use that
+    #(python3.withPackages (p: [ pkgs.platformio-core ]))
   ];
+
+  #environment.variables.PLATFORMIO_PENV_DIR = "${pkgs.platformio-core}";
  
   services.udev.extraRules = ''
     # ST-Link/V2
