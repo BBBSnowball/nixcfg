@@ -51,7 +51,8 @@
     serviceConfig.Type = "oneshot";
     script = ''
       sleep 10
-      HOME=/root inxi -v3 --tty -c2 --ip -Z >/dev/tty0
+      HOME=/root inxi -v3 --tty -c2 --ip -Z >/dev/tty1
+      HOME=/root inxi -v3 --tty -c2 --ip -Z >/dev/tty2
     '';
   };
 
@@ -76,4 +77,17 @@
       done
     '';
   };
+
+  systemd.services.glances = {
+    after = [ "getty.target" ];
+    wantedBy = [ "multi-user.target" ];
+    path = with pkgs; [ glances ];
+    environment.TERM = "linux";
+    script = ''
+      glances -t 10 >/dev/tty1
+    '';
+  };
+
+  # disable getty on tty1 so it doesn't interfere with our output
+  systemd.services."autovt@tty0".enable = false;
 }
