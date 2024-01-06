@@ -41,7 +41,6 @@ in
 
   networking.useNetworkd = true;
   networking.useDHCP = false;
-  networking.interfaces.enp1s0.useDHCP = true;
 
   # WIFI is "unmanaged" (NetworkManager) and all other won't necessarily be online.
   #FIXME necessary here?
@@ -56,11 +55,24 @@ in
 
   systemd.network.wait-online.ignoredInterfaces = [ "tinc.a" ];
 
+
+  networking.bridges.br0.interfaces = [ "enp1s0" ];
+  networking.interfaces.br0 = {
+    useDHCP = true;
+
+    # default MAC address may be random or one of the virtual interfaces
+    # so we set an explicit one (which is the same as the physical interface)
+    # https://superuser.com/a/1725894
+    # (For some reason, the MAC was different from that even when there was
+    # only one interface.)
+    macAddress = privateForHost.macAddress;
+  };
+
   # add static IP in addition to DHCP
   # (see https://superuser.com/a/1008200)
-  systemd.network.networks."40-enp1s0".addresses = [ {
+  systemd.network.networks."40-br0".addresses = [ {
     addressConfig = {
-      Label = "enp1s0:0";
+      Label = "br0:0";
       Address = "172.18.18.1/28";
     };
   } ];
