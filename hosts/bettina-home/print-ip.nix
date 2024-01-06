@@ -83,9 +83,16 @@
     wantedBy = [ "multi-user.target" ];
     path = with pkgs; [ glances ];
     environment.TERM = "linux";
-    script = ''
-      glances -t 10 >/dev/tty1
-    '';
+    #NOTE We shouldn't provide /dev/null as stdin for glances because that would take 100% CPU.
+    #     We could create a named pipe but now that we run it with dropped priviledges, we can just allow user input
+    #     and this is more convenient for the user anyway.
+    serviceConfig = {
+      DynamicUser = true;
+      StandardInput = "tty-force";
+      StandardOutput = "tty";
+      TTYPath = "/dev/tty1";
+      ExecStart = "${pkgs.glances}/bin/glances -t 10";
+    };
   };
 
   # disable getty on tty1 so it doesn't interfere with our output
