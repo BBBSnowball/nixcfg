@@ -27,5 +27,14 @@ wget https://github.com/home-assistant/operating-system/releases/download/11.3/h
 xz -d haos_ova-11.3.qcow2.xz
 
 virt-manager
-import with type linux2022
+import with:
+- type linux2022
+- network bridge br0
+- all CPUs
+- 4 GB of RAM
+- important: change BIOS to UEFI (cannot be done later, it seems)
+
+...
+
+https://hacs.xyz/docs/setup/download
 

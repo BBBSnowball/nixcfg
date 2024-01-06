@@ -45,7 +45,8 @@
       permit_join = false;
 
       frontend.port = 8086;  # default is 8080
-      #FIXME This does *NOT* work. It is used as the auth token! -> disable auth, for now; port is behind firewall anyway
+      # This does *NOT* work. It is used as the auth token! -> disable auth, for now; port is behind firewall anyway
+      # -> It does work, now, but we only enable it for some hosts.
       #frontend.auth_token = "!secret auth_token";
 
       #homeassistant = true;
