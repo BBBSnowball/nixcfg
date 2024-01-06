@@ -16,8 +16,9 @@ in
       ./disko.nix
       ./users.nix
       ./virtmanager.nix
-      #./test-zigbee.nix
       ./print-ip.nix
+      nixos-hardware.nixosModules.common-cpu-intel
+      ./homeautomation.nix
     ];
 
   networking.hostName = "bettina-home";
@@ -44,9 +45,9 @@ in
 
   # WIFI is "unmanaged" (NetworkManager) and all other won't necessarily be online.
   #FIXME necessary here?
-  boot.initrd.systemd.network.wait-online.timeout = 1;
-  boot.initrd.systemd.network.wait-online.enable = false;
-  systemd.services.systemd-networkd-wait-online.serviceConfig.ExecStart = lib.mkForce [ "" "${pkgs.coreutils}/bin/true" ];
+  #boot.initrd.systemd.network.wait-online.timeout = 1;
+  #boot.initrd.systemd.network.wait-online.enable = false;
+  #systemd.services.systemd-networkd-wait-online.serviceConfig.ExecStart = lib.mkForce [ "" "${pkgs.coreutils}/bin/true" ];
 
   networking.interfaces."tinc.a".ipv4.addresses = [ {
     address = tinc-a-address;
