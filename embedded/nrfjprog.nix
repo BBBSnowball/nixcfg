@@ -37,7 +37,6 @@ stdenv.mkDerivation {
   # postFixup doesn't work here because it runs before autoPatchelfHook.
   preDistPhases = [ "fixup2" ];
   fixup2 = ''
-    echo abc
     patchelf --set-interpreter "$(cat $NIX_CC/nix-support/dynamic-linker)" --set-rpath $out/bin:$out/lib $out/bin/nrfjprog
     for x in $out/bin/libjlinkarm* ; do
       patchelf --set-rpath $out/bin:$out/lib:$(patchelf --print-rpath "$x") "$x"
