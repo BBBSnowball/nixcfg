@@ -18,3 +18,14 @@ scp /etc/nixos/secret/by-host/framework/rootpw root@$name:/mnt/etc/nixos/secret/
 # build system, copy to target and run nixos-install
 /etc/nixos/nixos-rebuild.sh $name install
 
+
+...
+
+cd /var/lib/libvirt/images
+# https://github.com/home-assistant/operating-system/releases/
+wget https://github.com/home-assistant/operating-system/releases/download/11.3/haos_ova-11.3.qcow2.xz
+xz -d haos_ova-11.3.qcow2.xz
+
+virt-manager
+import with type linux2022
+

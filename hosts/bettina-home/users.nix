@@ -7,6 +7,7 @@ let
     openssh.authorizedKeys.keyFiles = [
       "${privateForHost}/ssh-laptop.pub"
       "${privateForHost}/ssh-fw.pub"
+      "${privateForHost}/ssh-fw-user.pub"
     ];
   };
   rootUser = basicUser;

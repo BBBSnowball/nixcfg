@@ -56,6 +56,15 @@ in
 
   systemd.network.wait-online.ignoredInterfaces = [ "tinc.a" ];
 
+  # add static IP in addition to DHCP
+  # (see https://superuser.com/a/1008200)
+  systemd.network.networks."40-enp1s0".addresses = [ {
+    addressConfig = {
+      Label = "enp1s0:0";
+      Address = "172.18.18.1/28";
+    };
+  } ];
+
   nix.registry.routeromen.flake = routeromen;
 
   # desktop stuff
