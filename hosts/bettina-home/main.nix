@@ -11,6 +11,7 @@ in
       tinc-client-a
       ssh-github
       allowUnfree
+      omada-controller
     ] ++
     [ ./hardware-configuration.nix
       ./disko.nix
@@ -19,6 +20,7 @@ in
       ./print-ip.nix
       nixos-hardware.nixosModules.common-cpu-intel
       ./homeautomation.nix
+      ./mongodb-for-omada.nix
     ];
 
   networking.hostName = "bettina-home";
