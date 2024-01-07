@@ -77,6 +77,11 @@ in
       Label = "br0:0";
       Address = "172.18.18.1/28";
     };
+  } {
+    addressConfig = {
+      Label = "br0:1";
+      Address = "192.168.2.11/24";
+    };
   } ];
 
   nix.registry.routeromen.flake = routeromen;
