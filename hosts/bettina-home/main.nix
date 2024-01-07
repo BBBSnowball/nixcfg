@@ -21,6 +21,7 @@ in
       nixos-hardware.nixosModules.common-cpu-intel
       ./homeautomation.nix
       ./mongodb-for-omada.nix
+      ./web.nix
     ];
 
   networking.hostName = "bettina-home";

@@ -1,0 +1,25 @@
+<!doctype html>
+<meta charset="UTF-8" />
+<link rel="shortcut icon" type="image/png" href="ha-nixos.png">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Home Assistant - Übersicht</title>
+<script>
+  console.log("c");
+  window.addEventListener("load", function () {
+    console.log("a");
+    document.querySelectorAll("a[x-href]").forEach(function (x) {
+      console.log("b");
+      x.setAttribute("href", x.getAttribute("x-href").replace("{host}", document.location.hostname));
+    });
+  }, false);
+</script>
+
+<ul>
+  <!-- <li><a x-href="https://{host}:8043">abc</a></li> -->
+  <li><a x-href="http://{host}:8088/">Omada Controller (WLAN)</a></li>
+  <li><a x-href="http://{host}:8086/">Zigbee2MQTT (Zigbee Geräte)</a></li>
+  <li><a x-href="http://{host}:8123/">Home Assistant</a></li>
+  <li><a href="http://192.168.2.1/">Router (Speedport)</a></li>
+  <li><a href="http://172.18.18.4/">Switch (dem Laptop die 172.18.18.5/28 geben, damit das funktioniert)</a></li>
+</ul>
+
