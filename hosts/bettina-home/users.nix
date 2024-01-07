@@ -27,5 +27,7 @@ in
   users.users.user = guiUser // {
     extraGroups = [ "dialout" "plugdev" "wheel" "wireshark" ];
   };
+
+  users.mutableUsers = false;
 }
 
