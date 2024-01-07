@@ -3,23 +3,58 @@
 <link rel="shortcut icon" type="image/png" href="ha-nixos.png">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Home Assistant - Übersicht</title>
+
+<style>
+body {
+  font-size-adjust: +1;
+  font-family: sans;
+}
+li {
+  margin-bottom: 1.5ex;
+  list-style-type: none;
+}
+img, .noimg {
+  height: 0.7lh;
+  margin-right: 1ex;
+}
+.noimg {
+  display: inline-block;
+  width: 0.7lh;
+}
+</style>
+
 <script>
-  console.log("c");
   window.addEventListener("load", function () {
-    console.log("a");
     document.querySelectorAll("a[x-href]").forEach(function (x) {
-      console.log("b");
       x.setAttribute("href", x.getAttribute("x-href").replace("{host}", document.location.hostname));
+    });
+    document.querySelectorAll("img[x-src]").forEach(function (x) {
+      x.setAttribute("src", x.getAttribute("x-src").replace("{host}", document.location.hostname));
     });
   }, false);
 </script>
 
 <ul>
   <!-- <li><a x-href="https://{host}:8043">abc</a></li> -->
-  <li><a x-href="http://{host}:8088/">Omada Controller (WLAN)</a></li>
-  <li><a x-href="http://{host}:8086/">Zigbee2MQTT (Zigbee Geräte)</a></li>
-  <li><a x-href="http://{host}:8123/">Home Assistant</a></li>
-  <li><a href="http://192.168.2.1/">Router (Speedport)</a></li>
-  <li><a href="http://172.18.18.4/">Switch (dem Laptop die 172.18.18.5/28 geben, damit das funktioniert)</a></li>
+  <li>
+    <img x-src="http://{host}:8088/favicon.ico"/>
+    <a  x-href="http://{host}:8088/">Omada Controller (WLAN)</a>
+  </li>
+  <li>
+    <img x-src="http://{host}:8086/assets/favicon.a8299d0b.ico"/>
+    <a  x-href="http://{host}:8086/">Zigbee2MQTT (Zigbee Geräte)</a>
+  </li>
+  <li>
+    <img x-src="http://{host}:8123/static/icons/favicon.ico"/>
+    <a  x-href="http://{host}:8123/">Home Assistant</a>
+  </li>
+  <li>
+    <span class="noimg">&nbsp;</span>
+    <a href="http://192.168.2.1/">Router (Speedport)</a>
+  </li>
+  <li>
+    <span class="noimg">&nbsp;</span>
+    <a href="http://172.18.18.4/">Switch (dem Laptop die 172.18.18.5/28 geben, damit das funktioniert)</a>
+  </li>
 </ul>
 
