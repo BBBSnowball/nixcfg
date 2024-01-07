@@ -26,6 +26,8 @@
           )"
           logger "print-ip: IP: $ADDR on $IFACE"
           logger "print-ip: $msg"
+          # use crlf line endings because terminal will be in raw mode if we successfully started an ncurses system monitor
+          msg="''${msg//$'\n'/$'\r\n'}"
           for tty in /dev/tty{0,1,2,3} ; do
             echo "$msg" >$tty
           done
@@ -40,7 +42,7 @@
     wantedBy = [ "network-pre.target" ];
     path = with pkgs; [ iproute2 util-linux ];
     script = ''
-      ip -4 monitor address >/dev/tty0
+      ip -4 monitor address | sed 's/$/\r/' >/dev/tty1
     '';
   };
 
@@ -51,7 +53,7 @@
     serviceConfig.Type = "oneshot";
     script = ''
       sleep 10
-      HOME=/root inxi -v3 --tty -c2 --ip -Z >/dev/tty1
+      HOME=/root inxi -v3 --tty -c2 --ip -Z | sed 's/$/\r/' >/dev/tty1
       HOME=/root inxi -v3 --tty -c2 --ip -Z >/dev/tty2
     '';
   };
@@ -72,6 +74,8 @@
       )"
       logger "print-ip: $msg"
       sleep 5
+      # use crlf line endings because terminal will be in raw mode if we successfully started an ncurses system monitor
+      msg="''${msg//$'\n'/$'\r\n'}"
       for tty in /dev/tty{0,1,2,3} ; do
         echo "$msg" >$tty
       done
