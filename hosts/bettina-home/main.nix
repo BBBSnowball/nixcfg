@@ -84,6 +84,16 @@ in
     };
   } ];
 
+  # We want to use IP 172.18.18.1 from HomeAssistant but we cannot tell HAOS
+  # about the route. Therefore, we resort to some trickery: The packet will
+  # be sent to the gateway but we can intercept it on the bridge and fixup
+  # the target MAC address. The return packet will be fine because our host
+  # does know about the route.
+  networking.firewall.extraCommands = ''
+    ebtables -t nat -D PREROUTING -p ipv4 --ip-destination 172.18.18.1 -j dnat --dnat-target ACCEPT --to-destination '${privateForHost.macAddress}' &>/dev/null || true
+    ebtables -t nat -I PREROUTING -p ipv4 --ip-destination 172.18.18.1 -j dnat --dnat-target ACCEPT --to-destination '${privateForHost.macAddress}'
+  '';
+
   nix.registry.routeromen.flake = routeromen;
 
   # desktop stuff
