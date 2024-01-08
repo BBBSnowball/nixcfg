@@ -1,7 +1,7 @@
 {
   description = "Config for my NixOS hosts";
 
-  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-23.05";
+  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-23.11";
   inputs.nixpkgs-unstable.url = "github:NixOS/nixpkgs";
 
   #inputs.flake-compat.url = "github:edolstra/flake-compat";

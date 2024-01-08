@@ -68,9 +68,9 @@ in {
   #  "192.168.89.3"
   #];
 
-  services.hostapd = {
-#   enable = true;
-    interface = "wlp0s20f0u4";
+  #services.hostapd.enable = true;
+  services.hostapd.radios.wlp0s20f0u4.networks.x = {
+    interface = "kl";
     ssid = "FRITZ!Box 7595";
     channel = 7;
     extraConfig = ''
