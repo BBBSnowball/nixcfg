@@ -32,7 +32,13 @@ in {
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
-  boot.loader.efi.efiSysMountPoint = "/boot/efi";
+  #boot.loader.efi.efiSysMountPoint = "/boot/efi";
+  #boot.loader.efi.efiSysMountPoint = "/boot";
+  boot.loader.systemd-boot.editor = false;
+  #FIXME It would be good to have something like boot.loader.grub.mirroredBoots but systemd-boot doesn't seem to support that.
+  #  see https://github.com/systemd/systemd/issues/19668
+  #  RAID is not an option either, see https://0pointer.net/blog/linux-boot-partitions.html, "Addendum: You got RAID?"
+  #  -> Do rsync in boot.loader.systemd-boot.extraInstallCommands ..?
 
   # The bios sucks. It hangs in the POST screen after reboot. This might help:
   # https://serverfault.com/questions/126571/system-hangs-while-rebooting-on-debian/392886#392886

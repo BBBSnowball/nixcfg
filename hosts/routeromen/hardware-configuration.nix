@@ -23,8 +23,13 @@
       fsType = "zfs";
     };
 
-  fileSystems."/boot/efi" =
+  fileSystems."/boot" =
     { device = "/dev/disk/by-uuid/18ED-2524";
+      fsType = "vfat";
+    };
+
+  fileSystems."/boot-fallback" =
+    { device = "/dev/disk/by-uuid/03A8-B80A";
       fsType = "vfat";
     };
 
