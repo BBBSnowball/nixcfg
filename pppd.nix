@@ -19,7 +19,6 @@ let
   '';
 in
 {
-  systemd.network.networks.enp4s0.vlan = [ 7 8 ];
   networking.vlans.upstream-7 = {
     id = 7;
     interface = "enp4s0";
@@ -102,4 +101,13 @@ in
   #};
 
   systemd.services.pppd-upstream.serviceConfig.ReadWritePaths = [ "/etc/ppp" ];
+  #FIXME use networkd to do this
+  systemd.services.pppd-upstream.serviceConfig.ExecStartPre = ''+${pkgs.iproute2}/bin/ip l set upstream-7 up'';
+
+  # avoid "degraded" status in networkctl
+  # https://github.com/systemd/systemd/issues/575#issuecomment-163810166
+  systemd.network.networks."40-enp4s0".networkConfig.LinkLocalAddressing = "no";
+  # doesn't work for those because they are "unmanaged"
+  systemd.network.networks."upstream-7".networkConfig.LinkLocalAddressing = "no";
+  systemd.network.networks."upstream-8".networkConfig.LinkLocalAddressing = "no";
 }

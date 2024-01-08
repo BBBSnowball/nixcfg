@@ -49,14 +49,9 @@ in {
   networking.hostId = import "${privateForHost}/hostId.nix";
   networking.wireless.enable = false;
 
-  # The global useDHCP flag is deprecated, therefore explicitly set to false here.
-  # Per-interface useDHCP will be mandatory in the future, so this generated config
-  # replicates the default behaviour.
+  networking.useNetworkd = true;
   networking.useDHCP = false;
   #networking.interfaces.enp4s0.useDHCP = true;
-
-  #FIXME config for enp4s0
-
   #networking.interfaces.br0.useDHCP = true;
   #networking.dhcpcd.persistent = true;
   networking.interfaces.br0.macAddress = "a0:36:9f:35:33:70";
@@ -73,6 +68,8 @@ in {
   #networking.nameservers = [
   #  "192.168.89.3"
   #];
+  systemd.network.wait-online.extraArgs = [ "--interface=br0" ];
+  #FIXME make another wait-online service/target for pppoe-wan ?
 
   #services.hostapd.enable = true;
   services.hostapd.radios.wlp0s20f0u4.networks.x = {
