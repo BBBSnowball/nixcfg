@@ -52,6 +52,13 @@ in
       #nodefaultroute
       defaultroute
       defaultroute6
+      # We sometimes get a default route with a 169.254.0.0/16 network on some interfaces
+      # for whatever reason (t.b.d.). pppd should replace that route rather than skipping
+      # its own route.
+      # (That was with metric 1001002 and the firewall was dropping outgoing packets so this
+      #  will work sort-of ok as long as it doens't keep pppd from adding its own route.)
+      replacedefaultroute
+      defaultroute-metric 1
       usepeerdns
       maxfail 1
       ip-up-script ${ipUpScript}
