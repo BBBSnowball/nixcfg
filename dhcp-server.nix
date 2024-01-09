@@ -88,4 +88,8 @@ in
   };
 
   systemd.services.dnsmasq.serviceConfig.StateDirectory = "dnsmasq";
+  # resolved listens only on certain IPs but it conflicts with dnsmasq's ports
+  # It does work if we start dnsmasq first.
+  #FIXME This is not enough. We have to stop resolved when we restart dnsmasq!
+  systemd.services.dnsmasq.before = [ "systemd-resolved.service" ];
 }
