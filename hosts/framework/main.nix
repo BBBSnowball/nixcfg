@@ -78,7 +78,14 @@ in
 
   nix.registry.routeromen.flake = routeromen;
 
-  boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
+  boot.binfmt.emulatedSystems = [
+    "aarch64-linux"
+    "armv7l-linux"
+    #"riscv32-linux"  # would build qemu. yuck.
+    #"riscv64-linux"
+    "wasm32-wasi"
+    "wasm64-wasi"
+  ];
 
   # desktop stuff
   #services.xserver.displayManager.lightdm.enable = true;
