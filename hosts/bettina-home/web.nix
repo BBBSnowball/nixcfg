@@ -1,9 +1,7 @@
 { pkgs, privateForHost, secretForHost, ... }:
 let
   inherit (privateForHost) domain;
-  #FIXME remove the "4" (as soon as TTLs have passed)
-  domain1 = "bettina-home4.${domain}";
-  domain2 = "bettina-home4-local.${domain}";
+  domain1 = "bettina-home.${domain}";
 in
 {
   services.nginx = {
@@ -23,8 +21,8 @@ in
     virtualHosts."${domain1}" = {
       root = ./html;
       useACMEHost = domain1;
-      addSSL = true;
-      #forceSSL = true;
+      #addSSL = true;   # provide HTTPS and let the user choose
+      forceSSL = true;  # redirect to HTTPS if user tries to use HTTP
 
       locations."/index.html".extraConfig = ''
         # only cache for a short time and only in memory
@@ -67,7 +65,7 @@ in
       export SHELL=${pkgs.bash}/bin/bash
       cd $CREDENTIALS_DIRECTORY
       exec ${pkgs.openssh}/bin/ssh -F $PWD/ssh_config -o BatchMode=yes target -- "$@"
-      # &>/var/lib/acme/bettina-home.bkoch.info/debug.log
+      # &>/var/lib/acme/bettina-home.${domain}/debug.log
     '';
     environmentFile = pkgs.writeText "acme-bettina-home.env" ''
       EXEC_MODE=
@@ -82,9 +80,7 @@ in
     email = privateForHost.acmeEmail;
     dnsProvider = "exec";
     extraDomainNames = [
-      domain2
       "*.${domain1}"
-      "*.${domain2}"
     ];
     inherit environmentFile;
     dnsResolver = "1.1.1.1:53";
