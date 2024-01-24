@@ -16,6 +16,7 @@ in
     [ ./disko.nix
       ./hardware-configuration.nix
       ./homeautomation.nix
+      ./mail.nix
       ./mongodb-for-omada.nix
       nixos-hardware.nixosModules.common-cpu-intel
       ./print-ip.nix
