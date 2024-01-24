@@ -19,7 +19,11 @@ in
       #logfile        ~/.msmtp.log
       syslog         on
       set_from_header on
-      allow_from_override off
+      # This causes error "envelope-from address is missing" although it should
+      # use the value of the `from` setting - at least that's how I understand
+      # the documentation. Anyway, the server will check it so we don't have
+      # to be too strict here.
+      #allow_from_override off
 
       # Gmail
       account        mail

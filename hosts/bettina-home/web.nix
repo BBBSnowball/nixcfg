@@ -2,6 +2,16 @@
 let
   inherit (privateForHost) domain;
   domain1 = "bettina-home.${domain}";
+
+  simpleProxyPass = target: {
+    useACMEHost = domain1;
+    #addSSL = true;
+    forceSSL = true;
+    locations."/" = {
+      proxyPass = target;
+      proxyWebsockets = true;
+    };
+  };
 in
 {
   services.nginx = {
@@ -32,27 +42,10 @@ in
         add_header Cache-Control "no-cache";
       '';
     };
-    virtualHosts."wlan.${domain1}" = {
-      useACMEHost = domain1;
-      addSSL = true;
-      locations."/".proxyPass = "http://localhost:8088/";
-    };
-    virtualHosts."zigbee.${domain1}" = {
-      useACMEHost = domain1;
-      addSSL = true;
-      locations."/" = {
-        proxyPass = "http://localhost:8086/";
-        proxyWebsockets = true;
-      };
-    };
-    virtualHosts."ha.${domain1}" = {
-      useACMEHost = domain1;
-      addSSL = true;
-      locations."/" = {
-        proxyPass = "http://localhost:8123/";
-        proxyWebsockets = true;
-      };
-    };
+    virtualHosts."wlan.${domain1}" = simpleProxyPass "http://localhost:8088/";
+    virtualHosts."zigbee.${domain1}" = simpleProxyPass "http://localhost:8086/";
+    virtualHosts."ha.${domain1}" = simpleProxyPass "http://localhost:8123/";
+    virtualHosts."passwords.${domain1}" = simpleProxyPass "http://localhost:8000/";
   };
 
   networking.firewall.allowedTCPPorts = [ 80 443 ];

@@ -21,6 +21,7 @@ in
       nixos-hardware.nixosModules.common-cpu-intel
       ./print-ip.nix
       ./users.nix
+      ./vaultwarden.nix
       ./virtmanager.nix
       ./web.nix
     ];
@@ -125,6 +126,7 @@ in
     virt-manager
     tcpdump
     lshw
+    pwgen
   ];
 
   services.fwupd.enable = true;
