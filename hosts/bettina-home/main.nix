@@ -13,14 +13,14 @@ in
       allowUnfree
       omada-controller
     ] ++
-    [ ./hardware-configuration.nix
-      ./disko.nix
-      ./users.nix
-      ./virtmanager.nix
-      ./print-ip.nix
-      nixos-hardware.nixosModules.common-cpu-intel
+    [ ./disko.nix
+      ./hardware-configuration.nix
       ./homeautomation.nix
       ./mongodb-for-omada.nix
+      nixos-hardware.nixosModules.common-cpu-intel
+      ./print-ip.nix
+      ./users.nix
+      ./virtmanager.nix
       ./web.nix
     ];
 
