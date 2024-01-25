@@ -1,0 +1,16 @@
+body {
+  font-size-adjust: +1;
+  font-family: sans;
+}
+li {
+  margin-bottom: 1.5ex;
+  list-style-type: none;
+}
+img, .noimg {
+  height: 0.7lh;
+  margin-right: 1ex;
+}
+.noimg {
+  display: inline-block;
+  width: 0.7lh;
+}
