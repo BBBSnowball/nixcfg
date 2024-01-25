@@ -46,6 +46,7 @@ in
     virtualHosts."zigbee.${domain1}" = simpleProxyPass "http://localhost:8086/";
     virtualHosts."ha.${domain1}" = simpleProxyPass "http://localhost:8123/";
     virtualHosts."passwords.${domain1}" = simpleProxyPass "http://localhost:8000/";
+    virtualHosts."speedport.${domain1}" = simpleProxyPass "http://192.168.2.1:80/";
   };
 
   networking.firewall.allowedTCPPorts = [ 80 443 ];
@@ -74,6 +75,8 @@ in
     dnsProvider = "exec";
     extraDomainNames = [
       "*.${domain1}"
+      "*.vpn.${domain1}"
+      "*.lokal.${domain1}"
     ];
     inherit environmentFile;
     dnsResolver = "1.1.1.1:53";
