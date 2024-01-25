@@ -1,52 +1,69 @@
-{ pkgs, privateForHost, secretForHost, ... }:
+{ lib, pkgs, privateForHost, secretForHost, ... }:
 let
   inherit (privateForHost) domain;
   domain1 = "bettina-home.${domain}";
 
-  simpleProxyPass = target: {
-    useACMEHost = domain1;
-    #addSSL = true;
-    forceSSL = true;
-    locations."/" = {
-      proxyPass = target;
-      proxyWebsockets = true;
-    };
+  baseDomains = [
+    domain1
+    "vpn.${domain1}"
+    "lokal.${domain1}"
+  ];
+
+  webServices = {
+    wlan      = { target = "http://localhost:8088/"; };
+    zigbee    = { target = "http://localhost:8086/"; };
+    ha        = { target = "http://localhost:8123/"; };
+    passwords = { target = "http://localhost:8000/"; };
+    speedport = { target = "http://192.168.2.1:80/"; defaultUri = "6.0/gui/"; };
+    switch    = { target = "http://172.18.18.4/"; };
   };
+
+  sslSettings = {
+    useACMEHost = domain1;
+    #addSSL = true;   # provide HTTPS and let the user choose
+    forceSSL = true;  # redirect to HTTPS if user tries to use HTTP
+  };
+
+  defaultVHost = {
+    root = ./html;
+
+    locations."/index.html".extraConfig = ''
+      # only cache for a short time and only in memory
+      # so we don't need manual updates and we notice
+      # when network is down
+      expires 60s;
+      add_header Cache-Control "no-cache";
+    '';
+  };
+
+  mapListToAttrs = f: xs: lib.listToAttrs (map f xs);
 in
 {
   services.nginx = {
     enable = true;
-    virtualHosts."default" = {
-      #root = "/var/www/default";
-      root = ./html;
-
-      locations."/index.html".extraConfig = ''
-        # only cache for a short time and only in memory
-        # so we don't need manual updates and we notice
-        # when network is down
-        expires 60s;
-        add_header Cache-Control "no-cache";
-      '';
-    };
-    virtualHosts."${domain1}" = {
-      root = ./html;
-      useACMEHost = domain1;
-      #addSSL = true;   # provide HTTPS and let the user choose
-      forceSSL = true;  # redirect to HTTPS if user tries to use HTTP
-
-      locations."/index.html".extraConfig = ''
-        # only cache for a short time and only in memory
-        # so we don't need manual updates and we notice
-        # when network is down
-        expires 60s;
-        add_header Cache-Control "no-cache";
-      '';
-    };
-    virtualHosts."wlan.${domain1}" = simpleProxyPass "http://localhost:8088/";
-    virtualHosts."zigbee.${domain1}" = simpleProxyPass "http://localhost:8086/";
-    virtualHosts."ha.${domain1}" = simpleProxyPass "http://localhost:8123/";
-    virtualHosts."passwords.${domain1}" = simpleProxyPass "http://localhost:8000/";
-    virtualHosts."speedport.${domain1}" = simpleProxyPass "http://192.168.2.1:80/";
+    virtualHosts = {
+      # Client is using our IP address or some unknown host name.
+      "default" = defaultVHost;
+    }
+    # add index page for each base domain
+    // lib.flip mapListToAttrs baseDomains (name: {
+      inherit name;
+      value = defaultVHost // sslSettings;
+    })
+    # add proxy pass for each service on each base domain
+    // lib.flip mapListToAttrs
+    (lib.cartesianProductOfSets { baseDomain = baseDomains; service = lib.attrNames webServices; })
+    ({ baseDomain, service }:
+    let target = webServices.${service}.target; in
+    {
+      name = "${service}.${baseDomain}";
+      value = sslSettings // {
+        locations."/" = {
+          proxyPass = target;
+          proxyWebsockets = true;
+        };
+      };
+    });
   };
 
   networking.firewall.allowedTCPPorts = [ 80 443 ];
