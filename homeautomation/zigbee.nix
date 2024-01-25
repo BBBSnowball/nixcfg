@@ -29,6 +29,8 @@
     systemd.services.zigbee2mqtt.after   = [ "sys-devices-ttyZigbee.device" ];
     # don't start it by default because it would wait for the device
     systemd.services.zigbee2mqtt.wantedBy = lib.mkForce [ ];
+    # don't bother to start it if the mqtt server has failed for some reason
+    systemd.services.zigbee2mqtt.requires = [ "mosquitto.service" ];
 
     services.zigbee2mqtt.package = nixpkgs-unstable.legacyPackages.x86_64-linux.zigbee2mqtt;
     services.zigbee2mqtt.enable = true;
