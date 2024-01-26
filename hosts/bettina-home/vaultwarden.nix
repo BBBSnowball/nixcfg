@@ -2,7 +2,7 @@
 {
   services.vaultwarden = {
     enable = true;
-    backupDir = "/var/backup/vaultwarden";
+    #backupDir = "/var/backup/vaultwarden";  # -> handled by "real" backup, see backup.nix
     config = {
       EMAIL_CHANGE_ALLOWED = false;
       SIGNUPS_ALLOWED = false;
