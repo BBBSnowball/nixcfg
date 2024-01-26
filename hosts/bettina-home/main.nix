@@ -13,7 +13,8 @@ in
       allowUnfree
       omada-controller
     ] ++
-    [ ./disko.nix
+    [ ./backup.nix
+      ./disko.nix
       ./hardware-configuration.nix
       ./homeautomation.nix
       ./mail.nix
