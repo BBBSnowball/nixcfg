@@ -57,7 +57,6 @@
       before_backup = let
         backupSqlite = pkgs.writeShellScript "backup-sqlite" ''
           set -e
-          ls -l /proc/self/fd >&2
           umask 077
           t=$(mktemp -d)
           ( cd "$t" && set -x && ${pkgs.sqlite}/bin/sqlite3 "$1" ".backup db.sqlite3" )
@@ -107,7 +106,7 @@
         #   (And we would have a hard time handling the necessary subprocesses between
         #    our shell hooks, which we could solve by making this a proper borgmatic hook.)
         ( set -x
-          /run/wrappers/bin/su vaultwarden -s ${pkgs.bash}/bin/bash -c '${backupSqlite} /var/lib/bitwarden_rs/db.sqlite3' 3>$d/vaultwarden.sqlite3
+          ${pkgs.su}/bin/su vaultwarden -s ${pkgs.bash}/bin/bash -c '${backupSqlite} /var/lib/bitwarden_rs/db.sqlite3' 3>$d/vaultwarden.sqlite3
         )
 
         # The journal is rather large and it is a database (i.e. naive backup might be
@@ -122,28 +121,8 @@
 
   systemd.services.borgmatic.path = [ pkgs.openssh ];
   systemd.services.borgmatic.serviceConfig = {
-    #LockPersonality         = lib.mkForce false;
-    #MemoryDenyWriteExecute  = lib.mkForce false;
-    #NoNewPrivileges         = lib.mkForce false;
-    #PrivateDevices          = lib.mkForce false;
-    #PrivateTmp              = lib.mkForce false;
-    #ProtectClock            = lib.mkForce false;
-    #ProtectControlGroups    = lib.mkForce false;
-    #ProtectHostname         = lib.mkForce false;
-    #ProtectKernelLogs       = lib.mkForce false;
-    #ProtectKernelModules    = lib.mkForce false;
-    #ProtectKernelTunables   = lib.mkForce false;
-
-    #RestrictAddressFamilies = lib.mkForce "";
-    #RestrictNamespaces      = lib.mkForce false;
-    #RestrictRealtime        = lib.mkForce false;
-    #RestrictSUIDSGID        = lib.mkForce false;
-    #SystemCallArchitectures = lib.mkForce "";
-    #SystemCallFilter        = lib.mkForce "";
-    #SystemCallErrorNumber   = lib.mkForce "";
-    #ProtectSystem           = lib.mkForce false;
-    #CapabilityBoundingSet   = lib.mkForce "~";
-    CapabilityBoundingSet   = lib.mkForce "cap_setgid cap_setuid CAP_DAC_READ_SEARCH CAP_NET_RAW";
+    # allow setgid and setuid because we want to change to the right user when backing up databases
+    CapabilityBoundingSet   = lib.mkForce "CAP_SETGID CAP_SETUID CAP_DAC_READ_SEARCH CAP_NET_RAW";
   };
 
   # We should usually use the borgmatic tool but having borg could be useful,
