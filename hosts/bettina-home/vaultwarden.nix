@@ -21,8 +21,4 @@
     #   (see https://github.com/dani-garcia/vaultwarden/wiki/Enabling-admin-page#using-argon2)
     environmentFile = "${secretForHost}/vaultwarden.env";
   };
-
-  # create backup directory
-  systemd.services.backup-vaultwarden.serviceConfig.ExecStartPre = "+${pkgs.coreutils}/bin/install "
-    + "-d -m 0700 -o ${config.users.users.vaultwarden.name} ${config.services.vaultwarden.backupDir}";
 }
