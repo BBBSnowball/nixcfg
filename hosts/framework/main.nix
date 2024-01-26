@@ -185,6 +185,7 @@ in
     gqrx  # gnuradio
     graph-easy  # dot graph to ascii graphic, e.g.: graph-easy /etc/tinc/$name/status/graph.dot
     rpi-imager
+    pwgen
   ];
 
   services.printing.drivers = [
