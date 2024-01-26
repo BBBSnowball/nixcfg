@@ -1,4 +1,4 @@
-{ pkgs, privateForHost, ... }:
+{ lib, pkgs, privateForHost, ... }:
 #NOTE Repository has to be created with `borgmatic init --encryption repokey` after this config is applied.
 #     Then, maybe test with `borgmatic create --verbosity 1 --list --stats`.
 {
@@ -54,7 +54,17 @@
       #  { name = "vaultwarden"; path = "/var/lib/bitwarden_rs/db.sqlite3"; }
       #];
 
-      before_backup = [ (pkgs.writeShellScript "before-backup" ''
+      before_backup = let
+        backupSqlite = pkgs.writeShellScript "backup-sqlite" ''
+          set -e
+          ls -l /proc/self/fd >&2
+          umask 077
+          t=$(mktemp -d)
+          ( cd "$t" && set -x && ${pkgs.sqlite}/bin/sqlite3 "$1" ".backup db.sqlite3" )
+          cat <"$t/db.sqlite3" >&3
+          rm -rf "$t"
+        '';
+      in [ (pkgs.writeShellScript "before-backup" ''
         set -eo pipefail
 
         # borgmatic_source_directory is ~/.borgmatic so we also store our files there.
@@ -62,10 +72,6 @@
         rm -rf $d
         umask 077
         mkdir -p $d
-
-        # The journal is rather large and it is a database (i.e. naive backup might be
-        # inconsistent) so we rather save its last lines as a text file.
-        ( set -x; journalctl --since -2d -n 20000 >$d/journal.txt )
 
         # HomeAssistant is supposed to be able to backup itself but none of the
         # existing borgbackup addons were working for us. This is looking quite
@@ -90,34 +96,54 @@
             && ssh ha-ssh rm "/backup/$slug.tar" )
         fi
 
-        # The "clever" way: Go into target dir before dropping privileges.
-        # -> This doesn't work because SQLite tries to walk there from the root (but it does work for simple things like `touch`).
-        #install -d -o vaultwarden -m 0700 $d/vaultwarden
-        #( cd $d/vaultwarden
-        #  set -x
-        #  su vaultwarden -s /bin/sh -c '${pkgs.sqlite}/bin/sqlite3 /var/lib/bitwarden_rs/db.sqlite3 ".backup db.sqlite3"'
-        #)
-
-        # The usual way: Store in temporary location and then move it.
-        t=$(mktemp -d)
-        chown vaultwarden $t
-        ( cd $t
-          set -x
-          su vaultwarden -s /bin/sh -c '${pkgs.sqlite}/bin/sqlite3 /var/lib/bitwarden_rs/db.sqlite3 ".backup vaultwarden.sqlite3"'
+        # Backup SQLite database
+        # This is different from what borgmatic would do on its own:
+        # - It uses the correct user to access the database so locking and journal
+        #   should work as expected and we don't have any attack surface for privilege
+        #   escalation via the database.
+        # - It uses a temporary file rather than a named pipe, which is less elegant
+        #   (needs temp space, might wear SSD if Linux decides to commit it to disk).
+        #   The upside is that we can forgo the read-special setting for borg.
+        #   (And we would have a hard time handling the necessary subprocesses between
+        #    our shell hooks, which we could solve by making this a proper borgmatic hook.)
+        ( set -x
+          /run/wrappers/bin/su vaultwarden -s ${pkgs.bash}/bin/bash -c '${backupSqlite} /var/lib/bitwarden_rs/db.sqlite3' 3>$d/vaultwarden.sqlite3
         )
-        mv $t/vaultwarden.sqlite3* $d/
-        rmdir $t
 
-        # (There is a third way: Use a named pipe, like borgmatic does for its builtin
-        # database support. We would have to use `.dump` because `.backup` needs a real
-        # file and it might be rather hard to get the process management right without
-        # any help from borgmatic. In addition, it needs `--read-special`, which I would
-        # rather not enable if we can help it.)
+        # The journal is rather large and it is a database (i.e. naive backup might be
+        # inconsistent) so we rather save its last lines as a text file.
+        ( set -x; journalctl --since -2d -n 20000 >$d/journal.txt )
       '') ];
       after_backup = [ (pkgs.writeShellScript "after-backup" ''
         ( set -x; rm -rf /root/.borgmatic/additional_files )
       '') ];
     };
+  };
+
+  systemd.services.borgmatic.path = [ pkgs.openssh ];
+  systemd.services.borgmatic.serviceConfig = {
+    #LockPersonality         = lib.mkForce false;
+    #MemoryDenyWriteExecute  = lib.mkForce false;
+    #NoNewPrivileges         = lib.mkForce false;
+    #PrivateDevices          = lib.mkForce false;
+    #PrivateTmp              = lib.mkForce false;
+    #ProtectClock            = lib.mkForce false;
+    #ProtectControlGroups    = lib.mkForce false;
+    #ProtectHostname         = lib.mkForce false;
+    #ProtectKernelLogs       = lib.mkForce false;
+    #ProtectKernelModules    = lib.mkForce false;
+    #ProtectKernelTunables   = lib.mkForce false;
+
+    #RestrictAddressFamilies = lib.mkForce "";
+    #RestrictNamespaces      = lib.mkForce false;
+    #RestrictRealtime        = lib.mkForce false;
+    #RestrictSUIDSGID        = lib.mkForce false;
+    #SystemCallArchitectures = lib.mkForce "";
+    #SystemCallFilter        = lib.mkForce "";
+    #SystemCallErrorNumber   = lib.mkForce "";
+    #ProtectSystem           = lib.mkForce false;
+    #CapabilityBoundingSet   = lib.mkForce "~";
+    CapabilityBoundingSet   = lib.mkForce "cap_setgid cap_setuid CAP_DAC_READ_SEARCH CAP_NET_RAW";
   };
 
   # We should usually use the borgmatic tool but having borg could be useful,
