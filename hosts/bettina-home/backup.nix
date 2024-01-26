@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, privateForHost, ... }:
 #NOTE Repository has to be created with `borgmatic init --encryption repokey` after this config is applied.
 #     Then, maybe test with `borgmatic create --verbosity 1 --list --stats`.
 {
@@ -124,4 +124,22 @@
   # e.g. for `borg help patterns` and man pages.
   # -> `borgmatic borg ...` is usually the better option.
   environment.systemPackages = [ pkgs.borgbackup ];
+
+
+  systemd.services."notify-by-mail@" = let
+    script = pkgs.writeShellScript "notify-by-mail" ''
+      (
+        echo "Subject: [bettina-home] service $1 failed"
+        echo ""
+        systemctl status "$1"
+      ) | /run/wrappers/bin/sendmail ${privateForHost.adminEmail}
+    '';
+  in {
+    description = "send an email when a service fails";
+
+    serviceConfig.Type = "oneshot";
+    serviceConfig.ExecStart = "${script} %i";
+  };
+
+  systemd.services.borgmatic.unitConfig.OnFailure = "notify-by-mail@%n";
 }
