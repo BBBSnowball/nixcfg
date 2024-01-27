@@ -38,3 +38,56 @@ import with:
 
 https://hacs.xyz/docs/setup/download
 
+...
+
+SSH to HA shell in container:
+- install SSH addon
+- Configure -> add authorized key
+- Configure -> Network -> Show disabled ports -> type "22" -> save and restart
+
+SSH to HA VM outside of containers:
+- type `login` in VM console
+- The official way - but doesn't seem to be so reliable and not so easy when you don't have physical access to the host:
+  https://developers.home-assistant.io/docs/operating-system/debugging
+- Better: create authorized_keys file in the right place
+  - Idea is based on this: https://community.home-assistant.io/t/getting-ssh-to-work-on-home-assistant-host-via-port-22222-on-synology-vm-resolved/367867/14
+  - This is a condition on the dropbear service.
+  - So, do this:
+    1. write SSH key to config dir
+    2. type `login` in VM console (in virt-manager)
+    3. ps -ef|grep sshd  (with SSH addon running - otherwise use something else)
+    4. cp /proc/$pid/root/homeassistant/authorized_keys /root/.ssh/authorized_keys
+    5. systemctl start dropbear
+    6. port is 22222
+
+borg backup in HA:
+- Outdated: This is a list of what went wrong - in case I want to try again or it might help someone else.
+- https://github.com/bmanojlovic/home-assistant-borg-backup
+    - do not use borg_repo_url because known_hosts will only be populated if borg_host is set
+    - This is a known issue: https://github.com/bmanojlovic/home-assistant-borg-backup/issues/2
+    - borg_ssh_params for Hetzner Storagebox: -o Port=23 -o PasswordAuthentication=no
+    - public key will be in /config/borg/keys/borg_backup.pub
+    - The addon calls ssh-keyscan but known_hosts was empty anyway. Fix by running the SSH command from log and accepting the fingerprint.
+    - Do not create the repository in advance because the addon will create it (and fail if it already exists).
+    - Doesn't work:
+            WARNING (MainThread) [supervisor.api.middleware.security] 7ef8e0ec_borg-backup missing API permission for /snapshots/new/full
+            ERROR (MainThread) [supervisor.api.middleware.security] Invalid token for access /snapshots/new/full
+    - Same issue here: https://github.com/home-assistant/supervisor/issues/741
+    - It has the role "backup" so it should work: https://github.com/home-assistant/supervisor/pull/755/files
+    - Reproduce in shell:
+            ssh ha docker inspect addon_7ef8e0ec_borg-backup|grep TOK
+            ssh ha-ssh SUPERVISOR_TOKEN=... ha backups new
+- https://github.com/yeah/hassio-borg_backup/
+    - This one is also quite old and I don't like the way it is written (unconditional init and just ignore the error: `borg init ... || true`).
+    - It is missing the `hassio_role` for backup.
+  - This fork has hassio_role: https://github.com/frigi83/hassio-borg_backup
+  - I still don't like the code quality.
+- Doing it on the host turned out to be so much easier and cleaner than debugging random, outdated Docker containers!
+    - (I have literally wasted hours with the HA addons, solving one issue after the other.)
+    - borgmatic does the backup part (and we need that anyway for the host) so we can remove 90% of the HA backup scripts.
+    - HA backup will happen in `before_backup` hook so it will be on the same schedule as everything else.
+    - HA has learned the `--uncompressed` option for backups. The existing borg addons don't use it yet (and some
+      go a long way to unpack the tar if necessary).
+    - As it is part of the normal backup service, it will send email notifications in case of failure.
+
+If ISP or local DNS resolver filters local IPs: sudo resolvectl dns wlp170s0 9.9.9.9
