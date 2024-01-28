@@ -71,7 +71,6 @@ in
       #platformio  # would be a different version than that in VS Code
       w3m
       kupfer
-      (git.override { guiSupport = true; })
       gnome.gnome-screenshot
       nfs-utils
       printrun # pronterface
