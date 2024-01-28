@@ -3,6 +3,7 @@
 
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-23.11";
   inputs.nixpkgs-unstable.url = "github:NixOS/nixpkgs";
+  inputs.nixpkgs-mongodb.url = "github:NixOS/nixpkgs/nixos-22.11";
 
   #inputs.flake-compat.url = "github:edolstra/flake-compat";
   inputs.flake-compat.url = "github:BBBSnowball/flake-compat";
@@ -18,7 +19,7 @@
   inputs.nix-bundle.url = "github:BBBSnowball/nix-bundle";
   inputs.nix-bundle.inputs.nixpkgs.follows = "nixpkgs";
 
-  outputs = inputs1: let outputFunction = { self, nixpkgs, nix-bundle, flake-compat, private, ... }: (let
+  outputs = inputs1: let outputFunction = { self, nixpkgs, nix-bundle, nixpkgs-mongodb, flake-compat, private, ... }: (let
     nixosSystemModule = path: {
       imports =
         [ (self.lib.provideArgsToModule ({ modules = self.nixosModules; }) path)
@@ -129,7 +130,9 @@
       # no way to build this in pure (flake) land so we lie and say that the license was free
       # hm, or maybe there is? `NIXPKGS_ALLOW_UNFREE=1 nix build --impure .#omada-controller-unfree` -> yes :-)
       #omada-controller-unfree = pkgs.callPackage ./pkgs/omada-controller.nix { mongodb = pkgs.mongodb.overrideAttrs (old: { meta = { license.free = true; }; }); };
-      omada-controller-unfree = pkgs.callPackage ./pkgs/omada-controller.nix { };
+      omada-controller-unfree = pkgs.callPackage ./pkgs/omada-controller.nix {
+        mongodb = nixpkgs-mongodb.legacyPackages.${system}.mongodb;
+      };
     } else {})
     )
     // (forDarwinSystems (system: let pkgs = nixpkgs.legacyPackages.${system}; in {
