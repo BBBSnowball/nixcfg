@@ -60,6 +60,14 @@ SSH to HA VM outside of containers:
     5. systemctl start dropbear
     6. port is 22222
 
+Munin for HA VM:
+- `nix build .#muninlite`, copy to `/mnt/overlay/muninlite` in the VM (using `ssh cat` trick
+   because SFTP is broken in the VM; don't forget to `chmod +x`).
+- SSH key is in /etc/nixos/secret/by-host/bettina-home/munin-ssh-key
+- Add SSH key to `/root/.ssh/authorized_keys` in VM:
+    - This won't work for Dropbear: `##restrict,command="/mnt/overlay/muninlite" ssh-rsa ...`
+    - Thus, use this: `no-port-forwarding,no-agent-forwarding,no-X11-forwarding,no-pty,command="/mnt/overlay/muninlite" ssh-rsa ...`
+
 borg backup in HA:
 - Outdated: This is a list of what went wrong - in case I want to try again or it might help someone else.
 - https://github.com/bmanojlovic/home-assistant-borg-backup

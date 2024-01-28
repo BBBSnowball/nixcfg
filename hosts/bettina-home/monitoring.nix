@@ -43,6 +43,7 @@ in
       address localhost
 
       [homeassistant]
+      # see notes.txt w.r.t. configuration in the VM
       address ssh://ha:22222/mnt/overlay/muninlite
     '';
   };
@@ -57,12 +58,3 @@ in
     path = [ pkgs.openssh ];
   };
 }
-
-#NOTE Preparations for HomeAssistant node:
-# 1. Gain SSH access on the actual system (see notes.txt).
-# 2. `nix build .#muninlite`, copy to `/mnt/overlay/muninlite` in the VM (using `ssh cat` trick
-#    because SFTP is broken in the VM; don't forget to `chmod +x`).
-# 3. `ssh-keygen -t rsa -b 4096 -f /etc/nixos/secret/by-host/bettina-home/munin-ssh-key -N ""`
-# 4. Add SSH key to `/root/.ssh/authorized_keys` in VM:
-#    ##`restrict,command="/mnt/overlay/muninlite" ssh-rsa ...`  -> Dropbear doesn't support `restrict`
-#    `no-port-forwarding,no-agent-forwarding,no-X11-forwarding,no-pty,command="/mnt/overlay/muninlite" ssh-rsa ...`
