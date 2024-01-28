@@ -25,6 +25,20 @@ let
       icon = "static/icons/favicon.ico";
       title = "Home Assistant";
     };
+    munin = {
+      target = "http://localhost:4949/";
+      icon = "/static/favicon.ico";
+      title = "Mumin (System Monitor)";
+      nginxConfig = {
+        locations."/".extraConfig = ''
+          rewrite ^/$ munin/ redirect; break;
+        '';
+        locations."/munin/".extraConfig = ''
+          alias /var/www/munin/;
+          expires modified +310s;
+        '';
+      };
+    };
     passwords = {
       target = "http://localhost:8000/";
       icon = "vw_static/vaultwarden-favicon.png";
@@ -133,12 +147,12 @@ in
     let target = webServices.${service}.target; in
     {
       name = "${service}.${baseDomain}";
-      value = sslSettings // {
+      value = sslSettings // (webServices.${service}.nginxConfig or {
         locations."/" = {
           proxyPass = target;
           proxyWebsockets = true;
         };
-      };
+      });
     });
   };
 
