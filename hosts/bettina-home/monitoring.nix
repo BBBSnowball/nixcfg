@@ -57,4 +57,18 @@ in
 
     path = [ pkgs.openssh ];
   };
+
+  services.logrotate = {
+    enable = true;
+    settings.munin = {
+      files = [
+        "/var/log/munin/ssh.txt"
+        "/var/log/munin/.munin-*.log"
+      ];
+      frequency = "daily";
+      minsize = "1M";
+      rotate = 10;
+      delaycompress = true;
+    };
+  };
 }
