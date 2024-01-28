@@ -50,21 +50,21 @@ in
 
     services.xrdp = {
 
-      enable = mkEnableOption "xrdp, the Remote Desktop Protocol server";
+      enable = mkEnableOption (lib.mdDoc "xrdp, the Remote Desktop Protocol server");
 
       package = mkOption {
         type = types.package;
         default = pkgs.xrdp;
-        defaultText = "pkgs.xrdp";
-        description = ''
+        defaultText = literalExpression "pkgs.xrdp";
+        description = lib.mdDoc ''
           The package to use for the xrdp daemon's binary.
         '';
       };
 
       port = mkOption {
-        type = types.int;
+        type = types.port;
         default = 3389;
-        description = ''
+        description = lib.mdDoc ''
           Specifies on which port the xrdp daemon listens.
         '';
       };
@@ -72,14 +72,14 @@ in
       openFirewall = mkOption {
         default = false;
         type = types.bool;
-        description = "Whether to open the firewall for the specified RDP port.";
+        description = lib.mdDoc "Whether to open the firewall for the specified RDP port.";
       };
 
       sslKey = mkOption {
         type = types.str;
         default = "/etc/xrdp/key.pem";
         example = "/path/to/your/key.pem";
-        description = ''
+        description = lib.mdDoc ''
           ssl private key path
           A self-signed certificate will be generated if file not exists.
         '';
@@ -89,7 +89,7 @@ in
         type = types.str;
         default = "/etc/xrdp/cert.pem";
         example = "/path/to/your/cert.pem";
-        description = ''
+        description = lib.mdDoc ''
           ssl certificate path
           A self-signed certificate will be generated if file not exists.
         '';
@@ -99,7 +99,7 @@ in
         type = types.str;
         default = "xterm";
         example = "xfce4-session";
-        description = ''
+        description = lib.mdDoc ''
           The script to run when user log in, usually a window manager, e.g. "icewm", "xfce4-session"
           This is per-user overridable, if file ~/startwm.sh exists it will be used instead.
         '';
@@ -119,6 +119,13 @@ in
         type = types.str;
         default = "";
       };
+
+      confDir = mkOption {
+        type = types.path;
+        default = confDir;
+        defaultText = literalMD "generated from configuration";
+        description = lib.mdDoc "The location of the config files for xrdp.";
+      };
     };
   };
 
@@ -137,7 +144,7 @@ in
       icons.enable = true;
     };
 
-    fonts.enableDefaultFonts = mkDefault true;
+    fonts.enableDefaultPackages = mkDefault true;
 
     systemd = {
       services.xrdp = {
@@ -171,7 +178,7 @@ in
           User = "xrdp";
           Group = "xrdp";
           PermissionsStartOnly = true;
-          ExecStart = "${cfg.package}/bin/xrdp --nodaemon --port ${toString cfg.port} --config ${confDir}/xrdp.ini";
+          ExecStart = "${cfg.package}/bin/xrdp --nodaemon --port ${toString cfg.port} --config ${cfg.confDir}/xrdp.ini";
         };
       };
 
@@ -181,7 +188,7 @@ in
         description = "xrdp session manager";
         restartIfChanged = false; # do not restart on "nixos-rebuild switch". like "display-manager", it can have many interactive programs as children
         serviceConfig = {
-          ExecStart = "${cfg.package}/bin/xrdp-sesman --nodaemon --config ${confDir}/sesman.ini";
+          ExecStart = "${cfg.package}/bin/xrdp-sesman --nodaemon --config ${cfg.confDir}/sesman.ini";
           ExecStop  = "${pkgs.coreutils}/bin/kill -INT $MAINPID";
         };
       };
