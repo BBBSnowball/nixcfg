@@ -2,12 +2,13 @@
 { stdenv, fetchzip, openjdk, mongodb }:
 stdenv.mkDerivation {
   pname = "omada-controller";
-  version = "5.13.22";
+  version = "5.13.23";
 
   src = fetchzip {
     # https://www.tp-link.com/de/support/download/omada-software-controller/
-    url = "https://static.tp-link.com/upload/software/2023/202312/20231201/Omada_SDN_Controller_v5.13.22_Linux_x64.tar.gz";
-    hash = "sha256-v/lDQcl9bkJBIMh+8y9is9KXp/AoVVeJ2j40YbKlv2Y=";
+    url = "https://static.tp-link.com/upload/software/2024/202401/20240112/Omada_SDN_Controller_v5.13.23_linux_x64.tar.gz";  # from the link above
+    #url = "https://download.tplinkcloud.com/firmware/Omada_SDN_Controller_v5.13.23_linux_x64_20231228194009_1705039261727.tar.gz";  # from webinterface of controller
+    hash = "sha256-Z+GGXZQ1R69L7Bkezy7QO6bIogm1HCch4WZAEcP7qT8=";
     stripRoot = false;
   };
 
