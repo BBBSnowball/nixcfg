@@ -1,5 +1,7 @@
-{ config, pkgs, lib, nixpkgs-mongodb, ... }:
+{ config, pkgs, lib, routeromen, ... }:
 let
+  nixpkgs-mongodb = routeromen.inputs.nixpkgs-mongodb;
+
   omadaControllerOverlay = self: super: rec {
     # Hydra doesn't build new MongoDB because SSPL has more restrictions than AGPL and the build takes for ages.
     # Also, it seems that Omada wants the old version anyway.

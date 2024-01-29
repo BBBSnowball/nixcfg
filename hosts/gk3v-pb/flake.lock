@@ -140,7 +140,6 @@
       "inputs": {
         "flake-registry": "flake-registry",
         "nixpkgs": "nixpkgs",
-        "nixpkgs-mongodb": "nixpkgs-mongodb",
         "nixpkgs-unstable": [
           "routeromen",
           "nixpkgs-unstable"
@@ -156,15 +155,16 @@
         "nixpkgs": [
           "nixpkgs"
         ],
+        "nixpkgs-mongodb": "nixpkgs-mongodb",
         "nixpkgs-unstable": "nixpkgs-unstable",
         "private": "private"
       },
       "locked": {
-        "lastModified": 1697158637,
-        "narHash": "sha256-fDdn/tJnU3wuB6Fj4S5r48aNOUI4DLqxHWailafrOt8=",
+        "lastModified": 1706499600,
+        "narHash": "sha256-2TPsP94kM4NXSQrmLIoU+HL/RkDihLnubUoysAESrN4=",
         "owner": "BBBSnowball",
         "repo": "nixcfg",
-        "rev": "337593d423bca71b99e3fbeb0d71bdefe6ad042c",
+        "rev": "bc3eb4f3664b223e62ba677e3955466b1250c55d",
         "type": "github"
       },
       "original": {

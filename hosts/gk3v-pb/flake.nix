@@ -6,7 +6,6 @@
   inputs.flake-registry.url = "github:NixOS/flake-registry";
   inputs.flake-registry.flake = false;
   inputs.nixpkgs-unstable.follows = "routeromen/nixpkgs-unstable";
-  inputs.nixpkgs-mongodb.url = "github:NixOS/nixpkgs/nixos-22.11";
 
   #inputs.nixpkgs-unstable.url = "github:NixOS/nixpkgs";
 
