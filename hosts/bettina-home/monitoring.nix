@@ -27,6 +27,11 @@ let
     #ls -l $CREDENTIALS_DIRECTORY >&2
     exec ${pkgs.openssh}/bin/ssh "$@"
   '';
+
+  sendMailAlert = pkgs.writeShellScript "munin-send-mail" ''
+    ( echo "Subject: $1"; echo ""; cat ) | \
+    ${pkgs.msmtp}/bin/sendmail "${privateForHost.adminEmail}"
+  '';
 in
 {
   services.munin-cron = {
@@ -36,11 +41,18 @@ in
       #ssh_command "${pkgs.openssh}/bin/ssh"
       ssh_command "${sshWithLog}"
       ssh_options -F ${muninSshConfig}
+
+      contact.syslog.command logger -p user.crit -t "Munin-Alert"
+      contact.email.command ${sendMailAlert} "Munin ${var:worst}: ${var:group}::${var:host}::${var:plugin}"
+      #contact.email.always_send warning critical
     '';
 
     hosts = ''
       [${config.networking.hostName}]
       address localhost
+
+      #df._dev_dm_0.critical = 80
+      #df._dev_dm_0.warning = 70
 
       [homeassistant]
       # see notes.txt w.r.t. configuration in the VM
@@ -55,7 +67,7 @@ in
       "munin-ssh-key:/etc/nixos/secret/by-host/bettina-home/munin-ssh-key"
     ];
 
-    path = [ pkgs.openssh ];
+    path = [ pkgs.openssh pkgs.util-linux ];
   };
 
   services.logrotate = {
