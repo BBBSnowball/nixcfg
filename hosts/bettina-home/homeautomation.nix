@@ -20,7 +20,7 @@
     after = [ "network.target" ];
     wantedBy = [ "multi-user.target" ];
     serviceConfig = {
-      User = "nobody";
+      DynamicUser = true;
       ExecStart = "${pkgs.socat}/bin/socat TCP-LISTEN:8123,fork TCP6-CONNECT:[fe80::3a3a:2ea1:5b27:2037%%br0]:8123";
     };
   };
