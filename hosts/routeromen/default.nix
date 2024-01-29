@@ -12,17 +12,17 @@ in {
       ./hardware-configuration.nix
       ../../wifi-ap-eap/default.nix
       #../../sound.nix
-      ../../smokeping.nix
-      ../../ntopng.nix
-      ../../samba.nix
+      ./smokeping.nix
+      ./ntopng.nix
+      ./samba.nix
       ./tinc.nix
       shorewall
-      ../../dhcp-server.nix
-      ../../pppd.nix
-      ../../bbverl/syslog-udp.nix
-      ../../bbverl/rabbitmq.nix
-      ../../bbverl/fhem.nix
-      ../../bbverl/ddclient.nix
+      ./dhcp-server.nix
+      ./pppd.nix
+      ./syslog-udp.nix
+      ./rabbitmq.nix
+      ./fhem.nix
+      ./ddclient.nix
       ../../homeautomation
       snowball-headless-big
       hotfixes
