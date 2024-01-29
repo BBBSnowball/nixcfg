@@ -43,13 +43,13 @@ let
         locations."^~ /munin-cgi/munin-cgi-graph/".extraConfig = ''
           fastcgi_split_path_info ^(/munin-cgi/munin-cgi-graph)(.*);
           fastcgi_param PATH_INFO $fastcgi_path_info;
-          fastcgi_pass unix:/var/run/munin/fastcgi-graph.sock;
+          fastcgi_pass unix:/run/munin/fastcgi-graph.sock;
           include ${pkgs.nginx}/conf/fastcgi_params;
         '';
         locations."/munin/".extraConfig = ''
           fastcgi_split_path_info ^(/munin)(.*);
           fastcgi_param PATH_INFO $fastcgi_path_info;
-          fastcgi_pass unix:/var/run/munin/fastcgi-html.sock;
+          fastcgi_pass unix:/run/munin/fastcgi-html.sock;
           include ${pkgs.nginx}/conf/fastcgi_params;
         '';
       };

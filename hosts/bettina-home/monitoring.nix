@@ -52,14 +52,30 @@ let
   # ugly hack, but we also need the config file for the CGI daemons
   muninConfig = lib.lists.last (lib.splitString " " config.systemd.services.munin-cron.serviceConfig.ExecStart);
 
-  munin-cgi-html = pkgs.writeShellScriptBin "munin-cgi-html" ''
-    export MUNIN_CONFIG=${muninConfig}
-    exec ${pkgs.perl}/bin/perl -T ${cgiPathArgs} ${pkgs.munin}/www/cgi/.munin-cgi-html-wrapped
-  '';
+  # We are using systemd to create the FastCGI socket.
+  # see https://redmine.lighttpd.net/projects/spawn-fcgi/wiki/Systemd
+  # This script is copied from that page.
+  spawn_fcgi = pkgs.writeShellScript "systemd-spawn-fcgi" ''
+    set -e
 
-  munin-cgi-graph = pkgs.writeShellScriptBin "munin-cgi-graph" ''
-    export MUNIN_CONFIG=${muninConfig}
-    exec ${pkgs.perl}/bin/perl -T ${cgiPathArgs} ${pkgs.munin}/www/cgi/.munin-cgi-graph-wrapped
+    if [ "''${LISTEN_PID}" != $$ ]; then
+        echo >&2 "file descriptors not for us, pid not matching: \"''${LISTEN_PID}\" != '$$'" 
+        exit 255
+    fi
+
+    if [ "''${LISTEN_FDS}" != "1" ]; then
+        echo >&2 "Requires exactly one socket passed to fastcgi, got: \"''${LISTEN_FDS:-0}\"" 
+        exit 255
+    fi
+
+    unset LISTEN_FDS
+
+    # move socket from 3 to 0
+    exec 0<&3
+    exec 3<&-
+
+    # spawn fastcgi backend
+    exec "$@"
   '';
 in
 {
@@ -119,33 +135,50 @@ in
     };
   };
 
-  #FIXME remove later
-  environment.systemPackages = [ munin-cgi-html munin-cgi-graph ];
-
   # see https://github.com/munin-monitoring/munin/blob/stable-2.0/doc/example/webserver/nginx.rst
-  systemd.services.munin-cgi-graph = {
-    wantedBy = [ "multi-user.target" ];
+  # The nginx config is in web.nix.
+  systemd.sockets.munin-cgi-graph = {
+    wantedBy = [ "sockets.target" ];
+    listenStreams = [ "/run/munin/fastcgi-graph.sock" ];
+    socketConfig.SocketUser = "nginx";
+    socketConfig.SocketGroup = "nginx";
+    socketConfig.SocketMode = "0600";
+  };
 
+  systemd.services.munin-cgi-graph = {
     environment.MUNIN_CONFIG = muninConfig;
 
     serviceConfig = {
-      #FIXME use systemd socket to create the socket
-      #User = "munin";
-      ExecStart = "${pkgs.spawn_fcgi}/bin/spawn-fcgi -n -s /var/run/munin/fastcgi-graph.sock -U nginx -u munin -g munin -- "
+      User = "munin";
+      Group = "munin";
+      StandardOutput = "null";
+      StandardError = "journal";
+      #FIXME try StandardInput=socket
+      ExecStart = "${spawn_fcgi} "
         + "${pkgs.perl}/bin/perl -T ${cgiPathArgs} ${pkgs.munin}/www/cgi/.munin-cgi-graph-wrapped";
       RuntimeDirectory = "munin-cgi-tmp";
     };
   };
-  systemd.services.munin-cgi-html = {
-    wantedBy = [ "multi-user.target" ];
 
+  systemd.sockets.munin-cgi-html = {
+    wantedBy = [ "sockets.target" ];
+    listenStreams = [ "/run/munin/fastcgi-html.sock" ];
+    socketConfig.SocketUser = "nginx";
+    socketConfig.SocketGroup = "nginx";
+    socketConfig.SocketMode = "0600";
+  };
+
+  systemd.services.munin-cgi-html = {
     environment.MUNIN_CONFIG = muninConfig;
 
     serviceConfig = {
-      #FIXME use systemd socket to create the socket
-      #User = "munin";
+      User = "munin";
+      Group = "munin";
+      StandardOutput = "null";
+      StandardError = "journal";
+      #FIXME try StandardInput=socket
       ExecStartPre = "${pkgs.coreutils}/bin/install -d -m 700 /run/munin-cgi-tmp/munin-cgi-graph";
-      ExecStart = "${pkgs.spawn_fcgi}/bin/spawn-fcgi -n -s /var/run/munin/fastcgi-html.sock -U nginx -u munin -g munin -- "
+      ExecStart = "${spawn_fcgi} "
         + "${pkgs.perl}/bin/perl -T ${cgiPathArgs} ${pkgs.munin}/www/cgi/.munin-cgi-html-wrapped";
       RuntimeDirectory = "munin-cgi-tmp";
     };
