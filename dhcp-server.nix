@@ -1,4 +1,4 @@
-{ config, pkgs, privateForHost, ... }:
+{ lib, pkgs, config, privateForHost, ... }:
 let
   self = config.networking.hostName;
   downstreamIP = (builtins.head config.networking.interfaces.br0.ipv4.addresses).address;
@@ -83,6 +83,7 @@ in
       domain=lan
       stop-dns-rebind
       rebind-localhost-ok
+      rebind-domain-ok=/${lib.concatStringsSep "/" (with privateForHost; [trueDomain infoDomain])}/
       dhcp-broadcast=tag:needs-broadcast
     '';
   };
