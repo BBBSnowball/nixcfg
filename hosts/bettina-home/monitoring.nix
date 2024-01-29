@@ -51,6 +51,35 @@ let
 
   # ugly hack, but we also need the config file for the CGI daemons
   muninConfig = lib.lists.last (lib.splitString " " config.systemd.services.munin-cron.serviceConfig.ExecStart);
+
+  # see https://github.com/munin-monitoring/munin/blob/stable-2.0/doc/example/webserver/nginx.rst
+  # The nginx config is in web.nix.
+  #
+  # We are using systemd to create the FastCGI socket. We use StandardInput=socket (see first line here):
+  # see https://redmine.lighttpd.net/projects/spawn-fcgi/wiki/Systemd
+  cgiSocket = name: {
+    wantedBy = [ "sockets.target" ];
+    listenStreams = [ "/run/munin/fastcgi-${name}.sock" ];
+    socketConfig.SocketUser = "nginx";
+    socketConfig.SocketGroup = "nginx";
+    socketConfig.SocketMode = "0600";
+  };
+  cgiService = name: extraConfig: extraConfig // {
+    environment.MUNIN_CONFIG = muninConfig;
+
+    serviceConfig = {
+      User = "munin";
+      Group = "munin";
+
+      StandardInput = "socket";
+      StandardOutput = "null";
+      StandardError = "journal";
+
+      RuntimeDirectory = "munin-cgi-tmp";
+
+      ExecStart = "${pkgs.perl}/bin/perl -T ${cgiPathArgs} ${pkgs.munin}/www/cgi/.munin-cgi-${name}-wrapped";
+    } // (extraConfig.serviceConfig or {});
+  };
 in
 {
   services.munin-cron = {
@@ -109,53 +138,13 @@ in
     };
   };
 
-  # see https://github.com/munin-monitoring/munin/blob/stable-2.0/doc/example/webserver/nginx.rst
-  # The nginx config is in web.nix.
-  #
-  # We are using systemd to create the FastCGI socket. We use StandardInput=socket (see first line here):
-  # see https://redmine.lighttpd.net/projects/spawn-fcgi/wiki/Systemd
-  systemd.sockets.munin-cgi-graph = {
-    wantedBy = [ "sockets.target" ];
-    listenStreams = [ "/run/munin/fastcgi-graph.sock" ];
-    socketConfig.SocketUser = "nginx";
-    socketConfig.SocketGroup = "nginx";
-    socketConfig.SocketMode = "0600";
+  systemd.sockets.munin-cgi-graph = cgiSocket "graph";
+
+  systemd.services.munin-cgi-graph = cgiService "graph" {
+    serviceConfig.ExecStartPre = "${pkgs.coreutils}/bin/install -d -m 700 /run/munin-cgi-tmp/munin-cgi-graph";
   };
 
-  systemd.services.munin-cgi-graph = {
-    environment.MUNIN_CONFIG = muninConfig;
+  systemd.sockets.munin-cgi-html = cgiSocket "html";
 
-    serviceConfig = {
-      User = "munin";
-      Group = "munin";
-      StandardInput = "socket";
-      StandardOutput = "null";
-      StandardError = "journal";
-      ExecStart = "${pkgs.perl}/bin/perl -T ${cgiPathArgs} ${pkgs.munin}/www/cgi/.munin-cgi-graph-wrapped";
-      RuntimeDirectory = "munin-cgi-tmp";
-    };
-  };
-
-  systemd.sockets.munin-cgi-html = {
-    wantedBy = [ "sockets.target" ];
-    listenStreams = [ "/run/munin/fastcgi-html.sock" ];
-    socketConfig.SocketUser = "nginx";
-    socketConfig.SocketGroup = "nginx";
-    socketConfig.SocketMode = "0600";
-  };
-
-  systemd.services.munin-cgi-html = {
-    environment.MUNIN_CONFIG = muninConfig;
-
-    serviceConfig = {
-      User = "munin";
-      Group = "munin";
-      StandardInput = "socket";
-      StandardOutput = "null";
-      StandardError = "journal";
-      ExecStartPre = "${pkgs.coreutils}/bin/install -d -m 700 /run/munin-cgi-tmp/munin-cgi-graph";
-      ExecStart = "${pkgs.perl}/bin/perl -T ${cgiPathArgs} ${pkgs.munin}/www/cgi/.munin-cgi-html-wrapped";
-      RuntimeDirectory = "munin-cgi-tmp";
-    };
-  };
+  systemd.services.munin-cgi-html = cgiService "html" {};
 }
