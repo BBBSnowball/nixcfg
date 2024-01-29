@@ -5,7 +5,7 @@
     allowedBridges = [ "br0" ];
   };
   users.users.user.extraGroups = [ "libvirtd" ];
-  users.users.user.packages = with pkgs; [ virtmanager ];
+  users.users.user.packages = with pkgs; [ virt-manager ];
 
   networking.firewall.extraCommands = ''
     # mark packets that are coming in from a VM interface

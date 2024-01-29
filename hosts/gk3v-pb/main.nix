@@ -49,7 +49,7 @@ in
 
   users.users.user = {
     isNormalUser = true;
-    passwordFile = "${secretForHost}/rootpw";
+    hashedPasswordFile = "${secretForHost}/rootpw";
     # lp: I couldn't get the Brother QL-500 to work through cups and the
     # web interface can only do text so we have to access it directly.
     extraGroups = [ "dialout" "wheel" "lp" ];
@@ -78,7 +78,7 @@ in
   };
   users.users.root = {
     # generate contents with `mkpasswd -m sha-512`
-    passwordFile = "${secretForHost}/rootpw";
+    hashedPasswordFile = "${secretForHost}/rootpw";
 
     openssh.authorizedKeys.keyFiles = [ "${privateForHost}/ssh-laptop.pub" ];
   };
