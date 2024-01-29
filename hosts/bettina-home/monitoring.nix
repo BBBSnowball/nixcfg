@@ -51,32 +51,6 @@ let
 
   # ugly hack, but we also need the config file for the CGI daemons
   muninConfig = lib.lists.last (lib.splitString " " config.systemd.services.munin-cron.serviceConfig.ExecStart);
-
-  # We are using systemd to create the FastCGI socket.
-  # see https://redmine.lighttpd.net/projects/spawn-fcgi/wiki/Systemd
-  # This script is copied from that page.
-  spawn_fcgi = pkgs.writeShellScript "systemd-spawn-fcgi" ''
-    set -e
-
-    if [ "''${LISTEN_PID}" != $$ ]; then
-        echo >&2 "file descriptors not for us, pid not matching: \"''${LISTEN_PID}\" != '$$'" 
-        exit 255
-    fi
-
-    if [ "''${LISTEN_FDS}" != "1" ]; then
-        echo >&2 "Requires exactly one socket passed to fastcgi, got: \"''${LISTEN_FDS:-0}\"" 
-        exit 255
-    fi
-
-    unset LISTEN_FDS
-
-    # move socket from 3 to 0
-    exec 0<&3
-    exec 3<&-
-
-    # spawn fastcgi backend
-    exec "$@"
-  '';
 in
 {
   services.munin-cron = {
@@ -137,6 +111,9 @@ in
 
   # see https://github.com/munin-monitoring/munin/blob/stable-2.0/doc/example/webserver/nginx.rst
   # The nginx config is in web.nix.
+  #
+  # We are using systemd to create the FastCGI socket. We use StandardInput=socket (see first line here):
+  # see https://redmine.lighttpd.net/projects/spawn-fcgi/wiki/Systemd
   systemd.sockets.munin-cgi-graph = {
     wantedBy = [ "sockets.target" ];
     listenStreams = [ "/run/munin/fastcgi-graph.sock" ];
@@ -151,11 +128,10 @@ in
     serviceConfig = {
       User = "munin";
       Group = "munin";
+      StandardInput = "socket";
       StandardOutput = "null";
       StandardError = "journal";
-      #FIXME try StandardInput=socket
-      ExecStart = "${spawn_fcgi} "
-        + "${pkgs.perl}/bin/perl -T ${cgiPathArgs} ${pkgs.munin}/www/cgi/.munin-cgi-graph-wrapped";
+      ExecStart = "${pkgs.perl}/bin/perl -T ${cgiPathArgs} ${pkgs.munin}/www/cgi/.munin-cgi-graph-wrapped";
       RuntimeDirectory = "munin-cgi-tmp";
     };
   };
@@ -174,12 +150,11 @@ in
     serviceConfig = {
       User = "munin";
       Group = "munin";
+      StandardInput = "socket";
       StandardOutput = "null";
       StandardError = "journal";
-      #FIXME try StandardInput=socket
       ExecStartPre = "${pkgs.coreutils}/bin/install -d -m 700 /run/munin-cgi-tmp/munin-cgi-graph";
-      ExecStart = "${spawn_fcgi} "
-        + "${pkgs.perl}/bin/perl -T ${cgiPathArgs} ${pkgs.munin}/www/cgi/.munin-cgi-html-wrapped";
+      ExecStart = "${pkgs.perl}/bin/perl -T ${cgiPathArgs} ${pkgs.munin}/www/cgi/.munin-cgi-html-wrapped";
       RuntimeDirectory = "munin-cgi-tmp";
     };
   };
