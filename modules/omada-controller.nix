@@ -1,6 +1,16 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, nixpkgs-mongodb, ... }:
 let
-  omadaControllerOverlay = self: super: { omada-controller = self.callPackage ../pkgs/omada-controller.nix {}; };
+  omadaControllerOverlay = self: super: rec {
+    # Hydra doesn't build new MongoDB because SSPL has more restrictions than AGPL and the build takes for ages.
+    # Also, it seems that Omada wants the old version anyway.
+    # -> It's not the best idea to pin this but we don't have any other good option, I think.
+    mongodb-for-omada = nixpkgs-mongodb.legacyPackages.${pkgs.stdenv.hostPlatform.system}.mongodb;
+
+    omada-controller = self.callPackage ../pkgs/omada-controller.nix {
+      mongodb = mongodb-for-omada;
+    };
+  };
+
   conf = config.services.omada-controller;
   name = "omada-controller";
   #chosen_jre = pkgs.jre8;

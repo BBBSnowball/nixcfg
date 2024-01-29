@@ -18,7 +18,6 @@ in
       ./hardware-configuration.nix
       ./homeautomation.nix
       ./mail.nix
-      ./mongodb-for-omada.nix
       ./monitoring.nix
       nixos-hardware.nixosModules.common-cpu-intel
       ./print-ip.nix

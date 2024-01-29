@@ -24,7 +24,6 @@ in
       ./iperf3.nix
       ./virtmanager.nix
       ./test-zigbee.nix
-      ./mongodb-for-omada.nix
     ];
 
   disabledModules = [ "services/networking/xrdp.nix" ];
