@@ -10,6 +10,9 @@
 
   services.zigbee2mqtt.settings.frontend.auth_token = "!secret auth_token";
 
+  # don't bother to start it if the mqtt server has failed for some reason
+  systemd.services.zigbee2mqtt.requires = [ "mosquitto.service" ];
+
   networking.firewall.allowedTCPPorts = [
     1883  # MQTT
     8086  # zigbee2mqtt
