@@ -135,6 +135,9 @@ in {
   };
   users.users.portfwd = {
     isNormalUser = true;
+    openssh.authorizedKeys.keys = [
+      ''restrict,port-forwarding,permitopen="192.168.84.130:22",command="false" ${builtins.readFile "${privateForHost}/ssh-sonline-bettina-home-port-forward.pub"}''
+    ];
   };
   users.users.test = {
     isNormalUser = true;
