@@ -42,50 +42,56 @@ in
   services.dnsmasq = {
     enable = true;
     resolveLocalQueries = false;
-    extraConfig = ''
-      interface=br0
-      dhcp-range=set:eth0,192.168.89.100,192.168.89.200
-      dhcp-option=option:router,${routerIP}
-      dhcp-option=option:dns-server,${routerIP}
-      except-interface=lo
-      listen-address=${downstreamIP}
-      listen-address=127.0.0.1
-      dhcp-authoritative
+    settings = {
+      interface = "br0";
+      dhcp-range = "set:eth0,192.168.89.100,192.168.89.200";
+      dhcp-option = [
+        "option:router,${routerIP}"
+        "option:dns-server,${routerIP}"
+        #"66,\"192.168.89.110\""  # for PXE
+      ];
+      except-interface = "lo";
+      listen-address = [
+        downstreamIP
+        "127.0.0.1"
+      ];
+      dhcp-authoritative = true;
 
-      dhcp-boot=pxelinux.0
-      #dhcp-option=66,"192.168.89.110"
-      enable-tftp
-      tftp-root=/var/lib/tftpboot
+      enable-tftp = true;
+      tftp-root = "/var/lib/tftpboot";
 
       # if the clients are bios, give them a bios boot file. Everyone else (because
       # many UEFI vendors send bogus Architecture numbers) gets UEFI.
-      dhcp-match=set:bios,60,PXEClient:Arch:00000
-      dhcp-boot=grub/bootx64.efi,${self}
-      dhcp-boot=tag:bios,grub/booti386,${self}
+      dhcp-match = "set:bios,60,PXEClient:Arch:00000";
+      dhcp-boot = [
+        "pxelinux.0"
+        "grub/bootx64.efi,${self}"
+        "tag:bios,grub/booti386,${self}"
+      ];
 
       # static IPs are defined in this file
-      conf-file=${privateForHost}/dhcp-static-hosts.conf
+      conf-file = "${privateForHost}/dhcp-static-hosts.conf";
 
 
       # DNS config
-      resolv-file=/etc/ppp/resolv.conf
-      #dnssec
-      conntrack
+      resolv-file = "/etc/ppp/resolv.conf";
+      #dnssec = true;
+      conntrack = true;
 
       # most of this is copied from OpenWRT
-      domain-needed  # don't lookup name without domain part on upstream servers
-      server=/lan/   # dito for *.lan
-      bogus-priv     # dito for reverse dns of private IPs
-      localise-queries
-      #read-ethers
-      expand-hosts
-      local-service
-      domain=lan
-      stop-dns-rebind
-      rebind-localhost-ok
-      rebind-domain-ok=/${lib.concatStringsSep "/" (with privateForHost; [trueDomain infoDomain])}/
-      dhcp-broadcast=tag:needs-broadcast
-    '';
+      domain-needed = true;  # don't lookup name without domain part on upstream servers
+      server = [ "/lan/" ];   # dito for *.lan
+      bogus-priv = true;     # dito for reverse dns of private IPs
+      localise-queries = true;
+      #read-ethers = true;
+      expand-hosts = true;
+      local-service = true;
+      domain = "lan";
+      stop-dns-rebind = true;
+      rebind-localhost-ok = true;
+      rebind-domain-ok = "/" + (lib.concatStringsSep "/" (with privateForHost; [trueDomain infoDomain])) + "/";
+      dhcp-broadcast = "tag:needs-broadcast";
+    };
   };
 
   systemd.services.dnsmasq.serviceConfig.StateDirectory = "dnsmasq";
