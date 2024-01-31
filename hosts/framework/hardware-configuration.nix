@@ -30,6 +30,12 @@
       fsType = "xfs";
     };
 
+  fileSystems."/home/gos/data2" =
+    { device = "/dev/disk/by-uuid/3c5c8228-56d7-42f6-92d1-c0437bf66447";
+      fsType = "btrfs";
+      options = [ "ssd" ];
+    };
+
   fileSystems."/boot" =
     { device = "/dev/disk/by-uuid/9FB9-1E18";
       fsType = "vfat";
@@ -37,6 +43,7 @@
 
   swapDevices = [ ];
 
+  nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
   powerManagement.cpuFreqGovernor = lib.mkDefault "powersave";
   hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
 }

@@ -23,6 +23,7 @@ in
       ./mcu-dev.nix
       ./users.nix
       ./bluetooth.nix
+      ./gos.nix
       nixos-hardware.nixosModules.framework
       ./virtmanager.nix
       ./bl808-netboot.nix
