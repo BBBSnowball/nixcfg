@@ -187,11 +187,13 @@ in
     graph-easy  # dot graph to ascii graphic, e.g.: graph-easy /etc/tinc/$name/status/graph.dot
     rpi-imager
     pwgen
+    system-config-printer
   ];
 
   services.printing.drivers = [
     (pkgs.callPackage ../../pkgs/mfc9142cdncupswrapper.nix { mfc9142cdnlpr = pkgs.callPackage ../../pkgs/mfc9142cdnlpr.nix {}; })
     pkgs.brlaser
+    pkgs.hplip
   ];
   #services.printing.extraConf = "LogLevel debug2";
 
