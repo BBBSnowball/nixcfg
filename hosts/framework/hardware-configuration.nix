@@ -25,10 +25,10 @@
       fsType = "xfs";
     };
   
-  fileSystems."/home/gos/data" =
-    { device = "/dev/vg1/gos";
-      fsType = "xfs";
-    };
+#  fileSystems."/home/gos/data" =
+#    { device = "/dev/vg1/gos";
+#      fsType = "xfs";
+#    };
 
   fileSystems."/home/gos/data2" =
     { device = "/dev/disk/by-uuid/3c5c8228-56d7-42f6-92d1-c0437bf66447";
