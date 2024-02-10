@@ -17,6 +17,12 @@
     options = [ "bind" ];
   };
 
+  fileSystems."/home/gos/data2/gos-data/nix/store" = {
+    device = "/nix/store";
+    fsType = "none";
+    options = [ "bind" ];
+  };
+
   environment.systemPackages = with pkgs; [
     btrfs-progs
   ];
