@@ -1,10 +1,10 @@
-{ pkgs, private, secretForHost, ... }:
+{ pkgs, privateForHost, secretForHost, ... }:
 let
   basicUser = {
     # generate contents with `mkpasswd -m sha-512`
     passwordFile = "${secretForHost}/rootpw";
 
-    openssh.authorizedKeys.keyFiles = [ "${private}/ssh-laptop.pub" ];
+    openssh.authorizedKeys.keyFiles = [ "${privateForHost}/ssh-laptop.pub" ];
   };
   rootUser = basicUser;
   guiUser = basicUser // {
