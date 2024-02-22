@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ lib, pkgs, ... }:
 let
   xontrib-fzf-widgets = pkgs.fetchFromGitHub {
     owner = "laloch";
@@ -118,7 +118,7 @@ in
 
   # nix puts the config at /etc/xonshrc but if we want to test xonsh in a virtualenv,
   # it will look at /etc/xonsh/xonshrc
-  environment.etc."xonsh/xonshrc".source = "/etc/xonshrc";
+  environment.etc."xonsh/xonshrc".source = lib.mkDefault "/etc/xonshrc";
 
   environment.systemPackages = with pkgs; [
     fzf ranger wl-clipboard fd broot

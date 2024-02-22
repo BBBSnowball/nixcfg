@@ -2,7 +2,7 @@
 let
   basicUser = {
     # generate contents with `mkpasswd -m sha-512`
-    passwordFile = "${secretForHost}/rootpw";
+    hashedPasswordFile = "${secretForHost}/rootpw";
 
     openssh.authorizedKeys.keyFiles = [ "${privateForHost}/ssh-laptop.pub" ];
   };
