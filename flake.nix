@@ -67,6 +67,7 @@
     nixosConfigurations.nixosvm = mkHostInSubflake "nixosvm";
     nixosConfigurations.c3pbvm = mkHostInSubflake "c3pbvm";
     nixosConfigurations.gk3v-pb = mkHostInSubflake "gk3v-pb";
+    nixosConfigurations.hetzner-gos = mkHostInSubflake "hetzner-gos";
     nixosConfigurations.hetzner-temp = mkHostInSubflake "hetzner-temp";
     nixosConfigurations.framework = self.nixosConfigurations.fw;
     nixosConfigurations.fw = mkHostInSubflake "fw";
