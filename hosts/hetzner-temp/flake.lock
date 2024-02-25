@@ -74,16 +74,47 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1641423937,
-        "narHash": "sha256-iIBSDySeZ79FDFiI5but9EtOIRc5Ncu/gq27Hg/yXjo=",
+        "lastModified": 1708702655,
+        "narHash": "sha256-qxT5jSLhelfLhQ07+AUxSTm1VnVH+hQxDkQSZ/m/Smo=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "e67c94a1adbb5cf8a0448bc9c434589b2dd293c2",
+        "rev": "c5101e457206dd437330d283d6626944e28794b3",
         "type": "github"
       },
       "original": {
         "owner": "NixOS",
-        "ref": "nixos-21.11",
+        "ref": "nixos-23.11",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs-mongodb": {
+      "locked": {
+        "lastModified": 1688392541,
+        "narHash": "sha256-lHrKvEkCPTUO+7tPfjIcb7Trk6k31rz18vkyqmkeJfY=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "ea4c80b39be4c09702b0cb3b42eab59e2ba4f24b",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixos-22.11",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs-unstable": {
+      "locked": {
+        "lastModified": 1697158538,
+        "narHash": "sha256-TR02XPre2EcwU1kT4WXZWJOBi/B8C7P1xoywOUGkdDk=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "ee176b5fbb680864dcf80f9ca3f6f134d81331d8",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
         "repo": "nixpkgs",
         "type": "github"
       }
@@ -120,14 +151,16 @@
         "nixpkgs": [
           "nixpkgs"
         ],
+        "nixpkgs-mongodb": "nixpkgs-mongodb",
+        "nixpkgs-unstable": "nixpkgs-unstable",
         "private": "private"
       },
       "locked": {
-        "lastModified": 1651540367,
-        "narHash": "sha256-8lTJxhL3utGnIHh1LmnRYp9CtCm5PIoPDomWpy/n7zU=",
+        "lastModified": 1706583714,
+        "narHash": "sha256-9XlWQfFw4bLncMKYA7eE/T18iiwG0NJvUlaVd/9qoEo=",
         "owner": "BBBSnowball",
         "repo": "nixcfg",
-        "rev": "4792f024f64ea9e6cc0689fda1724699159d4141",
+        "rev": "1e62c07dbfab1292623dd3b2fa3524e84989e277",
         "type": "github"
       },
       "original": {

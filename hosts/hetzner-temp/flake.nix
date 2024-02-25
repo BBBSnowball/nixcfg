@@ -1,5 +1,5 @@
 {
-  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-21.11";
+  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-23.11";
   inputs.routeromen.url = "github:BBBSnowball/nixcfg";
   inputs.routeromen.inputs.nixpkgs.follows = "nixpkgs";
   inputs.flake-registry.url = "github:NixOS/flake-registry";
