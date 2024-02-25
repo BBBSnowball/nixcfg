@@ -22,11 +22,23 @@
     options = [ "bind" ];
   };
 
-  fileSystems."/home/gos/gos-data/nix/store" = {
+  fileSystems."/home/gos/work" = {
+    device = "/media/gos/gos-data";
+    fsType = "none";
+    options = [ "bind" ];
+  };
+
+  fileSystems."/home/gos/work/nix/store" = {
     device = "/nix/store";
     fsType = "none";
     options = [ "bind" ];
   };
+
+  systemd.tmpfiles.rules = [
+    #Type Path                  Mode User Group Age Argument
+    "d    /media/gos/gos-docker 0700 gos  users -"
+    "d    /media/gos/gos-data   0700 gos  users -"
+  ];
 
   environment.systemPackages = with pkgs; [
     btrfs-progs
