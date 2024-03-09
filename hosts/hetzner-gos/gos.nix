@@ -8,6 +8,10 @@
 
       # It seems to choose something that doesn't work...
       dns = [ "9.9.9.9" ];
+
+      insecure-registries = [
+          "localhost:5000"
+      ];
     };
   };
 
@@ -42,6 +46,7 @@
 
   environment.systemPackages = with pkgs; [
     btrfs-progs
+    sshfs
   ];
 
   systemd.user.services.docker.unitConfig.ConditionUser = lib.mkForce "gos";  # default is "!root"
@@ -64,5 +69,15 @@
   in {
     BUILDKIT_STEP_LOG_MAX_SIZE = toString (1024 * MB);
     BUILDKIT_STEP_LOG_MAX_SPEED = toString (10 * MB);  # per second
+  };
+
+  systemd.services.copy-ssh-keys-to-gos = {
+    description = "copy SSH keys from root (added by Hetzner cloud) to user 'gos'";
+    wantedBy = [ "multi-user.target" ];
+
+    script = ''
+      install -m 0700 -o gos -d /home/gos/.ssh
+      install -m 0600 -o gos /root/.ssh/authorized_keys /home/gos/.ssh/authorized_keys
+    '';
   };
 }
