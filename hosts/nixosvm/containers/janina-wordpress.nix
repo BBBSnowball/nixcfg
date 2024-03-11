@@ -36,8 +36,10 @@ in {
           if (strpos($_SERVER['HTTP_X_FORWARDED_PROTO'], 'https') !== false)
             $_SERVER['HTTPS']='on';
         '';
-        #themes = [ responsiveTheme ];
-        plugins = [ passwordProtectPlugin ];
+        #themes = { inherit responsiveTheme; };
+        plugins = {
+          inherit passwordProtectPlugin;
+        };
         virtualHost = {
           adminAddr = "postmaster@${url2}";
           serverAliases = [ url2 ];

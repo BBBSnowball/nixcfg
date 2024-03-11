@@ -4,7 +4,7 @@ let
 in {
   containers.rss = {
     autoStart = true;
-    nixpkgs = nixpkgs-rss;
+    #nixpkgs = nixpkgs-rss;
     config = { config, pkgs, ... }: let
       poolName = "my_selfoss_pool";
       phpfpmSocketName = config.services.phpfpm.pools.my_selfoss_pool.socket;

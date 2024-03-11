@@ -111,7 +111,9 @@ in {
         chown -R acme:wwwrun ${acmeDir}
       '';
 
-      system.activationScripts.initSvn = lib.stringAfter ["users" "groups" "wrappers"] ''
+      #FIXME make this a service?
+      #system.activationScripts.initSvn = lib.stringAfter ["users" "groups" "wrappers"] ''
+      system.activationScripts.initSvn = lib.stringAfter ["users" "groups"] ''
         mkdir -m 0770 -p /var/svn
         chown wwwrun:wwwrun /var/svn
         if ! ls -d /var/svn/*/ >/dev/null ; then

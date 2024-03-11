@@ -42,13 +42,13 @@ in {
           if (strpos($_SERVER['HTTP_X_FORWARDED_PROTO'], 'https') !== false)
             $_SERVER['HTTPS']='on';
         '';
-        themes = [
-          (fetchTheme { url = "https://downloads.wordpress.org/theme/oceanwp.3.3.2.zip";       hash = "sha256-7ZjK+6p9C7QaRr/Hp6dECy4OjB0E8z/RK+rv2nVK80M="; })
-          (fetchTheme { url = "https://downloads.wordpress.org/theme/neve.3.2.5.zip";          hash = "sha256-pMRwBN6B6eA3zmdhLnw2zSoGR6nKJikE+1axrzINQw8="; })
-          (fetchTheme { url = "https://downloads.wordpress.org/theme/ashe.2.198.zip";          hash = "sha256-b/Tsf4wXff3HT9DNbWyujsWDZd/knePNdMIBnUwZhQ8="; })
-          (fetchTheme { url = "https://downloads.wordpress.org/theme/twentyseventeen.3.0.zip"; hash = "sha256-QHEkvpc2CLjSopAIZRCelJnJvICQUYZfjTJYhTAbJuo="; })
-        ];
-        plugins = [ ];
+        themes = {
+          oceanwp         = fetchTheme { url = "https://downloads.wordpress.org/theme/oceanwp.3.3.2.zip";       hash = "sha256-7ZjK+6p9C7QaRr/Hp6dECy4OjB0E8z/RK+rv2nVK80M="; };
+          neve            = fetchTheme { url = "https://downloads.wordpress.org/theme/neve.3.2.5.zip";          hash = "sha256-pMRwBN6B6eA3zmdhLnw2zSoGR6nKJikE+1axrzINQw8="; };
+          ashe            = fetchTheme { url = "https://downloads.wordpress.org/theme/ashe.2.198.zip";          hash = "sha256-b/Tsf4wXff3HT9DNbWyujsWDZd/knePNdMIBnUwZhQ8="; };
+          twentyseventeen = fetchTheme { url = "https://downloads.wordpress.org/theme/twentyseventeen.3.0.zip"; hash = "sha256-QHEkvpc2CLjSopAIZRCelJnJvICQUYZfjTJYhTAbJuo="; };
+        };
+        plugins = { };
         virtualHost = {
           adminAddr = "postmaster@${url1}";
           serverAliases = [ url2 ];
