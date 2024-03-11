@@ -3,7 +3,7 @@ let
   privateCommon = if builtins.readDir private ? "common.nix"
     then import "${private}/common.nix"
     else lib.warn "common.nix is not available in private so we cannot add SSH config for sync host"
-      { sync = { host = "localhost"; port = 0; }; };
+      { sync = { host = "localhost"; port = 1; }; };
 in
 {
   environment.systemPackages = with pkgs; [
