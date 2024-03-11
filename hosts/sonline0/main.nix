@@ -130,6 +130,7 @@ in {
     ];
     openssh.authorizedKeys.keys = [
       "restrict,command=\"echo ok\" ${builtins.readFile "${privateForHost}/ssh-sonline-ssh-check.pub"}"
+      ''restrict,port-forwarding,permitopen="192.168.84.130:22:,command="false" ${builtins.readFile "${privateForHost}/ssh-sonline-bettina-home-port-forward.pub"}''
     ];
     extraGroups = [ "wheel" ];
   };
