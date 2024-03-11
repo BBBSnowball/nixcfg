@@ -1,19 +1,28 @@
 { config, pkgs, lib, privateForHost, nixpkgsLetsmeet, ... }:
 let
-  useOldNixpkgs = false;
+  useOldNixpkgs = true;
+
+  overlays = [ (import ./overlay.nix privateForHost) ];
+  # edumeet wants NodeJS 16 but NixOS refuses to evaluate it
+  nixconfig.permittedInsecurePackages = [
+    pkg.passthru.nodejs.name
+  ];
+
+
   pkgs2 = if useOldNixpkgs
-    then import nixpkgsLetsmeet { overlays = [ (import ./overlay.nix privateForHost) ]; system = pkgs.system; }
-    else pkgs;
+  then import nixpkgsLetsmeet {
+    inherit overlays;
+    system = pkgs.system;
+    config = nixconfig;
+  }
+  else pkgs;
   pkg = pkgs2.edumeet-server;
 in {
-  nixpkgs.overlays = lib.mkIf (!useOldNixpkgs) [ (import ./overlay.nix privateForHost) ];
+  nixpkgs.overlays = lib.mkIf (!useOldNixpkgs) overlays;
   # make edumeet-connect available to the user
   environment.systemPackages = [ pkg ];
 
-  # edumeet wants NodeJS 16 but NixOS refuses to evaluate it
-  nixpkgs.config.permittedInsecurePackages = [
-    pkg.passthru.nodejs.name
-  ];
+  nixpkgs.config = nixconfig;
 
   networking.firewall.allowedTCPPorts = [ 8030 ];
   networking.firewall.allowedUDPPortRanges = [ { from = 40000; to = 40999; } ];
