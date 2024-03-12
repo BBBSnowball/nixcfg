@@ -1,6 +1,7 @@
 { config, pkgs, lib, ... }:
 let
-  nameserver = builtins.head config.networking.nameservers;
+  #nameserver = builtins.head config.networking.nameservers;
+  nameserver = "127.0.0.53";  # systemd-resolved
   fping = { name = ""; probe = null; key = ""; };
   fping1k = { name = ", 1k packets"; probe = "FPing1k"; key = "1k"; };
   fping_1k = fping1k // { key = "_1k"; };  # just different key to keep it as before

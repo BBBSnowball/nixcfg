@@ -37,7 +37,7 @@ in
     };
   };
 
-  networking.nameservers = [ "127.0.0.1" ];
+  #networking.nameservers = [ "127.0.0.1" ];
 
   services.dnsmasq = {
     enable = true;
