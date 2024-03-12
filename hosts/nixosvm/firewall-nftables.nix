@@ -32,17 +32,6 @@ in
         }
       }
 
-      set allow_vpn_to_tinc_ips {
-        typeof ip daddr
-        counter
-        flags constant
-        comment "same as allow_vpn_to_tinc but only the IPs";
-        elements = {
-          192.168.84.36,
-          192.168.84.47
-        }
-      }
-
       map dnat_vpn_to_tinc {
         typeof ip saddr . ip daddr . tcp dport : ip daddr . tcp dport;
         counter
@@ -95,7 +84,7 @@ in
         oifname "ens3" masquerade
 
         # adjust source IP so tinc can handle the packets
-        oifname "tinc.bbbsnowbal" ip saddr { 192.168.88.0/23, 192.168.91.0/23 } ip daddr @allow_vpn_to_tinc_ips masquerade
+        oifname "tinc.bbbsnowbal" ip saddr { 192.168.88.0/23, 192.168.91.0/23 } ip daddr . tcp dport @allow_vpn_to_tinc masquerade
       }
     '';
   };
