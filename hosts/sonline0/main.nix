@@ -38,6 +38,7 @@ in {
 
   boot.kernel.sysctl."net.ipv4.ip_forward" = "1";
 
+  networking.useNetworkd = true;
   systemd.network = {
     enable = true;
     wait-online.ignoredInterfaces = [ "enp1s0f1" "br84" ];
@@ -121,7 +122,7 @@ in {
 
   users.mutableUsers = false;
   # generate contents with `mkpasswd -m sha-512`
-  users.users.root.passwordFile = "${secretForHost}/rootpw";
+  users.users.root.hashedPasswordFile = "${secretForHost}/rootpw";
   users.users.${privateValues.userName} = {
     isNormalUser = true;
     openssh.authorizedKeys.keyFiles = [
