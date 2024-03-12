@@ -29,6 +29,10 @@ in {
 
     services.matrix-synapse = {
       enable = true;
+      # This adds optional Python dependencies. This should happen automatically
+      # based on `services.matrix-synapse.settings`, but our oidc config is added
+      # from secretForHost, i.e. the NixOS module cannot see it.
+      extras = [ "oidc" "postgres" ];
 
       settings.allow_guest_access  = false;
       settings.enable_registration = false;
