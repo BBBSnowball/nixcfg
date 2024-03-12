@@ -166,7 +166,7 @@ in {
 
           # initdb has already been done by NixOS' pre-start script
           ( cd "${parentDir}" && ${package}/bin/pg_upgrade \
-            --old-datadir "${parentDir}/current-data" --new-datadir "${dataDir}" \
+            --old-datadir "$(readlink -f "${parentDir}/current-data")" --new-datadir "${dataDir}" \
             --old-bindir "${parentDir}/current-pkg/bin" --new-bindir "${package}/bin" )
 
           touch "${dataDir}/.upgrade_done"
