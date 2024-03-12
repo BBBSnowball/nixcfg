@@ -9,15 +9,7 @@ in
   networking.nftables.enable = true;
 
   networking.nftables.tables.filter = {
-    #family = "ip";
     family = "inet";
-
-    # for fhem:
-    #TODO The second rule is required for the first rule to work and we need a route on bbverl:
-    # route add -host 192.168.88.2 gw 192.168.84.37
-    #allow_port_forward(in_iface, "bbbsnowball-dev", "192.168.84.47", :tcp, 80)
-    #dnat_port_forward(in_iface, "192.168.85.47", :tcp, 80, "bbbsnowball-dev", "192.168.84.47", 80)
-
     content = ''
       set allow_vpn_to_tinc {
         typeof ip daddr . tcp dport
@@ -28,7 +20,7 @@ in
           # calendar
           192.168.84.36 . 443,
           # fhem
-          192.168.84.47 . 80
+          192.168.84.85 . 8083
         }
       }
 
@@ -40,7 +32,7 @@ in
 
         elements = {
           # fhem
-          192.168.88.0/23 . 192.168.85.47/32  . 80   : 192.168.84.47 . 80,
+          192.168.88.0/23 . 192.168.85.47/32  . 80   : 192.168.84.85 . 8083,
           #
           0.0.0.0/0       . 192.168.112.10/32 . 80   : ${upstreamIP} . ${toString ports.rss.port},
           0.0.0.0/0       . 192.168.118.10/32 . 80   : ${upstreamIP} . ${toString ports.notes-magpie-ext.port},
