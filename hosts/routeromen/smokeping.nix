@@ -199,4 +199,7 @@ in
       #host = dummy.com
     '';
   };
+
+  #systemd.services.smokeping.serviceConfig.ExecStartPost = "!${pkgs.systemd}/bin/systemctl start thttpd";
+  systemd.services.smokeping.wants = [ "thttpd.service" ];
 }
