@@ -20,8 +20,10 @@
   environment.systemPackages = with pkgs; [
     meld
     firefox pavucontrol chromium
-    mpv vlc
+    mplayer mpv vlc
     speedcrunch
+    libreoffice gimp
+    inkscape
     gnome.eog gnome.evince
     w3m
     gitFull  # provides `git gui`
@@ -30,6 +32,7 @@
     iw wirelesstools
     qrencode  # also useful for cli with `-t ANSI` but I will prefer SSH/SFTP for headless systems
     (self.packages.${pkgs.stdenv.hostPlatform.system}.add_recently_used or self.inputs.routeromen.packages.${pkgs.stdenv.hostPlatform.system}.add_recently_used)
+    clementine
   ] ++ (builtins.filter (p: p.meta.available) [
     # These are not available for aarch64-linux at the moment.
     mplayer

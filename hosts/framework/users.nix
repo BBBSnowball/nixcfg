@@ -15,23 +15,11 @@ let
     isNormalUser = true;
 
     packages = with pkgs; [
-      firefox pavucontrol chromium
-      mplayer mpv
-      speedcrunch
-      libreoffice gimp
-      gnome.eog gnome.evince
       x11vnc
       #vscode-fhs  # We need MS C++ Extension for PlatformIO.
       #nixpkgs-unstable.legacyPackages.x86_64-linux.vscode-fhs
       (import nixpkgs-unstable { system = pkgs.stdenv.hostPlatform.system; config = { allowUnfree = true; }; }).vscode
       python3 # for PlatformIO
-      w3m
-      kupfer
-      #(git.override { guiSupport = true; })
-      gnome.gnome-screenshot
-      gnome.gnome-tweaks
-      gnome.nautilus
-      git-annex
     ];
   };
 in

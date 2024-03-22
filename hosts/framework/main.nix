@@ -11,6 +11,8 @@ in
       snowball-desktop
       network-manager
       desktop-base
+      desktop.default
+      hidpi
       tinc-client-a
       vscode
       ssh-github
@@ -19,16 +21,13 @@ in
       allowUnfree
     ] ++
     [ ./hardware-configuration.nix
-      ./pipewire.nix
       ./mcu-dev.nix
       ./users.nix
-      ./bluetooth.nix
       ./gos.nix
       nixos-hardware.nixosModules.framework
       ./virtmanager.nix
       ./bl808-netboot.nix
       ./test-zigbee.nix
-      ./hidpi.nix
       ./moreSecure.nix
       ./teensy.nix
       ./wireguard-test.nix
@@ -88,44 +87,6 @@ in
     "wasm64-wasi"
   ];
 
-  # desktop stuff
-  #services.xserver.displayManager.lightdm.enable = true;
-  #services.xserver.desktopManager.xfce.enable = true;
-  services.xserver.displayManager.gdm.enable = true;
-  #services.xserver.desktopManager.gnome.enable = true;
-
-  programs.sway.enable = true;
-  programs.sway.wrapperFeatures.gtk = true;
-  programs.sway.extraPackages = with pkgs; [
-    alacritty kitty foot dmenu kupfer
-    i3status i3status-rust termite rofi light
-    swaylock
-    wdisplays
-    brightnessctl  # uses logind so doesn't need root
-    sway-contrib.grimshot
-    #yubikey-agent
-    #yubikey-touch-detector
-    mako
-    pulseaudio
-    playerctl
-    libnotify
-    (pkgs.runCommand "notify-helpers" { inherit (pkgs) jq; } ''
-      mkdir $out/bin -p
-      cp ${./notify-brightness.sh} $out/bin/notify-brightness
-      substituteAll ${./notify-volume.sh} $out/bin/notify-volume
-      chmod +x $out/bin/*
-      patchShebangs $out/bin/*
-    '')
-  ];
-  environment.etc."sway/config".source = ./sway-config;
-  environment.etc."alacritty.yml".source = ./alacritty.yml;
-  #environment.etc."i3status.conf".source = ./i3status.conf;
-  environment.etc."xdg/i3status/config".source = ./i3status.conf;
-  hardware.opengl.enable = true;
-  # create /etc/X11/xkb for `localectl list-x11-keymap-options`
-  # https://github.com/NixOS/nixpkgs/issues/19629#issuecomment-368051434
-  services.xserver.exportConfiguration = true;
-
   programs.wireshark.enable = true;
   programs.wireshark.package = pkgs.wireshark;  # wireshark-qt instead of wireshark-cli
 
@@ -161,33 +122,26 @@ in
 
   environment.systemPackages = with pkgs; [
     mumble
-    picocom
     #wireshark
     zeal
     lazygit
     clementine
-    entr
     zgrviewer graphviz
     yubikey-manager yubikey-manager-qt yubikey-personalization
     cura freecad kicad graphviz blender
     libxslt zip  # used by Kicad
-    unzip
     inkscape
     wine
     android-tools
     virt-manager
     tigervnc
-    tcpdump
     meld
     dfu-util
     zgrviewer
-    lshw
     rustup gcc
     gqrx  # gnuradio
     graph-easy  # dot graph to ascii graphic, e.g.: graph-easy /etc/tinc/$name/status/graph.dot
     rpi-imager
-    pwgen
-    system-config-printer
   ];
 
   services.printing.drivers = [
