@@ -10,6 +10,7 @@ in
       snowball-desktop
       network-manager
       desktop-base
+      desktop.default
       #tinc-client-a  #FIXME
       vscode
       ssh-github
@@ -19,9 +20,7 @@ in
     ] ++
     [ ./hardware-configuration.nix
       nixos-m1.nixosModules.apple-silicon-support
-      ./pipewire.nix
       ./users.nix
-      ./bluetooth.nix
     ];
 
   hardware.asahi = {
@@ -82,31 +81,6 @@ in
   nix.registry.routeromen.flake = routeromen;
 
   boot.binfmt.emulatedSystems = [ "x86_64-linux" ];
-
-  # desktop stuff
-  #services.xserver.displayManager.lightdm.enable = true;
-  #services.xserver.desktopManager.xfce.enable = true;
-  services.xserver.displayManager.gdm.enable = true;
-  #services.xserver.desktopManager.gnome.enable = true;
-
-  programs.sway.enable = true;
-  programs.sway.wrapperFeatures.gtk = true;
-  programs.sway.extraPackages = with pkgs; [
-    alacritty kitty foot dmenu kupfer
-    i3status i3status-rust termite rofi light
-    swaylock
-    wdisplays
-    brightnessctl  # uses logind so doesn't need root
-    sway-contrib.grimshot
-    mako
-  ];
-  environment.etc."sway/config".source = ./sway-config;
-  environment.etc."alacritty.yml".source = ./alacritty.yml;
-  environment.etc."xdg/i3status/config".source = ./i3status.conf;
-  hardware.opengl.enable = true;
-  # create /etc/X11/xkb for `localectl list-x11-keymap-options`
-  # https://github.com/NixOS/nixpkgs/issues/19629#issuecomment-368051434
-  services.xserver.exportConfiguration = true;
 
   programs.git.enable = true;
 
