@@ -7,6 +7,7 @@
 
   services.xserver.enable = true;
   services.xserver.layout = "us";
+  services.xserver.xkbVariant = "altgr-intl";
   services.xserver.xkbOptions = "eurosign:e";
   services.xserver.libinput.enable = true;
 }

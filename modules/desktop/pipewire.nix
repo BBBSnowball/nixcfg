@@ -11,8 +11,10 @@
 
   services.pipewire = {
     enable = true;
+    #FIXME change to true?
     pulse.enable = lib.mkDefault false;
     alsa.enable = true;
+    alsa.support32Bit = true;
   };
 
   users.users.user = {
