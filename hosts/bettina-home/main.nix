@@ -103,17 +103,6 @@ in
   # desktop stuff
   #services.xserver.desktopManager.xfce.enable = true;
 
-  #programs.sway.enable = true;
-  #programs.sway.wrapperFeatures.gtk = true;
-  #programs.sway.extraPackages = with pkgs; [
-  #  alacritty kitty foot dmenu kupfer
-  #  wdisplays
-  #  sway-contrib.grimshot
-  #  mako
-  #  pulseaudio
-  #];
-  #environment.etc."sway/config".source = ./sway-config;
-  #environment.etc."alacritty.yml".source = ./alacritty.yml;
   hardware.opengl.enable = true;
   # create /etc/X11/xkb for `localectl list-x11-keymap-options`
   # https://github.com/NixOS/nixpkgs/issues/19629#issuecomment-368051434
