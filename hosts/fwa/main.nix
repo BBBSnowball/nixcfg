@@ -1,4 +1,4 @@
-{ config, pkgs, lib, routeromen, privateForHost, nixos-hardware, ... }@args:
+{ config, pkgs, lib, routeromen, privateForHost, nixos-hardware, lanzaboote, ... }@args:
 let
   #tinc-a-address = "192.168.83.139";
 in
@@ -21,6 +21,8 @@ in
       ./users.nix
       #FIXME replace by 16'' variant when that is added
       nixos-hardware.nixosModules.framework-13-7040-amd
+      ./secureBoot.nix
+      lanzaboote.nixosModules.lanzaboote
     ];
 
   networking.hostName = "fwa";
