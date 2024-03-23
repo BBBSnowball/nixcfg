@@ -7,6 +7,7 @@
 
   environment.systemPackages = with pkgs; [
     sbctl
+    tpm2-tools
   ];
 
   # Lanzaboote currently replaces the systemd-boot module.
@@ -22,4 +23,21 @@
   };
 
   environment.etc."secureboot/keys".source = "/etc/nixos/secret_local/secureboot/keys";
+
+  # might help according to Arch wiki but depends on which TPM we have
+  # (Microsoft Pluton, in our case)
+  boot.initrd.availableKernelModules = [ "tpm_crb" ];
+
+  # use systemd for initrd, so systemd-cryptenroll can be used
+  boot.initrd.systemd.enable = true;
 }
+
+# https://github.com/nix-community/lanzaboote/blob/master/docs/QUICK_START.md
+# sbctl generate-keys
+# nixos-rebuild ..
+# sbctl verify
+# reboot, remove existing secure boot keys to enter setup mode, enable secure boot
+# sbctl enroll-keys
+# reboot
+# bootctl status
+# systemd-cryptenroll --tpm2-device=auto --tpm2-with-pin=yes /dev/nvme0n1p1
