@@ -25,6 +25,7 @@
     libreoffice gimp
     inkscape
     gnome.eog gnome.evince
+    gnome.cheese
     w3m
     gitFull  # provides `git gui`
     gitui gitg
