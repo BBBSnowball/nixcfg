@@ -19,7 +19,8 @@ in
     ] ++
     [ ./hardware-configuration.nix
       ./users.nix
-      nixos-hardware.nixosModules.framework
+      #FIXME replace by 16'' variant when that is added
+      nixos-hardware.nixosModules.framework-13-7040-amd
     ];
 
   networking.hostName = "fwa";
@@ -118,6 +119,8 @@ in
 
   #FIXME NixOS installer has added this to the default config. Do we want this? Move to our general config?
   security.rtkit.enable = true;
+
+  services.fwupd.enable = true;
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
