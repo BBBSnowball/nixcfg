@@ -82,6 +82,19 @@
     ];
   };
 
+  systemd.user.services.waybar = {
+    description = "waybar";
+    wantedBy = [ "sway-session.target" ];
+    partOf = [ "sway-session.target" ];
+    path = with pkgs; [ waybar networkmanagerapplet ];
+    script = ''
+      # nm-applet doesn't seem to send its IconThemePath or something else goes wrong
+      # -> manually tell waybar about its icons
+      export XDG_DATA_DIRS="$XDG_DATA_DIRS:${pkgs.networkmanagerapplet}/share"
+      exec waybar -b 42
+    '';
+  };
+
   environment.etc."xdg/waybar/config".source = ./waybar/config.json;
   environment.etc."xdg/waybar/style.css".source = ./waybar/style.css;
 
@@ -104,5 +117,5 @@
 
   services.upower.enable = true;
   services.power-profiles-daemon.enable = true;
-  services.cpupower-gui.enable = true;
+  #services.cpupower-gui.enable = true;
 }

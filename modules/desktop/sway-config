@@ -238,7 +238,9 @@ bar {
 
     # waybar has better support for tray icons
     id 42
-    swaybar_command waybar -b 42
+    #swaybar_command waybar -b 42
+    # -> started as a service so no-op here
+    swaybar_command true
     mode dock
 }
 
