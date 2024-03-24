@@ -246,6 +246,11 @@ bar {
         background #323232
         inactive_workspace #32323200 #32323200 #5c5c5c
     }
+
+    # waybar has better support for tray icons
+    id 42
+    swaybar_command waybar -b 42
+    mode dock
 }
 
 # Mumble

@@ -32,6 +32,7 @@
     gnome.gnome-screenshot
     gnome.gnome-tweaks
     gnome.nautilus
+    waybar
   ];
   environment.etc."sway/config".source = ./sway-config;
   environment.etc."alacritty.yml".source = ./alacritty.yml;
@@ -41,4 +42,21 @@
   # create /etc/X11/xkb for `localectl list-x11-keymap-options`
   # https://github.com/NixOS/nixpkgs/issues/19629#issuecomment-368051434
   services.xserver.exportConfiguration = true;
+
+  environment.etc."xdg/waybar/config".source = ./waybar/config.json;
+  environment.etc."xdg/waybar/style.css".source = ./waybar/style.css;
+
+  fonts.packages = with pkgs; [
+    # fonts for waybar and other special cases
+    # https://www.reddit.com/r/NixOS/comments/16i7bc0/how_to_install_powerline_and_fontawesome/
+    font-awesome
+    powerline-fonts
+    powerline-symbols
+    (nerdfonts.override { fonts = [ "NerdFontsSymbolsOnly" ]; })
+    # https://github.com/Alexays/Waybar/issues/1486
+    roboto
+    #meslo-lg
+    #xlsfonts
+  ];
+
 }

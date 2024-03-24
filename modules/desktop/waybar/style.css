@@ -1,12 +1,12 @@
 * {
     /* `otf-font-awesome` is required to be installed for icons */
-    font-family: FontAwesome, Roboto, Helvetica, Arial, sans-serif;
+    font-family: FiraCode, FontAwesome, Roboto, Helvetica, Arial, sans-serif;
     font-size: 13px;
 }
 
 window#waybar {
-    background-color: rgba(43, 48, 59, 0.5);
-    border-bottom: 3px solid rgba(100, 114, 125, 0.5);
+    background-color: #323232;
+    border-bottom: 0px solid rgba(100, 114, 125, 0.5);
     color: #ffffff;
     transition-property: background-color;
     transition-duration: .5s;
@@ -49,7 +49,7 @@ button:hover {
 }
 
 #workspaces button {
-    padding: 0 5px;
+    padding: 0 2px;
     background-color: transparent;
     color: #ffffff;
 }
@@ -80,6 +80,7 @@ button:hover {
 #temperature,
 #backlight,
 #network,
+#bluetooth,
 #pulseaudio,
 #wireplumber,
 #custom-media,
@@ -88,8 +89,10 @@ button:hover {
 #idle_inhibitor,
 #scratchpad,
 #mpd {
-    padding: 0 10px;
+    padding: 0 4px;
     color: #ffffff;
+    /* background-color: #1b2940; */
+    /* background-color: inherit; */
 }
 
 #window,
@@ -107,8 +110,16 @@ button:hover {
     margin-right: 0;
 }
 
-#clock {
-    background-color: #64727D;
+.warning, #disk.warning {
+  /*
+    background-color: #eba94b;
+    color: black;
+    */
+  background-color: #aa6f1b;
+}
+
+#disk.critical, .critical {
+    background-color: #eb4d4b;
 }
 
 #battery {
@@ -118,7 +129,7 @@ button:hover {
 
 #battery.charging, #battery.plugged {
     color: #ffffff;
-    background-color: #26A65B;
+    background-color: #114225;
 }
 
 @keyframes blink {
@@ -142,34 +153,8 @@ label:focus {
     background-color: #000000;
 }
 
-#cpu {
-    background-color: #2ecc71;
-    color: #000000;
-}
-
-#memory {
-    background-color: #9b59b6;
-}
-
-#disk {
-    background-color: #964B00;
-}
-
-#backlight {
-    background-color: #90b1b1;
-}
-
-#network {
-    background-color: #2980b9;
-}
-
 #network.disconnected {
     background-color: #f53c3c;
-}
-
-#pulseaudio {
-    background-color: #f1c40f;
-    color: #000000;
 }
 
 #pulseaudio.muted {
@@ -177,31 +162,11 @@ label:focus {
     color: #2a5c45;
 }
 
-#wireplumber {
-    background-color: #fff0f5;
-    color: #000000;
-}
-
 #wireplumber.muted {
     background-color: #f53c3c;
 }
 
-#custom-media {
-    background-color: #66cc99;
-    color: #2a5c45;
-    min-width: 100px;
-}
-
-#custom-media.custom-spotify {
-    background-color: #66cc99;
-}
-
-#custom-media.custom-vlc {
-    background-color: #ffa000;
-}
-
 #temperature {
-    background-color: #f0932b;
 }
 
 #temperature.critical {
@@ -209,7 +174,6 @@ label:focus {
 }
 
 #tray {
-    background-color: #2980b9;
 }
 
 #tray > .passive {
@@ -222,17 +186,11 @@ label:focus {
 }
 
 #idle_inhibitor {
-    background-color: #2d3436;
 }
 
 #idle_inhibitor.activated {
     background-color: #ecf0f1;
     color: #2d3436;
-}
-
-#mpd {
-    background-color: #66cc99;
-    color: #2a5c45;
 }
 
 #mpd.disconnected {
