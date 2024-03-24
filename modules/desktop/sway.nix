@@ -96,6 +96,13 @@
     roboto
     #meslo-lg
     #xlsfonts
+
+    noto-fonts-monochrome-emoji
+    noto-fonts-color-emoji
+    #noto-fonts
   ];
 
+  services.upower.enable = true;
+  services.power-profiles-daemon.enable = true;
+  services.cpupower-gui.enable = true;
 }

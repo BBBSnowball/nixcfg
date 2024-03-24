@@ -13,11 +13,13 @@
       "clock"
     ],
     "modules-right": [
+      "privacy",  //NOTE Doesn't seem to detect anything, i.e. doesn't work. -> not supported in v0.9
       //"mpd",
       "idle_inhibitor", "pulseaudio",
       "network",
       "network#wifi",
       "bluetooth",
+      "power-profiles-daemon",  //NOTE not supported in v0.9
       "cpu", "memory",
       "disk",
       "temperature",
@@ -232,6 +234,39 @@
     		"paused": "⏸"
     	},
     	// "ignored-players": ["firefox"]
+    },
+    "privacy": {
+	"icon-spacing": 4,
+	"icon-size": 18,
+	"transition-duration": 250,
+	"modules": [
+		{
+			"type": "screenshare",
+			"tooltip": true,
+			"tooltip-icon-size": 24
+		},
+		{
+			"type": "audio-out",
+			"tooltip": true,
+			"tooltip-icon-size": 24
+		},
+		{
+			"type": "audio-in",
+			"tooltip": true,
+			"tooltip-icon-size": 24
+		}
+	]
+    },
+    "power-profiles-daemon": {
+        "format": "{icon}",
+        "tooltip-format": "Power profile: {profile}\nDriver: {driver}",
+        "tooltip": true,
+        "format-icons": {
+            "default": "?",
+            "performance": "PERF",
+            "balanced": "BAL",
+            "power-saver": "PS"
+        }
     }
 }
 
