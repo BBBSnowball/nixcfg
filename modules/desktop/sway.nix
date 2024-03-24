@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ lib, pkgs, config, ... }:
 {
   #services.xserver.displayManager.lightdm.enable = true;
   #services.xserver.desktopManager.xfce.enable = true;
@@ -42,6 +42,45 @@
   # create /etc/X11/xkb for `localectl list-x11-keymap-options`
   # https://github.com/NixOS/nixpkgs/issues/19629#issuecomment-368051434
   services.xserver.exportConfiguration = true;
+
+  # https://wiki.archlinux.org/title/sway#Manage_Sway-specific_daemons_with_systemd
+  systemd.user.targets.sway-session = {
+    description = "Sway compositor session";
+    bindsTo = [ "graphical-session.target" ];
+    wants = [ "graphical-session-pre.target" ];
+    after = [ "graphical-session-pre.target" ];
+  };
+
+  programs.nm-applet.enable = true;
+  
+  systemd.user.services.blueman-applet = lib.mkIf config.services.blueman.enable {
+    wantedBy = [ "sway-session.target" ];
+    partOf = [ "sway-session.target" ];
+    # already set by blueman's service file
+    #description = "Bluetooth manager applet";
+    #serviceConfig.ExecStart = "${pkgs.blueman}/bin/blueman-applet";
+  };
+
+  systemd.user.services.mako = {
+    description = "Mako (notification daemon)";
+    wantedBy = [ "sway-session.target" ];
+    partOf = [ "sway-session.target" ];
+    serviceConfig.ExecStart = "${pkgs.mako}/bin/mako";
+  };
+
+  systemd.user.services.swayidle = {
+    description = "swayidle";
+    wantedBy = [ "sway-session.target" ];
+    partOf = [ "sway-session.target" ];
+    path = with pkgs; [ sway swaylock playerctl ];
+    serviceConfig.ExecStart = lib.escapeShellArgs [
+      "${pkgs.swayidle}/bin/swayidle" "-w"
+      "timeout" "300" "swaylock -f -c 000000"
+      "timeout" "600" "swaymsg \"output * dpms off\""
+      "resume" "swaymsg \"output * dpms on\""
+      "before-sleep" "swaylock -f -c 000000; playerctl pause"
+    ];
+  };
 
   environment.etc."xdg/waybar/config".source = ./waybar/config.json;
   environment.etc."xdg/waybar/style.css".source = ./waybar/style.css;
