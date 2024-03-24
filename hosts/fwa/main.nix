@@ -108,6 +108,7 @@ in
     #gqrx  # gnuradio
     #graph-easy  # dot graph to ascii graphic, e.g.: graph-easy /etc/tinc/$name/status/graph.dot
     #rpi-imager
+    powerstat
   ];
 
   # enabled by nixos-hardware but causes multi-second delays for login manager and swaylock
@@ -123,6 +124,23 @@ in
   security.rtkit.enable = true;
 
   services.fwupd.enable = true;
+
+  boot.kernelPackages = pkgs.linuxPackages_latest;
+
+  fonts.packages = with pkgs; [
+    fira-code-nerdfont
+    #terminus-nerdfont
+    #inconsolata-nerdfont
+    #fira-code
+    #fira-code-symbols
+  ];
+
+  # `programs.command-not-found.enable` needs a Nix channel, so let's try this alternative
+  # https://discourse.nixos.org/t/command-not-found-unable-to-open-database/3807/8
+  programs.nix-index.enable = true;
+  programs.command-not-found.enable = lib.mkForce false;
+
+  services.blueman.enable = true;
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
