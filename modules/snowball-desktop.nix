@@ -27,7 +27,6 @@
     gnome.eog gnome.evince
     gnome.cheese
     w3m
-    gitFull  # provides `git gui`
     gitui gitg
     gnome.gnome-screenshot
     iw wirelesstools
@@ -38,4 +37,7 @@
     # These are not available for aarch64-linux at the moment.
     mplayer
   ]);
+
+  # already defined by snowball-big, so use a different priority to avoid a conflict
+  programs.git.package = lib.mkOverride 200 pkgs.gitFull;  # provides `git gui`
 }

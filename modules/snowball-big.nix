@@ -19,7 +19,8 @@
     picocom
     python3
     w3m
-    gitFull
     git-annex
   ];
+
+  programs.git.package = pkgs.gitFull;  # provides `git gui`
 }

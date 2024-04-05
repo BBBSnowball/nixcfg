@@ -12,7 +12,7 @@
     ];
 
   environment.systemPackages = with pkgs; [
-    wget byobu tmux git tig cifs-utils pv file killall lzop vimpager
+    wget byobu tmux tig cifs-utils pv file killall lzop vimpager
     dnsutils
     htop iotop iftop unixtools.top
     pciutils usbutils lm_sensors
@@ -103,8 +103,11 @@
     set diff-options = --show-signature
   '';
 
+  # enable git here rather than adding it to systemPackages, so we can overwrite it to gitFull
+  # without causing conflicts between git and gitFull packages
   programs.git = {
     enable = true;
     lfs.enable = true;
+    package = lib.mkDefault pkgs.git;
   };
 }

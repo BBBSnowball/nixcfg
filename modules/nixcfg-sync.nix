@@ -7,8 +7,12 @@ let
 in
 {
   environment.systemPackages = with pkgs; [
-    git gnupg git-crypt
+    gnupg git-crypt
   ];
+
+  #NOTE This will use gitFull by default but can be changed with programs.git.package.
+  # (If we were to unconditionally add git to systemPackages, this would conflict with gitFull.)
+  programs.git.enable = true;
 
   programs.ssh.extraConfig = ''
     Host sync
