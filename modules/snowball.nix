@@ -17,10 +17,14 @@
     LC_MEASUREMENT = locale;
     LC_MONETARY = locale;
     LC_NAME = locale;
-    LC_NUMERIC = locale;
+    # I like decimal point instead of comma, so let's keep numbers in en_US locale.
+    #LC_NUMERIC = locale;
     LC_PAPER = locale;
     LC_TELEPHONE = locale;
-    LC_TIME = locale;
+    #LC_TIME = locale;
+    # en_DK has ISO date format. Nice!
+    # see https://groups.google.com/g/linux.debian.user/c/aYHxiH5jVl4
+    LC_TIME = "en_DK.UTF-8";
   };
 
   time.timeZone = "Europe/Berlin";
