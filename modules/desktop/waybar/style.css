@@ -58,8 +58,10 @@ button:hover {
     background: rgba(0, 0, 0, 0.2);
 }
 
-#workspaces button.focused, #workspaces button.active {
-    background-color: #64727D;
+#workspaces button.focused.focused, #workspaces button.active.active {
+    /* background-color: #64727D; */
+    /* background-color: #225983; */
+    background-color: #285577;
     box-shadow: inset 0 -2px #ffffff;
     /* I would like all-around border better (like swaybar) but that breaks the layout. */
     /*
