@@ -256,6 +256,21 @@
         "type": "github"
       }
     },
+    "nixpkgs-ollama": {
+      "locked": {
+        "lastModified": 1712776940,
+        "narHash": "sha256-R0FKMUS/JQZEn+Tqkx3ZS9MJvr9w4KW0L83PIIrfEH4=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "85d3f97277c0a0b5b542951e8990b4bd2bbe2a26",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
     "nixpkgs-stable": {
       "locked": {
         "lastModified": 1678872516,
@@ -356,6 +371,7 @@
         "lanzaboote": "lanzaboote",
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs",
+        "nixpkgs-ollama": "nixpkgs-ollama",
         "nixpkgs-unstable": "nixpkgs-unstable",
         "routeromen": "routeromen"
       }

@@ -23,6 +23,7 @@ in
       nixos-hardware.nixosModules.framework-13-7040-amd
       ./secureBoot.nix
       lanzaboote.nixosModules.lanzaboote
+      ./llm.nix
     ];
 
   networking.hostName = "fwa";
