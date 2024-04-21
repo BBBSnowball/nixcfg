@@ -160,11 +160,11 @@
         "private": "private"
       },
       "locked": {
-        "lastModified": 1706499600,
-        "narHash": "sha256-2TPsP94kM4NXSQrmLIoU+HL/RkDihLnubUoysAESrN4=",
+        "lastModified": 1712782516,
+        "narHash": "sha256-+5+nZ7pUFPB/+9/plTsKG7UWsBCZZee+ATKehQKLs1w=",
         "owner": "BBBSnowball",
         "repo": "nixcfg",
-        "rev": "bc3eb4f3664b223e62ba677e3955466b1250c55d",
+        "rev": "3f18fb4d8bb2fcde5eb98899d030491e8d1cf0b4",
         "type": "github"
       },
       "original": {
