@@ -56,7 +56,7 @@ in
 
     packages = with pkgs; [
       # GraphViz is used for dependency tree in FreeCAD.
-      cura freecad kicad graphviz blender
+      #cura freecad kicad graphviz blender
       firefox pavucontrol chromium
       mplayer mpv vlc
       speedcrunch
