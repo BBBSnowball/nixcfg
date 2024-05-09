@@ -24,11 +24,13 @@ in
       ./iperf3.nix
       ./virtmanager.nix
       ./test-zigbee.nix
+      ./smokeping.nix
     ];
 
   disabledModules = [ "services/networking/xrdp.nix" ];
 
   networking.hostName = "gk3v-pb";
+  networking.domain = "fritz.box";
 
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;    
@@ -92,7 +94,8 @@ in
     password=ask
     ip=127.0.0.1
   '';
-  networking.firewall.allowedTCPPorts = [ config.services.xrdp.port
+  networking.firewall.allowedTCPPorts = [
+    config.services.xrdp.port
     657 # Tinc
   ];
   networking.firewall.allowedUDPPorts = [ 657 ];  # Tinc
