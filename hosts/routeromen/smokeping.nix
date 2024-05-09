@@ -1,7 +1,6 @@
 { config, pkgs, lib, ... }:
 let
-  #nameserver = builtins.head config.networking.nameservers;
-  nameserver = "127.0.0.53";  # systemd-resolved
+  nameserver = config.services.smokeping.nameserver;
   fping = { name = ""; probe = null; key = ""; };
   fping1k = { name = ", 1k packets"; probe = "FPing1k"; key = "1k"; };
   fping_1k = fping1k // { key = "_1k"; };  # just different key to keep it as before
@@ -74,11 +73,18 @@ let
 
 in
 {
-  nixpkgs.overlays = [
+  options.services.smokeping.nameserver = with lib; mkOption {
+    type = types.str;
+    description = "Nameserver to use for most DNS probes";
+    # e.g. builtins.head config.networking.nameservers;
+    default = "127.0.0.53";  # systemd-resolved
+  };
+
+  config.nixpkgs.overlays = [
     (import ../../pkgs/smokepingOverlay.nix)
   ];
 
-  services.smokeping = {
+  config.services.smokeping = {
     enable = true;
     imgUrl = "/cache";
     databaseConfig = ''
@@ -200,6 +206,6 @@ in
     '';
   };
 
-  #systemd.services.smokeping.serviceConfig.ExecStartPost = "!${pkgs.systemd}/bin/systemctl start thttpd";
-  systemd.services.smokeping.wants = [ "thttpd.service" ];
+  #config.systemd.services.smokeping.serviceConfig.ExecStartPost = "!${pkgs.systemd}/bin/systemctl start thttpd";
+  config.systemd.services.smokeping.wants = [ "thttpd.service" ];
 }
