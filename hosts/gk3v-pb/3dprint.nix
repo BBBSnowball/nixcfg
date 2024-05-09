@@ -86,7 +86,7 @@
   };
   users.users.octoprint.extraGroups = [ "dialout" ];
   services.mjpg-streamer = {
-    enable = true;
+    enable = false;
     # using yuv mode, see https://github.com/jacksonliam/mjpg-streamer/issues/236
     # -> limited to VGA resolution
     #inputPlugin = "input_uvc.so -d /dev/video0 -r 1920x1080 -f 15 -y";
