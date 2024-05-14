@@ -35,7 +35,7 @@
     pioLibs2 = [
       # remove meta.insecure attribute
       # (xtensa-esp32s3-elf-gdb needs libpython2.7.so.1.0)
-      "(python2.overrideAttrs(_:{meta={};}))"
+      #"(python2.overrideAttrs(_:{meta={};}))"
     ];
     missingPioLibs = lib.lists.filter (name: !lib.attrsets.hasAttrByPath (lib.strings.splitString "." name) pkgs) pioLibs;
     pioLibsForNixShell =
