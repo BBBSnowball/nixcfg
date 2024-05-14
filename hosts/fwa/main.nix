@@ -110,7 +110,12 @@ in
     #graph-easy  # dot graph to ascii graphic, e.g.: graph-easy /etc/tinc/$name/status/graph.dot
     #rpi-imager
     powerstat
+
+    man-pages
+    man-pages-posix
   ];
+
+  documentation.dev.enable = true;
 
   # enabled by nixos-hardware but causes multi-second delays for login manager and swaylock
   services.fprintd.enable = false;
