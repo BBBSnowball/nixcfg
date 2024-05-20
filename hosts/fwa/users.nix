@@ -9,26 +9,33 @@ let
     openssh.authorizedKeys.keyFiles = [ "${privateForHost}/ssh-laptop-fwa.pub" ];
   };
   rootUser = basicUser;
-  guiUser = basicUser // {
+  guiUser = trusted:
+  basicUser // {
     isNormalUser = true;
 
-    packages = with pkgs; [
+    packages = let
+      system = pkgs.stdenv.hostPlatform.system;
+      pkgsUnstable = nixpkgs-unstable.legacyPackages.${system};
+      pkgsUnstableUnfree = import nixpkgs-unstable { inherit system; config.allowUnfree = true; };
+    in with pkgs; [
       x11vnc
+      python3 # for PlatformIO but also useful in general
+    ] ++ (if trusted then [
+      pkgsUnstable.vscodium-fhs
+    ] else [
       #vscode-fhs  # We need MS C++ Extension for PlatformIO.
-      #nixpkgs-unstable.legacyPackages.x86_64-linux.vscode-fhs
-      (import nixpkgs-unstable { system = pkgs.stdenv.hostPlatform.system; config = { allowUnfree = true; }; }).vscode
-      python3 # for PlatformIO
-    ];
+      pkgsUnstableUnfree.vscode
+    ]);
   };
 in
 {
   users.users.root = rootUser;
 
-  users.users.user = guiUser // {
+  users.users.user = guiUser true // {
     extraGroups = [ "dialout" "plugdev" "wheel" "wireshark" ];
   };
 
-  users.users.user2 = guiUser // {
+  users.users.user2 = guiUser false // {
     extraGroups = [ "dialout" ];
   };
 }
