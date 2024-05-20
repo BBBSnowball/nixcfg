@@ -96,6 +96,7 @@
   };
 
   environment.etc."xdg/waybar/config".source = ./waybar/config.json;
+  environment.etc."xdg/waybar/config-common.json".source = ./waybar/config-common.json;
   environment.etc."xdg/waybar/style.css".source = ./waybar/style.css;
 
   fonts.packages = with pkgs; [

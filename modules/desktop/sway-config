@@ -283,6 +283,16 @@ bindsym Shift+Control+Print exec grimshot --notify save area
 for_window [shell="."] title_format "%title (%shell)"
 for_window [shell="xdg_shell"] title_format "%title"
 
+# We may use a nested sway with X11 backend for the epaper.
+# Set it to the correct size and move it to a dedicated desktop.
+# -> Disable this, for now, because we should add the same thing
+#    to our scripts so it will work out-of-the-box for others.
+#for_window [title="wlroots - X11-1"] floating enable
+#for_window [title="wlroots - X11-1"] border none
+#for_window [title="wlroots - X11-1"] resize set 280 480
+#for_window [title="wlroots - X11-1"] border normal
+#for_window [title="wlroots - X11-1"] move container to workspace e
+
 # include config.d, which contains nixos.conf that forwards env variables to the session bus
 include /etc/sway/config.d/*
 

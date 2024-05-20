@@ -11,6 +11,9 @@ window#waybar {
     transition-property: background-color;
     transition-duration: .5s;
 }
+window.epd#waybar {
+    background-color: #000;
+}
 
 window#waybar.hidden {
     opacity: 0.2;
@@ -68,6 +71,9 @@ button:hover {
     padding: 0 1px;
     border: 1px solid white;
     */
+}
+.epd #workspaces button.focused.focused, .epd #workspaces button.active.active {
+    background-color: #555;
 }
 
 #workspaces button.visible {
