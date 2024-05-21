@@ -15,6 +15,7 @@
     wget byobu tmux tig cifs-utils pv file killall lzop vimpager
     dnsutils
     htop iotop iftop unixtools.top
+    btop  # suggested by ahorn. I like it.
     pciutils usbutils lm_sensors
     smartmontools
     multipath-tools  # kpartx
