@@ -60,12 +60,26 @@ in
     description = "mitmproxy";
     wantedBy = [ "mitm.target" ];
 
+    # set home directory so mitmproxy will be able to generate a certificate
+    # -> /var/lib/mitmproxy/.mitmproxy/mitmproxy-ca-cert.pem
+    # https://docs.mitmproxy.org/stable/concepts-certificates/
+    # https://askubuntu.com/questions/73287/how-do-i-install-a-root-certificate/94861#94861
+    #
+    # Install on target:
+    #     mkdir /usr/local/share/ca-certificates/extra
+    #     vi /usr/local/share/ca-certificates/extra/mitmproxy-ca-cert.pem
+    #     openssl x509 -in /usr/local/share/ca-certificates/extra/mitmproxy-ca-cert.pem -inform PEM -out /usr/local/share/ca-certificates/extra/mitmproxy-ca-cert.crt
+    #       -> That doesn't seem to change anything. It might work if we simply rename it to .crt.
+    #     update-ca-certificates   # -> "1 added"
+    environment.HOME = "%S/mitmproxy";
+
     serviceConfig = {
       DynamicUser = true;
       User = "mitmproxy";
       StateDirectory = "mitmproxy";
+      ExecStartPre = "${pkgs.coreutils}/bin/chmod 0700 %S/mitmproxy";
       #ExecStart = "${pkgs.mitmproxy}/bin/mitmweb --no-web-open-browser --listen-host ${ourIp} --listen-port ${toString mitmPort} --save-stream-file $STATE_DIRECTORY/mitmproxy.dump";
-      ExecStart = "${pkgs.mitmproxy}/bin/mitmweb --no-web-open-browser --listen-host ${ourIp} --listen-port ${toString mitmPort} --save-stream-file %S/mitmproxy/mitmproxy.dump";
+      ExecStart = "${pkgs.mitmproxy}/bin/mitmweb --no-web-open-browser --listen-host ${ourIp} --listen-port ${toString mitmPort} --save-stream-file %S/mitmproxy/mitmproxy.dump --map-local '|.*/UGOSPRO_OTA_1.0.0.0851-release-0611.img|/var/lib/mitmproxy/UGOSPRO_OTA_1.0.0.0851-release-0611.img'";
     };
   };
 
