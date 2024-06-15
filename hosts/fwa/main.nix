@@ -99,7 +99,7 @@ in
     #lazygit
     #zgrviewer graphviz
     yubikey-manager yubikey-manager-qt yubikey-personalization
-    #cura freecad kicad graphviz blender
+    freecad kicad graphviz blender
     libxslt zip  # used by Kicad
     wine
     #android-tools
@@ -151,6 +151,13 @@ in
 
   programs.kdeconnect.enable = true;
   #services.avahi.enable = true;
+
+  environment.etc."systemd/dnssd/kdeconnect.dnssd".text = ''
+    [Service]
+    Name=%H
+    Type=_kdeconnect._udp
+    Port=1716
+  '';
 
   programs.gnupg.agent = {
     enable = true;
