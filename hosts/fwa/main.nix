@@ -25,6 +25,7 @@ in
       lanzaboote.nixosModules.lanzaboote
       ./llm.nix
       ./mitmproxy.nix
+      ./nix-serve.nix
     ];
 
   networking.hostName = "fwa";
