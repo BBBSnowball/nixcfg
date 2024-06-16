@@ -3,8 +3,6 @@ let
   moreSecure = config.environment.moreSecure;
 
   basicUser = {
-    isNormalUser = true;
-
     # generate contents with `mkpasswd -m sha-512`
     hashedPasswordFile = "${secretForHost}/rootpw";
 
@@ -14,14 +12,20 @@ let
     ];
   };
   rootUser = basicUser;
+  normalUser = basicUser // {
+    isNormalUser = true;
+  };
 in
 {
-  #users.users.root = rootUser;
+  users.mutableUsers = false;
 
-  users.users.user = basicUser // {
+  users.users.root = rootUser // {
+  };
+
+  users.users.user = normalUser // {
     extraGroups = [ "dialout" "plugdev" "wheel" "wireshark" ];
   };
 
-  users.users.user2 = basicUser;
+  users.users.user2 = normalUser;
 }
 

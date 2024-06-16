@@ -11,11 +11,22 @@ in
     ] ++
     [ ./hardware-configuration.nix
       ./users.nix
+      ./disko.nix
       #./secureBoot.nix
       #lanzaboote.nixosModules.lanzaboote
     ];
 
   networking.hostName = "ug1";
+
+  # If raid logical volume is not available, do: `modprobe dm-raid; vgchange -a y`
+  boot.initrd.availableKernelModules = [ "dm_raid" ];
+  boot.initrd.kernelModules = [ "dm_raid" ];
+  boot.initrd.services.lvm.enable = true;
+  boot.initrd.systemd.enable = true;  # will interfere with boot.shell_on_fail
+  # see https://github.com/NixOS/nixpkgs/issues/245089#issuecomment-1646966283
+  boot.initrd.systemd.emergencyAccess = true;  #FIXME remove when we enable secure boot
+  # for debugging
+  boot.kernelParams = [ "boot.shell_on_fail" ];
 
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
@@ -37,6 +48,8 @@ in
   networking.useNetworkd = true;
 
   networking.useDHCP = false;
+  networking.interfaces.enp88s0.useDHCP = true;
+  networking.interfaces.enp89s0.useDHCP = true;
 
   nix.registry.routeromen.flake = routeromen;
 

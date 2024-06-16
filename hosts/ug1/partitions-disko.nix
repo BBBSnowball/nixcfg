@@ -15,11 +15,25 @@ let
           priority = 1;
         };
         ESP = {
-          type = "EF00";
+          #type = "EF00";
           size = "1024M";
           content = {
             type = "mdraid";
             name = "ESP";
+          };
+        };
+        # systemd bootctl refuses to work with raid, so let's create another ESP, for now.
+        # see https://systemd-devel.freedesktop.narkive.com/3gjOshj3/bootctl-install-on-mdadm-raid-1-fails
+        "ESP${toString num}" = {
+          type = "EF00";
+          size = "1024M";
+          content = {
+            type = "filesystem";
+            format = "vfat";
+            mountpoint = "/boot${if num == 1 then "" else toString num}";
+            mountOptions = [
+              "fmask=0137,dmask=0027"
+            ];
           };
         };
         root = {
@@ -82,7 +96,7 @@ in
         content = {
           type = "filesystem";
           format = "vfat";
-          mountpoint = "/boot";
+          mountpoint = "/boot-raid";
           mountOptions = [
             "fmask=0137,dmask=0027"
           ];
