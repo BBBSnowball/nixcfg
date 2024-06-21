@@ -12,21 +12,28 @@ in
     [ ./hardware-configuration.nix
       ./users.nix
       ./disko.nix
-      #./secureBoot.nix
-      #lanzaboote.nixosModules.lanzaboote
+      ./secureBoot.nix
+      lanzaboote.nixosModules.lanzaboote
+      ./ugreen.nix
     ];
 
   networking.hostName = "ug1";
 
   # If raid logical volume is not available, do: `modprobe dm-raid; vgchange -a y`
   boot.initrd.availableKernelModules = [ "dm_raid" ];
-  boot.initrd.kernelModules = [ "dm_raid" ];
+  boot.initrd.kernelModules = [ "dm_raid" "hid_roccat_ryos" ];  #FIXME does adding roccat module help?
   boot.initrd.services.lvm.enable = true;
   boot.initrd.systemd.enable = true;  # will interfere with boot.shell_on_fail
   # see https://github.com/NixOS/nixpkgs/issues/245089#issuecomment-1646966283
   boot.initrd.systemd.emergencyAccess = true;  #FIXME remove when we enable secure boot
   # for debugging
   boot.kernelParams = [ "boot.shell_on_fail" ];
+  console.earlySetup = true;  #FIXME does this help? -> Yes! It also fixes the issue with devices not being found.
+  #FIXME for debugging initrd, remove later
+  systemd.extraConfig = ''
+    #DefaultTimeoutStartSec = 20
+  '';
+  boot.supportedFilesystems = [ "bcachefs" ];
 
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
@@ -50,6 +57,8 @@ in
   networking.useDHCP = false;
   networking.interfaces.enp88s0.useDHCP = true;
   networking.interfaces.enp89s0.useDHCP = true;
+  systemd.network.wait-online.extraArgs = [ "--any" ];
+  systemd.network.wait-online.timeout = 10;
 
   nix.registry.routeromen.flake = routeromen;
 

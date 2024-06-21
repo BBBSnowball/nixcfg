@@ -37,7 +37,7 @@
 # nixos-rebuild ..
 # sbctl verify
 # reboot, remove existing secure boot keys to enter setup mode, enable secure boot
-# sbctl enroll-keys
+# sbctl enroll-keys --microsoft
 # reboot
 # bootctl status
-# systemd-cryptenroll --tpm2-device=auto --tpm2-with-pin=yes /dev/nvme0n1p1
+# systemd-cryptenroll --tpm2-device=auto --tpm2-with-pin=no /dev/ssd/root
