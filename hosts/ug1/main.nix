@@ -48,7 +48,12 @@ in
   #   Random seed file '/boot/loader/random-seed' is world accessible, which is a security hole!
   # see https://forum.endeavouros.com/t/bootctl-install-outputs-some-warnings-about-efi-mount-point-and-random-seed-file-in-the-terminal/43991/6
   fileSystems."/boot".options = [
-    #FIXME This is ignored here (but works for bettina-home). Why?!
+    "fmask=0137,dmask=0027"
+  ];
+  fileSystems."/boot2".options = [
+    "fmask=0137,dmask=0027"
+  ];
+  fileSystems."/boot-raid".options = [
     "fmask=0137,dmask=0027"
   ];
 
