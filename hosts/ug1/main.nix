@@ -8,13 +8,14 @@ in
       snowball-headless-big
       ssh-github
       allowUnfree
-    ] ++
-    [ ./hardware-configuration.nix
-      ./users.nix
+    ] ++ [
+      ./bcachefs.nix
       ./disko.nix
-      ./secureBoot.nix
+      ./hardware-configuration.nix
       lanzaboote.nixosModules.lanzaboote
+      ./secureBoot.nix
       ./ugreen.nix
+      ./users.nix
     ];
 
   networking.hostName = "ug1";
@@ -28,12 +29,11 @@ in
   boot.initrd.systemd.emergencyAccess = true;  #FIXME remove when we enable secure boot
   # for debugging
   boot.kernelParams = [ "boot.shell_on_fail" ];
-  console.earlySetup = true;  #FIXME does this help? -> Yes! It also fixes the issue with devices not being found.
+  console.earlySetup = true;  #FIXME does this help? -> Yes! It also fixes the issue with devices not being found. -> Well, no. That was just coincidence.
   #FIXME for debugging initrd, remove later
   systemd.extraConfig = ''
-    #DefaultTimeoutStartSec = 20
+    DefaultTimeoutStartSec = 20
   '';
-  boot.supportedFilesystems = [ "bcachefs" ];
 
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;

@@ -29,11 +29,13 @@
   fileSystems."/boot-raid" =
     { device = "/dev/disk/by-uuid/7DF1-FE69";
       fsType = "vfat";
+      options = [ "nofail" ];
     };
 
   fileSystems."/boot2" =
     { device = "/dev/disk/by-uuid/7A4A-6C5C";
       fsType = "vfat";
+      options = [ "nofail" ];
     };
 
   fileSystems."/nix" =
@@ -42,9 +44,16 @@
       options = [ "subvol=nix" ];
     };
 
-  fileSystems."/data" =
-    { device = "UUID=c621e9cd-6c39-4e2e-9c4f-81907d3e6687";
+  fileSystems."/media/data" =
+    { device = "/dev/ssd/ssd1";
       fsType = "bcachefs";
+      options = [ "nofail,x-systemd.automount" ];
+    };
+
+  fileSystems."/media/sdata" =
+    { device = "/dev/ssd/ssd1e";
+      fsType = "bcachefs";
+      options = [ "nofail,x-systemd.automount" ];
     };
 
   swapDevices = [ ];
