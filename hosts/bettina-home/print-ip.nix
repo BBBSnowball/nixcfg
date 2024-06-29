@@ -94,6 +94,7 @@
       StandardOutput = "tty";
       TTYPath = "/dev/tty1";
       ExecStart = "${pkgs.glances}/bin/glances -t 10";
+      RestartSec = 30;
     };
   };
 
