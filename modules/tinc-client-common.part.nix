@@ -5,6 +5,10 @@ let
   tincIPs    = map (x: "${x.address}/${toString x.prefixLength}") config.networking.interfaces."tinc.${ifaceName}".ipv4.addresses;
   hostName   = config.networking.hostName;
   ourName    = builtins.replaceStrings ["-"] ["_"] hostName;
+  # user name changed by this commit (for 24.05): https://github.com/NixOS/nixpkgs/commit/5c84f893106b6ee55711ec1924052e600c09384b
+  tincUser   = if config.users.users ? "tinc.${name}" then "tinc.${name}"
+  else if config.users.users ? "tinc-${name}" then "tinc-${name}"
+  else throw "Couldn't determine user name for tinc service";
 in
 {
   environment.systemPackages = [ pkgs.tinc ];
@@ -35,7 +39,7 @@ in
 
   systemd.services."tinc.${name}" = {
     preStart = ''
-      ${pkgs.coreutils}/bin/install -o tinc.${name} -m755 -d /etc/tinc/${name}/hosts
+      ${pkgs.coreutils}/bin/install -o ${tincUser} -m755 -d /etc/tinc/${name}/hosts
   
       if [ -e "/etc/nixos/secret_local/tinc-${name}-rsa_key.priv" ] ; then
         ${pkgs.coreutils}/bin/install -o root -m400 /etc/nixos/secret_local/tinc-${name}-rsa_key.priv /etc/tinc/${name}/rsa_key.priv
@@ -47,14 +51,14 @@ in
         # We tell rsync to follow symlinks so the host-specific directory can refer to files in the common dir.
         ${pkgs.rsync}/bin/rsync -r --delete -L "${privateForHost}/tinc-pubkeys/${name}/" /etc/tinc/${name}/hosts
       else
-        #${pkgs.coreutils}/bin/install -o tinc.${name} -m444 ${private}/tinc-pubkeys/${name}/* /etc/tinc/${name}/hosts/
+        #${pkgs.coreutils}/bin/install -o ${tincUser} -m444 ${private}/tinc-pubkeys/${name}/* /etc/tinc/${name}/hosts/
         ${pkgs.rsync}/bin/rsync -r --delete ${private}/tinc-pubkeys/${name}/ /etc/tinc/${name}/hosts
       fi
   
-      ${pkgs.coreutils}/bin/install -d -o tinc.${name} -m700 /etc/tinc/${name}/status
+      ${pkgs.coreutils}/bin/install -d -o ${tincUser} -m700 /etc/tinc/${name}/status
   
       chmod 444 /etc/tinc/${name}/hosts/*
-      chown -R tinc.${name} /etc/tinc/${name}/hosts/
+      chown -R ${tincUser} /etc/tinc/${name}/hosts/
     '';
 
     serviceConfig.BindPaths = [
