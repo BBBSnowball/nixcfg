@@ -163,7 +163,7 @@ in
   programs.gnupg.agent = {
     enable = true;
     enableSSHSupport = true;
-    pinentryFlavor = "gtk2";
+    pinentryPackage = pkgs.pinentry.gtk2;
   };
 
   # This value determines the NixOS release from which the default
