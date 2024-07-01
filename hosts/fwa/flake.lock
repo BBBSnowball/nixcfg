@@ -211,11 +211,11 @@
     },
     "nixos-hardware": {
       "locked": {
-        "lastModified": 1711352745,
-        "narHash": "sha256-luvqik+i3HTvCbXQZgB6uggvEcxI9uae0nmrgtXJ17U=",
+        "lastModified": 1719681865,
+        "narHash": "sha256-Lp+l1IsREVbz8WM35OJYZz8sAH0XOjrZWUXVB5bJ2qg=",
         "owner": "NixOS",
         "repo": "nixos-hardware",
-        "rev": "9a763a7acc4cfbb8603bb0231fec3eda864f81c0",
+        "rev": "a59f00f5ac65b19382617ba00f360f8bc07ed3ac",
         "type": "github"
       },
       "original": {
@@ -226,16 +226,16 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1711668574,
-        "narHash": "sha256-u1dfs0ASQIEr1icTVrsKwg2xToIpn7ZXxW3RHfHxshg=",
+        "lastModified": 1719707984,
+        "narHash": "sha256-RoxIr/fbndtuKqulGvNCcuzC6KdAib85Q8gXnjzA1dw=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "219951b495fc2eac67b1456824cc1ec1fd2ee659",
+        "rev": "7dca15289a1c2990efbe4680f0923ce14139b042",
         "type": "github"
       },
       "original": {
         "owner": "NixOS",
-        "ref": "nixos-23.11",
+        "ref": "nixos-24.05",
         "repo": "nixpkgs",
         "type": "github"
       }
@@ -304,11 +304,11 @@
     },
     "nixpkgs-unstable_2": {
       "locked": {
-        "lastModified": 1697158538,
-        "narHash": "sha256-TR02XPre2EcwU1kT4WXZWJOBi/B8C7P1xoywOUGkdDk=",
+        "lastModified": 1719874014,
+        "narHash": "sha256-ca2s3KOSTtV/CQUXpFsG3yZi6hprTv0b090Z1qV9mTw=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "ee176b5fbb680864dcf80f9ca3f6f134d81331d8",
+        "rev": "a0966d001dbb9427182de99b2628f71a30a6d96a",
         "type": "github"
       },
       "original": {
@@ -389,11 +389,11 @@
         "private": "private"
       },
       "locked": {
-        "lastModified": 1711055900,
-        "narHash": "sha256-4+VSYAWejAiqgjY6dUKyaB3lRogYcTFVV2VBsGO0Ons=",
+        "lastModified": 1719875855,
+        "narHash": "sha256-egPg3GLjOyjgj5jY3RBXcE6iFFAgjUt+LX96ygHDYFw=",
         "owner": "BBBSnowball",
         "repo": "nixcfg",
-        "rev": "df76b0735663724a3fffc404c4f241898183efbf",
+        "rev": "ae9e03c124aa450b97954732492a399445752b09",
         "type": "github"
       },
       "original": {
