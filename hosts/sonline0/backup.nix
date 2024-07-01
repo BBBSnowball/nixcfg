@@ -14,7 +14,8 @@
       #OnCalendar = "daily";  # This would be at midnight, when the system might still be in use.
       OnCalendar = "*-*-* 06:00:00";
       #Persistent = "yes";
-      FixedRandomDelay = 3600;
+      FixedRandomDelay = true;
+      RandomizedDelaySec = 3600;
     };
   };
 
