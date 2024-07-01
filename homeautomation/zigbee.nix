@@ -30,7 +30,7 @@
     # don't start it by default because it would wait for the device
     systemd.services.zigbee2mqtt.wantedBy = lib.mkForce [ ];
 
-    services.zigbee2mqtt.package = nixpkgs-unstable.legacyPackages.x86_64-linux.zigbee2mqtt;
+    #services.zigbee2mqtt.package = nixpkgs-unstable.legacyPackages.x86_64-linux.zigbee2mqtt;
     services.zigbee2mqtt.enable = true;
     services.zigbee2mqtt.settings = {
       serial.port = "/dev/ttyZigbee";

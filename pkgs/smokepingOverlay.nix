@@ -19,6 +19,7 @@ in {
   smokeping = prev.smokeping.overrideAttrs (old: {
     patches = (old.patches or []) ++ lib.optionals (! lib.versionAtLeast prev.smokeping.version "2.8.2") [
       ./smokeping-drop-rsa1.patch
+      ./smokeping-drop-dsa.patch
       smokepingLargeValuesPatch
     ];
     postInstall = (old.postInstall or "") + ''
