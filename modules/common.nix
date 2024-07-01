@@ -7,6 +7,7 @@
       (if nixpkgs.lib.versionAtLeast nixpkgs.lib.version "23.10" then {} else ./loginctl-linger.nix)
       ./fix-sudo.nix
       modules.enable-flakes
+      modules.hotfixes
       modules.nvim
       modules.tig
     ];

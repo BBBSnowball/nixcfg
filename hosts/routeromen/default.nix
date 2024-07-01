@@ -25,7 +25,6 @@ in {
       ./ddclient.nix
       ../../homeautomation
       snowball-headless-big
-      hotfixes
       ./msmtp.nix
     ]);
 
