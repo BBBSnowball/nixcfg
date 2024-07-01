@@ -26,7 +26,7 @@
     # so let's do this *after* network-online. If any application tries to use IPv6 while dhclient
     # isn't done, the replies will get lost and resend times should save us.
     after = [ "network-online.target" ];
-    wants = [ "network.target" ];
+    wants = [ "network-online.target" "network.target" ];
     serviceConfig.ExecStart = "${nixpkgs-dhclient.legacyPackages.x86_64-linux.dhcp}/bin/dhclient -cf ${secretForHost}/dhclient6.conf -6 enp1s0f0 -P -v -sf ${pkgs.coreutils}/bin/true";
   };
 

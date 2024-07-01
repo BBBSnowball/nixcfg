@@ -28,7 +28,8 @@ in
   # https://nixos.wiki/wiki/Remote_LUKS_Unlocking
   boot.initrd = let
     extraBin = with pkgs; [
-      dmraid mdadm cryptsetup
+      (dmraid // { meta.mainProgram = "dmraid"; })
+      mdadm cryptsetup
       (lvm2 // { meta.mainProgram = "lvm"; })
       dhcpcd
       (kexec-tools // { meta.mainProgram = "kexec"; })
