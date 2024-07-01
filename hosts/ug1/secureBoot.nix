@@ -33,11 +33,14 @@
 }
 
 # https://github.com/nix-community/lanzaboote/blob/master/docs/QUICK_START.md
-# sbctl generate-keys
+# sbctl create-keys
+# mv /etc/secureboot/keys /etc/nixos/secret_local/secureboot/keys
+# ln -s /etc/nixos/secret_local/secureboot/keys /etc/secureboot/keys
 # nixos-rebuild ..
 # sbctl verify
 # reboot, remove existing secure boot keys to enter setup mode, enable secure boot
-# sbctl enroll-keys
+#FIXME What are the option roms? Can we avoid them?
+# sbctl enroll-keys --microsoft
 # reboot
 # bootctl status
-# systemd-cryptenroll --tpm2-device=auto --tpm2-with-pin=yes /dev/nvme0n1p1
+# systemd-cryptenroll --tpm2-device=auto --tpm2-with-pin=no /dev/ssd/root

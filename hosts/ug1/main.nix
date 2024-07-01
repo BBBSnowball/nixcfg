@@ -50,6 +50,7 @@ in
   networking.useDHCP = false;
   networking.interfaces.enp88s0.useDHCP = true;
   networking.interfaces.enp89s0.useDHCP = true;
+  systemd.network.wait-online.extraArgs = [ "--any" "--timeout=10" ];
 
   nix.registry.routeromen.flake = routeromen;
 
