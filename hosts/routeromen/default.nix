@@ -106,7 +106,7 @@ in {
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
-    wget byobu tmux git tig cifs-utils pv file killall
+    wget byobu tmux tig cifs-utils pv file killall
     #vim
     htop iotop iftop cpufrequtils inteltool powertop stress stress-ng sysprof nethogs nix-top unixtools.top usbtop lzop
     #FIXME throttled undervolt
