@@ -24,7 +24,7 @@ in
       ./mcu-dev.nix
       ./users.nix
       ./gos.nix
-      nixos-hardware.nixosModules.framework
+      nixos-hardware.nixosModules.framework-11th-gen-intel
       ./virtmanager.nix
       ./bl808-netboot.nix
       ./test-zigbee.nix

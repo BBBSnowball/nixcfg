@@ -10,5 +10,6 @@
 
   nixpkgs.allowUnfreeByName = [
     "teensyduino"
+    "teensy-udev-rules"
   ];
 }
