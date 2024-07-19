@@ -27,11 +27,14 @@
     btrfs-progs
   ];
 
-  systemd.user.services.docker.unitConfig.ConditionUser = lib.mkForce "gos";  # default is "!root"
+  #systemd.user.services.docker.unitConfig.ConditionUser = lib.mkForce "gos";  # default is "!root"
+  systemd.user.services.docker.unitConfig.ConditionGroup = lib.mkForce "dockerrootless";
+  users.groups.dockerrootless = {};
 
   services.udev.packages = [ pkgs.android-udev-rules ];
   users.groups.adbusers = {};
   users.users.user.extraGroups = [ "adbusers" ];
+  users.users.gos.extraGroups = [ "dockerrootless" ];
 
   # log limit is likely to hide important parts of the output for our builds so increase it
   # https://stackoverflow.com/questions/65819424/is-there-a-way-to-increase-the-log-size-in-docker-when-building-a-container/66230655#66230655
@@ -42,5 +45,18 @@
   in {
     BUILDKIT_STEP_LOG_MAX_SIZE = toString (1024 * MB);
     BUILDKIT_STEP_LOG_MAX_SPEED = toString (10 * MB);  # per second
+  };
+
+  # similar setup for user3
+  fileSystems."/home/user3/.local/share/docker" = {
+    device = "/home/user3/data2/user3-docker";
+    fsType = "none";
+    options = [ "bind" ];
+  };
+
+  fileSystems."/home/user3/data2/gos-data/nix/store" = {
+    device = "/nix/store";
+    fsType = "none";
+    options = [ "bind" ];
   };
 }

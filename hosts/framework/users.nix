@@ -35,6 +35,13 @@ in
     extraGroups = [ "dialout" ];
   };
 
+  users.users.user3 = guiUser // {
+    extraGroups = [ "dialout" "dockerrootless" ];
+    packages = with pkgs; [
+      docker-compose
+    ] ++ guiUser.packages;
+  };
+
   users.users.gos = basicUser // {
     extraGroups = [ ];
     isNormalUser = true;

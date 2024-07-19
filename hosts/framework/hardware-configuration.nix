@@ -36,6 +36,12 @@
       options = [ "ssd" ];
     };
 
+  fileSystems."/home/user3/data2" =
+    { device = "/dev/disk/by-uuid/5dde60c3-2427-47f0-8ed2-c3b3e1de10ad";
+      fsType = "btrfs";
+      options = [ "ssd" ];
+    };
+
   fileSystems."/boot" =
     { device = "/dev/disk/by-uuid/9FB9-1E18";
       fsType = "vfat";
