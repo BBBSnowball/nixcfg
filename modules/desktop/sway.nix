@@ -36,6 +36,7 @@
   ];
   environment.etc."sway/config".source = ./sway-config;
   environment.etc."alacritty.yml".source = ./alacritty.yml;
+  environment.etc."alacritty.toml".source = ./alacritty.toml;
   #environment.etc."i3status.conf".source = ./i3status.conf;
   environment.etc."xdg/i3status/config".source = ./i3status.conf;
   hardware.opengl.enable = true;

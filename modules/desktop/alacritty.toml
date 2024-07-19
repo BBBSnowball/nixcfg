@@ -1,0 +1,15 @@
+# https://wiki.archlinux.org/title/Alacritty#Terminal_functionality_unavailable_in_remote_shells
+[env]
+TERM = "xterm-256color"
+
+# https://wiki.archlinux.org/title/Alacritty#Spawn_new_instance_in_same_directory
+[[keyboard.bindings]]
+action = "SpawnNewInstance"
+key = "Return"
+mods = "Control|Shift"
+
+[[keyboard.bindings]]
+action = "SpawnNewInstance"
+key = "N"
+mods = "Control|Shift"
+
