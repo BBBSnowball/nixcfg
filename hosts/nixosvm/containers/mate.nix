@@ -6,7 +6,7 @@ in {
     autoStart = true;
     config = { config, pkgs, ... }: let
       #node = pkgs.nodejs-8_x;
-      node = pkgs.nodejs;
+      node = pkgs.nodejs_18;
     in {
       imports = [ modules.container-common ];
 
@@ -14,6 +14,8 @@ in {
         node cacert
         #NOTE npm2nix doesn't seem to exist in 19.09 but I didn't get this to work anyway.
         #     Do an `npm update` in ~strichliste/strichliste after an update.
+        #     Do this as user strichliste and in `nix-shell -p python3 sqlite`.
+        #     If it complains about ca-certificates, check the path in /home/strichliste/.npmrc.
 	sqlite-interactive
       ];
 
