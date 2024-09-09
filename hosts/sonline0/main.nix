@@ -38,6 +38,11 @@ in {
 
   boot.kernel.sysctl."net.ipv4.ip_forward" = "1";
 
+  # useDHCP partially breaks networkd for the main interface.
+  # see https://github.com/NixOS/nixpkgs/issues/75515#issuecomment-564768770
+  # (Except that 99-ethernet-default-dhcp.network was winning over the specific file.)
+  networking.useDHCP = false;
+
   networking.useNetworkd = true;
   systemd.network = {
     enable = true;
@@ -84,6 +89,12 @@ in {
       extraConfig = ''
         [Network]
         IPv6AcceptRA=true
+        [IPV6]
+        # We could set DUID here and see whether this can replace dhclient
+        # but there doesn't seem to be any way to keep this private
+        # (`networkctl status enp1s0f0` will show it)
+        #ClientIdentifier=duid
+        #DUIDRawData=...
       '';
     };
 
