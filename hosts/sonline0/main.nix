@@ -155,6 +155,12 @@ in {
 
   programs.vim.defaultEditor = true;
 
+  # mdmonitor service is added by mdadm package and it will fail if we don't configure this.
+  # (msmtp will resolve "root" to the intended recipient via aliases.)
+  environment.etc."mdadm.conf".text = ''
+    MAILADDR root
+  '';
+
   # This value determines the NixOS release with which your system is to be
   # compatible, in order to avoid breaking some software such as database
   # servers. You should change this only after NixOS release notes say you
