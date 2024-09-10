@@ -264,6 +264,10 @@ in
 
   services.rpcbind.enable = true;  # for NFS client
 
+  services.tailscale.enable = true;
+  networking.networkmanager.unmanaged = [ "tailscale0" ];
+  #networking.networkmanager.logLevel = "TRACE";
+
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
   # on your system were taken. It‘s perfectly fine and recommended to leave
