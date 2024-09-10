@@ -5,7 +5,7 @@ let
   fping1k = { name = ", 1k packets"; probe = "FPing1k"; key = "1k"; };
   fping_1k = fping1k // { key = "_1k"; };  # just different key to keep it as before
   targetHosts = [
-    { host = "localhost"; key = "LocalMachine"; }
+    #{ host = "localhost"; key = "LocalMachine"; }
     { name = "FritzBox"; host = "192.168.178.1"; probes = [ fping fping1k ]; }
     { name = "Printer"; host = "192.168.178.21"; }
     { name = "work"; host = "192.168.178.56"; probes = [ fping fping_1k ]; }
@@ -37,16 +37,16 @@ let
 
     # Level 3 / CenturyLink
     # https://lookingglass.centurylink.com/
-    { name = "Level 3, Paris";     host = "lo-22.ear1.Paris1.Level3.net"; }
-    { name = "Level 3, Marseille"; host = "lo0.0.edge4.Marseille1.level3.net"; }
-    { name = "Level 3, London";    host = "lo-0.ear1.London1.Level3.net"; }
+    #{ name = "Level 3, Paris";     host = "lo-22.ear1.Paris1.Level3.net"; }
+    #{ name = "Level 3, Marseille"; host = "lo0.0.edge4.Marseille1.level3.net"; }
+    #{ name = "Level 3, London";    host = "lo-0.ear1.London1.Level3.net"; }
 
     # Telia
     # https://lg.twelve99.net/?type=ping&router=prs-b8&address=163.172.39.101
     { name = "Telia, Paris 1"; host = "prs-b6.ip.twelve99.net"; }
     { name = "Telia, Paris 2"; host = "prs-b8.ip.twelve99.net"; }
     { name = "Telia, Paris 3"; host = "prs-b8.ip.twelve99.net"; }
-    { name = "Telia, London";  host = "slou-b1.ip.twelve99.net"; }
+    #{ name = "Telia, London";  host = "slou-b1.ip.twelve99.net"; }
   ];
   completeHost = x: rec {
     key    = x.key or (lib.strings.replaceStrings ["." "," " "] ["_" "_" ""] name);
