@@ -24,7 +24,11 @@ in {
         interface = "127.0.0.1";
         authMode = "Registered";
         plugins = with pkgs; [ ];
-        libpurple_plugins = with pkgs; [ purple-matrix purple-signald purple-discord ];
+        libpurple_plugins = with pkgs; [
+          #purple-matrix
+          purple-signald
+          purple-discord
+        ];
       };
 
       services.stunnel = {
@@ -47,10 +51,10 @@ in {
           verify = "2";
         };
         # http://wiki.bitlbee.org/Oscar%20over%20SSL
-        clients.oscaricq = {
-          accept = "127.0.0.1:5190";
-          connect = "slogin.icq.com:443";
-        };
+        #clients.oscaricq = {
+        #  accept = "127.0.0.1:5190";
+        #  connect = "slogin.icq.com:443";
+        #};
       };
 
       # There is a ready-made service for WeeChat in screen
