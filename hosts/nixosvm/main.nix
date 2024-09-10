@@ -23,8 +23,9 @@ in {
       auto-upgrade
       snowball-vm-sonline0
       nixcfg-sync
-      ./services/taskserver.nix
+      ./services/headscale.nix
       ./services/openvpn.nix
+      ./services/taskserver.nix
       ./services/tinc.nix
       (if useNftables then ./firewall-nftables.nix else ./firewall-iptables-restore.nix)
     ] ++ (map withFlakeInputs [
