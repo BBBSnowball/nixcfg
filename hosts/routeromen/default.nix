@@ -13,7 +13,7 @@ in {
       ../../wifi-ap-eap/default.nix
       #../../sound.nix
       ./smokeping.nix
-      ./ntopng.nix
+      #./ntopng.nix
       ./samba.nix
       ./tinc.nix
       shorewall
