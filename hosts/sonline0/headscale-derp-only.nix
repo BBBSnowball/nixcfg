@@ -1,9 +1,14 @@
-{ pkgs, privateForHost, secretForHost, ... }:
+{ lib, pkgs, privateForHost, secretForHost, ... }:
 let
   # 3478 is already used by coturn.
   stunport = 3480;
 
   domain = "derp2.${privateForHost.infoDomain}";
+
+  # We have TLS offloading in a VM, so don't enable it here.
+  # (This will disable gRPC because we won't have any TLS for that
+  #  but we don't need it anyway.)
+  useTls = false;
 in
 {
   #NOTE This doesn't work, yet. The DERP server doesn't seem to be started.
@@ -15,10 +20,10 @@ in
       metrics_listen_addr = "127.0.0.1:9090";
       grpc_listen_addr = "127.0.0.1:50443";
 
-      #NOTE These are probably not necessary. We thought that they might be needed for DERP
+      #NOTE These are not necessary. We thought that they might be needed for DERP
       #     but that was disabled due to a typo in the config.
-      tls_cert_path = "/var/lib/acme/${domain}/fullchain.pem";
-      tls_key_path = "/var/lib/acme/${domain}/key.pem";
+      tls_cert_path = lib.mkIf useTls "/var/lib/acme/${domain}/fullchain.pem";
+      tls_key_path = lib.mkIf useTls "/var/lib/acme/${domain}/key.pem";
 
       derp.server = {
         #NOTE `enabled`, not `enable` !
@@ -44,7 +49,7 @@ in
   # The service will often close its database and then hang until it is killed.
   # There is no point in waiting for that for too long.
   systemd.services.headscale.serviceConfig.TimeoutStopSec = 5;
-  systemd.services.headscale.after = [
+  systemd.services.headscale.after = lib.mkIf useTls [
     # Wait for file to exist (selfsigned) or acme to be done?
     # -> No reason to start beofre acme is done, I think.
     #"acme-selfsigned-derp2.bkoch.info.service"
@@ -94,7 +99,7 @@ in
       #EXEC_SEQUENCE_INTERVAL=60
     '';
   in
-  {
+  lib.mkIf useTls {
     email = privateForHost.acmeEmail;
     dnsProvider = "exec";
     extraDomainNames = [
