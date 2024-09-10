@@ -1,9 +1,15 @@
 #/usr/bin/bash
 set -e
 
+nameserver="$1"
+email="$2"
+shift
+shift
+# remaining arguments are allowed domains
+
 read cmd name value x <<<"$SSH_ORIGINAL_COMMAND"
 
-if [ -n "$x" -o -z "$value" ] ; then
+if [ -n "$x" -o -z "$name" -o -z "$value" ] ; then
   echo "not the right number of arguments in \$SSH_ORIGINAL_COMMAND" >&2
   exit 200
 fi
@@ -11,15 +17,17 @@ fi
 # client adds a trailing dot (which is correct) but mailinabox API doesn't like that
 name="${name%.}"
 
-case "$name" in
-  bettina-home-acme.domain-without-dnssec)
-    # lego will resolve the CNAME so we will get this one instead of the others.
-    ;;
-  *)
+# Does the name match any of our arguments?
+# lego will resolve the CNAME so we will get this one instead of the others.
+while [ "$1" != "$name" ] ; do
+  shift
+  if [ -z "$1" ] ; then
     echo "domain not allowed: $name" >&2
     exit 200
-    ;;
-esac
+  fi
+done
+# define in depth: use the argument that we can trust rather than untrusted input
+name="$1"
 
 value2="${value//[^-a-zA-Z0-9_+=]/}"
 if [ "$value" != "$value2" ] ; then
@@ -55,7 +63,7 @@ else
 \$ORIGIN $name.
 \$TTL $ttl
 
-@ IN SOA ns1.mail.domain-without-dnssec. hostmaster.the-other-domain. (
+@ IN SOA $nameserver $email (
            $(date '+%s')     ; serial number
            30     ; Refresh (secondary nameserver update interval)
            15     ; Retry (when refresh fails, how often to try again, should be lower than the refresh)
@@ -78,3 +86,4 @@ EOF
   esac
   killall -HUP /usr/sbin/nsd
 fi
+

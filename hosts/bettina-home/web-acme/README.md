@@ -3,7 +3,7 @@ by mailinabox in our case so we are a bit limited w.r.t. how we can add records
 with short TTL.
 
 - lego will call `$dnsScript`, which forwards the request via SSH.
-- mailinabox host, `~/.ssh/authorized_keys`: `restrict,command="/root/acme-dns-update-for-bettina-home.sh" ssh-rsa ...`
+- mailinabox host, `~/.ssh/authorized_keys`: `restrict,command="/root/acme-dns-update.sh ns1.domain-without-dnssec. hostmaster.real-domain. bettina-home-acme.domain-without-dnssec" ssh-rsa ...`
 - DNS records:
     - `bettina-home.domain`: `A` record for any of the IPs (optional)
     - `lokal.bettina-home.domain` and `*.lokal.bettina-home.domain`: `A` record to local IP
