@@ -9,6 +9,8 @@ let
     { name = "FritzBox"; host = "192.168.178.1"; probes = [ fping fping1k ]; }
     { name = "Printer"; host = "192.168.178.21"; }
     { name = "work"; host = "192.168.178.56"; probes = [ fping fping_1k ]; }
+    { name = "192.168.178.30"; host = "192.168.178.30"; probes = [ fping fping_1k ]; }
+    { name = "192.168.178.33"; host = "192.168.178.33"; probes = [ fping fping_1k ]; }
     { key = "Google"; host = "google.de"; }
     #rec { key = "DNS1"; name = "DNS 1 (${host})"; host = "176.95.16.219"; }
     { name = "DNS 1"; host = "176.95.16.219"; }
