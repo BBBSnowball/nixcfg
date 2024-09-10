@@ -54,6 +54,7 @@ in
       listen-address = [
         downstreamIP
         "127.0.0.1"
+        "127.0.0.53"
       ];
       dhcp-authoritative = true;
 
@@ -97,12 +98,19 @@ in
   systemd.services.dnsmasq.serviceConfig.StateDirectory = "dnsmasq";
   # resolved listens only on certain IPs but it conflicts with dnsmasq's ports
   # It does work if we start dnsmasq first.
+  # -> Well, except systemd-resolve will not open its own socket, now. That breaks any software that trusts
+  #    resolved's entry in resolv.conf. D'oh!
+  # -> Let dnsmasq listen on 127.0.0.53, so it will replace resolved. Not ideal but we don't have many options here.
   #systemd.services.dnsmasq.before = [ "systemd-resolved.service" ];
   systemd.services.systemd-resolved = {
     after = [ "dnsmasq.service" ];
     wants = [ "dnsmasq.service" ];
     # stop resolved if dnsmasq is stopped (or restarted)
     partOf = [ "dnsmasq.service" ];
+
+    # If resolved is started, some software will try to talk to it but it is broken because of dnsmasq.
+    # Therefore, don't start it. Normal name resolution will work (but resolvectl will fail, of course).
+    enable = false;
   };
   # avoid `after` dependency in the other direction
   # (direct, as well as via network.target)
