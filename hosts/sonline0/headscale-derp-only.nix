@@ -19,12 +19,14 @@ in
       #     but that was disabled due to a typo in the config.
       tls_cert_path = "/var/lib/acme/${domain}/fullchain.pem";
       tls_key_path = "/var/lib/acme/${domain}/key.pem";
+
       derp.server = {
-        enable = true;
+        #NOTE `enabled`, not `enable` !
+        enabled = true;
         region_id = 900;
         
-        region_code = "headscale";
-        region_name = "Headscale Embedded DERP";
+        region_code = "custom";
+        region_name = "headscale";
         #stun_listen_addr = ":3480";
         stun_listen_addr = "${privateForHost.net.ip0}:${toString stunport}";
         #private_key_path = "/var/lib/headscale/derp_server_private.key";
@@ -32,6 +34,7 @@ in
         ipv6 = privateForHost.net.ipv6;
       };
       derp.urls = [];
+      derp.paths = [ "/etc/headscale/derp.yaml" ];
 
       # just to avoid the warning
       ip_prefixes = [ "100.64.0.0/10" ];
@@ -47,6 +50,24 @@ in
     #"acme-selfsigned-derp2.bkoch.info.service"
     "acme-derp2.bkoch.info.service"
   ];
+
+  environment.etc."headscale/derp.yaml".text = ''
+    OmitDefaultRegions: true
+    regions:
+      900:
+        regionid: 900
+        regioncode: custom
+        regionname: headscale
+        nodes:
+          - name: 900a
+            regionid: 900
+            hostname: ${domain}
+            ipv4: ${privateForHost.net.ip0}
+            ipv6: "${privateForHost.net.ipv6}"
+            stunport: 3480
+            stunonly: false
+            derpport: 0
+  '';
 
   #NOTE This needs additional config on mailinabox.
   #  see ../bettina-home/web-acme/README.md
