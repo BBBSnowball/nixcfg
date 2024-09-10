@@ -18,6 +18,7 @@ in {
       ./ipv6-dhclient.nix
       ./backup.nix
       ./coturn.nix
+      ./headscale-derp-only.nix
     ];
 
   boot.loader.grub.devices = [
@@ -80,7 +81,7 @@ in {
         "${privateValues.net.ip0}/24"
         "${privateValues.net.ip1}/32"
         "${privateValues.net.ip2}/32"
-        "${privateValues.net.ipv6}"
+        "${privateValues.net.ipv6_cidr}"
       ];
       gateway = [ privateValues.net.gw ];
       dns = privateValues.net.nameservers;
