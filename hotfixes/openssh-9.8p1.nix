@@ -8,7 +8,8 @@ let
 in {
   ${name} =
   if lib.versionAtLeast pkg.version fixedVersion || lib.lists.any (p: lib.strings.match ".*CVE-2024-6387.*" (toString p) != null) pkg.patches
-  then builtins.trace "hotfix not used for ${pkg.name} because it is not older than ${fixedVersion}" pkg
+  then #builtins.trace "hotfix not used for ${pkg.name} because it is not older than ${fixedVersion}"
+       pkg
   else pkg.overrideAttrs (old: rec {
     name = "${old.pname}-${version}";
     version = fixedVersion;
