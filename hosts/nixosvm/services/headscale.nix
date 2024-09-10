@@ -52,6 +52,15 @@ in
             hostname: derp1.${privateForHost.infoDomain}
             ipv4: ${config.networking.externalIp}
             ipv6: "${privateForHost.serverExternalIpv6}"
+            # coturn should work as a stun-only DERP.
+            stunport: 3478
+            stunonly: true
+            derpport: 0
+          - name: 900b
+            regionid: 900
+            hostname: derp2.${privateForHost.infoDomain}
+            ipv4: ${config.networking.externalIp}
+            ipv6: "${privateForHost.serverExternalIpv6}"
             stunport: 3480
             stunonly: false
             derpport: 0
