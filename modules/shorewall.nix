@@ -11,6 +11,7 @@ let
       modem     ip
       loc       ip
       tinc      ip
+      tailscale ip
     '';
 
     interfaces = let
@@ -25,6 +26,7 @@ let
       modem   MODEM_IF        ${myDefaultOptions},sourceroute=0,physical=upstream-7
       loc     LOC_IF          ${myDefaultOptions},physical=br0,routeback,dhcp
       tinc    TINC_IF         ${myDefaultOptions},physical=tinc.bbbsnowbal,dhcp
+      tailscale TAILSCALE_IF  ${myDefaultOptions},physical=tailscale0
     '';
 
     policy = ''
@@ -32,6 +34,7 @@ let
 
       loc     net             ACCEPT
       $FW     net,loc,tinc    ACCEPT
+      $FW     tailscale       ACCEPT
       net     all             DROP            $LOG_LEVEL      $LOGLIMIT
       all     all             REJECT          $LOG_LEVEL      $LOGLIMIT
     '';
