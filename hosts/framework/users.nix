@@ -42,6 +42,10 @@ in
     ] ++ guiUser.packages;
   };
 
+  users.users.user4 = guiUser // {
+    extraGroups = [ "dialout" ];
+  };
+
   users.users.gos = basicUser // {
     extraGroups = [ ];
     isNormalUser = true;
