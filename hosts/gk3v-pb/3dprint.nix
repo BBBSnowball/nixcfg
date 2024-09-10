@@ -51,7 +51,7 @@
         meta = with lib; {
           description = "Create custom G-Code macros for OctoPrint";
           homepage = "https://github.com/cp2004/OctoPrint-GCodeMacros";
-          license = licenses.agpl3;
+          #license = licenses.agpl3;
         };
       };
       changeFilament = buildPlugin rec {
@@ -77,7 +77,8 @@
       telegram
       touchui
       #octoklipper
-      octoprint-dashboard displaylayerprogress
+      #octoprint-dashboard
+      displaylayerprogress
       #lightcontrols
       draggableFiles
       gcodeMacros
