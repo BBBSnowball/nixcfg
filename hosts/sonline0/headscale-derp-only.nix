@@ -32,8 +32,8 @@ in
         
         region_code = "custom";
         region_name = "headscale";
-        #stun_listen_addr = ":3480";
-        stun_listen_addr = "${privateForHost.net.ip0}:${toString stunport}";
+        stun_listen_addr = ":${toString stunport}";
+        #stun_listen_addr = "${privateForHost.net.ip0}:${toString stunport}";
         #private_key_path = "/var/lib/headscale/derp_server_private.key";
         ipv4 = privateForHost.net.ip0;
         ipv6 = privateForHost.net.ipv6;
