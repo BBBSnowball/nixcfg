@@ -11,5 +11,6 @@
   networking.useDHCP = false;
 
   networking.defaultGateway = "192.168.84.129";
-  networking.nameservers = [ "62.210.16.6" "62.210.16.7" ];
+  #networking.nameservers = [ "62.210.16.6" "62.210.16.7" ];
+  networking.nameservers = [ "51.159.69.156" "51.159.69.162" ];
 }
