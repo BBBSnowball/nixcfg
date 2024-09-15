@@ -2,13 +2,14 @@
 let
   # 3478 is already used by coturn.
   stunport = 3480;
+  derpport = 1443;
 
   domain = "derp2.${privateForHost.infoDomain}";
 
   # We have TLS offloading in a VM, so don't enable it here.
   # (This will disable gRPC because we won't have any TLS for that
   #  but we don't need it anyway.)
-  useTls = false;
+  useTls = true;
 in
 {
   #NOTE This doesn't work, yet. The DERP server doesn't seem to be started.
@@ -16,7 +17,8 @@ in
     enable = true;
     settings = {
       server_url = "https://${domain}";
-      listen_addr = "${privateForHost.net.internalPrefix}.129:8080";
+      #listen_addr = "${privateForHost.net.internalPrefix}.129:8080";
+      listen_addr = "${privateForHost.net.ip0}:${toString derpport}";
       metrics_listen_addr = "127.0.0.1:9090";
       grpc_listen_addr = "127.0.0.1:50443";
 
@@ -51,9 +53,8 @@ in
   systemd.services.headscale.serviceConfig.TimeoutStopSec = 5;
   systemd.services.headscale.after = lib.mkIf useTls [
     # Wait for file to exist (selfsigned) or acme to be done?
-    # -> No reason to start beofre acme is done, I think.
-    #"acme-selfsigned-derp2.bkoch.info.service"
-    "acme-derp2.bkoch.info.service"
+    # -> No reason to start before acme is done, I think.
+    "acme-${domain}.service"
   ];
 
   environment.etc."headscale/derp.yaml".text = ''
@@ -69,9 +70,9 @@ in
             hostname: ${domain}
             ipv4: ${privateForHost.net.ip0}
             ipv6: "${privateForHost.net.ipv6}"
-            stunport: 3480
+            stunport: ${toString stunport}
             stunonly: false
-            derpport: 0
+            derpport: ${toString derpport}
   '';
 
   #NOTE This needs additional config on mailinabox.
