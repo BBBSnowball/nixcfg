@@ -30,7 +30,7 @@
         ln -sf ''${CREDENTIALS_DIRECTORY}/id_edi /run/autossh/
       '';
     };
-    autossh-ldap.serviceConfig = restartConfig;
+    #autossh-ldap.serviceConfig = restartConfig;
   };
 
   # The ssh config refers to the IdentityFile in /etc/nixos/secret (for use by root) as well as /run/autossh (for use by the service).
