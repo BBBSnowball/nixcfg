@@ -18,7 +18,8 @@ in
     settings = {
       server_url = "https://${domain}";
       #listen_addr = "${privateForHost.net.internalPrefix}.129:8080";
-      listen_addr = "${privateForHost.net.ip0}:${toString derpport}";
+      #listen_addr = "${privateForHost.net.ip0}:${toString derpport}";
+      listen_addr = ":${toString derpport}";
       metrics_listen_addr = "127.0.0.1:9090";
       grpc_listen_addr = "127.0.0.1:50443";
 
@@ -32,8 +33,8 @@ in
         enabled = true;
         region_id = 900;
         
-        region_code = "custom";
-        region_name = "headscale";
+        region_code = "sonline0";
+        region_name = "sonline0";
         stun_listen_addr = ":${toString stunport}";
         #stun_listen_addr = "${privateForHost.net.ip0}:${toString stunport}";
         #private_key_path = "/var/lib/headscale/derp_server_private.key";
@@ -62,8 +63,8 @@ in
     regions:
       900:
         regionid: 900
-        regioncode: custom
-        regionname: headscale
+        regioncode: sonline0
+        regionname: sonline0
         nodes:
           - name: 900a
             regionid: 900
