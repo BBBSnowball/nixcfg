@@ -38,6 +38,7 @@ in {
   services.openssh.ports = [ privateInitrd.port ];
 
   boot.kernel.sysctl."net.ipv4.ip_forward" = "1";
+  boot.kernel.sysctl."net.ipv6.conf.all.forwarding" = "1";
 
   # useDHCP partially breaks networkd for the main interface.
   # see https://github.com/NixOS/nixpkgs/issues/75515#issuecomment-564768770
@@ -108,6 +109,7 @@ in {
       name = "br84";
       address = [
         "${privateValues.net.internalPrefix}.129/24"
+        "${privateValues.net.ipv6_br84_cidr}"
       ];
       extraConfig = ''
         [Bridge]
