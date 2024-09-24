@@ -28,6 +28,7 @@ in
       ./virtmanager.nix
       ./bl808-netboot.nix
       ./test-zigbee.nix
+      #./ipfs.nix
       ./llm.nix
       ./moreSecure.nix
       ./teensy.nix
