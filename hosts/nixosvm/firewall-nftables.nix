@@ -49,6 +49,9 @@ in
         iifname "vpn_android-*" oifname "tinc.bbbsnowbal" ip daddr . tcp dport @allow_vpn_to_tinc accept
         oifname "vpn_android-*" iifname "tinc.bbbsnowbal" ip saddr . tcp sport @allow_vpn_to_tinc accept
 
+        iifname "vpn_android-*" oifname "tailscale0" ip daddr { 100.64.0.0/16 } accept comment "Android VPN to Tailscale"
+        oifname "vpn_android-*" iifname "tailscale0" ip saddr { 100.64.0.0/16 } accept comment "Tailscale to Android VPN"
+
         iifname "vpn_*" oifname "ens3" ip daddr { 192.168.0.0/16, 127.0.0.0/8 } jump fw-reject
         iifname "vpn_*" oifname "ens3" accept
         oifname "vpn_*" iifname "ens3" accept
@@ -76,7 +79,10 @@ in
         oifname "ens3" masquerade
 
         # adjust source IP so tinc can handle the packets
-        oifname "tinc.bbbsnowbal" ip saddr { 192.168.88.0/23, 192.168.91.0/23 } ip daddr . tcp dport @allow_vpn_to_tinc masquerade
+        oifname "tinc.bbbsnowbal" ip saddr { 192.168.88.0/23, 192.168.91.0/23 } ip daddr . tcp dport @allow_vpn_to_tinc counter masquerade
+
+        # adjust source IP so Wireguard/Tailscale will accept the packets
+        oifname "tailscale0" ip saddr { 192.168.88.0/23, 192.168.91.0/23 } counter masquerade comment "Android VPN to Tailscale"
       }
     '';
   };
