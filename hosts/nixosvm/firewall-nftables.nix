@@ -43,11 +43,36 @@ in
         }
       }
 
+      set allow_upstream_to_tailscale {
+        typeof ip saddr . ip daddr . tcp dport
+        counter
+        flags constant
+        comment "allow traffic from upstream port to these hosts+ports";
+        elements = {
+          # mailinabox to rock1
+          192.168.84.130 . 100.64.0.9 . 80,
+        }
+      }
+
+      map dnat_from_upstream {
+        typeof ip saddr . ip daddr . tcp dport : ip daddr . tcp dport;
+        counter
+        flags constant, interval
+        comment "DNAT mappings from upstream port";
+
+        elements = {
+          192.168.84.130 . ${upstreamIP} . 8091 : 100.64.0.9 . 80,
+        }
+      }
+
       chain filter {
         type filter hook forward priority filter; policy drop;
 
         iifname "vpn_android-*" oifname "tinc.bbbsnowbal" ip daddr . tcp dport @allow_vpn_to_tinc accept
         oifname "vpn_android-*" iifname "tinc.bbbsnowbal" ip saddr . tcp sport @allow_vpn_to_tinc accept
+
+        iifname "ens3" oifname "tailscale0" ip saddr . ip daddr . tcp dport @allow_upstream_to_tailscale accept
+        oifname "ens3" iifname "tailscale0" ip daddr . ip saddr . tcp sport @allow_upstream_to_tailscale accept
 
         iifname "vpn_android-*" oifname "tailscale0" ip daddr { 100.64.0.0/16 } accept comment "Android VPN to Tailscale"
         oifname "vpn_android-*" iifname "tailscale0" ip saddr { 100.64.0.0/16 } accept comment "Tailscale to Android VPN"
@@ -67,6 +92,7 @@ in
 
         # lookup saddr+daddr+dport in map, get ip addr and port for dnat
         iifname "vpn_android-*" dnat ip addr . port to ip saddr . ip daddr . tcp dport map @dnat_vpn_to_tinc
+        iifname "ens3" dnat ip addr . port to ip saddr . ip daddr . tcp dport map @dnat_from_upstream
 
         #TODO We shoud properly filter incoming packets from VPN: deny from vpn_+ in INPUT, allow "--icmp-type destination-unreachable", whitelist appropriate ports
         #TODO This should already be rejected in FORWARD but this is not logged and connection times out instead.
@@ -82,7 +108,7 @@ in
         oifname "tinc.bbbsnowbal" ip saddr { 192.168.88.0/23, 192.168.91.0/23 } ip daddr . tcp dport @allow_vpn_to_tinc counter masquerade
 
         # adjust source IP so Wireguard/Tailscale will accept the packets
-        oifname "tailscale0" ip saddr { 192.168.88.0/23, 192.168.91.0/23 } counter masquerade comment "Android VPN to Tailscale"
+        oifname "tailscale0" ip saddr { 192.168.84.0/24, 192.168.88.0/23, 192.168.91.0/23 } counter masquerade comment "Android VPN or upstream interface to Tailscale"
       }
     '';
   };
