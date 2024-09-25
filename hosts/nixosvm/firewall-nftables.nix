@@ -110,6 +110,17 @@ in
         # adjust source IP so Wireguard/Tailscale will accept the packets
         oifname "tailscale0" ip saddr { 192.168.84.0/24, 192.168.88.0/23, 192.168.91.0/23 } counter masquerade comment "Android VPN or upstream interface to Tailscale"
       }
+
+      chain input {
+        type filter hook input priority filter - 1;
+        iifname "tailscale0" ip saddr != { 100.64.0.1, 100.64.0.9 } tcp dport ${toString config.networking.firewall.allowedPorts.rss.port} goto log-and-reject
+      }
+
+      chain log-and-reject {
+        # call NixOS' logging
+        jump fw-reject
+        reject
+      }
     '';
   };
   #networking.nftables.tables.filter6 = {
@@ -121,4 +132,6 @@ in
   #    };
   #  '';
   #};
+
+  networking.firewall.interfaces.tailscale0.allowedTCPPorts = [ config.networking.firewall.allowedPorts.rss.port ];
 }
