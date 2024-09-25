@@ -13,11 +13,11 @@ let
   allowedPortsType = types.attrsOf portTypeOrPort;
 in {
   options = {
-    networking.firewall.allowedPortsInterface = mkOption {
-      type = types.str;
-      default = "";
-      example = "eth0";
-      description = "open ports in allowedPorts on specific interface; use \"\" for all interfaces";
+    networking.firewall.allowedPortsInterfaces = mkOption {
+      type = with types; listOf str;
+      default = [];
+      example = [ "eth0" ];
+      description = "open ports in allowedPorts on specific interfaces; use [] for all interfaces";
     };
     networking.firewall.allowedPorts = mkOption {
       type = allowedPortsType;
@@ -51,15 +51,21 @@ in {
       allowedTCPPortRanges = extractRanges (filterType "tcp" config.networking.firewall.allowedPorts);
       allowedUDPPortRanges = extractRanges (filterType "udp" config.networking.firewall.allowedPorts);
     };
-    iface = config.networking.firewall.allowedPortsInterface;
+    allInterfaces = length config.networking.firewall.allowedPortsInterfaces == 0;
+    perInterface = listToAttrs (map (iface: nameValuePair iface firewallOptions) config.networking.firewall.allowedPortsInterfaces);
   #NOTE Useful functions for debugging: abort, builtins.toXML, builtins.toJSON, builtins.trace
-  in {
-    #NOTE We have to "tell" Nix which attributes we might be setting before we can use any config options.
-    #     Otherwise, we will end up with infinite recursion.
-    networking.firewall.allowedTCPPorts       = if iface == "" then firewallOptions.allowedTCPPorts      else {};
-    networking.firewall.allowedUDPPorts       = if iface == "" then firewallOptions.allowedUDPPorts      else {};
-    networking.firewall.allowedTCPPortRanges  = if iface == "" then firewallOptions.allowedTCPPortRanges else {};
-    networking.firewall.allowedUDPPortRanges  = if iface == "" then firewallOptions.allowedUDPPortRanges else {};
-    networking.firewall.interfaces."${iface}" = if iface != "" then firewallOptions                      else {};
-  };
+  in mkMerge [
+    (mkIf allInterfaces {
+      #NOTE We have to "tell" Nix which attributes we might be setting before we can use any config options.
+      #     Otherwise, we will end up with infinite recursion.
+      networking.firewall = {
+        inherit (firewallOptions)
+          allowedTCPPorts
+          allowedUDPPorts
+          allowedTCPPortRanges
+          allowedUDPPortRanges;
+      };
+    })
+    { networking.firewall.interfaces = perInterface; }
+  ];
 }
