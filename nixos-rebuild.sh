@@ -180,7 +180,7 @@ case "$action" in
     if [ -n "$targetHost" ] ; then
       generatesResult=0
     else
-      generatesResult=1
+      generatesResult=0
     fi
     ;;
   *)
