@@ -69,6 +69,12 @@ in {
   networking.firewall.enable = true;
   networking.nftables.enable = useNftables;
 
+  networking.firewall.allowedPortsInterfaces = [
+    "ens3"
+    "tinc.bbbsnowbal"
+    #"vpn_android-*"
+  ];
+
   networking.firewall.rejectPackets = true;
   networking.firewall.pingLimit = if useNftables then "100/minute burst 20 packets" else "--limit 100/minute --limit-burst 20";
 
