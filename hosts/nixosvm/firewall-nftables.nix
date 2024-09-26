@@ -133,5 +133,12 @@ in
   #  '';
   #};
 
-  networking.firewall.interfaces.tailscale0.allowedTCPPorts = [ config.networking.firewall.allowedPorts.rss.port ];
+  networking.firewall.interfaces.tailscale0.allowedTCPPorts = [
+    ports.rss.port
+    ports.notes-magpie-ext.port
+  ];
+  networking.firewall.interfaces."vpn_android-*".allowedTCPPorts = [
+    ports.rss.port
+    ports.notes-magpie-ext.port
+  ];
 }
