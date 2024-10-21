@@ -9,6 +9,7 @@ in
       ssh-github
       allowUnfree
     ] ++ [
+      ./audiobookshelf.nix
       ./bcachefs.nix
       ./disko.nix
       ./hardware-configuration.nix
