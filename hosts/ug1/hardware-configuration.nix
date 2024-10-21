@@ -9,7 +9,8 @@
     ];
 
   boot.initrd.availableKernelModules = [ "xhci_pci" "thunderbolt" "ahci" "nvme" "usb_storage" "usbhid" "sd_mod" ];
-  boot.initrd.kernelModules = [ "dm-snapshot" ];
+  # dm-raid to avoid: "Can't process LV ssd/root: raid1 target support missing from kernel?"
+  boot.initrd.kernelModules = [ "dm-snapshot" "dm-raid" ];
   boot.kernelModules = [ "kvm-intel" ];
   boot.extraModulePackages = [ ];
 

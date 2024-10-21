@@ -32,9 +32,18 @@ in
   boot.kernelParams = [ "boot.shell_on_fail" ];
   console.earlySetup = true;  #FIXME does this help? -> Yes! It also fixes the issue with devices not being found. -> Well, no. That was just coincidence.
   #FIXME for debugging initrd, remove later
-  systemd.extraConfig = ''
-    DefaultTimeoutStartSec = 20
-  '';
+  #FIXME This is added to the config but it doesn't change the timeout.
+  #boot.initrd.systemd.extraConfig = ''
+  #  DefaultTimeoutStartSec = 20
+  #'';
+  # dm-raid to avoid: "Can't process LV ssd/root: raid1 target support missing from kernel?"
+  boot.initrd.systemd.services.mdmonitor.serviceConfig.ExecStartPre = [
+    "${lib.getBin pkgs.kmod}/bin/modprobe dm_raid"
+  ];
+  # auto-activate "ssd" volume group again (in case the VG service ran before we were able to add the kernel module)
+  boot.initrd.systemd.services.mdmonitor.serviceConfig.ExecStartPost = [
+    "${lib.getBin pkgs.lvm2}/bin/lvm vgchange -aay --autoactivation event ssd"
+  ];
 
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
