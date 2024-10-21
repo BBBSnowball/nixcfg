@@ -87,6 +87,7 @@ in
   ];
 
   environment.systemPackages = with pkgs; [
+    #git-revise
   ];
 
   services.openssh.enable = true;
