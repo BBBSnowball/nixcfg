@@ -95,7 +95,9 @@ in
   programs.emacs.defaultEditor = lib.mkForce false;
   programs.vim.defaultEditor = true;
 
-  services.fwupd.enable = true;
+  # -> hard fail without Polkit because it refuses to continue when the policy files are missing:
+  # https://github.com/fwupd/fwupd/blob/e995cb55a294ba2a9200cf1a8e6b29b3442dbbb4/src/fu-util.c#L4170
+  #services.fwupd.enable = true;
 
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
