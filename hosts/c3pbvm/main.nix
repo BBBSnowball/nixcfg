@@ -13,7 +13,6 @@
       #./chatgpt-telegram-bot.nix
     ];
 
-  networking.upstreamIp = "192.168.84.135";
   users.users.root.openssh.authorizedKeys.keyFiles = let
     p = "${privateForHost}/../sonline0-shared";
   in [
