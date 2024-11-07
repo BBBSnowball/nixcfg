@@ -20,6 +20,7 @@
     python3
     w3m
     git-annex
+    git-revise
   ];
 
   programs.git.package = pkgs.gitFull;  # provides `git gui`

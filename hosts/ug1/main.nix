@@ -8,25 +8,42 @@ in
       snowball-headless-big
       ssh-github
       allowUnfree
-    ] ++
-    [ ./hardware-configuration.nix
-      ./users.nix
+    ] ++ [
+      ./audiobookshelf.nix
+      ./bcachefs.nix
       ./disko.nix
-      #./secureBoot.nix
-      #lanzaboote.nixosModules.lanzaboote
+      ./hardware-configuration.nix
+      lanzaboote.nixosModules.lanzaboote
+      ./secureBoot.nix
+      ./ugreen.nix
+      ./users.nix
     ];
 
   networking.hostName = "ug1";
 
   # If raid logical volume is not available, do: `modprobe dm-raid; vgchange -a y`
   boot.initrd.availableKernelModules = [ "dm_raid" ];
-  boot.initrd.kernelModules = [ "dm_raid" ];
+  boot.initrd.kernelModules = [ "dm_raid" "hid_roccat_ryos" ];  #FIXME does adding roccat module help?
   boot.initrd.services.lvm.enable = true;
   boot.initrd.systemd.enable = true;  # will interfere with boot.shell_on_fail
   # see https://github.com/NixOS/nixpkgs/issues/245089#issuecomment-1646966283
   boot.initrd.systemd.emergencyAccess = true;  #FIXME remove when we enable secure boot
   # for debugging
   boot.kernelParams = [ "boot.shell_on_fail" ];
+  console.earlySetup = true;  #FIXME does this help? -> Yes! It also fixes the issue with devices not being found. -> Well, no. That was just coincidence.
+  #FIXME for debugging initrd, remove later
+  #FIXME This is added to the config but it doesn't change the timeout.
+  #boot.initrd.systemd.extraConfig = ''
+  #  DefaultTimeoutStartSec = 20
+  #'';
+  # dm-raid to avoid: "Can't process LV ssd/root: raid1 target support missing from kernel?"
+  boot.initrd.systemd.services.mdmonitor.serviceConfig.ExecStartPre = [
+    "${lib.getBin pkgs.kmod}/bin/modprobe dm_raid"
+  ];
+  # auto-activate "ssd" volume group again (in case the VG service ran before we were able to add the kernel module)
+  boot.initrd.systemd.services.mdmonitor.serviceConfig.ExecStartPost = [
+    "${lib.getBin pkgs.lvm2}/bin/lvm vgchange -aay --autoactivation event ssd"
+  ];
 
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
@@ -41,7 +58,12 @@ in
   #   Random seed file '/boot/loader/random-seed' is world accessible, which is a security hole!
   # see https://forum.endeavouros.com/t/bootctl-install-outputs-some-warnings-about-efi-mount-point-and-random-seed-file-in-the-terminal/43991/6
   fileSystems."/boot".options = [
-    #FIXME This is ignored here (but works for bettina-home). Why?!
+    "fmask=0137,dmask=0027"
+  ];
+  fileSystems."/boot2".options = [
+    "fmask=0137,dmask=0027"
+  ];
+  fileSystems."/boot-raid".options = [
     "fmask=0137,dmask=0027"
   ];
 
@@ -50,7 +72,8 @@ in
   networking.useDHCP = false;
   networking.interfaces.enp88s0.useDHCP = true;
   networking.interfaces.enp89s0.useDHCP = true;
-  systemd.network.wait-online.extraArgs = [ "--any" "--timeout=10" ];
+  systemd.network.wait-online.extraArgs = [ "--any" ];
+  systemd.network.wait-online.timeout = 10;
 
   nix.registry.routeromen.flake = routeromen;
 
@@ -64,6 +87,7 @@ in
   ];
 
   environment.systemPackages = with pkgs; [
+    #git-revise
   ];
 
   services.openssh.enable = true;
@@ -72,7 +96,9 @@ in
   programs.emacs.defaultEditor = lib.mkForce false;
   programs.vim.defaultEditor = true;
 
-  services.fwupd.enable = true;
+  # -> hard fail without Polkit because it refuses to continue when the policy files are missing:
+  # https://github.com/fwupd/fwupd/blob/e995cb55a294ba2a9200cf1a8e6b29b3442dbbb4/src/fu-util.c#L4170
+  #services.fwupd.enable = true;
 
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
@@ -81,6 +107,8 @@ in
   environment.etc."mdadm.conf".text = ''
     MAILADDR root
   '';
+
+  services.tailscale.enable = true;
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions

@@ -9,7 +9,8 @@
     ];
 
   boot.initrd.availableKernelModules = [ "xhci_pci" "thunderbolt" "ahci" "nvme" "usb_storage" "usbhid" "sd_mod" ];
-  boot.initrd.kernelModules = [ "dm-snapshot" ];
+  # dm-raid to avoid: "Can't process LV ssd/root: raid1 target support missing from kernel?"
+  boot.initrd.kernelModules = [ "dm-snapshot" "dm-raid" ];
   boot.kernelModules = [ "kvm-intel" ];
   boot.extraModulePackages = [ ];
 
@@ -29,17 +30,31 @@
   fileSystems."/boot-raid" =
     { device = "/dev/disk/by-uuid/7DF1-FE69";
       fsType = "vfat";
+      options = [ "nofail" ];
     };
 
   fileSystems."/boot2" =
     { device = "/dev/disk/by-uuid/7A4A-6C5C";
       fsType = "vfat";
+      options = [ "nofail" ];
     };
 
   fileSystems."/nix" =
     { device = "/dev/disk/by-uuid/e7a7863a-722e-4f62-bc9f-7aeb6ff48544";
       fsType = "btrfs";
       options = [ "subvol=nix" ];
+    };
+
+  fileSystems."/media/data" =
+    { device = "/dev/ssd/ssd1";
+      fsType = "bcachefs";
+      options = [ "nofail,x-systemd.automount" ];
+    };
+
+  fileSystems."/media/sdata" =
+    { device = "/dev/ssd/ssd1e";
+      fsType = "bcachefs";
+      options = [ "nofail,x-systemd.automount" ];
     };
 
   swapDevices = [ ];
