@@ -9,12 +9,24 @@
         Open ports of this VM are forwarded via DNAT from this external IP.
       '';
     };
+    externalIpv6 = mkOption {
+      type = types.str;
+      description = ''
+        external IPv6 for this VM (which is also the internal IP)
+      '';
+    };
     upstreamIp = mkOption {
       type = types.str;
       description = ''
         internal IP of this VM towards the host
 
         Services should listen on this IP. This is usually the IP of the first network interface ("eth0").
+      '';
+    };
+    vmNumber = mkOption {
+      type = types.int;
+      description = ''
+        Number of VM. This will be used to generate its default IP addresses.
       '';
     };
   };

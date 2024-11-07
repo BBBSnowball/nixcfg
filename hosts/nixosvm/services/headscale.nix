@@ -1,13 +1,15 @@
 { config, privateForHost, ... }:
 let
   port = 8088;
+  inherit (privateForHost.sonline0) infoDomain serverExternalIpv6 ipv6Net;
+  inherit (config.networking) upstreamIp externalIp;
 in
 {
   services.headscale = {
     enable = true;
     settings = {
-      server_url = "https://headscale.${privateForHost.infoDomain}";
-      listen_addr = "${config.networking.upstreamIp}:${toString port}";
+      server_url = "https://headscale.${infoDomain}";
+      listen_addr = "${upstreamIp}:${toString port}";
       metrics_listen_addr = "127.0.0.1:9090";
 
       derp = {
@@ -53,9 +55,9 @@ in
         nodes:
           - name: 900a
             regionid: 900
-            hostname: derp2.${privateForHost.infoDomain}
-            ipv4: ${config.networking.externalIp}
-            ipv6: "${privateForHost.serverExternalIpv6}"
+            hostname: derp2.${infoDomain}
+            ipv4: ${externalIp}
+            ipv6: "${serverExternalIpv6}"
             stunport: 3480
             stunonly: false
             derpport: 1443
@@ -66,9 +68,9 @@ in
       #  nodes:
       #    - name: 901b
       #      regionid: 901
-      #      hostname: derp1.${privateForHost.infoDomain}
-      #      ipv4: ${config.networking.externalIp}
-      #      #ipv6: "${privateForHost.serverExternalIpv6}"
+      #      hostname: derp1.${infoDomain}
+      #      ipv4: ${externalIp}
+      #      #ipv6: "${ipv6Net.prefix}130"
       #      # coturn should work as a stun-only DERP.
       #      stunport: 3478
       #      stunonly: false

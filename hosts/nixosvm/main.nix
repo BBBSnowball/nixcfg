@@ -40,7 +40,6 @@ in {
       ./containers/weechat.nix
     ]);
 
-  networking.upstreamIp = "192.168.84.133";
   users.users.root.openssh.authorizedKeys.keyFiles = [
     "${privateForHost}/ssh-laptop.pub"
     "${privateForHost}/ssh-dom0.pub"
