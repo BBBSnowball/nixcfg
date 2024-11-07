@@ -14,11 +14,14 @@
     ];
 
   networking.upstreamIp = "192.168.84.135";
-  users.users.root.openssh.authorizedKeys.keyFiles = [
-    "${privateForHost}/ssh-laptop.pub"
-    "${privateForHost}/ssh-dom0.pub"
-    "${privateForHost}/ssh-routeromen.pub"
+  users.users.root.openssh.authorizedKeys.keyFiles = let
+    p = "${privateForHost}/../sonline0-shared";
+  in [
+    "${p}/ssh-laptop.pub"
+    "${p}/ssh-dom0.pub"
+    "${p}/ssh-routeromen.pub"
   ];
+
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget

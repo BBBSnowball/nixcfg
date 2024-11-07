@@ -15,7 +15,7 @@ in {
       services.gitolite = {
         enable = true;
         user = "git";
-        adminPubkey = builtins.readFile "${privateForHost}/ssh-laptop.pub";
+        adminPubkey = builtins.readFile "${privateForHost}/../sonline0-shared/ssh-laptop.pub";
         enableGitAnnex = true;
       };
 

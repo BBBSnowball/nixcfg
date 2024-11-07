@@ -40,10 +40,12 @@ in {
       ./containers/weechat.nix
     ]);
 
-  users.users.root.openssh.authorizedKeys.keyFiles = [
-    "${privateForHost}/ssh-laptop.pub"
-    "${privateForHost}/ssh-dom0.pub"
-    "${privateForHost}/ssh-routeromen.pub"
+  users.users.root.openssh.authorizedKeys.keyFiles = let
+    p = "${privateForHost}/../sonline0-shared";
+  in [
+    "${p}/ssh-laptop.pub"
+    "${p}/ssh-dom0.pub"
+    "${p}/ssh-routeromen.pub"
   ];
 
   networking.interfaces."tinc.bbbsnowbal".ipv4.addresses = [ {

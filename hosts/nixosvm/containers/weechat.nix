@@ -16,7 +16,7 @@ in {
         isNormalUser = true;
         extraGroups = [ ];
         uid = 1495;
-        openssh.authorizedKeys.keyFiles = [ "${privateForHost}/ssh-laptop.pub" ];
+        openssh.authorizedKeys.keyFiles = [ "${privateForHost}/../sonline0-shared/ssh-laptop.pub" ];
       };
 
       services.bitlbee = {

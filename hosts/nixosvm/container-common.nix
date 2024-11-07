@@ -9,7 +9,12 @@ in
     ./openssh-with-unix-socket.nix
   ];
 
-  users.users.root.openssh.authorizedKeys.keyFiles = [ "${privateForHost}/ssh-laptop.pub" "${privateForHost}/ssh-dom0.pub" ];
+  users.users.root.openssh.authorizedKeys.keyFiles = let
+    p = "${privateForHost}/../sonline0-shared";
+  in [
+    "${p}/ssh-laptop.pub"
+    "${p}/ssh-dom0.pub"
+  ];
 
   system.stateVersion = lib.mkDefault "22.11";
 }
