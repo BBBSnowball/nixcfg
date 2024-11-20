@@ -43,12 +43,19 @@ in {
             $_SERVER['HTTPS']='on';
         '';
         themes = {
-          oceanwp         = fetchTheme { url = "https://downloads.wordpress.org/theme/oceanwp.3.3.2.zip";       hash = "sha256-7ZjK+6p9C7QaRr/Hp6dECy4OjB0E8z/RK+rv2nVK80M="; };
-          neve            = fetchTheme { url = "https://downloads.wordpress.org/theme/neve.3.2.5.zip";          hash = "sha256-pMRwBN6B6eA3zmdhLnw2zSoGR6nKJikE+1axrzINQw8="; };
-          ashe            = fetchTheme { url = "https://downloads.wordpress.org/theme/ashe.2.198.zip";          hash = "sha256-b/Tsf4wXff3HT9DNbWyujsWDZd/knePNdMIBnUwZhQ8="; };
-          twentyseventeen = fetchTheme { url = "https://downloads.wordpress.org/theme/twentyseventeen.3.0.zip"; hash = "sha256-QHEkvpc2CLjSopAIZRCelJnJvICQUYZfjTJYhTAbJuo="; };
+          oceanwp         = fetchTheme { url = "https://downloads.wordpress.org/theme/oceanwp.4.0.2.zip";       hash = "sha256-cNcdLYWcAz9/Wqr2dTa8m97VCq7i/IoX17Fu6ZTzmjs="; };
+          #neve            = fetchTheme { url = "https://downloads.wordpress.org/theme/neve.3.2.5.zip";          hash = "sha256-pMRwBN6B6eA3zmdhLnw2zSoGR6nKJikE+1axrzINQw8="; };
+          neve            = fetchTheme { url = "https://downloads.wordpress.org/theme/neve.3.8.13.zip";         hash = "sha256-hJ0noKHIZ+SXSIy0z3ixCJNqcc/nFIXezqJ+sz7qzlc="; };
+          ashe            = fetchTheme { url = "https://downloads.wordpress.org/theme/ashe.2.246.zip";          hash = "sha256-87yWJhuXSfpp6L30/P9kN8jcqYVFLKlXU0NXCppUGrA="; };
+          twentyseventeen = fetchTheme { url = "https://downloads.wordpress.org/theme/twentyseventeen.3.8.zip"; hash = "sha256-4GOzQtvre7ifYe7oQPFPcD+WRmZZ9G5OZcuRFZ92fw4="; };
+          #inherit (pkgs.wordpressPackages) twentyseventeen;
         };
-        plugins = { };
+        plugins = {
+          inherit (pkgs.wordpressPackages.plugins)
+            cookie-notice
+            wp-gdpr-compliance
+            wpforms-lite;
+        };
         virtualHost = {
           adminAddr = "postmaster@${url1}";
           serverAliases = [ url2 ];

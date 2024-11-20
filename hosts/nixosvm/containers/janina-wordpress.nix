@@ -6,8 +6,8 @@ let
   url2 = lib.fileContents "${privateForHost}/janina/url2.txt";
 
   passwordProtectPlugin = pkgs.fetchzip {
-    url = "https://downloads.wordpress.org/plugin/password-protected.2.4.zip";
-    sha256 = "sha256-whZfEyoTKj3ttEjh2zzpMnnPzCVHQlqfsih7QRa8wTU=";
+    url = "https://downloads.wordpress.org/plugin/password-protected.2.7.4.zip";
+    sha256 = "sha256-6kU4duN3V/z0jIiShxzCHTG2GIZPKRook0MIQVXWLQg=";
   };
 in {
   containers.janina-wordpress = {
