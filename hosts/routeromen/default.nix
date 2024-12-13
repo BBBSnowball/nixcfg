@@ -163,6 +163,21 @@ in {
     destPort = 22;
     source = "tinc";
     dest = "$FW";
+  }
+  # We get lots of these because of tailscale.
+  {
+    proto = "udp";
+    destPort = 5351;
+    source = "loc";
+    dest = "$FW";
+    action = "REJECT";
+  }
+  {
+    proto = "udp";
+    destPort = 1900;
+    source = "loc";
+    dest = "$FW";
+    action = "REJECT";
   }];
 
   # Open ports in the firewall.
