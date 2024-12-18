@@ -17,5 +17,5 @@ in
   };
 
   hardware.pulseaudio.enable = !usePipewire;  # use Pipewire instead
-  sound.enable = !usePipewire;                # use Pipewire's ALSA emulation
+  #sound.enable = !usePipewire;                # use Pipewire's ALSA emulation
 }

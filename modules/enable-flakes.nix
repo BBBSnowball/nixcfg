@@ -2,7 +2,7 @@
 with lib;
 {
   # see https://www.tweag.io/blog/2020-07-31-nixos-flakes/
-  config.nix.package = pkgs.nixFlakes;
+  config.nix.package = pkgs.nixVersions.stable or pkgs.nixFlakes;
   config.nix.extraOptions = ''
     experimental-features = nix-command flakes
   '';

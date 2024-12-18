@@ -62,6 +62,7 @@
   services.xserver.desktopManager.gnome.enable = true;
   services.tlp.enable = true;
 
+  programs.vim.enable = true;
   programs.vim.defaultEditor = true;
 
   hardware.enableRedistributableFirmware = true;

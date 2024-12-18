@@ -37,6 +37,7 @@ with lib;
         isNormalUser = true;
       };
 
+      programs.vim.enable = true;
       programs.vim.defaultEditor = true;
       environment.etc.vimrc.text = ''
         imap fd <Esc>

@@ -126,6 +126,7 @@ in
   services.openssh.settings.PasswordAuthentication = false;
 
   programs.emacs.defaultEditor = lib.mkForce false;
+  programs.vim.enable = true;
   programs.vim.defaultEditor = true;
 
   #FIXME NixOS installer has added this to the default config. Do we want this? Move to our general config?

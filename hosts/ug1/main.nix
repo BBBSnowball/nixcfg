@@ -94,6 +94,7 @@ in
   services.openssh.settings.PasswordAuthentication = false;
 
   programs.emacs.defaultEditor = lib.mkForce false;
+  programs.vim.enable = true;
   programs.vim.defaultEditor = true;
 
   # -> hard fail without Polkit because it refuses to continue when the policy files are missing:

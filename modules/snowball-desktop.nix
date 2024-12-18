@@ -14,7 +14,7 @@
 
   #nixpkgs.allowUnfreeByName = [ "mfc9140cdnlpr" ];
 
-  sound.enable = lib.mkOverride 500 true;
+  #sound.enable = lib.mkOverride 500 true;
   hardware.pulseaudio.enable = lib.mkOverride 500 true;
 
   environment.systemPackages = with pkgs; [
@@ -24,11 +24,8 @@
     speedcrunch
     libreoffice gimp
     inkscape
-    gnome.eog gnome.evince
-    gnome.cheese
     w3m
     gitui gitg
-    gnome.gnome-screenshot
     iw wirelesstools
     qrencode  # also useful for cli with `-t ANSI` but I will prefer SSH/SFTP for headless systems
     (self.packages.${pkgs.stdenv.hostPlatform.system}.add_recently_used or self.inputs.routeromen.packages.${pkgs.stdenv.hostPlatform.system}.add_recently_used)
@@ -38,6 +35,12 @@
   ] ++ (builtins.filter (p: p.meta.available) [
     # These are not available for aarch64-linux at the moment.
     mplayer
+  ]) ++ (with pkgs.gnome; with pkgs; [
+    # Avoid warning in 24.11 by not accessing them through pkgs.gnome when possible.
+    eog
+    evince
+    cheese
+    gnome-screenshot
   ]);
 
   # already defined by snowball-big, so use a different priority to avoid a conflict

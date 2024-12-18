@@ -26,7 +26,7 @@ in
       ./gos.nix
       nixos-hardware.nixosModules.framework-11th-gen-intel
       ./virtmanager.nix
-      ./bl808-netboot.nix
+      #./bl808-netboot.nix
       ./test-zigbee.nix
       #./ipfs.nix
       ./llm.nix
@@ -130,7 +130,8 @@ in
     clementine
     zgrviewer graphviz
     yubikey-manager yubikey-manager-qt yubikey-personalization
-    cura freecad kicad graphviz blender
+    #cura  # python-libarcus is broken
+    freecad kicad graphviz blender
     libxslt zip  # used by Kicad
     inkscape
     wine
@@ -194,6 +195,7 @@ in
 
   programs.emacs.defaultEditor = lib.mkForce false;
   programs.vim.defaultEditor = true;
+  programs.vim.enable = true;
 
   services.blueman.enable = true;
 

@@ -1,4 +1,7 @@
 { lib, pkgs, config, ... }:
+let
+  atLeast_24_11 = lib.versionAtLeast lib.version "24.11";
+in
 {
   #services.xserver.displayManager.lightdm.enable = true;
   #services.xserver.desktopManager.xfce.enable = true;
@@ -7,7 +10,7 @@
 
   programs.sway.enable = true;
   programs.sway.wrapperFeatures.gtk = true;
-  programs.sway.extraPackages = with pkgs; [
+  programs.sway.extraPackages = (with pkgs; [
     alacritty kitty foot dmenu kupfer
     i3status i3status-rust termite rofi light
     swaylock
@@ -29,24 +32,27 @@
     '')
     system-config-printer
     kupfer
-    gnome.gnome-screenshot
-    gnome.gnome-tweaks
-    gnome.nautilus
     waybar
-  ];
+  ]) ++ (with pkgs.gnome or {}; with pkgs; [
+    # Avoid warning in 24.11 by not accessing them through pkgs.gnome when possible.
+    gnome-screenshot
+    gnome-tweaks
+    nautilus
+  ]);
   environment.etc."sway/config".source = ./sway-config;
   environment.etc."alacritty.yml".source = ./alacritty.yml;
   environment.etc."alacritty.toml".source = ./alacritty.toml;
   #environment.etc."i3status.conf".source = ./i3status.conf;
   environment.etc."xdg/i3status/config".source = ./i3status.conf;
-  hardware.opengl.enable = true;
+  hardware.opengl.enable = lib.mkIf (!atLeast_24_11) true;  # warning in 24.11
+  hardware.graphics.enable = lib.mkIf atLeast_24_11 true;
   # create /etc/X11/xkb for `localectl list-x11-keymap-options`
   # https://github.com/NixOS/nixpkgs/issues/19629#issuecomment-368051434
   services.xserver.exportConfiguration = true;
 
   # https://wiki.archlinux.org/title/sway#Manage_Sway-specific_daemons_with_systemd
   systemd.user.targets.sway-session = {
-    description = "Sway compositor session";
+    description = lib.mkDefault "Sway compositor session";
     bindsTo = [ "graphical-session.target" ];
     wants = [ "graphical-session-pre.target" ];
     after = [ "graphical-session-pre.target" ];

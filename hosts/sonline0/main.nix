@@ -167,6 +167,7 @@ in {
   #nix.settings.trusted-users = [ "root" "@wheel" ];
   nix.settings.trusted-public-keys = privateValues.trusted-public-keys;
 
+  programs.vim.enable = true;
   programs.vim.defaultEditor = true;
 
   # mdmonitor service is added by mdadm package and it will fail if we don't configure this.
