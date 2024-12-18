@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="991.3418"
+   height="1124.4302"
+   viewBox="0 0 991.3418 1124.4302"
+   version="1.1"
+   id="SVGRoot"
+   sodipodi:docname="subraum_logo_glow.svg"
+   inkscape:version="1.3.2 (091e20ef0f, 2023-11-25)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview876"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:document-units="px"
+     showgrid="false"
+     inkscape:zoom="0.60756173"
+     inkscape:cx="509.41326"
+     inkscape:cy="525.87249"
+     inkscape:window-width="1707"
+     inkscape:window-height="995"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1-3"
+     inkscape:showpageshadow="2"
+     inkscape:deskcolor="#d1d1d1" />
+  <defs
+     id="defs871">
+    <filter
+       style="color-interpolation-filters:sRGB"
+       id="filter29"
+       inkscape:label="filter1" />
+    <filter
+       y="-0.066"
+       height="1.132"
+       inkscape:menu-tooltip="Darkens the edge with an inner blur and adds a flexible glow"
+       inkscape:menu="Shadows and Glows"
+       inkscape:label="Dark and Glow"
+       style="color-interpolation-filters:sRGB"
+       id="filter30"
+       x="-0.076211096"
+       width="1.1524222">
+      <feGaussianBlur
+         stdDeviation="11"
+         result="result6"
+         id="feGaussianBlur29" />
+      <feComposite
+         result="result8"
+         in="SourceGraphic"
+         operator="atop"
+         in2="result6"
+         id="feComposite29" />
+      <feComposite
+         result="result9"
+         operator="over"
+         in2="SourceAlpha"
+         in="result8"
+         id="feComposite30" />
+      <feColorMatrix
+         values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 1 0"
+         result="result10"
+         id="feColorMatrix30" />
+      <feBlend
+         in="result10"
+         mode="normal"
+         in2="result6"
+         id="feBlend30" />
+    </filter>
+  </defs>
+  <g
+     inkscape:label="Ebene 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-4.3290937,62.215129)">
+    <g
+       id="layer1-3"
+       inkscape:label="Layer 1"
+       transform="matrix(2.4832823,0,0,2.4832823,-456.89597,-1146.1757)"
+       style="fill:#1a1a1a">
+      <path
+         inkscape:export-ydpi="150"
+         inkscape:export-xdpi="150"
+         inkscape:export-filename="/Users/smile/Documents/C3PB/subraum/subr010.png"
+         sodipodi:nodetypes="cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+         inkscape:connector-curvature="0"
+         id="path3907"
+         d="m 385.35078,462.90316 -173.21875,100 v 200 l 173.21875,100 173.1875,-100 v -200 z m -7.5,22.3125 v 42 l -105.96875,61.1875 -36.375,-21 z m 15,0 142.3125,82.1875 -36.375,21 -105.9375,-61.1875 z m -7.5,55.6875 97.84712,56.48718 -25.12087,14.5037 -57.74101,-33.33679 -15,8.66025 57.74088,33.33671 -57.72612,33.34895 -97.87462,-56.51282 25.11987,-14.50296 57.73999,33.3362 15,-8.66026 -57.73999,-33.3362 z m -158.21875,39.65625 37,21.34375 v 121.9688 l -37,21.3581 z m 315.8217,0.33089 -0.009,164.01286 -35.8127,-20.6944 V 601.57197 Z m -50.8217,29.35661 v 49.3125 l -8.9375,5.1875 v 15 l 8.9375,-5.1875 v 48.67285 l -99.28125,57.3271 V 667.55941 Z m -213,0.32594 41.84375,24.17406 v 56.5 l 15,8.65625 v -56.5 l 41.86125,24.15706 0.0137,112.99914 -98.71875,-57 z m 178.945,49.48816 -32.62,18.83317 -0.0125,15.00898 32.625,-18.84375 z m -0.007,37.65465 -32.625,18.8437 v 15 l 32.625,-18.8437 z m -186.188,39.6875 105.96875,61.1562 v 42 l -142.34375,-82.1562 z m 226.90625,0 36.375,21 -142.3125,82.1562 v -42 z"
+         style="fill:#5e00ff;fill-opacity:1;stroke:none;filter:url(#filter30)" />
+      <path
+         inkscape:export-ydpi="150"
+         inkscape:export-xdpi="150"
+         inkscape:export-filename="/Users/smile/Documents/C3PB/subraum/subr010.png"
+         sodipodi:nodetypes="cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+         inkscape:connector-curvature="0"
+         id="path1"
+         d="m 385.35078,462.90316 -173.21875,100 v 200 l 173.21875,100 173.1875,-100 v -200 z m -7.5,22.3125 v 42 l -105.96875,61.1875 -36.375,-21 z m 15,0 142.3125,82.1875 -36.375,21 -105.9375,-61.1875 z m -7.5,55.6875 97.84712,56.48718 -25.12087,14.5037 -57.74101,-33.33679 -15,8.66025 57.74088,33.33671 -57.72612,33.34895 -97.87462,-56.51282 25.11987,-14.50296 57.73999,33.3362 15,-8.66026 -57.73999,-33.3362 z m -158.21875,39.65625 37,21.34375 v 121.9688 l -37,21.3581 z m 315.8217,0.33089 -0.009,164.01286 -35.8127,-20.6944 V 601.57197 Z m -50.8217,29.35661 v 49.3125 l -8.9375,5.1875 v 15 l 8.9375,-5.1875 v 48.67285 l -99.28125,57.3271 V 667.55941 Z m -213,0.32594 41.84375,24.17406 v 56.5 l 15,8.65625 v -56.5 l 41.86125,24.15706 0.0137,112.99914 -98.71875,-57 z m 178.945,49.48816 -32.62,18.83317 -0.0125,15.00898 32.625,-18.84375 z m -0.007,37.65465 -32.625,18.8437 v 15 l 32.625,-18.8437 z m -186.188,39.6875 105.96875,61.1562 v 42 l -142.34375,-82.1562 z m 226.90625,0 36.375,21 -142.3125,82.1562 v -42 z"
+         style="fill:#1a1a1a;stroke:none" />
+    </g>
+  </g>
+</svg>
