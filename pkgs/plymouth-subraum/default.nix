@@ -1,33 +1,34 @@
-{ pkgs ? import <nixpkgs> { }
-, theme ? "subraum"
-, # TODO: Should be a list when more themes come
-  bgColor ? "1, 1, 1"
-, # rgb value between 0-1. TODO: Write hex to plymouth magic
+{ stdenv
+, python3
+, inkscape
 }:
-pkgs.stdenv.mkDerivation {
-  pname = "plymouth-whatever";
+let
+  name = "subraum";
+  ppython = python3.withPackages (p: [ p.colour ]);
+in
+stdenv.mkDerivation {
+  pname = "plymouth-${name}";
   version = "0.1.0";
 
-  src = ./src;
+  src = ./.;
 
-  patchPhase = ''
-    runHook prePatch
+  nativeBuildInputs = [ ppython inkscape ];
 
-    shopt -s extglob
+  buildPhase = ''
+    runHook preBuild
 
-    # deal with all the non ascii stuff
+    #substituteInPlace *.plymouth --replace /usr/ $out/
+    substituteInPlace *.plymouth --subst-var out
 
-    runHook postPatch
+    python3 generate.py
+
+    runHook postBuild
   '';
-
-  dontBuild = true;
 
   installPhase = ''
     runHook preInstall
 
-    mkdir -p $out/share/plymouth/themes/${theme}
-    cp ${theme}/* $out/share/plymouth/themes/${theme}
-    find $out/share/plymouth/themes/ -name \*.plymouth -exec sed -i "s@\/usr\/@$out\/@" {} \;
+    install -Dt $out/share/plymouth/themes/${name} *.png *.plymouth *.script
 
     runHook postInstall
   '';

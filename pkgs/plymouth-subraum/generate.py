@@ -12,11 +12,10 @@ for i in range(n_frames):
 
 
     if i % frame_mul == 0:
-        os.system("cp subraum_logo_glow.svg subraum_logo_glow_anim.svg")
-        os.system(f"sed -i 's/fill:#5e00ff/fill:{c.hex}/g' 'subraum_logo_glow_anim.svg'")
+        os.system(f"sed 's/fill:#5e00ff/fill:{c.hex}/g' subraum_logo_glow.svg >subraum_logo_glow_anim.svg")
         os.system(f'inkscape --actions="export-type:png;export-filename:animation-{i}.png;export-width:400;export-do" ./subraum_logo_glow_anim.svg')
         #os.system(f"cp animation-{i}.png throbber-{i}.png")
     else:
         print("copy",i)
         os.system(f"cp animation-{(i-1)}.png animation-{i}.png")
-        os.system(f"cp animation-{(i-1)}.png throbber-{i}.png")
+        #os.system(f"cp animation-{(i-1)}.png throbber-{i}.png")

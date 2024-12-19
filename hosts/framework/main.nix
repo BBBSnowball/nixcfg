@@ -19,6 +19,7 @@ in
       #xonsh
       flir
       allowUnfree
+      plymouth-subraum
     ] ++
     [ ./hardware-configuration.nix
       ./mcu-dev.nix

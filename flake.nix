@@ -113,6 +113,7 @@
       add_recently_used = pkgs.callPackage ./pkgs/add_recently_used.nix {};
       muninlite = pkgs.callPackage ./pkgs/muninlite.nix {};
       tailscale-derpprobe = pkgs.tailscale.overrideDerivation (_: { subPackages = [ "cmd/derpprobe" ]; postInstall = ""; });
+      plymouth-subraum = pkgs.callPackage ./pkgs/plymouth-subraum {};
     } // (with gd32.${system}; {
       gcc-gd32 = gcc; binutils-gd32 = binutils; openocd-gd32 = openocd-nuclei; gdb-gd32 = gdb-nuclei;
       rustc-gd32 = rustc; cargo-gd32 = cargo;

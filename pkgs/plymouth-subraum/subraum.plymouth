@@ -4,5 +4,5 @@ Description=Subraum logo glowing
 ModuleName=script
 
 [script]
-ImageDir=/usr/share/plymouth/themes/subraum
-ScriptFile=/usr/share/plymouth/themes/subraum/subraum.script
+ImageDir=@out@/share/plymouth/themes/subraum
+ScriptFile=@out@/share/plymouth/themes/subraum/subraum.script
