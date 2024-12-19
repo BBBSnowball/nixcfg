@@ -36,7 +36,7 @@ in
       ./wireguard-test.nix
     ];
 
-  environment.moreSecure = false;
+  environment.moreSecure = true;
 
   networking.hostName = "fw";
 
