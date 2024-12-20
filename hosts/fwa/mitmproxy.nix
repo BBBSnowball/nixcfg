@@ -9,14 +9,14 @@ in
   services.dnsmasq = {
     enable = true;
     resolveLocalQueries = false;
-    extraConfig = ''
+    settings = {
       # Make it fast, no reason to be considerate towards other servers on our two-device network.
       # -> well, that was for network over USB.
       #dhcp-authoritative
       #dhcp-rapid-commit
       #no-ping
 
-      log-dhcp
+      log-dhcp = true;
 
       #enable-tftp=${iface}
       #tftp-root=/tftpboot
@@ -24,16 +24,16 @@ in
 
       # be able to run in parallel with libvirt's dnsmasq
       #FIXME dnsmasq refuses to start because "unknown interface enp0s13f0u3u4" - but the interface exists. Well, that's a problem for later.
-      interface=${iface}
-      bind-interfaces
+      interface = iface;
+      bind-interfaces = true;
 
-      dhcp-range=interface:${iface},${dhcpRange},10h
+      dhcp-range = "interface:${iface},${dhcpRange},10h";
   
       #dhcp-option=option:router
-      dhcp-option=option:router,${ourIp}
+      dhcp-option = "option:router,${ourIp}";
 
-      listen-address = ${ourIp}
-    '';
+      listen-address = ourIp;
+    };
   };
 
   networking.firewall.interfaces.${iface} = {

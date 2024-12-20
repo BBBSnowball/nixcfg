@@ -1,5 +1,8 @@
 # `sudo -i` is broken on NixOS 20.09 because some systemd behavior
 # has changed.
+# -> This also contains the workaround for this issue, which still
+#    occurs on my system with systemd 256:
+#    https://github.com/systemd/systemd/issues/14863
 { pkgs, ... }:
 {
   environment.systemPackages = [ (pkgs.writeShellScriptBin "root" ''
