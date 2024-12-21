@@ -20,7 +20,7 @@ in
     [ ./hardware-configuration.nix
       ./users.nix
       #FIXME replace by 16'' variant when that is added
-      nixos-hardware.nixosModules.framework-13-7040-amd
+      nixos-hardware.nixosModules.framework-16-7040-amd
       ./secureBoot.nix
       lanzaboote.nixosModules.lanzaboote
       ./llm.nix
