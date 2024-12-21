@@ -16,6 +16,7 @@ in
       ssh-github
       flir
       allowUnfree
+      plymouth-subraum
     ] ++
     [ ./hardware-configuration.nix
       ./users.nix
