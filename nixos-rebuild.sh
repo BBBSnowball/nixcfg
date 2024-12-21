@@ -9,6 +9,8 @@ if [ $# -lt 2 -o "$1" == "--help" ] ; then
   echo "  more actions: reboot build-drv diff-drv diff-cl/diff-closures disko-script disko-mount-script"
   echo "  install actions (target must be running the NixOS installer): disko install"
   echo "  set hostname to \"\" to build for the current host"
+  echo ""
+  echo "  To debug warnings: NIX_ABORT_ON_WARN=true $0 \"\" dry-build --show-trace"
   exit 1
 fi
 targetHost="$1"
@@ -68,7 +70,7 @@ post_cmd=
 extraBuildFlags=()
 needSshToTarget=0
 case "$action" in
-  test|dry-activate)
+  test|dry-*)
     needSshToTarget=1
     ;;
   switch|boot)
