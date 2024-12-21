@@ -7,7 +7,7 @@
   inputs.flake-registry.url = "github:NixOS/flake-registry";
   inputs.flake-registry.flake = false;
   inputs.nixos-hardware.url = "github:NixOS/nixos-hardware";
-  inputs.lanzaboote.url = "github:nix-community/lanzaboote/v0.3.0";
+  inputs.lanzaboote.url = "github:nix-community/lanzaboote/v0.4.1";
   inputs.lanzaboote.inputs.nixpkgs.follows = "nixpkgs";
 
   outputs = { self, nixpkgs, routeromen, ... }@flakeInputs:
