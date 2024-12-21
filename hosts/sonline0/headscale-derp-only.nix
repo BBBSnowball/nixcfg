@@ -110,6 +110,7 @@ in
     dnsResolver = "1.1.1.1:53";
     dnsPropagationCheck = false;  # disable check of all primary servers
     group = "headscale";
+    reloadServices = "headscale.service";
   };
 
   systemd.services."acme-${domain}".serviceConfig.LoadCredential = [
