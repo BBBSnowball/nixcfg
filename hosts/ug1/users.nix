@@ -27,5 +27,28 @@ in
   };
 
   users.users.user2 = normalUser;
+  
+  users.users.xps-qubes = normalUser // {
+    openssh.authorizedKeys.keyFiles = [
+      "${privateForHost}/ssh-qubes-netvm.pub"
+    ];
+    #group = "sftponly";
+  };
+  users.users.framework13 = normalUser // {
+    openssh.authorizedKeys.keyFiles = [
+      "${privateForHost}/ssh-framework13.pub"
+    ];
+    #group = "sftponly";
+  };
+  users.groups.sftponly = {};
+  # https://serverfault.com/a/354618
+  services.openssh.extraConfig = ''
+    Match group sftponly
+     ChrootDirectory /media/data/backup/%u
+     X11Forwarding no
+     AllowTcpForwarding no
+     AllowAgentForwarding no
+     ForceCommand internal-sftp -d /%u
+  '';
 }
 
