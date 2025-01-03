@@ -44,7 +44,7 @@
     boot.loader.grub.device = lib.mkDefault "/dev/vda";
   
     #headless = true;
-    sound.enable = false;
+    #sound.enable = false;
     boot.vesa = false;
     boot.loader.grub.splashImage = null;
   

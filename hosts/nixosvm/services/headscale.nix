@@ -23,8 +23,9 @@ in
         "fd7a:115c:a1e0::/48"
       ];
 
-      dns_config = {
+      dns = {
         override_local_dns = false;
+        magic_dns = false;
       };
 
       logtail.enabled = false;
