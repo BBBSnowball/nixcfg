@@ -31,6 +31,7 @@ in {
     ] ++ (map withFlakeInputs [
       ./containers/feg.nix
       ./containers/git.nix
+      ./containers/hedgedoc.nix
       ./containers/mate.nix
       ./containers/notes.nix
       ./containers/rss.nix
