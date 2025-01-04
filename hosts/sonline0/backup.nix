@@ -34,5 +34,6 @@
       target=hetzner    ${./backup.sh} cron
     '';
     restartIfChanged = false;
+    unitConfig.OnFailure = "notify-by-mail@%n";
   };
 }

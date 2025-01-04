@@ -17,7 +17,7 @@ in
       ./disko.nix
       ./hardware-configuration.nix
       ./homeautomation.nix
-      ./mail.nix
+      ./mail.nix  #FIXME use our sendmail module
       ./monitoring.nix
       nixos-hardware.nixosModules.common-cpu-intel
       ./print-ip.nix

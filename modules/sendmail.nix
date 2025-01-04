@@ -1,4 +1,3 @@
-#FIXME use our sendmail module
 { lib, pkgs, privateForHost, secretForHost, ... }:
 {
   programs.msmtp = {
@@ -31,6 +30,8 @@
 
       account        smarthost
       host           ${p.smtpHost}
+      ${lib.optionalString (p ? smtpHostReal)
+        "tls_host_override  ${p.smtpHostReal}"}
       port           ${toString p.smtpPort}
       tls_starttls   off
       tls            on
@@ -58,7 +59,7 @@
     serviceConfig = {
       # We tried to point it to a different config with $HOME and $SYSCFGDIR but that didn't work
       # so we are left with the somewhat ugly `--command=...`.
-      # The "-" prefix is to ignore any errors because client errors are likely to cause a error exit value.
+      # The "-" prefix is to ignore any errors because client errors are likely to cause an error exit value.
       ExecStart = "-${pkgs.msmtp}/bin/msmtpd --inetd --log=syslog --command=\"${pkgs.msmtp}/bin/msmtp -f %%F --account=smarthost --\"";
 
       StandardInput = "socket";
@@ -69,5 +70,38 @@
       User = "msmtp";
       DynamicUser = true;
     };
+  };
+
+  systemd.services."notify-by-mail@" = let
+    # $text can contain UTF-8, so let's encode it and specify the charset.
+    # (Thunderbird will do the right thing anyway but K8 won't.)
+    # Without MIME encoding this could be as simple as:
+    #   echo "Subject: [$1] service $2 failed"
+    #   echo ""
+    #   systemctl status --full -n30 "$2"
+    script = pkgs.writeShellScript "notify-by-mail" ''
+      (
+        boundary="===============$(${pkgs.pwgen}/bin/pwgen -s 20 1)=="
+        echo "Subject: [$1] service $2 failed"
+        echo "Content-Type: multipart/alternative; boundary=\"$boundary\""
+        echo "MIME-Version: 1.0"
+        echo ""
+
+        echo "--$boundary"
+        echo "Content-Type: text/plain; charset=\"utf-8\""
+        echo "MIME-Version: 1.0"
+        echo "Content-Transfer-Encoding: base64"
+        echo ""
+        systemctl status --full -n30 "$2" \
+          | base64
+        echo ""
+        echo "--$boundary--"
+      ) | /run/wrappers/bin/sendmail ${privateForHost.mail.adminEmail}
+    '';
+  in {
+    description = "send an email when a service fails";
+
+    serviceConfig.Type = "oneshot";
+    serviceConfig.ExecStart = "${script} %H %i";
   };
 }
