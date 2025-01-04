@@ -4,21 +4,62 @@
 
 LOCAL_DIR=/
 
+source /etc/nixos/secret/by-host/sonline0/backup_env
+
+backupArgs=(
+	--exclude /var/cache \
+	--exclude /root/.cache \
+	--exclude /proc \
+	--exclude /sys \
+	--exclude /dev \
+	--exclude /run \
+	--exclude /tmp \
+	--exclude /var/tmp \
+	--exclude /nix/store \
+	--exclude /var/vms/nixos-minimal-*-linux.iso \
+	--exclude "/var/vms/*.bak*" \
+	--exclude /var/vms/nixos-nix.img \
+	--exclude /var/vms/nixos-swap.img \
+	--exclude /var/vms/c3pb-nix.img \
+)
+
+case "${target:-}" in
+  dedibackup)
+    logfile=/var/log/duplicity-backup-to-ftp.log
+    backupArgs+=(
+  	--ftp-passive \
+  	--volsize 1000 \
+    )
+    ;;
+  hetzner)
+    logfile=/var/log/duplicity-backup-to-hetzner.log
+    target_url="$target_url2"
+    backupArgs+=(--concurrency 2)
+    ;;
+  *)
+    echo "Invalid \$target!" >&2
+    exit 1
+    ;;
+esac
+
 case "$1" in
-  ""|help)
+  ""|help|--help)
     echo "Try one of \`backup --progress -vi\`, verify, collection-status, list-current-files" 2>&1
     exit 1
     ;;
   backup)
     # full or incremental
     shift
-    CMD="$* $LOCAL_DIR"
+    CMD=("$@" $LOCAL_DIR $target_url)
     ;;
-  verify|full|incr)
-    CMD="$* $LOCAL_DIR"
+  full|incr)
+    CMD=("$@" $LOCAL_DIR $target_url)
+    ;;
+  verify)
+    CMD=("$@" $target_url $LOCAL_DIR)
     ;;
   cron)
-    exec 1>>/var/log/duplicity-backup-to-ftp.log 2>&1
+    exec 1>>"$logfile" 2>&1
     date
     if pgrep duplicity >/dev/null ; then
       echo "Duplicity is already/still running."
@@ -27,11 +68,12 @@ case "$1" in
     echo "Starting backup..."
     #NOTE "--force" is required for remove-all-but-n-full because default behavior is to list instead of remove.
     "$0" backup --backend-retry-delay 300 --full-if-older-than 2W \
-      && "$0" remove-all-but-n-full 5 --force \
-      && exit 0
+      && "$0" remove-all-but-n-full 5 --force
+    exit $?
     ;;
   *)
-    CMD="$*"
+    CMD=("$@" $target_url)
+    backupArgs=()
     ;;
 esac
 
@@ -49,30 +91,12 @@ esac
 #  /var/cache     # package cache, etc.
 #  /root/.cache   # duplicity cache
 
-source /etc/nixos/secret/by-host/sonline0/backup_env
-
 # don't do --exclude-other-filesystems anymore because of /var/vms
 FTP_PASSWORD="$FTP_PASSWORD" PASSPHRASE="$PASSPHRASE" \
 	duplicity \
 	--encrypt-key $encrypt_for \
 	--encrypt-sign-key $our_key \
-	--exclude /var/cache \
-	--exclude /root/.cache \
-	--exclude /proc \
-	--exclude /sys \
-	--exclude /dev \
-	--exclude /run \
-	--exclude /tmp \
-	--exclude /var/tmp \
-	--exclude /nix/store \
-	--exclude /var/vms/nixos-minimal-*-linux.iso \
-	--exclude "/var/vms/*.bak*" \
-	--exclude /var/vms/nixos-nix.img \
-	--exclude /var/vms/nixos-swap.img \
-	--exclude /var/vms/c3pb-nix.img \
-	--ftp-passive \
-	--volsize 1000 \
+        "${backupArgs[@]}" \
         $extra_args \
-	$CMD \
-        "$target_url"
+	"${CMD[@]}"
 

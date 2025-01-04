@@ -12,6 +12,7 @@ in {
       ./firewall-iptables-restore-simple.nix
       routeromen.nixosModules.snowball-headless
       routeromen.nixosModules.nixcfg-sync
+      routeromen.nixosModules.sendmail
       ./vms.nix
       ./kexec.nix
       #./ipv6.nix

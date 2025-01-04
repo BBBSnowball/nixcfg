@@ -4,7 +4,11 @@
     duplicity lftp
     (pkgs.runCommand "backup" {} ''
       mkdir -p $out/bin
-      ln -s ${./backup.sh} $out/bin/backup
+      #ln -s ${./backup.sh} $out/bin/backup
+      for target in dedibackup hetzner ; do
+        echo -e "#!/bin/sh\ntarget=$target exec ${./backup.sh} \"\$@\"" >$out/bin/backup-$target
+        chmod +x $out/bin/backup-$target
+      done
     '')
   ];
 
@@ -24,7 +28,11 @@
     description = "Backup whole system with duplicity";
     path = with pkgs; [ bash duplicity procps lftp ];
     serviceConfig.Type = "oneshot";
-    serviceConfig.ExecStart = "${./backup.sh} cron";
+    #serviceConfig.ExecStart = "${./backup.sh} cron";
+    script = ''
+      target=dedibackup ${./backup.sh} cron || true
+      target=hetzner    ${./backup.sh} cron
+    '';
     restartIfChanged = false;
   };
 }
