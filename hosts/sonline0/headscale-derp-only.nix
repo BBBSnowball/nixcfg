@@ -46,6 +46,8 @@ in
 
       # just to avoid the warning
       ip_prefixes = [ "100.64.0.0/10" ];
+
+      dns.magic_dns = false;
     };
   };
 
