@@ -139,9 +139,11 @@ in {
   users.users.root.hashedPasswordFile = "${secretForHost}/rootpw";
   users.users.${privateValues.userName} = {
     isNormalUser = true;
-    openssh.authorizedKeys.keyFiles = [
-      "${privateForHost}/ssh-laptop.pub"
-      "${privateForHost}/ssh-routeromen.pub"
+    openssh.authorizedKeys.keyFiles = let
+      p = "${privateForHost}/../sonline0-shared";
+    in [
+      "${p}/ssh-laptop.pub"
+      "${p}/ssh-routeromen.pub"
     ];
     openssh.authorizedKeys.keys = [
       "restrict,command=\"echo ok\" ${builtins.readFile "${privateForHost}/ssh-sonline-ssh-check.pub"}"
