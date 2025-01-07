@@ -5,7 +5,7 @@ let
     sqlite-interactive
     liberation_ttf
     #FIXME This won't make it available to binaries.
-    libusb
+    libusb1
     inetutils  # ifconfig
     procps     # free
   ]);

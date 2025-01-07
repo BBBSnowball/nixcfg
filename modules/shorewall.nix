@@ -163,7 +163,7 @@ let
   };
 
   packages = with pkgs; [
-    coreutils shorewall iptables-nftables-compat iproute ipset inetutils gnugrep gnused
+    coreutils shorewall iptables-nftables-compat iproute2 ipset inetutils gnugrep gnused
     #iptables ebtables
   ];
 

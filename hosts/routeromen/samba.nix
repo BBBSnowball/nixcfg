@@ -4,10 +4,8 @@
 
   services.samba = {
     enable = true;
-    extraConfig = ''
-      log level = 1 auth:5 winbind:5
-    '';
-    shares = {
+    settings = {
+      global."log level" = "1 auth:5 winbind:5";
       scans = {
         path = "/home/scans";
         comment = "Target for scans from HP printer";

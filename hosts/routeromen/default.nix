@@ -138,7 +138,7 @@ in {
     #iptables-nftables-compat
 
     direnv
-    posix_man_pages
+    man-pages-posix
     dnsutils
   ];
 
@@ -224,10 +224,10 @@ in {
     openssh.authorizedKeys.keyFiles = [ "${privateForHost}/ssh-laptop.pub" ];
     packages = with pkgs; [
       anbox apktool
-      android-studio # unfree :-(
+      #android-studio # unfree :-(
       #androidenv.androidPkgs_9_0.platform-tools  # contains adb
-      androidenv.androidPkgs_9_0.androidsdk
-      adoptopenjdk-bin  # contains keytool and jarsigner
+      #androidenv.androidPkgs_9_0.androidsdk
+      #adoptopenjdk-bin  # contains keytool and jarsigner
       nodePackages.node2nix
     ];
     extraGroups = [
