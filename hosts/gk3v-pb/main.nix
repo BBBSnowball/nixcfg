@@ -269,8 +269,18 @@ in
   services.rpcbind.enable = true;  # for NFS client
 
   services.tailscale.enable = true;
-  networking.networkmanager.unmanaged = [ "tailscale0" ];
-  #networking.networkmanager.logLevel = "TRACE";
+  #networking.networkmanager.unmanaged = [ "interface-name:tailscale0" "interface-name:tinc.*" "interface-name:vnet*" "interface-name:lo" ];
+  networking.networkmanager.unmanaged = [ "interface-name:tailscale0" "interface-name:tinc.*" "interface-name:vnet*" ];
+  # If wait-online service hangs, enable debug loglevel and run this:
+  # journalctl --unit NetworkManager.service --since "-10min" --grep startup; nmcli c s -a
+  #networking.networkmanager.logLevel = "DEBUG"; # or "TRACE";
+  #systemd.services.NetworkManager-wait-online.serviceConfig.Environment = "NM_ONLINE_TIMEOUT=10";
+  # -> Well, I give up. See https://github.com/NixOS/nixpkgs/issues/180175
+  systemd.services.NetworkManager-wait-online.enable = false;
+
+  # avoid warnings: "portmapper: failed to get PCP mapping: PCP is implemented but not enabled in the router"
+  # see https://github.com/tailscale/tailscale/issues/13145
+  systemd.services.tailscaled.environment.TS_DISABLE_PORTMAPPER = "1";
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
