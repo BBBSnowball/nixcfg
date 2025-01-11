@@ -1,4 +1,4 @@
-{ stdenv, fetchurl, autoPatchelfHook, libstdcxx5, xorg, udev, qt4, libusb, ncurses5 }:
+{ stdenv, fetchurl, autoPatchelfHook, libstdcxx5, xorg, udev, qt4, libusb1, ncurses5 }:
 stdenv.mkDerivation {
   pname = "nrfjprog";
   version = "10.12.1";
@@ -11,7 +11,7 @@ stdenv.mkDerivation {
   nativeBuildInputs = [ autoPatchelfHook ];
   buildInputs = [
     #libstdcxx5
-    udev qt4 libusb ncurses5
+    udev qt4 libusb1 ncurses5
   ] ++ (with xorg; [
     libICE
   ]);

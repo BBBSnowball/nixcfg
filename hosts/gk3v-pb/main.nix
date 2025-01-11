@@ -18,7 +18,7 @@ in
     [ ./hardware-configuration.nix
       ./rust.nix
       ./udev.nix
-      ./3dprint.nix
+      #./3dprint.nix
       ./xrdp.nix
       ./brother_ql_service.nix
       ./iperf3.nix
@@ -56,14 +56,13 @@ in
     extraGroups = [ "dialout" "wheel" "lp" ];
     openssh.authorizedKeys.keyFiles = [ "${privateForHost}/ssh-laptop.pub" ];
 
-    packages = with pkgs; [
+    packages = (with pkgs; [
       # GraphViz is used for dependency tree in FreeCAD.
       #cura freecad kicad graphviz blender
       firefox pavucontrol chromium
       mplayer mpv vlc
       speedcrunch
       libreoffice gimp
-      gnome.eog gnome.evince
       x11vnc
       (python3Packages.brother-ql)
       #vscodium
@@ -72,10 +71,15 @@ in
       #platformio  # would be a different version than that in VS Code
       w3m
       kupfer
-      gnome.gnome-screenshot
       nfs-utils
       printrun # pronterface
-    ];
+    ]) ++ (with pkgs.gnome; with pkgs; [
+      # Avoid warning in 24.11 by not accessing them through pkgs.gnome when possible.
+      eog
+      evince
+      cheese
+      gnome-screenshot
+    ]);
   };
   users.users.root = {
     # generate contents with `mkpasswd -m sha-512`

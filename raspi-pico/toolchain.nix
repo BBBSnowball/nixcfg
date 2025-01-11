@@ -44,7 +44,7 @@ let
 
   enablePicoprobe = true;
   openocd-rppico =
-    { openocd, fetchFromGitHub, tcl, which, gnum4, automake, autoconf, libtool, libusb-compat-0_1, libusb, libgpiod }:
+    { openocd, fetchFromGitHub, tcl, which, gnum4, automake, autoconf, libtool, libusb-compat-0_1, libusb1, libgpiod }:
     openocd.overrideAttrs (old: {
       pname = "openocd-rppico";
       version = if enablePicoprobe then "2021-01-20-14c0d0" else "2021-01-08-7c9611";
@@ -67,7 +67,7 @@ let
       nativeBuildInputs = (old.nativeBuildInputs or []) ++ [ tcl which gnum4 automake autoconf libtool ];
 
       # I think this should be in buildInputs but that would pull in Python with gdb for risc-v which is totally unnecessary here.
-      buildInputs = (old.buildInputs or []) ++ [ libusb-compat-0_1 libusb ];
+      buildInputs = (old.buildInputs or []) ++ [ libusb-compat-0_1 libusb1 ];
 
       preConfigure = ''
         ./bootstrap nosubmodule

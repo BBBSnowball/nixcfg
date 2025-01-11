@@ -20,7 +20,7 @@ self: super: {
       substituteInPlace main.c --replace 'rpiboot -d recovery' "rpiboot -d $out/share/rpiboot/recovery"
     '';
 
-    buildInputs = [ self.libusb ];
+    buildInputs = [ self.libusb1 ];
 
     installPhase = ''
       mkdir -p $out/bin $out/share/rpiboot/{recovery,msd} $out/etc/udev/rules.d
