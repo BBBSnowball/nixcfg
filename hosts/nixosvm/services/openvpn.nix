@@ -7,6 +7,9 @@ in {
     upstreamIP = config.networking.upstreamIp;
 
     #FIXME use an additional IP to make one of the "cool" VPNs, i.e. UDP on 53 and TCP on 443
+    #NOTE We are listening on IPv4 and IPv6 here but client won't automatically reconnect when
+    #     switching to an IPv4-only net on the client side. Therefore `proto udp4` is still
+    #     recommended for the client side.
     makeVpn= name: { keyName ? null, subnet, port, useTcp ? false, ... }: {
       config = ''
         dev vpn_${name}
@@ -16,7 +19,7 @@ in {
         secret /var/openvpn/${if keyName != null then keyName else name}.key
         port ${toString port}
         #local ${serverExternalIp}
-        local ${upstreamIP}
+        #local ${upstreamIP}
         comp-lzo
         keepalive 300 600
         ping-timer-rem      # only for davides and jolla
@@ -24,6 +27,7 @@ in {
         persist-key         # not for tcp
         cipher aes-256-cbc  # for android-udp
         ${lib.optionalString useTcp "proto tcp-server"}
+        ${lib.optionalString (!useTcp) "proto udp6"}
 
         user  nobody
         group nogroup
