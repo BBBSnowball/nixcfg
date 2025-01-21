@@ -26,6 +26,7 @@ in {
       ../../homeautomation
       snowball-headless-big
       ./msmtp.nix
+      ./local-wifi.nix
     ]);
 
   # Use the systemd-boot EFI boot loader.
@@ -57,7 +58,11 @@ in {
   networking.bridges.br0.interfaces = ["enp2s0f0" "enp2s0f1" "enp2s0f2" "enp2s0f3"];
   networking.interfaces.br0.ipv4 = {
     #addresses = [ { address = "192.168.178.59"; prefixLength = 24; } ];
-    addresses = [ { address = "192.168.89.185"; prefixLength = 24; } ];
+    addresses = [
+      { address = "192.168.89.185"; prefixLength = 24; }
+      # dummy for local-wifi
+      { address = "192.168.91.185"; prefixLength = 24; }
+    ];
     #routes = [ {
     #  address = "0.0.0.0";
     #  prefixLength = 0;
