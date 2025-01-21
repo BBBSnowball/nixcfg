@@ -107,7 +107,8 @@ in
   # avoid "degraded" status in networkctl
   # https://github.com/systemd/systemd/issues/575#issuecomment-163810166
   systemd.network.networks."40-enp4s0".networkConfig.LinkLocalAddressing = "no";
-  # doesn't work for those because they are "unmanaged"
-  systemd.network.networks."upstream-7".networkConfig.LinkLocalAddressing = "no";
-  systemd.network.networks."upstream-8".networkConfig.LinkLocalAddressing = "no";
+  systemd.network.networks."50-upstream" = {
+    matchConfig.Name = "upstream-*";
+    networkConfig.LinkLocalAddressing = "no";
+  };
 }
