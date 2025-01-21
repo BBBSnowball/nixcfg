@@ -110,8 +110,10 @@ in
 
     # If resolved is started, some software will try to talk to it but it is broken because of dnsmasq.
     # Therefore, don't start it. Normal name resolution will work (but resolvectl will fail, of course).
+    # -> Well, not true anymore. We set services.resolved.enable to false to enable resolveconf.
     enable = false;
   };
+  services.resolved.enable = false;
   # avoid `after` dependency in the other direction
   # (direct, as well as via network.target)
   systemd.services.dnsmasq.after = lib.mkForce [];
