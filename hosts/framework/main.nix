@@ -79,6 +79,10 @@ in
 
   systemd.network.wait-online.ignoredInterfaces = [ "tinc.a" ];
 
+  networking.firewall = {
+    allowedUDPPorts = [ 2021 ]; # for Bambu Studio
+  };
+
   nix.registry.routeromen.flake = routeromen;
 
   boot.binfmt.emulatedSystems = [
