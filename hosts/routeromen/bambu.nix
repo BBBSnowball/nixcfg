@@ -1,6 +1,7 @@
 { pkgs, secretForHost, ... }:
 let
   node-media-server = import ./node-media-server { inherit pkgs; };
+  injectpassword = import ./injectpassword { inherit pkgs; };
 in
 {
   systemd.services.node-media-server = {
@@ -28,13 +29,18 @@ in
       User = "stream-printer1";
     };
     script = ''
+      INPUT="rtsps://bblp:$ACCESS_CODE@$IP:322/streaming/live/1"
       while true ; do
         #while ! ping -nc1 $IP >/dev/null ; do sleep 10 ; done
         while ! nmap -n $IP -Pn -sT -p 322 --noninteractive -oG - | grep -q /open/ ; do sleep 10 ; done
 
         echo "Start streaming..."
-        #FIXME This will leak $ACCESS_TOKEN in process list! And also in journal because ffmpeg will sometimes mention it in log messages.
-        ffmpeg -re -i rtsps://bblp:$ACCESS_CODE@$IP:322/streaming/live/1 -c copy -f flv rtmp://localhost/live/test -hide_banner -loglevel warning
+        # This would leak $ACCESS_TOKEN in process list. FFmpeg supports loading option values from a file,
+        # e.g. with `-/filter`, but that doesn't work for `-i`. We couldn't find any easy way, so....
+        # FFmpeg will still leak the password into stderr/journal in some cases, e.g. for invalid args.
+        # It will sanitize the logged URL for other errors (e.g. couldn't connect).
+        PW="$INPUT" PWN=3 LD_PRELOAD="${injectpassword}/injectpassword.so" \
+          ffmpeg -re -i "<hidden>" -c copy -f flv rtmp://localhost/live/test -hide_banner -loglevel warning
         sleep 10
       done
     '';
