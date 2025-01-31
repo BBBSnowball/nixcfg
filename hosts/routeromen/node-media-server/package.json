@@ -1,0 +1,11 @@
+{
+  "name": "my-node-media-server",
+  "version": "1.0.0",
+  "engines" : {
+    "node" : ">=8.0.0"
+  },
+  "bin": "bin/app.js",
+  "dependencies": {
+    "node-media-server": "^4"
+  }
+}

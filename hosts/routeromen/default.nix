@@ -22,6 +22,7 @@ in {
       ./syslog-udp.nix
       ./rabbitmq.nix
       ./fhem.nix
+      ./bambu.nix
       ./ddclient.nix
       ../../homeautomation
       snowball-headless-big
