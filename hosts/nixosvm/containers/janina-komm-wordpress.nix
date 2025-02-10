@@ -4,7 +4,7 @@ let
   port = 8087;
   mysqlPort = 3308;
   name = "janina-komm";
-  inherit (privateForHost.janina) url3 url4;
+  inherit (privateForHost.janina) url3 url4 smtpHost;
   url1 = url3;
   url2 = url4;
 
@@ -79,13 +79,12 @@ in {
         enable = true;
         accounts.default = {
           auth = true;
-          host = "192.168.84.130";
+          host = smtpHost;
           port = "587";
           passwordeval = "cat ${secretForHost}/smtp-password.txt";
           user = "noreply@${url1}";
           from = "noreply@${url1}";
           tls = "on";
-          tls_certcheck = "off";
         };
       };
 

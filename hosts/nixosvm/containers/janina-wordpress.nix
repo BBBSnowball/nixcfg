@@ -4,7 +4,7 @@ let
   port = 8086;
   mysqlPort = 3307;
   name = "janina";
-  inherit (privateForHost.janina) url1 url2;
+  inherit (privateForHost.janina) url1 url2 smtpHost;
 
   passwordProtectPlugin = pkgs.fetchzip {
     url = "https://downloads.wordpress.org/plugin/password-protected.2.7.4.zip";
@@ -62,13 +62,12 @@ in {
         enable = true;
         accounts.default = {
           auth = true;
-          host = "192.168.84.130";
+          host = smtpHost;
           port = "587";
           passwordeval = "cat ${secretForHost}/smtp-password.txt";
           user = "noreply@${url1}";
           from = "noreply@${url1}";
           tls = "on";
-          tls_certcheck = "off";
         };
       };
 

@@ -1,7 +1,7 @@
 { config, lib, modules, privateForHost, secretForHost, ... }:
 let
   ports = config.networking.firewall.allowedPorts;
-  inherit (privateForHost.janina) url1;
+  inherit (privateForHost.janina) url1 smtpHost;
 in {
   containers.php = {
     autoStart = true;
@@ -58,7 +58,7 @@ in {
         enable = true;
         accounts.default = {
           auth = true;
-          host = "192.168.84.130";
+          host = smtHost;
           port = "587";
           passwordeval = "cat ${secretForHost}/smtp-password.txt";
           user = "noreply@${url1}";
