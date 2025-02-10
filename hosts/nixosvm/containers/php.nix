@@ -58,7 +58,7 @@ in {
         enable = true;
         accounts.default = {
           auth = true;
-          host = smtHost;
+          host = smtpHost;
           port = "587";
           passwordeval = "cat ${secretForHost}/smtp-password.txt";
           user = "noreply@${url1}";

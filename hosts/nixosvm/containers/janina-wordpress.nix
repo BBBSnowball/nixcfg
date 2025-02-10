@@ -73,8 +73,6 @@ in {
 
       systemd.services."phpfpm-wordpress-${name}" = {
         preStart = ''
-          chmod 440 ${secretForHost}/{smtp-password.txt,${name}-wordpress-db-password}
-          chown wordpress:root ${secretForHost}/${name}-wordpress-db-password
           chown root:wwwrun ${secretForHost}/smtp-password.txt
           chmod 711 ${secretForHost}
         '';
@@ -88,10 +86,10 @@ in {
   systemd.services."container@${name}-wordpress" = {
     path = with pkgs; [ gnutar which ];
     preStart = ''
-      chmod 600 ${secretForHost}/{smtp-password.txt,${name}-wordpress-db-password}
+      chmod 600 ${secretForHost}/smtp-password.txt
       systemd-nspawn -D "$root" --bind-ro=/nix/store:/nix/store --pipe -- `which mkdir` -p -m 0755 "/etc/nixos"
       systemd-nspawn -D "$root" --bind-ro=/nix/store:/nix/store --pipe -- `which mkdir` -p -m 0711 "${secretForHost}"
-      tar -C ${secretForHost} -c smtp-password.txt ${name}-wordpress-db-password \
+      tar -C ${secretForHost} -c smtp-password.txt \
         | systemd-nspawn -D "$root" --bind-ro=/nix/store:/nix/store --pipe -- `which tar` -C ${secretForHost} -x
     '';
   };
