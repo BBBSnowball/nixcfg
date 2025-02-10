@@ -1,20 +1,21 @@
 { config, lib, pkgs, modules, privateForHost, secretForHost, ... }:
 let
   ports = config.networking.firewall.allowedPorts;
+  port = 8086;
   mysqlPort = 3307;
-  url1 = lib.fileContents "${privateForHost}/janina/url1.txt";
-  url2 = lib.fileContents "${privateForHost}/janina/url2.txt";
+  name = "janina";
+  inherit (privateForHost.janina) url1 url2;
 
   passwordProtectPlugin = pkgs.fetchzip {
     url = "https://downloads.wordpress.org/plugin/password-protected.2.7.4.zip";
     sha256 = "sha256-6kU4duN3V/z0jIiShxzCHTG2GIZPKRook0MIQVXWLQg=";
   };
 in {
-  containers.janina-wordpress = {
+  containers."${name}-wordpress" = {
     autoStart = true;
     config = { config, pkgs, ... }: let
-      wp-cmd = pkgs.writeShellScriptBin "wp-janina" ''
-        exec sudo -u wordpress -- ${pkgs.wp-cli}/bin/wp -- --path=${config.services.httpd.virtualHosts.janina.documentRoot} "$@"
+      wp-cmd = pkgs.writeShellScriptBin "wp-${name}" ''
+        exec sudo -u wordpress -- ${pkgs.wp-cli}/bin/wp -- --path=${config.services.httpd.virtualHosts.${name}.documentRoot} "$@"
       '';
     in {
       imports = [ modules.container-common ];
@@ -23,13 +24,13 @@ in {
         wp-cmd unzip
       ];
 
-      services.wordpress.sites."janina" = {
+      services.wordpress.sites.${name} = {
         database = {
           #host = "127.0.0.1";
           #port = mysqlPort;
           socket = "/run/mysqld/mysqld.sock";
           name = "wordpress";
-          #passwordFile = "${secretForHost}/janina-wordpress-db-password";  # not allowed because createLocally manages it
+          #passwordFile = "${secretForHost}/${name}-wordpress-db-password";  # not allowed because createLocally manages it
           createLocally = true;
         };
         extraConfig = ''
@@ -43,7 +44,7 @@ in {
         virtualHost = {
           adminAddr = "postmaster@${url2}";
           serverAliases = [ url2 ];
-          listen = [ { port = ports.janina-wordpress.port; } ];
+          listen = [ { port = ports."${name}-wordpress".port; } ];
           locations."/extra-fonts" = {
             #alias = "/var/www/extra-fonts";
             alias = "/var/www%{REQUEST_URI}";  # oh, well... ugly hack!
@@ -54,7 +55,7 @@ in {
         };
       };
 
-      #services.mysql.port = 3307;
+      #services.mysql.port = mysqlPort;
       services.mysql.settings.mysqld.skip-networking = true;
 
       programs.msmtp = {
@@ -71,30 +72,28 @@ in {
         };
       };
 
-      systemd.services.phpfpm-wordpress-janina.preStart = ''
-        chmod 440 ${secretForHost}/{smtp-password.txt,janina-wordpress-db-password}
-        chown wordpress:root ${secretForHost}/janina-wordpress-db-password
-        chown root:wwwrun ${secretForHost}/smtp-password.txt
-        chmod 711 ${secretForHost}
-      '';
-      systemd.services.phpfpm-wordpress-janina.serviceConfig.PermissionsStartOnly = true;
+      systemd.services."phpfpm-wordpress-${name}" = {
+        preStart = ''
+          chmod 440 ${secretForHost}/{smtp-password.txt,${name}-wordpress-db-password}
+          chown wordpress:root ${secretForHost}/${name}-wordpress-db-password
+          chown root:wwwrun ${secretForHost}/smtp-password.txt
+          chmod 711 ${secretForHost}
+        '';
+        serviceConfig.PermissionsStartOnly = true;
+      };
     };
   };
 
-  networking.firewall.allowedPorts.janina-wordpress  = 8086;
+  networking.firewall.allowedPorts."${name}-wordpress" = port;
 
-  systemd.services."container@janina-wordpress".path = with pkgs; [ gnutar which ];
-  systemd.services."container@janina-wordpress".preStart = ''
-    #FIXME If the container makes these into symlinks, we may overwrite files on the host.
-    # -> pipe tar into nspawn instead..?
-    #mkdir -p -m 0755 "$root/etc/nixos"
-    #mkdir -p -m 0711 "$root${secretForHost}"
-    #cp -u --remove-destination ${secretForHost}/{smtp-password.txt,janina-wordpress-db-password} -t $root${secretForHost}/
-
-    chmod 600 ${secretForHost}/{smtp-password.txt,janina-wordpress-db-password}
-    systemd-nspawn -D "$root" --bind-ro=/nix/store:/nix/store --pipe -- `which mkdir` -p -m 0755 "/etc/nixos"
-    systemd-nspawn -D "$root" --bind-ro=/nix/store:/nix/store --pipe -- `which mkdir` -p -m 0711 "${secretForHost}"
-    tar -C ${secretForHost} -c smtp-password.txt janina-wordpress-db-password \
-      | systemd-nspawn -D "$root" --bind-ro=/nix/store:/nix/store --pipe -- `which tar` -C ${secretForHost} -x
-  '';
+  systemd.services."container@${name}-wordpress" = {
+    path = with pkgs; [ gnutar which ];
+    preStart = ''
+      chmod 600 ${secretForHost}/{smtp-password.txt,${name}-wordpress-db-password}
+      systemd-nspawn -D "$root" --bind-ro=/nix/store:/nix/store --pipe -- `which mkdir` -p -m 0755 "/etc/nixos"
+      systemd-nspawn -D "$root" --bind-ro=/nix/store:/nix/store --pipe -- `which mkdir` -p -m 0711 "${secretForHost}"
+      tar -C ${secretForHost} -c smtp-password.txt ${name}-wordpress-db-password \
+        | systemd-nspawn -D "$root" --bind-ro=/nix/store:/nix/store --pipe -- `which tar` -C ${secretForHost} -x
+    '';
+  };
 }

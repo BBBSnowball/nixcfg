@@ -1,10 +1,12 @@
 { config, lib, pkgs, modules, privateForHost, secretForHost, ... }:
 let
   ports = config.networking.firewall.allowedPorts;
+  port = 8087;
   mysqlPort = 3308;
   name = "janina-komm";
-  url1 = lib.fileContents "${privateForHost}/janina/url3.txt";
-  url2 = lib.fileContents "${privateForHost}/janina/url4.txt";
+  inherit (privateForHost.janina) url3 url4;
+  url1 = url3;
+  url2 = url4;
 
   fetchTheme = { url, hash }: let
     nameParts = with builtins; match "(.*/)?([^.]+)[.]([0-9.]+)[.][a-z]+" url;
@@ -16,7 +18,7 @@ let
     installPhase = ''mkdir -p $out; cp -R * $out/'';
   };
 in {
-  containers.janina-komm-wordpress = {
+  containers."${name}-wordpress" = {
     autoStart = true;
     config = { config, pkgs, ... }: let
       wp-cmd = pkgs.writeShellScriptBin "wp-${name}" ''
@@ -99,7 +101,7 @@ in {
     };
   };
 
-  networking.firewall.allowedPorts."${name}-wordpress" = 8087;
+  networking.firewall.allowedPorts."${name}-wordpress" = port;
 
   systemd.services."container@${name}-wordpress" = {
     path = with pkgs; [ gnutar which ];

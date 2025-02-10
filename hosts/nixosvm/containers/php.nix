@@ -1,7 +1,7 @@
 { config, lib, modules, privateForHost, secretForHost, ... }:
 let
   ports = config.networking.firewall.allowedPorts;
-  url1 = lib.fileContents "${privateForHost}/janina/url1.txt";
+  inherit (privateForHost.janina) url1;
 in {
   containers.php = {
     autoStart = true;
