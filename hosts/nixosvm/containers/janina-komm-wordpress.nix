@@ -11,7 +11,7 @@ in {
     autoStart = true;
     config = { config, pkgs, ... }: let
       wp-cmd = pkgs.writeShellScriptBin "wp-${name}" ''
-        exec sudo -u wordpress -- ${pkgs.wp-cli}/bin/wp -- --path=${config.services.httpd.virtualHosts.${name}.documentRoot} "$@"
+        exec sudo -u wordpress -- ${pkgs.wp-cli}/bin/wp --path=${config.services.httpd.virtualHosts.${name}.documentRoot} "$@"
       '';
     in {
       imports = [
