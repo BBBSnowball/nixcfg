@@ -38,6 +38,7 @@ in {
       ./containers/php.nix
       ./containers/janina-wordpress.nix
       ./containers/janina-komm-wordpress.nix
+      ./containers/janina-lead-wordpress.nix
       ./containers/weechat.nix
     ]);
 
