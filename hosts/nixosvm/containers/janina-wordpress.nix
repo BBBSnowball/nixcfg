@@ -1,24 +1,24 @@
 { config, lib, pkgs, modules, privateForHost, secretForHost, ... }:
 let
   ports = config.networking.firewall.allowedPorts;
-  port = 8086;
-  mysqlPort = 3307;
   name = "janina";
+  containerName = "${name}-wordpress";
   inherit (privateForHost.janina) url1 url2 smtpHost;
-
-  passwordProtectPlugin = pkgs.fetchzip {
-    url = "https://downloads.wordpress.org/plugin/password-protected.2.7.4.zip";
-    sha256 = "sha256-6kU4duN3V/z0jIiShxzCHTG2GIZPKRook0MIQVXWLQg=";
-  };
+  urls = [ url2 url1 ];
+  mainUrl = lib.elemAt urls 0;
 in {
-  containers."${name}-wordpress" = {
+  containers.${containerName} = {
     autoStart = true;
     config = { config, pkgs, ... }: let
       wp-cmd = pkgs.writeShellScriptBin "wp-${name}" ''
         exec sudo -u wordpress -- ${pkgs.wp-cli}/bin/wp -- --path=${config.services.httpd.virtualHosts.${name}.documentRoot} "$@"
       '';
     in {
-      imports = [ modules.container-common ];
+      imports = [
+        modules.container-common
+        ./parts/wordpress-pkgs.nix
+        ./parts/sendmail-to-smarthost.nix
+      ];
 
       environment.systemPackages = with pkgs; [
         wp-cmd unzip
@@ -26,11 +26,8 @@ in {
 
       services.wordpress.sites.${name} = {
         database = {
-          #host = "127.0.0.1";
-          #port = mysqlPort;
           socket = "/run/mysqld/mysqld.sock";
           name = "wordpress";
-          #passwordFile = "${secretForHost}/${name}-wordpress-db-password";  # not allowed because createLocally manages it
           createLocally = true;
         };
         extraConfig = ''
@@ -39,11 +36,11 @@ in {
         '';
         #themes = { inherit responsiveTheme; };
         plugins = {
-          inherit passwordProtectPlugin;
+          inherit (pkgs.myWordpressPlugins) passwordProtectPlugin;
         };
         virtualHost = {
-          adminAddr = "postmaster@${url2}";
-          serverAliases = [ url2 ];
+          adminAddr = "postmaster@${mainUrl}";
+          serverAliases = urls;
           listen = [ { port = ports."${name}-wordpress".port; } ];
           locations."/extra-fonts" = {
             #alias = "/var/www/extra-fonts";
@@ -55,42 +52,20 @@ in {
         };
       };
 
-      #services.mysql.port = mysqlPort;
       services.mysql.settings.mysqld.skip-networking = true;
 
-      programs.msmtp = {
+      programs.sendmail-to-smarthost = {
         enable = true;
-        accounts.default = {
-          auth = true;
-          host = smtpHost;
-          port = "587";
-          passwordeval = "cat ${secretForHost}/smtp-password.txt";
-          user = "noreply@${url1}";
-          from = "noreply@${url1}";
-          tls = "on";
-        };
-      };
-
-      systemd.services."phpfpm-wordpress-${name}" = {
-        preStart = ''
-          chown root:wwwrun ${secretForHost}/smtp-password.txt
-          chmod 711 ${secretForHost}
-        '';
-        serviceConfig.PermissionsStartOnly = true;
+        inherit smtpHost;
+        sender = "noreply@${mainUrl}";
+        passwordFile = "/run/credentials/system/smtp-password";
       };
     };
+
+    bindMounts."/run/credentials/system".hostPath = "/run/credentials/container@${containerName}.service";
   };
 
-  networking.firewall.allowedPorts."${name}-wordpress" = port;
-
-  systemd.services."container@${name}-wordpress" = {
-    path = with pkgs; [ gnutar which ];
-    preStart = ''
-      chmod 600 ${secretForHost}/smtp-password.txt
-      systemd-nspawn -D "$root" --bind-ro=/nix/store:/nix/store --pipe -- `which mkdir` -p -m 0755 "/etc/nixos"
-      systemd-nspawn -D "$root" --bind-ro=/nix/store:/nix/store --pipe -- `which mkdir` -p -m 0711 "${secretForHost}"
-      tar -C ${secretForHost} -c smtp-password.txt \
-        | systemd-nspawn -D "$root" --bind-ro=/nix/store:/nix/store --pipe -- `which tar` -C ${secretForHost} -x
-    '';
-  };
+  systemd.services."container@${containerName}".serviceConfig.LoadCredential = [ "smtp-password:${secretForHost}/smtp-password.txt" ];
+  
+  networking.firewall.allowedPorts."${name}-wordpress" = 8086;
 }

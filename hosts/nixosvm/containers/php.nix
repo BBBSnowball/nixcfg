@@ -2,14 +2,18 @@
 let
   ports = config.networking.firewall.allowedPorts;
   inherit (privateForHost.janina) url1 smtpHost;
+  containerName = "php";
 in {
-  containers.php = {
+  containers.${containerName} = {
     autoStart = true;
     config = { config, pkgs, ... }: let
       poolName = "php";
       phpfpmSocketName = config.services.phpfpm.pools.php.socket;
     in {
-      imports = [ modules.container-common ];
+      imports = [
+        modules.container-common
+        ./parts/sendmail-to-smarthost.nix
+      ];
 
       environment.systemPackages = with pkgs; [
         phpPackages.composer
@@ -54,21 +58,18 @@ in {
       services.mysql.package = pkgs.mariadb;
       services.mysql.settings.mysqld.skip-networking = true;
 
-      programs.msmtp = {
+      programs.sendmail-to-smarthost = {
         enable = true;
-        accounts.default = {
-          auth = true;
-          host = smtpHost;
-          port = "587";
-          passwordeval = "cat ${secretForHost}/smtp-password.txt";
-          user = "noreply@${url1}";
-          from = "noreply@${url1}";
-          tls = "on";
-          tls_certcheck = "off";
-        };
+        inherit smtpHost;
+        sender = "noreply@${url1}";
+        passwordFile = "/run/credentials/system/smtp-password";
       };
     };
+
+    bindMounts."/run/credentials/system".hostPath = "/run/credentials/container@${containerName}.service";
   };
 
-  networking.firewall.allowedPorts.phpserver  = 8085;
+  systemd.services."container@${containerName}".serviceConfig.LoadCredential = [ "smtp-password:${secretForHost}/smtp-password.txt" ];
+
+  networking.firewall.allowedPorts.phpserver = 8085;
 }
