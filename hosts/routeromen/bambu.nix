@@ -1,3 +1,6 @@
+#NOTE Example player is hosted on our fhem server, for now. Do this:
+# ln -s /etc/nixos/flake/hosts/routeromen/flvjs /var/fhem/data/www/bambu
+
 { lib, pkgs, config, secretForHost, ... }:
 let
   node-media-server = import ./node-media-server { inherit pkgs; };
@@ -34,14 +37,16 @@ in
 
   systemd.services.stream-printer1 = {
     after = [ "network.target" "node-media-server.service" ];
-    #wantedBy = [ "multi-user.target" ];
+    bindsTo = [ "node-media-server.service" ];  # stop us if node-media-server terminates
+    #wantedBy = [ "multi-user.target" ];  # don't autostart us
     path = with pkgs; [ ffmpeg iputils nmap ];
     serviceConfig = {
-      Restart = "always";
       RestartSec = 30;
       EnvironmentFile = "${secretForHost}/bambu";  # defines IP and ACCESS_CODE
       DynamicUser = true;
       User = "stream-printer1";
+      # Kill it if it doesn't stop rather soon.
+      TimeoutStopSec = 5;
     };
     script = ''
       INPUT="rtsps://bblp:$ACCESS_CODE@$IP:322/streaming/live/1"
@@ -55,7 +60,6 @@ in
         # FFmpeg will still leak the password into stderr/journal in some cases, e.g. for invalid args.
         # It will sanitize the logged URL for other errors (e.g. couldn't connect).
         PW="$INPUT" PWN=3 \
-          timeout -v -k 1m 5m \
           env LD_PRELOAD="${injectpassword}/injectpassword.so" \
           ffmpeg -re -i "<hidden>" -c copy -f flv rtmp://localhost/live/test -hide_banner -loglevel warning \
           || true
@@ -71,5 +75,4 @@ in
     destPort = [ 8087 ];
     source = "loc,tinc:192.168.84.50,192.168.84.39";
   };
-
 }

@@ -71,4 +71,31 @@ const streamPath = "/live/test";
 nms.ctx.broadcasts.set(streamPath, new MyBroadcastServer());
 logger.info(`We have added MyBroadcastServer for ${streamPath}`);
 
+// Get the HTTP App object - *very* ugly hack!
+const app = nms.httpServer.httpServer._events.request;
+function reply(req, res, process) {
+  process.on('exit', (code) => {
+    if (code == 0) {
+      res.send('ok');
+    } else {
+      console.log(`child process exited with code ${code}`);
+      res.status(503);
+      res.send("error: couldn't run command");
+    }
+  });
+  process.on('error', (err) => {
+    console.log(`child process had an error: ${err}`);
+    res.status(503);
+    res.send("error: couldn't run command");
+  });
+}
+app.post("/restart", (req, res) => {
+  const p = spawn("/run/wrappers/bin/sudo systemctl restart stream-printer1.service", { stdio: "inherit", shell: true });
+  reply(req, res, p);
+});
+app.post("/stop", (req, res) => {
+  const p = spawn("/run/wrappers/bin/sudo systemctl stop stream-printer1.service", { stdio: "inherit", shell: true });
+  reply(req, res, p);
+});
+
 nms.run();
