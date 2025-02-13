@@ -39,8 +39,11 @@ in
         # e.g. with `-/filter`, but that doesn't work for `-i`. We couldn't find any easy way, so....
         # FFmpeg will still leak the password into stderr/journal in some cases, e.g. for invalid args.
         # It will sanitize the logged URL for other errors (e.g. couldn't connect).
-        PW="$INPUT" PWN=3 LD_PRELOAD="${injectpassword}/injectpassword.so" \
-          ffmpeg -re -i "<hidden>" -c copy -f flv rtmp://localhost/live/test -hide_banner -loglevel warning
+        PW="$INPUT" PWN=3 \
+          timeout -v -k 1m 5m \
+          env LD_PRELOAD="${injectpassword}/injectpassword.so" \
+          ffmpeg -re -i "<hidden>" -c copy -f flv rtmp://localhost/live/test -hide_banner -loglevel warning \
+          || true
         sleep 10
       done
     '';
