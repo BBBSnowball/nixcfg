@@ -49,7 +49,7 @@ class MyBroadcastServer extends BroadcastServer {
     if (!this.streamActive) {
       logger.info("Starting stream service");
       this.streamActive = true;
-      spawn("systemctl start --user stream-printer1.service", { stdio: "inherit", shell: true });
+      spawn("/run/wrappers/bin/sudo systemctl start stream-printer1.service", { stdio: "inherit", shell: true });
     }
   }
   donePlay2 = (session) => {
@@ -57,7 +57,7 @@ class MyBroadcastServer extends BroadcastServer {
     logger.info(`donePlay in MyBroadcastServer, protocol ${session.protocol}, after ${this.subscribers.size} subscribers`);
     if (this.subscribers.size == 0 && this.streamActive) {
       logger.info("Stopping stream service");
-      spawn("systemctl stop --user stream-printer1.service", { stdio: "inherit", shell: true });
+      spawn("/run/wrappers/bin/sudo systemctl stop stream-printer1.service", { stdio: "inherit", shell: true });
       this.streamActive = false;
     }
   }

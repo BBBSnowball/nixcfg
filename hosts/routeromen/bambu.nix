@@ -1,52 +1,47 @@
-{ pkgs, config, secretForHost, ... }:
+{ lib, pkgs, config, secretForHost, ... }:
 let
   node-media-server = import ./node-media-server { inherit pkgs; };
   injectpassword = import ./injectpassword { inherit pkgs; };
 in
 {
-  systemd.user.services.node-media-server = let
-    userService = "user@${toString config.users.users.node-media-server.uid}.service";
-  in {
-    unitConfig.ConditionUser = "node-media-server";
-    # https://unix.stackexchange.com/a/590958
-    #bindsTo = [ userService ];
-    #after = [ "network.target" userService ];
-    # -> We still cannot use `systemctl --user`.
-    # -> Run both services as user services.
-
+  systemd.services.node-media-server = {
     after = [ "network.target" ];
-    #wantedBy = [ "multi-user.target" ];
-    wantedBy = [ "default.target" ];
-    path = with pkgs; [ node-media-server ];
+    wantedBy = [ "multi-user.target" ];
+    path = with pkgs; [ node-media-server systemd ];
     serviceConfig = {
       ExecStart = "${node-media-server}/bin/my-node-media-server";
       Restart = "always";
       RestartSec = 30;
-      #DynamicUser = true;
-      #User = "node-media-server";
+      #DynamicUser = true;  # This would enable NoNewPrivileges but we want to use sudo.
+      User = "node-media-server";
     };
   };
 
-  users.users.node-media-server = {
-    isSystemUser = true;
-    group = "node-media-server";
-    #uid = 5859;  # must be known in advance
-    linger = true;
-  };
-  users.groups.node-media-server = {};
+  users.users.node-media-server = {            
+    isSystemUser = true;                       
+    group = "node-media-server";               
+  };                                           
+  users.groups.node-media-server = {};         
 
-  systemd.user.services.stream-printer1 = {
-    unitConfig.ConditionUser = "node-media-server";
+  security.sudo.extraConfig = let
+    systemctl = lib.getExe' pkgs.systemd "systemctl";
+  in ''
+    node-media-server ALL=NOPASSWD: ${systemctl} start stream-printer1.service, \
+      ${systemctl} stop stream-printer1.service, \
+      ${systemctl} restart stream-printer1.service
+    #${systemctl} status stream-printer1.service  # -> not needed and might leak the access code in case of unusual errors
+  '';
+
+  systemd.services.stream-printer1 = {
     after = [ "network.target" "node-media-server.service" ];
     #wantedBy = [ "multi-user.target" ];
     path = with pkgs; [ ffmpeg iputils nmap ];
     serviceConfig = {
       Restart = "always";
       RestartSec = 30;
-      #EnvironmentFile = "${secretForHost}/bambu";  # defines IP and ACCESS_CODE
-      EnvironmentFile = "/tmp/bambu";  # defines IP and ACCESS_CODE
-      #DynamicUser = true;
-      #User = "stream-printer1";
+      EnvironmentFile = "${secretForHost}/bambu";  # defines IP and ACCESS_CODE
+      DynamicUser = true;
+      User = "stream-printer1";
     };
     script = ''
       INPUT="rtsps://bblp:$ACCESS_CODE@$IP:322/streaming/live/1"
