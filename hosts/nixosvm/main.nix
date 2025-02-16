@@ -29,16 +29,17 @@ in {
       ./services/tinc.nix
       (if useNftables then ./firewall-nftables.nix else ./firewall-iptables-restore.nix)
     ] ++ (map withFlakeInputs [
+      ./containers/bunt.nix
       ./containers/feg.nix
       ./containers/git.nix
       ./containers/hedgedoc.nix
+      ./containers/janina-wordpress.nix
+      ./containers/janina-komm-wordpress.nix
+      ./containers/janina-lead-wordpress.nix
       ./containers/mate.nix
       ./containers/notes.nix
       ./containers/rss.nix
       ./containers/php.nix
-      ./containers/janina-wordpress.nix
-      ./containers/janina-komm-wordpress.nix
-      ./containers/janina-lead-wordpress.nix
       ./containers/weechat.nix
     ]);
 
