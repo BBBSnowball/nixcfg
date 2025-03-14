@@ -8,19 +8,29 @@ let
   hostName1 = "c1";
 
   creds = "/run/credentials/nginx.service";
+
+  logSettings = {
+    extraConfig = ''
+      access_log /var/log/nginx/access.log mini if=$loggable;
+    '';
+  };
   makeSslVHost = name: {
     listen = [
       #{ addr = "0.0.0.0"; port = ports.c1.port; ssl = true; }
       { addr = "[::]";    port = ports.${name}.port; ssl = true; }
     ];
     #adminAddr = "postmaster@localhost";
-    serverAliases = [ name ];
+    #serverAliases = [ name ];
     root = "/var/www/html";
 
     onlySSL = true;
     sslCertificate = "${creds}/secret_clown-${name}-cert.pem";
     sslCertificateKey = "${creds}/secret_clown-${name}-key.pem";
     # Check with: openssl s_client -connect localhost:8099 -showcerts |& openssl x509 -text | grep DNS
+  } // logSettings;
+  internVHost = {
+    root = "/var/www/html-intern";
+    basicAuthFile = "${creds}/secret_htpasswd";
   };
 in {
   containers.${name} = {
@@ -34,6 +44,16 @@ in {
       _module.args = { inherit nixpkgs-24-05; };
 
       services.nginx.enable = true;
+
+      services.nginx.commonHttpConfig = ''
+        # omit success (and redirect) in logs unless they generate an absurd amount of load
+        map $status,$request_time $loggable {
+          ~,[^0]  1;  # slow
+          ~^[23]  0;  # successful (or redirect)
+          default 1;  # some unusual status
+        }
+        log_format mini '[$time_iso8601] $status $request_method "$host$uri" rt=$request_time';
+      '';
 
       services.nginx.virtualHosts = {
         # redirect HTTP to HTTPS, similar to forceSSL but custom port
@@ -54,6 +74,10 @@ in {
         c2 = makeSslVHost "c2";
         c3 = makeSslVHost "c3";
         c4 = makeSslVHost "c4";
+        "~^intern[.][^1.]+[.]de$ " = makeSslVHost "c1" // internVHost;
+        "~^intern[.][^2.]+[.]de$ " = makeSslVHost "c2" // internVHost;
+        "~^intern[.][^4.]+[.]de$ " = makeSslVHost "c3" // internVHost;
+        "~^intern[.][^5.]+[.]de$ " = makeSslVHost "c4" // internVHost;
       };
 
       systemd.services."nginx" = {
@@ -62,6 +86,7 @@ in {
           "secret_clown-c2-key.pem" "secret_clown-c2-cert.pem"
           "secret_clown-c3-key.pem" "secret_clown-c3-cert.pem"
           "secret_clown-c4-key.pem" "secret_clown-c4-cert.pem"
+          "secret_htpasswd"
         ];
       };
     };
