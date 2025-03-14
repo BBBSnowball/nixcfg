@@ -101,14 +101,14 @@ in {
 
       services.nginx.virtualHosts.${hostNameNC} = {
         listen = [
-          { addr = "0.0.0.0"; port = ports.bunt-nc.port; ssl = true; }
+          #{ addr = "0.0.0.0"; port = ports.bunt-nc.port; ssl = true; }
           { addr = "[::]";    port = ports.bunt-nc.port; ssl = true; }
         ];
       } // sslKeys;
 
       services.nginx.virtualHosts.${hostNameWP} = {
         listen = [
-          { addr = "0.0.0.0"; port = ports.bunt-wp.port; ssl = true; }
+          #{ addr = "0.0.0.0"; port = ports.bunt-wp.port; ssl = true; }
           { addr = "[::]";    port = ports.bunt-wp.port; ssl = true; }
         ];
       } // sslKeys;
@@ -116,7 +116,7 @@ in {
       services.nginx.virtualHosts.${hostNameMain} = {
         root = "/var/www/html";
         listen = [
-          { addr = "0.0.0.0"; port = ports.bunt-mn.port; ssl = true; }
+          #{ addr = "0.0.0.0"; port = ports.bunt-mn.port; ssl = true; }
           { addr = "[::]";    port = ports.bunt-mn.port; ssl = true; }
         ];
       } // sslKeys;
@@ -124,7 +124,7 @@ in {
       # redirect HTTP to HTTPS, similar to forceSSL but custom port
       services.nginx.virtualHosts.http = {
         listen = [
-          { addr = "0.0.0.0"; port = ports.bunt-http.port; }
+          #{ addr = "0.0.0.0"; port = ports.bunt-http.port; }
           { addr = "[::]";    port = ports.bunt-http.port; }
         ];
 

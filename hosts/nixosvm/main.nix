@@ -30,6 +30,7 @@ in {
       (if useNftables then ./firewall-nftables.nix else ./firewall-iptables-restore.nix)
     ] ++ (map withFlakeInputs [
       ./containers/bunt.nix
+      ./containers/c.nix
       ./containers/feg.nix
       ./containers/git.nix
       ./containers/hedgedoc.nix
