@@ -81,6 +81,15 @@ in
     # e.g. builtins.head config.networking.nameservers;
     default = "127.0.0.53";  # systemd-resolved
   };
+  # We cannot call it "port" because that's what the old option was called and NixOS has a deprecation error for that.
+  options.services.smokeping.ourPort = with lib; mkOption {
+    type = types.port;
+    description = "Port for webserver";
+    # This used to be 8081 when thttpd was used but NixOS has switched to 80.
+    # We still want the old value, for now.
+    default = 8081;
+  };
+
 
   config.nixpkgs.overlays = [
     (import ../../pkgs/smokepingOverlay.nix)
@@ -210,4 +219,9 @@ in
 
   #config.systemd.services.smokeping.serviceConfig.ExecStartPost = "!${pkgs.systemd}/bin/systemctl start thttpd";
   config.systemd.services.smokeping.wants = [ "thttpd.service" ];
+
+  config.services.nginx.virtualHosts.smokeping.listen = [
+    { addr = "0.0.0.0"; port = config.services.smokeping.ourPort; }
+    { addr = "[::]"; port = config.services.smokeping.ourPort; }
+  ];
 }
