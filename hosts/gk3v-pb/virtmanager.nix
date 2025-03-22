@@ -22,6 +22,9 @@
 
     # allow access to z2m from fw via tinc
     iptables -I nixos-fw 3 -s 192.168.83.139/32 -i tinc.a -p tcp -m tcp --dport 8086 -j ACCEPT
+    # also from xps
+    iptables -I nixos-fw 3 -s 192.168.83.50/32 -i tinc.a -p tcp -m tcp --dport 8086 -j ACCEPT
+    iptables -I nixos-fw 3 -s 192.168.84.50/32 -i tinc.bbbsnowbal -p tcp -m tcp --dport 8086 -j ACCEPT
   '';
 
   #networking.firewall.logRefusedPackets = true;
