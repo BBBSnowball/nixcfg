@@ -29,6 +29,7 @@ in
       ./virtmanager.nix
       #./bl808-netboot.nix
       ./test-zigbee.nix
+      ./inkscape-silhouette.nix
       #./ipfs.nix
       ./llm.nix
       ./moreSecure.nix

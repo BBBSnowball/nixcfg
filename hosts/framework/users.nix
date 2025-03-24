@@ -28,7 +28,7 @@ in
   users.users.root = rootUser;
 
   users.users.user = guiUser // {
-    extraGroups = [ "dialout" "plugdev" "wheel" "wireshark" ];
+    extraGroups = [ "dialout" "plugdev" "wheel" "wireshark" "lp" ];
   };
 
   users.users.user2 = guiUser // {
