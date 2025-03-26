@@ -47,7 +47,19 @@ let
       owner = "fablabnbg";
       repo = "inkscape-silhouette";
       rev = "1e8261eeac70e753b5df2415cc0e896fd67ae994";
+      hash = "sha256-1d1jmr+9axSUxLdNv4OK2mzutROK3Wna2Z6Vkg9Mk98=";
     };
+
+    #FIXME Patch doesn't work.
+    #  Can we reproduce the issue outside of Inkscape?
+    #  python3 -c 'import silhouette.read_dump; silhouette.read_dump.show_plotcuts([[[0,0],[10,10]]], buttons=True, extraText="abc")'
+    #  -> Nope.
+    # MPLBACKEND=gtk3agg python3 -c 'import matplotlib'
+    # -> Libs are missing.
+    # Use Python and GI_TYPELIB_PATH from Inkscape (read from /proc, GI_TYPELIB_PATH and NIX_PYTHONPREFIX):
+    # GI_TYPELIB_PATH=... /nix/store/2m1m42zgmxh7n49dykhi01736ksg9a6q-python3-3.12.8-env/bin/python3 -c 'import silhouette.read_dump; silhouette.read_dump.show_plotcuts([[[0,0],[10,10]]], buttons=True, extraText="abc"); import matplotlib; print(matplotlib.get_backend())'
+    # -> Backend is "gtk3agg" but no warnings.
+    patches = [ ./01-disable-deprecation-warnings.patch ];
 
     # prerequisites = ["cssselect", "xmltodict", "lxml", "pyusb", "libusb1", "numpy"]
     propagatedBuildInputs = with pkgs.python3Packages; [
@@ -57,25 +69,32 @@ let
   };
 
   extensions = pkgs.runCommand "inkscape-extensions-silhouette" {
-    py = inkscape-silhouette;
-    inherit (pkgs) libusb1;
-    inherit (pkgs.python3Packages) pyusb;
     src = inkscape-silhouette.src;
+    pypkgs = pkgs.python3.withPackages (p: with p; [
+      inkscape-silhouette
+      pyusb
+      wxpython
+      matplotlib
+      xmltodict
+    ]);
+    sitepkgs = pkgs.python3.sitePackages;
   } ''
     mkdir $out
-    ln -s $py/lib/python3.12/site-packages/silhouette $out/silhouette
-    #ln -s $libusb1 $out/libusb1
-    ln -s $pyusb/lib/python3.12/site-packages/usb $out/usb
-    ln -s $src/render_silhouette_regmarks.inx $out/render_silhouette_regmarks.inx
-    ln -s $src/sendto_silhouette.inx $out/sendto_silhouette.inx
-    ln -s $src/silhouette_multi.inx $out/silhouette_multi.inx
-    ln -s $src/render_silhouette_regmarks.py $out/render_silhouette_regmarks.py
-    ln -s $src/sendto_silhouette.py $out/sendto_silhouette.py
-    ln -s $src/silhouette_multi.py $out/silhouette_multi.py
+    for x in $pypkgs ; do
+      cp -sr $x/$sitepkgs/* $out/
+    done
+
+    cp $src/{render_silhouette_regmarks,sendto_silhouette,silhouette_multi}.{py,inx} .
+    chmod u+w *
+    patch -p1 <${./01-disable-deprecation-warnings.patch}
+    cp *.py *.inx $out/
   '';
 
   install = pkgs.writeShellScriptBin "install-inkscape-silhouette" ''
     set -e
+    # This does not copy the file into the Nix store, so it will still be able to access
+    # the files next to it (but it will be in the Nix store anyway when run from a Flake).
+    nixfile=${builtins.toString ./.}/inkscape-silhouette-pkg.nix
     target=~/.config/inkscape
     target1=~/.config/inkscape/extensions
     target2=~/.config/inkscape/ui/toolbar-commands.ui
@@ -85,8 +104,8 @@ let
     if [ -e "$target2" -a ! -L "$target2" ] ; then
       ( set -x; mv --backup "$target2" "$target2.bak" )
     fi
-    [ ! -e "$target1" -o -L "$target1" ] && nix-build ./inkscape-silhouette.nix -A extensions -o "$target1"
-    [ ! -e "$target1" -o -L "$target1" ] && nix-build ./inkscape-silhouette.nix -A toolbarFile -o "$target2"
+    [ ! -e "$target1" -o -L "$target1" ] && nix-build $nixfile -A extensions -o "$target1"
+    [ ! -e "$target1" -o -L "$target1" ] && nix-build $nixfile -A toolbarFile -o "$target2"
   '';
 in
 {

@@ -1,0 +1,49 @@
+diff --git a/render_silhouette_regmarks.py b/render_silhouette_regmarks.py
+index 8bfbc91..bce9241 100644
+--- a/render_silhouette_regmarks.py
++++ b/render_silhouette_regmarks.py
+@@ -20,6 +20,12 @@ Base module for rendering regmarks for Silhouette CAMEO products in Inkscape.
+ """
+ 
+ import sys, os
++
++# The deprecation warnings are quite annoying because Inkscape will open a model dialog if there is any text on stderr.
++# https://discourse.gnome.org/t/suppress-deprecationwarning-gtk-some-widget-is-deprecated/20318
++import warnings
++warnings.filterwarnings("ignore", category=DeprecationWarning) 
++
+ # Enables stand alone mode and helps for tests #
+ # We append the directory where this script lives and inkscape extension folder to sys.path
+ sys.path.append(os.path.dirname(os.path.abspath(sys.argv[0])))
+diff --git a/sendto_silhouette.py b/sendto_silhouette.py
+index 82e0e9e..fa413b1 100644
+--- a/sendto_silhouette.py
++++ b/sendto_silhouette.py
+@@ -10,6 +10,11 @@ __author__ = "Juergen Weigert <juergen@fabmail.org> and contributors"
+ 
+ import sys, os, time, math, operator
+ 
++# The deprecation warnings are quite annoying because Inkscape will open a model dialog if there is any text on stderr.
++# https://discourse.gnome.org/t/suppress-deprecationwarning-gtk-some-widget-is-deprecated/20318
++import warnings
++warnings.filterwarnings("ignore", category=DeprecationWarning) 
++
+ # we sys.path.append() the directory where this script lives.
+ sys.path.append(os.path.dirname(os.path.abspath(sys.argv[0])))
+ 
+diff --git a/silhouette_multi.py b/silhouette_multi.py
+index 62e1770..add5bc3 100755
+--- a/silhouette_multi.py
++++ b/silhouette_multi.py
+@@ -2,6 +2,11 @@
+ import os
+ import sys
+ 
++# The deprecation warnings are quite annoying because Inkscape will open a model dialog if there is any text on stderr.
++# https://discourse.gnome.org/t/suppress-deprecationwarning-gtk-some-widget-is-deprecated/20318
++import warnings
++warnings.filterwarnings("ignore", category=DeprecationWarning) 
++
+ # we sys.path.append() the directory where this script lives.
+ sys.path.append(os.path.dirname(os.path.abspath(sys.argv[0])))
+ 
