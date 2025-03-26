@@ -40,6 +40,12 @@ let
     xmlstarlet val -w $out
   '';
 
+  toolbarExtension = pkgs.runCommand "inkscape-toolbar" {
+  } ''
+    mkdir -p $out/share/inkscape/ui
+    ln -s ${toolbarFile} $out/share/inkscape/ui/toolbar-commands.ui
+  '';
+
   inkscape-silhouette = pkgs.python3Packages.buildPythonPackage {
     name = "inkscape-silhouette";
 
@@ -109,5 +115,5 @@ let
   '';
 in
 {
-  inherit toolbarFile inkscape-silhouette extensions install;
+  inherit toolbarFile toolbarExtension inkscape-silhouette extensions install;
 }

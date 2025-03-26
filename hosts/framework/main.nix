@@ -139,7 +139,7 @@ in
     #cura  # python-libarcus is broken
     freecad kicad graphviz blender
     libxslt zip  # used by Kicad
-    inkscape
+    #inkscape
     wine
     android-tools
     virt-manager
