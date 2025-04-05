@@ -29,6 +29,9 @@ in
       ./virtmanager.nix
       #./bl808-netboot.nix
       ./test-zigbee.nix
+
+      ./firefox-policy.nix
+      (withFlakeInputs ./home)
       ./inkscape-silhouette.nix
       #./ipfs.nix
       ./llm.nix
