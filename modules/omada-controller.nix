@@ -125,9 +125,15 @@ in {
     '';
 
     wantedBy = [ "multi-user.target" ];
-    serviceConfig.DynamicUser = "yes";
-    #serviceConfig.User = name;
+    #serviceConfig.DynamicUser = "yes";
+    serviceConfig.User = name;  # -> easier for debugging permission issues
   };
+
+  config.users.users.${name} = {
+    isSystemUser = true;
+    group = "omada-controller";
+  };
+  config.users.groups.omada-controller = {};
 
   # Ports:
   # 27217: mongodb. no ACL so never open this to the network.

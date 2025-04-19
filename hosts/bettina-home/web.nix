@@ -11,9 +11,16 @@ let
 
   webServices = {
     wlan = {
-      target = "http://localhost:8088/";
+      # Omada always redirects to HTTPS, so we have to use the HTTPS port.
+      target = "https://localhost:8043/";
       icon = "favicon.ico";
       title = "Omada Controller (WLAN)";
+      proxyConfig = {
+        extraConfig = ''
+          proxy_ssl_verify       off;
+          proxy_ssl_protocols TLSv1 TLSv1.1 TLSv1.2 TLSv1.3;
+        '';
+      };
     };
     zigbee = {
       target = "http://localhost:8086/";
@@ -166,7 +173,7 @@ in
         locations."/" = {
           proxyPass = target;
           proxyWebsockets = true;
-        };
+        } // (webServices.${service}.proxyConfig or {});
       });
     });
   };
