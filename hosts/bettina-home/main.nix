@@ -77,15 +77,11 @@ in
   # add static IP in addition to DHCP
   # (see https://superuser.com/a/1008200)
   systemd.network.networks."40-br0".addresses = [ {
-    addressConfig = {
-      Label = "br0:0";
-      Address = "172.18.18.1/28";
-    };
+    Label = "br0:0";
+    Address = "172.18.18.1/28";
   } {
-    addressConfig = {
-      Label = "br0:1";
-      Address = "192.168.2.11/24";
-    };
+    Label = "br0:1";
+    Address = "192.168.2.11/24";
   } ];
 
   # We want to use IP 172.18.18.1 from HomeAssistant but we cannot tell HAOS
@@ -105,7 +101,7 @@ in
   # desktop stuff
   #services.xserver.desktopManager.xfce.enable = true;
 
-  hardware.opengl.enable = true;
+  hardware.graphics.enable = true;
   # create /etc/X11/xkb for `localectl list-x11-keymap-options`
   # https://github.com/NixOS/nixpkgs/issues/19629#issuecomment-368051434
   services.xserver.exportConfiguration = true;

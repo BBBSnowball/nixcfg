@@ -164,7 +164,7 @@ in
     })
     # add proxy pass for each service on each base domain
     // lib.flip mapListToAttrs
-    (lib.cartesianProductOfSets { baseDomain = baseDomains; service = lib.attrNames webServices; })
+    (lib.cartesianProduct { baseDomain = baseDomains; service = lib.attrNames webServices; })
     ({ baseDomain, service }:
     let target = webServices.${service}.target; in
     {
