@@ -98,6 +98,8 @@ in
     ebtables -t nat -I PREROUTING -p ipv4 --ip-destination 172.18.18.1 -j dnat --dnat-target ACCEPT --to-destination '${privateForHost.macAddress}'
   '';
 
+  services.tailscale.enable = true;
+
   nix.registry.routeromen.flake = routeromen;
 
   # desktop stuff
