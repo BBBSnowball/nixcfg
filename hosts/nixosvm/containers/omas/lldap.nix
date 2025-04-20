@@ -39,10 +39,14 @@ in
       database_url = "postgres://%2Fvar%2Frun%2Fpostgresql/lldap";
       # We are using the key seed, so don't provide a key.
       server_key = "";
+
+      # NextCloud tries to use nested groups.
+      ignored_group_attributes = [ "memberof" ];
+
+      #verbose = true;
     };
 
     # patch lldap to use index_local.html instead of lots of files from the cloud
-    #FIXME replace in ELF instead of building it?
     package = let
       oldFrontend = pkgs.lldap.frontend;
       

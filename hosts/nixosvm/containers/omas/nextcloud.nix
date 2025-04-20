@@ -60,7 +60,7 @@ in
         news contacts calendar tasks
         forms
         groupfolders
-        memories  # photos
+        #memories  # photos  -> too many errors in log
         polls
         #whiteboard  # -> needs an additional server
         #unroundedcorners

@@ -16,6 +16,7 @@ in {
         #./kanidm.nix
         ./lldap.nix
         ./mediawiki.nix
+        ./nginx-ldap.nix
         ./nextcloud.nix
         ./postgresql.nix
         ./send-mail.nix

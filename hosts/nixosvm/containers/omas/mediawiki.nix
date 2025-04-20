@@ -43,7 +43,7 @@ let
 
       # Configuration for Extension:LDAPAuthorization
       authorization.rules.groups.required = [
-        #"cn=Omas_intern,ou=groups,${basedn}"  #FIXME
+        "cn=Omas_intern,ou=groups,${basedn}"
       ];
       
       # Configuration for Extension:LDAPGroups
@@ -113,7 +113,7 @@ in
       // If local login is supported as well, then these globals are still needed
       $wgPluggableAuth_EnableLocalLogin = true;
       $LDAPAuthentication2AllowLocalLogin = true;
-      $wgPluggableAuth_Config['Log In (LDAP)'] = [
+      $wgPluggableAuth_Config['Anmelden mit "Omas intern" Benutzer'] = [
           'plugin' => 'LDAPAuthentication2',
           'data' => [
               'domain' => 'omas'
@@ -148,29 +148,38 @@ in
         url = "https://extdist.wmflabs.org/dist/extensions/LDAPProvider-REL1_39-afc8861.tar.gz";
         hash = "sha256-XLVXJAmvMHZtYSiRFXds0/4jKRtK3dkGAkJJ58Uilfw=";
       };
-      #FIXME !
-      #LDAPAuthorization = pkgs.fetchzip {
-      #  # https://www.mediawiki.org/wiki/Extension:LDAPAuthorization
-      #  #url = "https://extdist.wmflabs.org/dist/extensions/LDAPAuthorization-REL1_42-81bcaf5.tar.gz";
-      #  #hash = "sha256-SzWqltXymsqS307fllx4HJlLfqynWDCwBL+xzy3vS+0=";
-      #  url = "https://extdist.wmflabs.org/dist/extensions/LDAPAuthorization-REL1_39-4ad821f.tar.gz";
-      #  hash = "sha256-z97RfEy3x/UrEGdzS3Zui9jw21IQV2jN2NT9kId6zAo=";
-      #};
-      #LDAPUserInfo = pkgs.fetchzip {
-      #  # https://www.mediawiki.org/wiki/Extension:LDAPUserInfo
-      #  url = "https://extdist.wmflabs.org/dist/extensions/LDAPUserInfo-REL1_42-f4cd072.tar.gz";
-      #  hash = "sha256-PmHZopUTv7vbWU53IxFY/gY0kwQbZm0QlPC6DExm2N4=";
-      #};
+      LDAPAuthorization = pkgs.fetchzip {
+        # https://www.mediawiki.org/wiki/Extension:LDAPAuthorization
+        #url = "https://extdist.wmflabs.org/dist/extensions/LDAPAuthorization-REL1_42-81bcaf5.tar.gz";
+        #hash = "sha256-SzWqltXymsqS307fllx4HJlLfqynWDCwBL+xzy3vS+0=";
+        url = "https://extdist.wmflabs.org/dist/extensions/LDAPAuthorization-REL1_39-4ad821f.tar.gz";
+        hash = "sha256-z97RfEy3x/UrEGdzS3Zui9jw21IQV2jN2NT9kId6zAo=";
+      };
+      LDAPUserInfo = pkgs.fetchzip {
+        # https://www.mediawiki.org/wiki/Extension:LDAPUserInfo
+        #url = "https://extdist.wmflabs.org/dist/extensions/LDAPUserInfo-REL1_42-f4cd072.tar.gz";
+        #hash = "sha256-PmHZopUTv7vbWU53IxFY/gY0kwQbZm0QlPC6DExm2N4=";
+        url = "https://extdist.wmflabs.org/dist/extensions/LDAPUserInfo-REL1_39-361a8e5.tar.gz";
+        hash = "sha256-HhNzvxPAUFO+uLxGZ7FZOuCoa6ZU0BHTNJ2KnPKqkq0=";
+      };
       PluggableAuth = pkgs.fetchzip {
         # https://www.mediawiki.org/wiki/Extension:PluggableAuth
         url = "https://extdist.wmflabs.org/dist/extensions/PluggableAuth-REL1_42-894ee32.tar.gz";
         hash = "sha256-YHUek3pEM9XH2YLLkbfqEbPHMJBEzKGmJEin7eW91/g=";
       };
-      #LDAPSyncAll = pkgs.fetchzip {
-      #  # https://www.mediawiki.org/wiki/Extension:LDAPSyncAll
-      #  url = "https://extdist.wmflabs.org/dist/extensions/LDAPSyncAll-REL1_42-2d637e5.tar.gz";
-      #  hash = "sha256-6xE9Xx7u6i+JuejyrE7WzGWRQGDVIByHmzjKI7vHy0Q=";
-      #};
+      LDAPSyncAll = pkgs.fetchzip {
+        # https://www.mediawiki.org/wiki/Extension:LDAPSyncAll
+        #url = "https://extdist.wmflabs.org/dist/extensions/LDAPSyncAll-REL1_42-2d637e5.tar.gz";
+        #hash = "sha256-6xE9Xx7u6i+JuejyrE7WzGWRQGDVIByHmzjKI7vHy0Q=";
+        url = "https://extdist.wmflabs.org/dist/extensions/LDAPSyncAll-REL1_39-843fd4b.tar.gz";
+        hash = "sha256-bLGv79n1dqUpq2XyMUbJckfo1l/VjyuyfTIsyKRrnpg=";
+      };
+      LDAPGroups = pkgs.fetchzip {
+        # https://www.mediawiki.org/wiki/Extension:LDAPSyncAll
+        url = "https://extdist.wmflabs.org/dist/extensions/LDAPGroups-REL1_39-1d5f4e9.tar.gz";
+        hash = "sha256-7alH76MrUxHg657b4oAfNHKcia9KnJ+/0DJRKpYMD1s=";
+      };
+
 
       #FIXME LDAPGroups?
     };
@@ -207,6 +216,6 @@ in
 
   systemd.tmpfiles.rules = [
     # no read permissions for the group because PHP workers share the group
-    "d /var/log/mediawiki 0700 mediawiki root -"
+    "d /var/log/mediawiki 0700 mediawiki root 1d"
   ];
 }
