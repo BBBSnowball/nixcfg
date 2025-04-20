@@ -88,6 +88,10 @@ in {
 
       services.postgresql = {
         enable = true;
+
+        enableTCPIP = false; # still keeps localhost
+        settings.listen_addresses = lib.mkForce "";
+
         ensureDatabases = [ "nextcloud" ];
         ensureUsers = [
           {

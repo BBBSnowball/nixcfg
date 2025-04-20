@@ -5,7 +5,7 @@
 
 {
   imports =
-    [ "${modulesPath}/profiles/qemu-guest.nix"
+    [ (modulesPath + "/profiles/qemu-guest.nix")
     ];
 
   boot.initrd.availableKernelModules = [ "ata_piix" "virtio_pci" "floppy" "sr_mod" "virtio_blk" ];
@@ -22,9 +22,15 @@
       fsType = "ext4";
     };
 
+  fileSystems."/var/lib/nixos-containers/omas/var/lib" =
+    { device = "/dev/disk/by-uuid/3e437349-57fe-47cc-97ad-0636c555a467";
+      fsType = "ext4";
+    };
+
   swapDevices =
     [ { device = "/dev/disk/by-uuid/b9319cb7-8297-43ef-845b-d3f04f6b0ed1"; }
     ];
 
+  nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
   nix.settings.max-jobs = lib.mkDefault 2;
 }

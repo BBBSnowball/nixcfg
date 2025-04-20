@@ -39,6 +39,7 @@ in {
       ./containers/janina-lead-wordpress.nix
       ./containers/mate.nix
       ./containers/notes.nix
+      ./containers/omas
       ./containers/rss.nix
       ./containers/php.nix
       ./containers/weechat.nix
