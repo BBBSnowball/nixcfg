@@ -1,0 +1,25 @@
+diff --git a/nginx_ldap_auth/app/main.py b/nginx_ldap_auth/app/main.py
+index 7c31c7a..0affa32 100644
+--- a/nginx_ldap_auth/app/main.py
++++ b/nginx_ldap_auth/app/main.py
+@@ -288,6 +288,9 @@ async def logout(request: Request) -> RedirectResponse:
+     if username := request.session.get("username"):
+         await kill_session(request)
+         _logger.info("auth.logout", username=username)
++    else:
++        session_id = get_session_handler(request).session_id
++        _logger.info("auth.logout.noop", session_id=session_id, headers=request.headers, cookies=request.cookies)
+     return RedirectResponse(url="/auth/login?service=/")
+ 
+ 
+@@ -302,6 +305,10 @@ async def whoami(request: Request, response: Response) -> str:
+     """
+     _logger = get_logger(request)
+     await load_session(request)
++    if True:
++        session_id = get_session_handler(request).session_id
++        _logger.info("whoami", session_id=session_id, headers=request.headers, cookies=request.cookies, username=request.session.get("username"))
++    #response.headers["Content-Type"] = "text/plain"
+     if username := request.session.get("username"):
+         return username
+     else:

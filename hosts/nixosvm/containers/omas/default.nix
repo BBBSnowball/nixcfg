@@ -13,6 +13,7 @@ in {
     in {
       imports = [
         modules.container-common
+        ./discourse.nix
         #./kanidm.nix
         ./lldap.nix
         ./mediawiki.nix
@@ -28,11 +29,23 @@ in {
         inherit ports smtpHost;
       };
 
+      services.nginx.commonHttpConfig = ''
+        map $host $hostSuffix {
+          "~^(intern[.])(.+)$" $2;
+          default $host;
+        }
+      '';
+
       services.nginx.virtualHosts."intern.${hostName}" = {
         root = "/var/www/html-intern";
         listen = [
           { addr = "0.0.0.0"; port = ports.omas-intern.port; }
         ];
+
+        locations."/".extraConfig = ''
+          sub_filter_once off;
+          sub_filter '{domain}' $hostSuffix;
+        '';
       };
 
       # remove read permissions for the group because PHP workers share the group

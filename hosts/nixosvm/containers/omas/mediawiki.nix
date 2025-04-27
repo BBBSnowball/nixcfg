@@ -63,6 +63,7 @@ in
     locations."= /".extraConfig = lib.mkForce ''
       return 301 https://${hostName}/wiki/;
     '';
+    locations."= /favicon.ico".alias = "/var/www/html-intern/ogr-favicon-w.ico";
   };
 
   services.mediawiki = {
@@ -113,7 +114,7 @@ in
       // If local login is supported as well, then these globals are still needed
       $wgPluggableAuth_EnableLocalLogin = true;
       $LDAPAuthentication2AllowLocalLogin = true;
-      $wgPluggableAuth_Config['Anmelden mit "Omas intern" Benutzer'] = [
+      $wgPluggableAuth_Config['Anmelden "Omas intern"'] = [
           'plugin' => 'LDAPAuthentication2',
           'data' => [
               'domain' => 'omas'

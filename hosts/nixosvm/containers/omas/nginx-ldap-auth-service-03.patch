@@ -1,0 +1,37 @@
+diff --git a/nginx_ldap_auth/app/main.py b/nginx_ldap_auth/app/main.py
+index 75ba166..7c31c7a 100644
+--- a/nginx_ldap_auth/app/main.py
++++ b/nginx_ldap_auth/app/main.py
+@@ -3,6 +3,7 @@ from typing import Annotated, Any, cast
+ 
+ from fastapi import Depends, FastAPI, Request, Response, status
+ from fastapi.responses import HTMLResponse, RedirectResponse
++from fastapi.responses import PlainTextResponse
+ from fastapi.staticfiles import StaticFiles
+ from fastapi.templating import Jinja2Templates
+ from fastapi_csrf_protect import CsrfProtect
+@@ -290,6 +291,24 @@ async def logout(request: Request) -> RedirectResponse:
+     return RedirectResponse(url="/auth/login?service=/")
+ 
+ 
++@app.get("/auth/whoami", response_class=PlainTextResponse)
++async def whoami(request: Request, response: Response) -> str:
++    """
++    Get current username.
++
++    Args:
++        request: The request object
++
++    """
++    _logger = get_logger(request)
++    await load_session(request)
++    if username := request.session.get("username"):
++        return username
++    else:
++        response.status_code = status.HTTP_401_UNAUTHORIZED
++        return ""
++
++
+ @app.get("/check")
+ async def check_auth(request: Request, response: Response) -> dict[str, Any]:
+     """

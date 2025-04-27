@@ -22,6 +22,18 @@ rec {
     bonsai = prev.bonsai.overrideAttrs (old: {
       buildInputs = (old.buildInputs or [] ) ++ [ final.setuptools pkgs.openldap pkgs.cyrus_sasl ];
     });
+    nginx-ldap-auth-service = prev.nginx-ldap-auth-service.overrideAttrs (old: {
+      # Changes:
+      # 1. Support unescaped service URL in query string.
+      # 2. Change session ID to include username after login.
+      # 3. Set samesite=strict for CSRF cookie.
+      # 4. Remove CDN.
+      patches = [
+        ./nginx-ldap-auth-service-00.patch
+        ./nginx-ldap-auth-service-01.patch
+        ./nginx-ldap-auth-service-03.patch
+      ];
+    });
   };
 
   pythonSet =
