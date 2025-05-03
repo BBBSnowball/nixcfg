@@ -23,6 +23,9 @@ in
       podman-tui
       podman-compose
     ];
+
+    # podman needs the user session
+    linger = true;
   };
   users.groups.${name} = { };
 
@@ -55,6 +58,11 @@ in
 
     preStart = ''
       set -eo pipefail
+
+      # podman needs newuidmap
+      PATH="/run/wrappers/bin:$PATH"
+
+      # pull images in advance, so we can better control the version
       for img in \
         docker.elastic.co/elasticsearch/elasticsearch:8.17.2 \
         docker.io/library/redis:$REDIS_VERSION               \
@@ -65,7 +73,11 @@ in
           ( set -x; podman pull "$img" )
         fi
       done
-      ( set -x; podman build ${src} --tag ${name} --pull=never )
+
+      # build tubearchivist image from Dockerfile (i.e. let's not trust the registry here)
+      if [ -z "$(podman images -q "localhost/tubearchivist")" ] ; then
+        ( set -x; podman build ${src} --tag ${name} --pull=never )
+      fi
     '';
 
     serviceConfig = {
