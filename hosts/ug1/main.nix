@@ -14,9 +14,11 @@ in
       ./disko.nix
       ./hardware-configuration.nix
       lanzaboote.nixosModules.lanzaboote
+      ./podman.nix
       ./secureBoot.nix
       ./ugreen.nix
       ./users.nix
+      ./tubearchivist.nix
     ];
 
   networking.hostName = "ug1";
