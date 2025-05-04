@@ -51,7 +51,14 @@ in
       podman-compose
     ];
 
-    environment.TA_HOST = "http://192.168.178.42:${toString port}";
+    # They check the host header and reply with 400 "Bad Request"
+    # if it doesn't match any of our values and a few hardcoded ones.
+    # Thus, we have to allow-list any values that we might want to use.
+    environment.TA_HOST = ''
+      http://192.168.178.42:${toString port}
+      http://100.64.0.15:${toString port}
+      http://127.0.0.1:${toString port}
+    '';
     environment.PORT = toString port;
     environment.TZ = "Europe/Berlin";
     environment.REDIS_VERSION = "7.4.3";  # latest tag at time of writing
