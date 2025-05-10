@@ -1,3 +1,14 @@
+From 9adf3d71a71ec4c65d5e14140258b8dc6ae49981 Mon Sep 17 00:00:00 2001
+From: Your Name <root@nixos>
+Date: Mon, 21 Apr 2025 03:33:14 +0200
+Subject: [PATCH 4/5] remove CDN
+
+---
+ nginx_ldap_auth/app/static/bootstrap.min.css | 7 +++++++
+ nginx_ldap_auth/app/templates/login.html     | 4 ++--
+ 2 files changed, 9 insertions(+), 2 deletions(-)
+ create mode 100644 nginx_ldap_auth/app/static/bootstrap.min.css
+
 diff --git a/nginx_ldap_auth/app/static/bootstrap.min.css b/nginx_ldap_auth/app/static/bootstrap.min.css
 new file mode 100644
 index 0000000..edfbbb0
@@ -13,7 +24,7 @@ index 0000000..edfbbb0
 +/*# sourceMappingURL=bootstrap.min.css.map */
 \ No newline at end of file
 diff --git a/nginx_ldap_auth/app/templates/login.html b/nginx_ldap_auth/app/templates/login.html
-index 0d7094f..be74c5b 100644
+index 0d7094f..7918298 100644
 --- a/nginx_ldap_auth/app/templates/login.html
 +++ b/nginx_ldap_auth/app/templates/login.html
 @@ -13,7 +13,7 @@
@@ -32,3 +43,6 @@ index 0d7094f..be74c5b 100644
 -</html>
 \ No newline at end of file
 +</html>
+-- 
+2.47.2
+

@@ -1,3 +1,12 @@
+From 25846f3fb9e7461c277e4496d6683a126abe1275 Mon Sep 17 00:00:00 2001
+From: Your Name <root@nixos>
+Date: Sat, 10 May 2025 17:53:21 +0200
+Subject: [PATCH 5/5] add /auth/whoami
+
+---
+ nginx_ldap_auth/app/main.py | 19 +++++++++++++++++++
+ 1 file changed, 19 insertions(+)
+
 diff --git a/nginx_ldap_auth/app/main.py b/nginx_ldap_auth/app/main.py
 index 75ba166..7c31c7a 100644
 --- a/nginx_ldap_auth/app/main.py
@@ -35,3 +44,6 @@ index 75ba166..7c31c7a 100644
  @app.get("/check")
  async def check_auth(request: Request, response: Response) -> dict[str, Any]:
      """
+-- 
+2.47.2
+

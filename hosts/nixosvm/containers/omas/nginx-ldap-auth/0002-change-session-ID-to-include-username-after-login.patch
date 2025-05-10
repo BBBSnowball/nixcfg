@@ -1,0 +1,32 @@
+From 42ace337a133beabe258f53956aa0aba480ad8ca Mon Sep 17 00:00:00 2001
+From: Your Name <root@nixos>
+Date: Mon, 21 Apr 2025 03:32:22 +0200
+Subject: [PATCH 2/5] change session ID to include username after login
+
+---
+ nginx_ldap_auth/app/main.py | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/nginx_ldap_auth/app/main.py b/nginx_ldap_auth/app/main.py
+index 5c91861..7230e93 100644
+--- a/nginx_ldap_auth/app/main.py
++++ b/nginx_ldap_auth/app/main.py
+@@ -14,6 +14,7 @@ from starsessions import (
+     SessionStore,
+     get_session_handler,
+     load_session,
++    generate_session_id,
+ )
+ from starsessions.stores.redis import RedisStore
+ 
+@@ -257,6 +258,7 @@ async def login_handler(
+     await form.load_data()
+     if await form.is_valid():
+         await load_session(request)
++        get_session_handler(request).session_id = generate_session_id() + ":" + form.username
+         request.session["username"] = form.username
+         response: HTMLResponse | RedirectResponse = RedirectResponse(
+             url=form.service, status_code=status.HTTP_302_FOUND
+-- 
+2.47.2
+

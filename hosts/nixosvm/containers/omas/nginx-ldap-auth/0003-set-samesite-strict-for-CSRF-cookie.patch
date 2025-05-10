@@ -1,0 +1,25 @@
+From 1f56a3fe60122d6a35eaa43671505c6152ba997b Mon Sep 17 00:00:00 2001
+From: Your Name <root@nixos>
+Date: Mon, 21 Apr 2025 03:32:35 +0200
+Subject: [PATCH 3/5] set samesite=strict for CSRF cookie
+
+---
+ nginx_ldap_auth/app/main.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/nginx_ldap_auth/app/main.py b/nginx_ldap_auth/app/main.py
+index 7230e93..75ba166 100644
+--- a/nginx_ldap_auth/app/main.py
++++ b/nginx_ldap_auth/app/main.py
+@@ -64,7 +64,7 @@ class CsrfSettings(BaseSettings):
+     #: The secret key to use for CSRF tokens
+     secret_key: str = Field(validation_alias="CSRF_SECRET_KEY")
+     #: We'll set the SameSite attribute on our CSRF cookies to this value
+-    cookie_samesite: str = "lax"
++    cookie_samesite: str = "strict"
+     #: Set our CSRF cookie to be secure
+     cookie_secure: bool = True
+     #: Set the maximum age of our CSRF cookie to 5 minutes
+-- 
+2.47.2
+

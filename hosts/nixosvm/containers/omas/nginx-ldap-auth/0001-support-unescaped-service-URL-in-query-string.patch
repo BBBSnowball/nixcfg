@@ -1,0 +1,25 @@
+From 10b0dc42ebec5426b3cf303796309ae3dcd1ccb0 Mon Sep 17 00:00:00 2001
+From: Your Name <root@nixos>
+Date: Mon, 21 Apr 2025 03:32:06 +0200
+Subject: [PATCH 1/5] support unescaped service URL in query string
+
+---
+ nginx_ldap_auth/app/main.py | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/nginx_ldap_auth/app/main.py b/nginx_ldap_auth/app/main.py
+index 4ac98fc..5c91861 100644
+--- a/nginx_ldap_auth/app/main.py
++++ b/nginx_ldap_auth/app/main.py
+@@ -182,6 +182,8 @@ async def login(
+         Otherwise, a rendered login page.
+ 
+     """
++    if request.url.query.startswith("https://") or request.url.query.startswith("/"):
++      service = request.url.query
+     csrf_token, signed_token = csrf_protect.generate_csrf_tokens()
+     auth_realm = request.headers.get("x-auth-realm", settings.auth_realm)
+     _logger = get_logger(request)
+-- 
+2.47.2
+

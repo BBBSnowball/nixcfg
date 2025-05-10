@@ -29,9 +29,12 @@ rec {
       # 3. Set samesite=strict for CSRF cookie.
       # 4. Remove CDN.
       patches = [
-        ./nginx-ldap-auth-service-00.patch
-        ./nginx-ldap-auth-service-01.patch
-        ./nginx-ldap-auth-service-03.patch
+        ./nginx-ldap-auth/0001-support-unescaped-service-URL-in-query-string.patch
+        ./nginx-ldap-auth/0002-change-session-ID-to-include-username-after-login.patch
+        ./nginx-ldap-auth/0003-set-samesite-strict-for-CSRF-cookie.patch
+        ./nginx-ldap-auth/0004-remove-CDN.patch
+        ./nginx-ldap-auth/0005-add-auth-whoami.patch
+        ./nginx-ldap-auth/0006-debug.patch  #FIXME remove, only for debugging
       ];
     });
   };
