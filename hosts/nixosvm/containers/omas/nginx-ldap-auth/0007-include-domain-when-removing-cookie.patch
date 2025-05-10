@@ -1,0 +1,38 @@
+From 54ef58174095367b48f5c603a54f5bf1d87daf7f Mon Sep 17 00:00:00 2001
+From: Your Name <root@nixos>
+Date: Sat, 10 May 2025 20:19:15 +0200
+Subject: [PATCH] include domain when removing cookie
+
+Code is copied from upstream:
+https://github.com/alex-oleshkevich/starsessions/blob/a95711feb3c02e99cf1dfb9c4fd8b2e1653546be/starsessions/middleware.py#L99C60-L109C63
+---
+ nginx_ldap_auth/app/middleware.py | 12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
+
+diff --git a/nginx_ldap_auth/app/middleware.py b/nginx_ldap_auth/app/middleware.py
+index 8969a96..0c398bc 100644
+--- a/nginx_ldap_auth/app/middleware.py
++++ b/nginx_ldap_auth/app/middleware.py
+@@ -74,11 +74,15 @@ class SessionMiddleware(StarsessionsSessionMiddleware):
+                     self.cookie_path and scope["path"].startswith(self.cookie_path)
+                 ):
+                     headers = MutableHeaders(scope=message)
+-                    header_value = "{}={}; {}".format(
+-                        cookie_name,
+-                        f"null; path={path}; expires=Thu, 01 Jan 1970 00:00:00 GMT;",
++                    header_parts = [
++                        f"{self.cookie_name}=''",
++                        f"path={path}",
++                        "expires=Thu, 01 Jan 1970 00:00:00 GMT",
+                         self.security_flags,
+-                    )
++                    ]
++                    if cookie_domain:
++                        header_parts.append(f"domain={cookie_domain}")
++                    header_value = "; ".join(header_parts)
+                     headers.append("Set-Cookie", header_value)
+                     await handler.destroy()
+                 await send(message)
+-- 
+2.47.2
+

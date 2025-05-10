@@ -23,6 +23,9 @@ let
       COOKIE_DOMAIN = "intern.${domain}";
       # Workaround: Entries without `display_name` don't have any `cn` but we don't need that anyway, so let's use the uid.
       LDAP_FULL_NAME_ATTRIBUTE = "uid";
+      # redis-py uses "unix:///some/path" for Unix sockets
+      REDIS_URL = "unix://" + config.services.redis.servers.nginx-ldap-auth.unixSocket;
+      SESSION_BACKEND = "redis";
 
       #DEBUG = "1";
     };
@@ -86,12 +89,12 @@ in
   };
   users.groups.nginx-ldap-auth = {};
 
-  # redis-py uses "unix:///some/path" for Unix sockets
   services.redis.servers.nginx-ldap-auth = {
     enable = true;
     port = 0;  # only Unix socket
     user = "nginx-ldap-auth";
     group = "nginx-ldap-auth";
+    unixSocketPerm = 660;
   };
 
   services.nginx.commonHttpConfig = ''

@@ -1,0 +1,38 @@
+From 8837b8bee0209d9ea8c6ab65d578148c3b32061d Mon Sep 17 00:00:00 2001
+From: Your Name <root@nixos>
+Date: Sat, 10 May 2025 19:10:26 +0200
+Subject: [PATCH] allow Unix socket for Redis URL
+
+---
+ nginx_ldap_auth/settings.py | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/nginx_ldap_auth/settings.py b/nginx_ldap_auth/settings.py
+index 52a93b0..133ac42 100644
+--- a/nginx_ldap_auth/settings.py
++++ b/nginx_ldap_auth/settings.py
+@@ -1,8 +1,11 @@
+ from typing import Literal
+ 
+-from pydantic import RedisDsn, ValidationError, model_validator
++from pydantic import RedisDsn, ValidationError, model_validator, AnyUrl, UrlConstraints
+ from pydantic_settings import BaseSettings, SettingsConfigDict
+ 
++class UnixUrl(AnyUrl):
++    _constraints = UrlConstraints(allowed_schemes=['unix'])
++
+ 
+ class Settings(BaseSettings):
+     # ==================
+@@ -53,7 +56,7 @@ class Settings(BaseSettings):
+     #: * If you don't specify a database, ``0`` is used.
+     #: * If you don't specify a password, no password is used.
+     #: * If you don't specify a port, ``6379`` is used.
+-    redis_url: RedisDsn | None = None
++    redis_url: RedisDsn | UnixUrl | None = None
+     #: If using the Redis session backend, the prefix to use for session keys
+     redis_prefix: str = "nginx_ldap_auth."
+ 
+-- 
+2.47.2
+
