@@ -1,0 +1,64 @@
+From 9e9623646e8be19c97eab5f845118dc47adf18d1 Mon Sep 17 00:00:00 2001
+From: Your Name <root@nixos>
+Date: Sat, 10 May 2025 21:30:33 +0200
+Subject: [PATCH] add options for Unix socket and file descriptor
+
+We also have to patch logging because the local socket won't know
+the client's IP address when connecting via Unix socket.
+---
+ nginx_ldap_auth/cli/server.py | 16 ++++++++++++++++
+ nginx_ldap_auth/logging.py    |  6 +++++-
+ 2 files changed, 21 insertions(+), 1 deletion(-)
+
+diff --git a/nginx_ldap_auth/cli/server.py b/nginx_ldap_auth/cli/server.py
+index 45326e5..cff1ecc 100644
+--- a/nginx_ldap_auth/cli/server.py
++++ b/nginx_ldap_auth/cli/server.py
+@@ -34,6 +34,18 @@ def print_settings():
+     type=int,
+     help="The port to listen on.",
+ )
++@click.option(
++    "--uds",
++    type=str,
++    default=lambda: os.environ.get("BIND_UDS", None),
++    help="Bind to a UNIX domain socket."
++)
++@click.option(
++    "--fd",
++    type=int,
++    default=lambda: os.environ.get("BIND_FD", None),
++    help="Bind to socket from this file descriptor."
++)
+ @click.option(
+     "--reload/--no-reload",
+     "-r",
+@@ -83,4 +95,8 @@ def start(**kwargs):
+     }
+     if kwargs["env_file"]:
+         uvicorn_kwargs["env_file"] = kwargs["env_file"]
++    if kwargs["uds"]:
++        uvicorn_kwargs["uds"] = kwargs["uds"]
++    if kwargs["fd"]:
++        uvicorn_kwargs["fd"] = kwargs["fd"]
+     uvicorn.run("nginx_ldap_auth.app.main:app", **uvicorn_kwargs)
+diff --git a/nginx_ldap_auth/logging.py b/nginx_ldap_auth/logging.py
+index 5b7f2db..aea6f5f 100644
+--- a/nginx_ldap_auth/logging.py
++++ b/nginx_ldap_auth/logging.py
+@@ -35,7 +35,11 @@ def get_logger(request: Request | None = None) -> structlog.BoundLogger:
+     if remote_ip:
+         remote_ip = remote_ip.split(",")[0]
+     else:
+-        remote_ip = cast(Address, request.client).host
++        addr = cast(Address, request.client)
++        if addr is not None:
++            remote_ip = addr.host
++        else:
++            remote_ip = None
+     request = cast(Request, request)
+     return logger.bind(
+         realm=request.headers.get("x-auth-realm", settings.auth_realm),
+-- 
+2.47.2
+

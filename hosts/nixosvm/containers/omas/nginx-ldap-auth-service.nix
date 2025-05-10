@@ -23,11 +23,6 @@ rec {
       buildInputs = (old.buildInputs or [] ) ++ [ final.setuptools pkgs.openldap pkgs.cyrus_sasl ];
     });
     nginx-ldap-auth-service = prev.nginx-ldap-auth-service.overrideAttrs (old: {
-      # Changes:
-      # 1. Support unescaped service URL in query string.
-      # 2. Change session ID to include username after login.
-      # 3. Set samesite=strict for CSRF cookie.
-      # 4. Remove CDN.
       patches = [
         ./nginx-ldap-auth/0001-support-unescaped-service-URL-in-query-string.patch
         ./nginx-ldap-auth/0002-change-session-ID-to-include-username-after-login.patch
@@ -36,7 +31,8 @@ rec {
         ./nginx-ldap-auth/0005-add-auth-whoami.patch
         ./nginx-ldap-auth/0006-allow-Unix-socket-for-Redis-URL.patch
         ./nginx-ldap-auth/0007-include-domain-when-removing-cookie.patch
-        ./nginx-ldap-auth/0006-debug.patch  #FIXME remove, only for debugging
+        ./nginx-ldap-auth/0008-add-options-for-Unix-socket-and-file-descriptor.patch
+        #./nginx-ldap-auth/0006-debug.patch  # only for debugging
       ];
     });
   };

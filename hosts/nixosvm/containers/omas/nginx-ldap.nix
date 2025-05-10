@@ -56,6 +56,8 @@ let
     '';
     locations."/check-auth" = config.services.nginx.virtualHosts."intern.${domain}".locations."/check-auth";
   };
+
+  proxyTarget = "https://unix:/run/nginx-ldap-auth/socket.sock:";
 in
 {
   systemd.services.nginx-ldap-auth = lib.mkMerge [ serviceSettings {
@@ -70,8 +72,31 @@ in
       "secret_nginx-ldap-cert.pem"
     ];
 
-    wantedBy = [ "multi-user.target" ];
+    #wantedBy = [ "multi-user.target" ];  # started by socket activation
+
+    # won't work because the service uses `uvicorn.run`
+    #environment.UVICORN_UDS = "/tmp/bla.socket";
+    # Thus, we have added a custom option.
+    #environment.BIND_UDS = "/tmp/bla.socket";
+    # systemd will create the socket and pass it as fd 3.
+    environment.BIND_FD = "3";
+
+    requires = [ "nginx-ldap-auth.socket" ];
+    after = [ "network.target" "nginx-ldap-auth.socket" ];
   } ];
+
+  systemd.sockets.nginx-ldap-auth = {
+    description = "Authentication to LDAP for Nginx";
+    wantedBy = [ "sockets.target" ];
+    partOf = [ "nginx-ldap-auth.service" ];
+    listenStreams = [ "/run/nginx-ldap-auth/socket.sock" ];
+    socketConfig = {
+      Accept = false;  # Uvicorn will take the server socket.
+      SocketUser = "nginx-ldap-auth";
+      SocketGroup = "nginx";
+      SocketMode = "0660";
+    };
+  };
 
   systemd.services.nginx-ldap-auth-print-settings = lib.mkMerge [ serviceSettings {
     serviceConfig.ExecStart = "${env}/bin/nginx-ldap-auth settings";
@@ -129,7 +154,7 @@ in
       proxy_set_header  Cookie $altered_cookie;
     '';
     locations."/auth".extraConfig = ''
-      proxy_pass https://127.0.0.1:8888/auth;
+      proxy_pass ${proxyTarget}/auth;
       proxy_set_header Host $host;
       proxy_set_header X-Real-IP $remote_addr;
       proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -153,7 +178,7 @@ in
     '';
     locations."/check-auth".extraConfig = ''
       internal;
-      proxy_pass https://127.0.0.1:8888/check;
+      proxy_pass ${proxyTarget}/check;
   
       # Ensure that we don't pass the user's headers or request body to
       # the auth service.
