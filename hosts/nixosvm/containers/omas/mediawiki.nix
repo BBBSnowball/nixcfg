@@ -64,6 +64,7 @@ in
       return 301 https://${hostName}/wiki/;
     '';
     locations."= /favicon.ico".alias = "/var/www/html-intern/ogr-favicon-w.ico";
+    locations."= /icon.png".alias = "/var/www/html-intern/ogr.png";
   };
 
   services.mediawiki = {
@@ -124,6 +125,13 @@ in
       $GLOBALS['LDAPSyncAllBlockExecutorUsername'] = 'admin';
       $GLOBALS['LDAPSyncAllExcludedUsernames'] = [ 'admin', 'Admin' ];
       $GLOBALS['LDAPSyncAllExcludedGroups'] = [ 'bot', 'editor', 'bureaucrat', 'sysop' ];
+
+      // Enable Content Security Policy.
+      $wgCSPHeader = true;
+
+      $wgLogos = [
+        'icon' => "/icon.png",
+      ];
     '';
 
     extensions = {
