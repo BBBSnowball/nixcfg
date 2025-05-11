@@ -34,12 +34,35 @@ in
     secretKeyBaseFile = "/run/credentials/discourse.service/secret_discourse-secret-key-base";
 
     # see https://github.com/discourse/discourse/blob/main/config/site_settings.yml
+    # and https://github.com/discourse/discourse/blob/main/config/discourse_defaults.conf
     siteSettings = {
       required = {
         title = "Omadiskussion";
         site_description = "";
         #notification_email = "noreply@${domain}";
         notification_email = "discuss@${domain}";
+      };
+
+      # We are not using NixOS' mail.incoming because that would use Postfix.
+      # There doesn't seem to be any complete documentation on these features but see here
+      # for a tutorial: https://meta.discourse.org/t/set-up-reply-by-email-with-pop3-polling/14003
+      # And see here for a list of settings: /admin/site_settings/category/email
+      email = {
+        manual_polling_enabled = lib.mkForce true;
+        reply_by_email_enabled = lib.mkForce true;
+        #reply_by_email_address = "replies+%{reply_key}@${domain}";  # -> Used as sender address so must match the SMTP account.
+        reply_by_email_address = "discuss+%{reply_key}@${domain}";
+        log_mail_processing_failures = false;  # for debugging, see ${domain}/logs/
+        # There are some settings for IMAP but not the relevant ones..? Let's stick to POP3, for now.
+        pop3_polling_username = "discuss@${domain}";
+        # pop3_polling_password -> set in Webinterface
+        pop3_polling_host = smtpHost;
+        pop3_polling_enabled = true;
+        pop3_polling_ssl = true;
+        pop3_polling_period_mins = 1;
+
+        # It still leaks the unsubscribe link but that doesn't work without correct login.
+        trim_incoming_emails = true;
       };
     };
 
@@ -53,6 +76,7 @@ in
       domain = domain;
       authentication = "login";
     };
+    mail.incoming.replyEmailAddress = "discuss+%{reply_key}@${domain}";
 
     redis.passwordFile = "/run/credentials/discourse.service/secret_discourse-redis-password";
   };
