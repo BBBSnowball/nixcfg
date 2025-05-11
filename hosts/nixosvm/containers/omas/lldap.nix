@@ -2,18 +2,43 @@
 let
   hostName = "accounts.${domain}";
   port = ports.omas-accounts.port;
+  port2 = 8020;
 
   # some values are only needed for the first run
   initial = true;
 
   ldap_base_dn = "dc=omas,dc=example,dc=com";
+
+  oldFrontend = pkgs.lldap.frontend;
+  frontend = (import ./lldap-static.nix { inherit pkgs; }).frontend-static;
 in
 {
-  #services.nginx.virtualHosts.${hostName} = {
-  #  listen = [
-  #    { addr = "0.0.0.0"; inherit port; }
-  #  ];
-  #};
+  services.nginx.virtualHosts.${hostName} = {
+    listen = [
+      { addr = "0.0.0.0"; inherit port; }
+    ];
+    locations."/"= {
+      proxyPass = "http://localhost:${toString port2}";
+      recommendedProxySettings = true;
+      proxyWebsockets = true;
+      extraConfig = ''
+        #proxy_ssl_trusted_certificate FIXME.cert;  #FIXME use SSL for LDAP and web interface
+
+        # There is some inline Javascript and styles that we cannot easily replace. We are guarding against use
+        # of CDN (not cross-site-scripting), so `unsafe-inline` is ok-ish here.
+        add_header Content-Security-Policy "default-src 'self' 'unsafe-inline' data:; script-src 'self' 'wasm-unsafe-eval' 'unsafe-inline';";
+        add_header X-Frame-Options "deny";
+      '';
+    };
+    locations."= /favicon.ico".alias = "/var/www/html-intern/ogr-favicon-a.ico";
+
+    # use index_local.html instead of lots of files from the cloud
+    locations."=/".alias = "${frontend}/index.html";
+    locations."=/index.html".alias = "${frontend}/index.html";
+    locations."/static/".alias = "${frontend}/static/";
+    # Not served with the correct MIME type for gzipped WASM, by default. Thus, let the backend handle this.
+    #locations."/pkg/".alias = "${frontend}/pkg/";
+  };
 
   services.lldap = {
     enable = true;
@@ -35,7 +60,7 @@ in
       ldap_host = "localhost";
       inherit ldap_base_dn;
       http_url = "https://${hostName}";
-      http_port = port;
+      http_port = port2;
       database_url = "postgres://%2Fvar%2Frun%2Fpostgresql/lldap";
       # We are using the key seed, so don't provide a key.
       server_key = "";
@@ -47,9 +72,10 @@ in
     };
 
     # patch lldap to use index_local.html instead of lots of files from the cloud
+    #NOTE We also use Nginx to serve the static frontend but lldap will serve its
+    #     index.html under many URIs (e.g. `/users`) so we also have to replace it here.
     package = let
       oldFrontend = pkgs.lldap.frontend;
-      
       frontend = (import ./lldap-static.nix { inherit pkgs; }).frontend-static;
 
       #rebuild = pkgs.lldap.overrideAttrs (old: {
@@ -58,7 +84,6 @@ in
       #  '';
       #});
 
-      #TODO replace index.html and /static with Nginx
       dirtyReplace = pkgs.runCommand pkgs.lldap.name {
         passthru.meta = pkgs.lldap.meta;
       } ''
@@ -71,7 +96,7 @@ in
       '';
     in dirtyReplace;
   };
-  
+
   systemd.services.lldap = {
     serviceConfig.LoadCredential = lib.mkMerge [
       [ "secret_lldap-jwt-secret" ]

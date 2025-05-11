@@ -211,6 +211,7 @@ in
   };
   #services.nginx.additionalModules = [ pkgs.nginxModules.set-misc ];  # for set_escape_uri
   # -> would build Nginx -> no, thanks.
-  services.nginx.virtualHosts."wiki.${domain}" = additionalProtectedDomain;
+  services.nginx.virtualHosts."accounts.${domain}" = additionalProtectedDomain;
   services.nginx.virtualHosts."discuss.${domain}" = additionalProtectedDomain;
+  services.nginx.virtualHosts."wiki.${domain}" = additionalProtectedDomain;
 }
