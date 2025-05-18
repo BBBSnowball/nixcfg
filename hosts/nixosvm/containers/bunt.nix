@@ -86,6 +86,8 @@ in {
         };
       };
 
+      services.mysql.settings.mysqld.skip-networking = true;
+
       services.postgresql = {
         enable = true;
 

@@ -1,11 +1,12 @@
-{ pkgs, domain, ports, ... }:
+{ config, pkgs, domain, ports, ... }:
 let
   name = "omas";
   hostName = domain;
   port = ports.omas-wordpress.port;
 
+  wp-root = config.services.nginx.virtualHosts.${hostName}.root;
   wp-cmd = pkgs.writeShellScriptBin "wp-${name}" ''
-    exec sudo -u wordpress -- ${pkgs.wp-cli}/bin/wp --path=${config.services.nginx.virtualHosts.${hostName}.root} "$@"
+    exec sudo -u wordpress -- ${pkgs.wp-cli}/bin/wp --path=${wp-root} "$@"
   '';
 in
 {
@@ -36,14 +37,12 @@ in
       adminAddr = "postmaster@${domain}";
       serverAliases = [ hostName ];
       listen = [ { port = ports."${name}-wp".port; } ];
-      locations."/extra-fonts" = {
-        #alias = "/var/www/extra-fonts";
-        alias = "/var/www%{REQUEST_URI}";  # oh, well... ugly hack!
-        extraConfig = ''
-          Require all granted
-        '';
-      };
     };
+
+    extraConfig = ''
+      if (strpos($_SERVER['HTTP_X_FORWARDED_PROTO'], 'https') !== false)
+        $_SERVER['HTTPS']='on';
+    '';
 
     plugins = {
       #inherit (pkgs.myWordpressPlugins);
@@ -51,7 +50,9 @@ in
 
     themes = {
       inherit (pkgs.myWordpressThemes)
-        neve;
+        neve twentyseventeen;
     };
   };
+
+  services.mysql.settings.mysqld.skip-networking = true;
 }

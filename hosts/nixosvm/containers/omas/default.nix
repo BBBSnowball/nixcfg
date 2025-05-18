@@ -21,7 +21,7 @@ in {
         ./nextcloud.nix
         ./postgresql.nix
         ./send-mail.nix
-        #./wordpress.nix
+        ./wordpress.nix
       ];
       
       _module.args = {
