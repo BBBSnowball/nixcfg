@@ -1,4 +1,4 @@
-{ pkgs, config, domain, ports, ... }:
+{ lib, pkgs, config, domain, ports, reverse_proxy_ip, ... }:
 let
   hostName = "cloud.${domain}";
   port = ports.omas-nextcloud.port;
@@ -52,6 +52,11 @@ in
          #"OC\\Preview\\XBitmap"
          "OC\\Preview\\HEIC"
        ];
+       trusted_proxies = [ reverse_proxy_ip ];
+       overwritehost = hostName;
+       #trusted_domains = [ hostName ];
+       maintenance_window_start = 2;  # 2 am, UTC
+       default_phone_region = "DE";
     };
 
     extraAppsEnable = true;
@@ -69,6 +74,11 @@ in
         end_to_end_encryption
         ;
     };
+
+    # Admin interface was complaining about too small cache.
+    phpOptions."opcache.interned_strings_buffer" = "23";
+    # Admin interface was complaining about not enough memory.
+    phpOptions.memory_limit = lib.mkForce "512M";  # default is equal to max upload file size
   };
 
   systemd.services."nextcloud-setup" = {
