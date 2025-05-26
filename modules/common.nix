@@ -112,4 +112,9 @@
     lfs.enable = true;
     package = lib.mkDefault pkgs.git;
   };
+
+  nix.settings = {
+    keep-derivations = true;  # on by default
+    keep-outputs = true;      # keep downloaded files and build results during gc
+  };
 }
