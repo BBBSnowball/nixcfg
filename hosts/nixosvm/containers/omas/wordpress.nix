@@ -1,4 +1,4 @@
-{ config, pkgs, domain, ports, ... }:
+{ config, pkgs, domain, oldDomain, ports, ... }:
 let
   name = "omas";
   hostName = domain;
@@ -8,6 +8,17 @@ let
   wp-cmd = pkgs.writeShellScriptBin "wp-${name}" ''
     exec sudo -u wordpress -- ${pkgs.wp-cli}/bin/wp --path=${wp-root} "$@"
   '';
+
+  fetchLanguage = { language, hash ? "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=" }:
+  pkgs.stdenv.mkDerivation {
+    name = "wordpress-language-${language}";
+    src = pkgs.fetchurl {
+      url = "https://de.wordpress.org/wordpress-${pkgs.wordpress.version}-${language}.tar.gz";
+      name = "wordpress-${pkgs.wordpress.version}-${language}.tar.gz";
+      inherit hash;
+    };
+    installPhase = "mkdir -p $out; cp -r ./wp-content/languages/* $out/";
+  };
 in
 {
   imports = [
@@ -42,6 +53,11 @@ in
     extraConfig = ''
       if (strpos($_SERVER['HTTP_X_FORWARDED_PROTO'], 'https') !== false)
         $_SERVER['HTTPS']='on';
+
+      # login will be broken after changing the domain unless we set these variables
+      # see https://developer.wordpress.org/advanced-administration/upgrade/migrating/
+      define('WP_HOME', 'https://${hostName}');
+      define('WP_SITEURL', 'https://${hostName}');
     '';
 
     plugins = {
@@ -52,6 +68,11 @@ in
       inherit (pkgs.myWordpressThemes)
         neve twentyseventeen;
     };
+
+    languages = [ (fetchLanguage {
+      language = "de_DE";
+      hash = "sha256-21wyaomIfkhjbddIRhFofcfZn7FoitSTi1r1jx9ULXI=";
+    }) ];
   };
 
   services.mysql.settings.mysqld.skip-networking = true;
