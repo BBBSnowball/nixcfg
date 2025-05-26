@@ -18,7 +18,7 @@ in
       { addr = "0.0.0.0"; inherit port; }
     ];
     locations."/"= {
-      proxyPass = "http://localhost:${toString port2}";
+      proxyPass = "http://localhost:${toString port2}/";
       recommendedProxySettings = true;
       proxyWebsockets = true;
       extraConfig = ''
@@ -33,8 +33,9 @@ in
     locations."= /favicon.ico".alias = "/var/www/html-intern/ogr-favicon-a.ico";
 
     # use index_local.html instead of lots of files from the cloud
-    locations."=/".alias = "${frontend}/index.html";
-    locations."=/index.html".alias = "${frontend}/index.html";
+    #locations."=/".alias = "${frontend}/index.html";  # -> broken...
+    #locations."=/".alias = "${frontend}/";
+    #locations."=/index.html".alias = "${frontend}/";
     locations."/static/".alias = "${frontend}/static/";
     # Not served with the correct MIME type for gzipped WASM, by default. Thus, let the backend handle this.
     #locations."/pkg/".alias = "${frontend}/pkg/";
