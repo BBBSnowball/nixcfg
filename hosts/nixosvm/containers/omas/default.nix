@@ -1,11 +1,24 @@
 { config, lib, modules, pkgs, privateForHost, secretForHost, ... }:
 let
   inherit (privateForHost.sonline0) trueDomain;
-  inherit (privateForHost.omas) smtpHost;
-  ports = config.networking.firewall.allowedPorts;
+  inherit (privateForHost.omas) domain;
+  #ports = config.networking.firewall.allowedPorts;
   name = "omas";
   containerName = name;
-  hostName = "ogr.${trueDomain}";
+  hostName = domain;
+  oldDomain = "ogr.${trueDomain}";
+
+  ports = let x = port: { inherit port; type = "tcp"; }; in {
+    omas-wordpress = x 8100;
+    omas-intern = x 8100;
+    omas-nextcloud = x 8100;
+    omas-discourse = x 8100;
+    omas-wiki = x 8100;
+    omas-accounts = x 8100;
+  };
+  portsForFirewall = {
+    inherit (ports) omas-wordpress;
+  };
 in {
   containers.${name} = {
     autoStart = true;
@@ -25,8 +38,8 @@ in {
       ];
       
       _module.args = {
-        domain = hostName;
-        inherit ports smtpHost;
+        inherit ports domain;
+        inherit (privateForHost.omas) smtpHost reverse_proxy_ip;
       };
 
       services.nginx.commonHttpConfig = ''
@@ -63,10 +76,5 @@ in {
 
   systemd.services."container@${containerName}".serviceConfig.LoadCredential = [ "secret:${secretForHost}/${name}/" ];
 
-  networking.firewall.allowedPorts.omas-wordpress = 8100;
-  networking.firewall.allowedPorts.omas-intern = 8101;
-  networking.firewall.allowedPorts.omas-nextcloud = 8102;
-  networking.firewall.allowedPorts.omas-discourse = 8103;
-  networking.firewall.allowedPorts.omas-wiki = 8104;
-  networking.firewall.allowedPorts.omas-accounts = 8105;
+  networking.firewall.allowedPorts = portsForFirewall;
 }
