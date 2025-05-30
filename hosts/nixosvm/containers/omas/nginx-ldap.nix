@@ -212,6 +212,12 @@ in
   #services.nginx.additionalModules = [ pkgs.nginxModules.set-misc ];  # for set_escape_uri
   # -> would build Nginx -> no, thanks.
   services.nginx.virtualHosts."accounts.${domain}" = additionalProtectedDomain;
-  services.nginx.virtualHosts."discuss.${domain}" = additionalProtectedDomain;
+  services.nginx.virtualHosts."discuss.${domain}" = lib.mkMerge [ additionalProtectedDomain {
+    # Some of these are present in old content and redirect via the old domain omits the auth cookie.
+    #locations."/images/emoji/".extraConfig = ''
+    locations."~ /images/emoji/".extraConfig = ''
+      auth_request off;
+    '';
+  } ];
   services.nginx.virtualHosts."wiki.${domain}" = additionalProtectedDomain;
 }
