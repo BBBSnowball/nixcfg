@@ -28,4 +28,17 @@
   };
 
   time.timeZone = "Europe/Berlin";
+
+  programs.bash.shellAliases.cdd = let
+    dirs = [
+      "/etc/nixos"
+      "/etc/nixos/hosts/*/private"
+      "/etc/nixos/flake"
+      "/etc/nixos/flake/hosts/*"
+      "/etc/nixos/secret"
+      "/etc/nixos/secret_local"
+      "/etc/nixos/flake/hosts/nixosvm/containers"
+      "/etc/nixos/flake/hosts/nixosvm/containers/*"
+    ];
+  in ''cd "$(ls -1d ${lib.concatStringsSep " " dirs} | fzf)"'';
 }
