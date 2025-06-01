@@ -49,6 +49,10 @@ in {
         }
       '';
 
+      services.nginx.virtualHosts.${hostName} = {
+        locations."= /favicon.ico".alias = "/var/www/html-intern/favicon-public.ico";
+      };
+
       services.nginx.virtualHosts."intern.${hostName}" = {
         root = "/var/www/html-intern";
         listen = [
