@@ -105,8 +105,8 @@ def update_file_from_tar(expected_name, target_path):
 # to track the actual state but that also won't work because the web interface will
 # update it for some changes and it will also edit dns/custom.yaml. Instead, we keep
 # a separate state file to keep track of whether an update might be needed.
-dns_changed = update_file_from_tar("result-dns", "/home/user-data/dns/custom.yaml")
-web_changed = update_file_from_tar("result-www", "/home/user-data/www/custom.yaml")
+dns_changed = update_file_from_tar("dns.yaml", "/home/user-data/dns/custom.yaml")
+web_changed = update_file_from_tar("www.yaml", "/home/user-data/www/custom.yaml")
 
 pp = "+ "
 pm = "- "
@@ -148,7 +148,7 @@ def print_alias(name, old, new):
             print(f"{pp}  ];")
     print(f"{p}}}")
 
-expected_state = json.loads(get_from_tar("result-mail").decode("utf-8"))
+expected_state = json.loads(get_from_tar("mail.json").decode("utf-8"))
 expected_aliases = expected_state["aliases"]
 for k,v in expected_aliases.items():
     if not isinstance(v, dict):
@@ -224,7 +224,7 @@ if dns_changed:
         print(mgmt("/dns/update", { "POSTDATA": "" }))
         state["dns_mtime"] = dns_mtime
         state_changed = True
-if dns_changed:
+if web_changed:
     if check_mode:
         print("We would trigger a web update.")
     else:

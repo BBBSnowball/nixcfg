@@ -3,8 +3,6 @@
 # Usage: ./run.sh apply
 set -xe
 cd /etc/nixos/hosts/sonline0/private/private/by-host/sonline0/mailinabox
-nix-build dns-custom.nix -o result-dns
-nix-build www-custom.nix -o result-www
-nix-build mail.nix -o result-mail
+nix-build default.nix -o result-all
 exec ./scripts/apply.sh "$@"
 
