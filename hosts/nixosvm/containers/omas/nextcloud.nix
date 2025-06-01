@@ -13,9 +13,8 @@ in
   services.nextcloud = {
     enable = true;
     autoUpdateApps.enable = true;
-    config.adminpassFile = "/run/credentials/nextcloud-setup.service/secret_nextcloud-admin-password";
-    # Name must be the same regardless of which service is using it.
-    secretFile = "/run/nextcloud/secret.conf";
+    config.adminpassFile = "secret_nextcloud-admin-password";
+    secretFile = "secret_nextcloud-config";
   
     # We have to manually specify the version, so we can ensure that migrations run between major upgrades.
     package = pkgs.nextcloud31;
@@ -82,18 +81,10 @@ in
   };
 
   systemd.services."nextcloud-setup" = {
-    serviceConfig.LoadCredential = [ "secret_nextcloud-admin-password" "secret_nextcloud-config" ];
     after = [ "postgresql.service" ];
-    serviceConfig.ExecStartPre = [
-      "+${pkgs.coreutils}/bin/install -D -m 0400 -o nextcloud %d/secret_nextcloud-config /run/nextcloud/secret.conf"
-    ];
   };
 
   systemd.services."phpfpm-nextcloud" = {
-    serviceConfig.LoadCredential = [ "secret_nextcloud-config" ];
-    serviceConfig.ExecStartPre = [
-      "${pkgs.coreutils}/bin/install -D -m 0400 -o nextcloud %d/secret_nextcloud-config /run/nextcloud/secret.conf"
-    ];
     path = with pkgs; [ exiftool ];
   };
 }

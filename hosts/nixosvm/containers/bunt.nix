@@ -36,12 +36,14 @@ in {
       services.nextcloud = {
         enable = true;
         autoUpdateApps.enable = true;
-        config.adminpassFile = "/run/credentials/nextcloud-setup.service/secret_nextcloud-admin-password";
+        config.adminpassFile = "secret_nextcloud-admin-password"; #"/run/credentials/nextcloud-setup.service/secret_nextcloud-admin-password";
         #secretFile = "/run/credentials/phpfpm-nextcloud.service/secret_nextcloud-config";
         # -> Name must be the same regardless of which service is using it.
-        secretFile = "/run/nextcloud/secret.conf";
+        #secretFile = "/run/nextcloud/secret.conf";
         # -> Can we cheat? -> Yes, but phpfpm drop privileges, so we have to change ownership.
         #secretFile = "\".getenv('CREDENTIALS_DIRECTORY').\"/secret_nextcloud-config";
+        # -> New NixOS accepts a credential name. Nice!
+        secretFile = "secret_nextcloud-config";
       
         # We have to manually specify the version, so we can ensure that migrations run between major upgrades.
         package = pkgs.nextcloud31;
@@ -146,21 +148,21 @@ in {
       };
 
       systemd.services."nextcloud-setup" = {
-        serviceConfig.LoadCredential = [ "secret_nextcloud-admin-password" "secret_nextcloud-config" ];
+      #  serviceConfig.LoadCredential = [ "secret_nextcloud-admin-password" "secret_nextcloud-config" ];
         after = [ "postgresql.service" ];
-        serviceConfig.ExecStartPre = [
-          #"${pkgs.coreutils}/bin/install -d -m 0400 -o nextcloud /run/nextcloud"
-          "+${pkgs.coreutils}/bin/install -D -m 0400 -o nextcloud %d/secret_nextcloud-config /run/nextcloud/secret.conf"
-        ];
+      #  serviceConfig.ExecStartPre = [
+      #    #"${pkgs.coreutils}/bin/install -d -m 0400 -o nextcloud /run/nextcloud"
+      #    "+${pkgs.coreutils}/bin/install -D -m 0400 -o nextcloud %d/secret_nextcloud-config /run/nextcloud/secret.conf"
+      #  ];
       };
 
-      systemd.services."phpfpm-nextcloud" = {
-        serviceConfig.LoadCredential = [ "secret_nextcloud-config" ];
-        serviceConfig.ExecStartPre = [
-          #"${pkgs.coreutils}/bin/install -d -m 0400 -o nextcloud /run/nextcloud"
-          "${pkgs.coreutils}/bin/install -D -m 0400 -o nextcloud %d/secret_nextcloud-config /run/nextcloud/secret.conf"
-        ];
-      };
+      #systemd.services."phpfpm-nextcloud" = {
+      #  serviceConfig.LoadCredential = [ "secret_nextcloud-config" ];
+      #  serviceConfig.ExecStartPre = [
+      #    #"${pkgs.coreutils}/bin/install -d -m 0400 -o nextcloud /run/nextcloud"
+      #    "${pkgs.coreutils}/bin/install -D -m 0400 -o nextcloud %d/secret_nextcloud-config /run/nextcloud/secret.conf"
+      #  ];
+      #};
       #services.phpfpm.pools.nextcloud.phpEnv.CREDENTIALS_DIRECTORY = "/run/credentials/phpfpm-nextcloud.service";
     };
 
