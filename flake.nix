@@ -1,7 +1,7 @@
 {
   description = "Config for my NixOS hosts";
 
-  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.11";
+  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
   inputs.nixpkgs-unstable.url = "github:NixOS/nixpkgs";
   inputs.nixpkgs-mongodb.url = "github:NixOS/nixpkgs/nixos-22.11";
 

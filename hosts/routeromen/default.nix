@@ -229,7 +229,8 @@ in {
     hashedPassword = import "${privateForHost}/hashedPassword.nix";
     openssh.authorizedKeys.keyFiles = [ "${privateForHost}/ssh-laptop.pub" ];
     packages = with pkgs; [
-      anbox apktool
+      #anbox
+      apktool
       #android-studio # unfree :-(
       #androidenv.androidPkgs_9_0.platform-tools  # contains adb
       #androidenv.androidPkgs_9_0.androidsdk
