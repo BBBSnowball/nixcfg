@@ -6,7 +6,7 @@ in {
     autoStart = true;
     config = { config, pkgs, ... }: let
       #node = pkgs.nodejs-8_x;
-      node = pkgs.nodejs_18;
+      node = pkgs.nodejs_20;
     in {
       imports = [ modules.container-common ];
 

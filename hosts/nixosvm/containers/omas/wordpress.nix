@@ -71,7 +71,8 @@ in
 
     languages = [ (fetchLanguage {
       language = "de_DE";
-      hash = "sha256-21wyaomIfkhjbddIRhFofcfZn7FoitSTi1r1jx9ULXI=";
+      #hash = "sha256-21wyaomIfkhjbddIRhFofcfZn7FoitSTi1r1jx9ULXI=";
+      hash = "sha256-IcYbNy2c/EyYfQKQmnYIcMHo6anV0ipj3bAZX0TSYkM=";
     }) ];
   };
 

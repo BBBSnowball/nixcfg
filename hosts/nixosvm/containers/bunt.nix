@@ -44,7 +44,7 @@ in {
         #secretFile = "\".getenv('CREDENTIALS_DIRECTORY').\"/secret_nextcloud-config";
       
         # We have to manually specify the version, so we can ensure that migrations run between major upgrades.
-        package = pkgs.nextcloud30;
+        package = pkgs.nextcloud31;
 
         hostName = hostNameNC;
         #https = true;

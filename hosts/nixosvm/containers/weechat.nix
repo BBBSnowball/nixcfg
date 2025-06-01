@@ -26,8 +26,8 @@ in {
         plugins = with pkgs; [ ];
         libpurple_plugins = with pkgs; [
           #purple-matrix
-          purple-signald
-          purple-discord
+          #purple-signald
+          #purple-discord
         ];
       };
 
