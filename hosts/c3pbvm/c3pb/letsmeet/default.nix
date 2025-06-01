@@ -50,7 +50,7 @@ in {
     description = "WebRTC meeting service (edumeet / multiparty-meeting)";
 
     wantedBy = [ "multi-user.target" ];
-    after = [ "network.target" ];
+    after = [ "network.target" "redis.service" ];
 
     serviceConfig = {
       ExecStart = "${pkg}/bin/edumeet-server";
