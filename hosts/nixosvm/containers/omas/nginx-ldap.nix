@@ -34,10 +34,8 @@ let
     serviceConfig.EnvironmentFile = "/run/credstore/secret_nginx-ldap-env";
   };
 
-  additionalProtectedDomain = {
+  partiallyProtectedDomain = {
     extraConfig = ''
-      auth_request /check-auth;
-
       # If the auth service returns a 401, redirect to the login page.
       #set_escape_uri $service_for_auth https://$host$request_uri;
       #error_page 401 =200 https://intern.${domain}/auth/login?service=https://$host$request_uri;
@@ -55,6 +53,14 @@ let
       proxy_set_header X-Real-User $user_from_session;
     '';
     locations."/check-auth" = config.services.nginx.virtualHosts."intern.${domain}".locations."/check-auth";
+  };
+  protectLocation = ''
+    auth_request /check-auth;
+  '';
+  additionalProtectedDomain = partiallyProtectedDomain // {
+    extraConfig = ''
+      auth_request /check-auth;
+    '' + partiallyProtectedDomain.extraConfig;
   };
 
   proxyTarget = "https://unix:/run/nginx-ldap-auth/socket.sock:";
@@ -220,4 +226,16 @@ in
     '';
   } ];
   services.nginx.virtualHosts."wiki.${domain}" = additionalProtectedDomain;
+  services.nginx.virtualHosts."${domain}" = let
+    phpConfig = config.services.nginx.virtualHosts."${domain}".locations."~ \\.php$".extraConfig;
+  in lib.mkMerge [ partiallyProtectedDomain {
+    locations."/admin/".extraConfig = protectLocation + "add_header X-Debug 1;";
+    locations."/wp-admin/".extraConfig = protectLocation + "add_header X-Debug 2;";
+    locations."= /wp-login.php".extraConfig = protectLocation + phpConfig + "add_header X-Debug 3;";
+    # We need higher priority than the *.php regex.
+    locations."~ ^/wp-admin/.*\\.php$" = {
+      priority = 490;
+      extraConfig = protectLocation + phpConfig + "add_header X-Debug 4;";
+    };
+  } ];
 }
