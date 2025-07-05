@@ -39,6 +39,7 @@ let
       ashe            = fetchTheme { url = "https://downloads.wordpress.org/theme/ashe.2.246.zip";          hash = "sha256-87yWJhuXSfpp6L30/P9kN8jcqYVFLKlXU0NXCppUGrA="; };
       #twentyseventeen = fetchTheme { url = "https://downloads.wordpress.org/theme/twentyseventeen.3.8.zip"; hash = "sha256-4GOzQtvre7ifYe7oQPFPcD+WRmZZ9G5OZcuRFZ92fw4="; };
       twentyseventeen = fetchTheme { url = "https://downloads.wordpress.org/theme/twentyseventeen.3.9.zip"; hash = "sha256-dCzN0w5ousJE0pn6PibR4s2W8Dbpt8yrb4qZSx3pkJo="; };
+      twentytwentyfive = fetchTheme { url = "https://downloads.wordpress.org/theme/twentytwentyfive.1.2.zip"; hash = "sha256-NrjRzgj3VtIeUCQlUcqU1bGKLURpRjUvePV1+5qLpeo="; };
     };
   };
 in

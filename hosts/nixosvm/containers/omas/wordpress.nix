@@ -75,7 +75,10 @@ in
 
     themes = {
       inherit (pkgs.myWordpressThemes)
-        neve twentyseventeen;
+      #neve
+      twentyseventeen
+      twentytwentyfive
+      ;
     };
 
     languages = [ (fetchLanguage {
