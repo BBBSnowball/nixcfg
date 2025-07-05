@@ -9,6 +9,15 @@ in
       { addr = "0.0.0.0"; inherit port; }
     ];
     locations."= /favicon.ico".alias = "/var/www/html-intern/ogr-favicon-d.ico";
+    locations."@discourse".recommendedProxySettings = false;
+    locations."@discourse".extraConfig = ''
+      proxy_set_header        Host "${hostName}";
+      proxy_set_header        X-Real-IP $remote_addr;
+      proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+      proxy_set_header        X-Forwarded-Proto https;
+      proxy_set_header        X-Forwarded-Host "${hostName}";
+      proxy_set_header        X-Forwarded-Server "${hostName}";
+    '';
   };
 
   services.discourse = {
@@ -41,6 +50,7 @@ in
         site_description = "";
         #notification_email = "noreply@${domain}";
         notification_email = "discuss@${domain}";
+        force_https = true;
       };
 
       # We are not using NixOS' mail.incoming because that would use Postfix.
