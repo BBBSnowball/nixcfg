@@ -1,4 +1,21 @@
 { lib, pkgs, ... }:
+let
+  mountsForUser = user: {
+    "/home/${user}/.local/share/docker" = {
+      #device = "/home/${user}/data2/${user}-docker";
+      device = "/home/${user}/data2/gos-docker";
+      fsType = "none";
+      options = [ "bind" "nofail" ];
+    };
+  
+    "/home/${user}/data2/${user}-data/nix/store" = {
+      device = "/nix/store";
+      fsType = "none";
+      options = [ "bind" "nofail" ];
+    };
+
+  };
+in
 {
   virtualisation.docker.rootless = {
     enable = true;
@@ -11,17 +28,17 @@
     };
   };
 
-  fileSystems."/home/gos/.local/share/docker" = {
-    device = "/home/gos/data2/gos-docker";
-    fsType = "none";
-    options = [ "bind" ];
-  };
-
-  fileSystems."/home/gos/data2/gos-data/nix/store" = {
-    device = "/nix/store";
-    fsType = "none";
-    options = [ "bind" ];
-  };
+  fileSystems = mountsForUser "gos"
+    // mountsForUser "user3"
+    #// mountsForUser "fxa"
+    # -> not enough space for another volume, let's share them
+    // {
+      "/home/fxa/.local/share/docker" = {
+        device = "/home/user3/data2/fxa-docker";
+        fsType = "none";
+        options = [ "bind" "nofail" ];
+      };
+    };
 
   environment.systemPackages = with pkgs; [
     btrfs-progs
@@ -45,18 +62,5 @@
   in {
     BUILDKIT_STEP_LOG_MAX_SIZE = toString (1024 * MB);
     BUILDKIT_STEP_LOG_MAX_SPEED = toString (10 * MB);  # per second
-  };
-
-  # similar setup for user3
-  fileSystems."/home/user3/.local/share/docker" = {
-    device = "/home/user3/data2/user3-docker";
-    fsType = "none";
-    options = [ "bind" ];
-  };
-
-  fileSystems."/home/user3/data2/gos-data/nix/store" = {
-    device = "/nix/store";
-    fsType = "none";
-    options = [ "bind" ];
   };
 }

@@ -65,5 +65,10 @@ in
       #signify
     ];
   };
+
+  users.users.fxa = basicUser // {
+    extraGroups = [ "dockerrootless" ];
+    isNormalUser = true;
+  };
 }
 
