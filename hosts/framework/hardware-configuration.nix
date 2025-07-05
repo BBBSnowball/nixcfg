@@ -33,13 +33,13 @@
   fileSystems."/home/gos/data2" =
     { device = "/dev/disk/by-uuid/3c5c8228-56d7-42f6-92d1-c0437bf66447";
       fsType = "btrfs";
-      options = [ "ssd" ];
+      options = [ "ssd" "nofail" ];
     };
 
   fileSystems."/home/user3/data2" =
     { device = "/dev/disk/by-uuid/5dde60c3-2427-47f0-8ed2-c3b3e1de10ad";
       fsType = "btrfs";
-      options = [ "ssd" ];
+      options = [ "ssd" "nofail" ];
     };
 
   fileSystems."/boot" =
