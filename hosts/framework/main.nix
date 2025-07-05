@@ -138,7 +138,8 @@ in
     lazygit
     clementine
     zgrviewer graphviz
-    yubikey-manager yubikey-manager-qt yubikey-personalization
+    yubikey-manager yubikey-personalization
+    # yubikey-manager-qt  # marked insecure
     #cura  # python-libarcus is broken
     freecad kicad graphviz blender
     libxslt zip  # used by Kicad

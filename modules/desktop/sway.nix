@@ -112,7 +112,8 @@ in
     font-awesome
     powerline-fonts
     powerline-symbols
-    (nerdfonts.override { fonts = [ "NerdFontsSymbolsOnly" ]; })
+    #(nerdfonts.override { fonts = [ "NerdFontsSymbolsOnly" ]; })
+    nerd-fonts.symbols-only
     # https://github.com/Alexays/Waybar/issues/1486
     roboto
     #meslo-lg

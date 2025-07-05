@@ -15,7 +15,7 @@
   #nixpkgs.allowUnfreeByName = [ "mfc9140cdnlpr" ];
 
   #sound.enable = lib.mkOverride 500 true;
-  hardware.pulseaudio.enable = lib.mkOverride 500 true;
+  #hardware.pulseaudio.enable = lib.mkOverride 500 true;
 
   environment.systemPackages = with pkgs; [
     meld
