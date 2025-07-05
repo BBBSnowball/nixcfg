@@ -30,6 +30,15 @@ in
       { addr = "0.0.0.0"; inherit port; }
     ];
   };
+  #services.nginx.virtualHosts."www.${hostName}" = config.services.nginx.virtualHosts.${hostName};
+  services.nginx.virtualHosts."www.${hostName}" = {
+    listen = [
+      { addr = "0.0.0.0"; inherit port; }
+    ];
+    extraConfig = ''
+      rewrite ^/(.*)$ http://${hostName}/$1 redirect;
+    '';
+  };
 
   environment.systemPackages = with pkgs; [
     wp-cmd unzip
