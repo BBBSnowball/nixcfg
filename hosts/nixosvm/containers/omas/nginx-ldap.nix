@@ -229,7 +229,9 @@ in
   services.nginx.virtualHosts."${domain}" = let
     phpConfig = config.services.nginx.virtualHosts."${domain}".locations."~ \\.php$".extraConfig;
   in lib.mkMerge [ partiallyProtectedDomain {
-    locations."/admin/".extraConfig = protectLocation + "add_header X-Debug 1;";
+    #locations."/admin/".extraConfig = protectLocation + "add_header X-Debug 1;";
+    locations."/admin".extraConfig = ''rewrite ^/(.*)$ http://${domain}/wp-admin/ redirect;'';
+    locations."/admin/".extraConfig = ''rewrite ^/(.*)$ http://${domain}/wp-admin/ redirect;'';
     locations."/wp-admin/".extraConfig = protectLocation + "add_header X-Debug 2;";
     locations."= /wp-login.php".extraConfig = protectLocation + phpConfig + "add_header X-Debug 3;";
     # We need higher priority than the *.php regex.
