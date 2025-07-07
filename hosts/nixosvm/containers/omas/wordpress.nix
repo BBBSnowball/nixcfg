@@ -67,6 +67,27 @@ in
       # see https://developer.wordpress.org/advanced-administration/upgrade/migrating/
       define('WP_HOME', 'https://${hostName}');
       define('WP_SITEURL', 'https://${hostName}');
+
+      # avoid warning because Wordpress cannot update itself (obviously)
+      define('WPMU_PLUGIN_DIR', '${pkgs.writeTextFile {
+        name = "wordpress-must-use";
+        destination = "/disable-site-status-tests.php";
+        # see https://plugins.trac.wordpress.org/browser/disable-wordpress-updates/trunk/disable-updates.php
+        # and https://developer.wordpress.org/reference/hooks/site_status_tests/#comment-3216
+        # and https://stackoverflow.com/questions/21449197/wordpress-configuration-via-add-filter/35202129#35202129
+        # and /nix/store/j49216mc1i89.../share/wordpress/wp-admin/includes/class-wp-site-health.php
+        text = ''
+          <?php
+          function remove_background_updates_test($tests) {
+            unset( $tests['async']['background_updates'] );
+            unset( $tests['direct']['plugin_theme_auto_updates'] );
+            unset( $tests['direct']['update_temp_backup_writable'] );
+            return $tests;
+          }
+          add_filter( 'site_status_tests', 'remove_background_updates_test' );
+          ?>
+        '';
+      }}');
     '';
 
     plugins = {
@@ -76,7 +97,7 @@ in
     themes = {
       inherit (pkgs.myWordpressThemes)
       #neve
-      twentyseventeen
+      #twentyseventeen
       twentytwentyfive
       ;
     };
@@ -84,9 +105,19 @@ in
     languages = [ (fetchLanguage {
       language = "de_DE";
       #hash = "sha256-21wyaomIfkhjbddIRhFofcfZn7FoitSTi1r1jx9ULXI=";
-      hash = "sha256-IcYbNy2c/EyYfQKQmnYIcMHo6anV0ipj3bAZX0TSYkM=";
+      #hash = "sha256-IcYbNy2c/EyYfQKQmnYIcMHo6anV0ipj3bAZX0TSYkM=";
+      hash = "sha256-qFkNGr4ShYrXRG+mwr9w/WPfOFSJCybb/rBnhZMQHVA=";  # 6.8.1
     }) ];
+
+    # This would be put into `settings`, which is not what we want.
+    #poolConfig.phpOptions = ''
+    #  extension=${pkgs.phpExtensions.imagick}/lib/php/extensions/imagick.so
+    #'';
   };
 
   services.mysql.settings.mysqld.skip-networking = true;
+
+  services.phpfpm.pools."wordpress-${hostName}".phpOptions = ''
+    extension=${pkgs.phpExtensions.imagick}/lib/php/extensions/imagick.so
+  '';
 }
