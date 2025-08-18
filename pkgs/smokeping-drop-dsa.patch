@@ -6,8 +6,8 @@ see https://github.com/oetiker/SmokePing/commit/62ac9fda04b994bbf4f97d3dd1cf8b92
      # no need for this if we run as a cgi
      unless ( $ENV{SERVER_SOFTWARE} ) {
          
--        my $call = "$self->{properties}{binary} -t dsa,rsa,ecdsa 127.0.0.1";
-+        my $call = "$self->{properties}{binary} -t rsa,ecdsa 127.0.0.1";
+-        my $call = "$self->{properties}{binary} -t dsa,rsa,ecdsa $self->{properties}{init_host}";
++        my $call = "$self->{properties}{binary} -t rsa,ecdsa $self->{properties}{init_host}";
          my $return = `$call 2>&1`;
          if ($return =~ m/$ssh_re/s){
              print "### parsing ssh-keyscan output...OK\n";
