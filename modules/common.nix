@@ -118,6 +118,10 @@
     keep-outputs = true;      # keep downloaded files and build results during gc
 
     # default is to let all users use the daemon but that's not necessary
-    allowed-users = lib.mkDefault [ "root" "@wheel" "@users" ];
+    allowed-users = lib.mkDefault [
+      "root" "@wheel" "@users"
+      # our post-start script creates a GC root
+      "postgres"
+    ];
   };
 }
