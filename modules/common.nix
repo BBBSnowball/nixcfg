@@ -116,5 +116,8 @@
   nix.settings = {
     keep-derivations = true;  # on by default
     keep-outputs = true;      # keep downloaded files and build results during gc
+
+    # default is to let all users use the daemon but that's not necessary
+    allowed-users = lib.mkDefault [ "root" "@wheel" "@users" ];
   };
 }
