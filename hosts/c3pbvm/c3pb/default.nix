@@ -7,6 +7,7 @@
     (withFlakeInputs ./matrix-synapse.nix)
     #(withFlakeInputs ./mautrix-telegram) # moved to revreso
     #(withFlakeInputs ./matrix-edi.nix)   # replaced by newer bot
+    (withFlakeInputs ./element-web.nix)
     (withFlakeInputs ./webmumble.nix)
     (withFlakeInputs ./letsmeet)
   ];
