@@ -121,7 +121,7 @@ def print_alias(name, old, new):
         p = pp
     else:
         p = pn
-    print(f"{p}{escape(name)} = {{")
+    print(f"{p}aliases.{escape(name)} = {{")
     if not old or not new or old["forwards_to"] != new["forwards_to"]:
         print(f"{p}  forwards_to = [")
         if old:
@@ -146,7 +146,47 @@ def print_alias(name, old, new):
             for x in new["permitted_senders"]:
                 print(f"{pp}    {escape(x)}")
             print(f"{pp}  ];")
-    print(f"{p}}}")
+    print(f"{p}}};")
+
+default_user_values = {
+    "status": "active",
+    "privileges": [],
+    "quota": "0",
+    "box_quota": 0,
+}
+def print_user_if_different(name, old, new):
+    if old and not new:
+        p = pm
+        diff = True
+    elif not old and new:
+        p = pp
+        diff = True
+    else:
+        p = pn
+        diff = False
+    if diff:
+        print(f"{p}users.{escape(name)} = {{")
+    for prop in ("status", "privileges", "quota", "box_quota"):
+        if old and prop not in old or new and prop not in new:
+            continue
+        if not old:
+            print(f"{p}  {prop} = " + repr(new[prop]))
+        elif not new:
+            if prop not in default_user_values or default_user_values[prop] != old[prop]:
+                print(f"{p}  {prop} = " + repr(old[prop]) + ";")
+        elif old[prop] != new[prop]:
+            if not diff:
+                print(f"{p}{escape(name)} = {{")
+                diff = True
+            print(f"{pm}    {prop} = {repr(old[prop])};")
+            print(f"{pp}    {prop} = {repr(new[prop])};")
+        if new and new["status"] == "inactive":
+            # don't compare other properties
+            break
+    if diff:
+        print(f"{p}}};")
+    return diff
+
 
 expected_state = json.loads(get_from_tar("mail.json").decode("utf-8"))
 expected_aliases = expected_state["aliases"]
@@ -198,7 +238,32 @@ for k,v in expected_aliases.items():
         if v["permitted_senders"] is not None:
             request["permitted_senders"] = "\n".join(v["permitted_senders"])
         print(mgmt("/mail/aliases/add", request))
-print(f"{uptodate} mail alias are up-to-date.")
+print(f"{uptodate} mail aliases are up-to-date.")
+
+expected_users = expected_state["users"]
+for k,v in expected_users.items():
+    pass
+
+uptodate = 0
+current_users = {}
+for per_domain in mgmt("/mail/users?format=json", is_json=True):
+    for user in per_domain["users"]:
+        name = user["email"]
+        current_users[name] = user
+        expected = expected_users.get(name)
+        diff = print_user_if_different(name, user, expected)
+        if not diff:
+            uptodate += 1
+        elif diff and should_update:
+            if expected:
+                print(f"*Manual action*: adjust user")
+            else:
+                print(f"*Manual action*: delete user")
+for k,v in expected_users.items():
+    if k not in current_users:
+        print_user_if_different(name, None, v)
+        print(f"*Manual action*: create user")
+print(f"{uptodate} mail users are up-to-date.")
 
 statefile = "/home/user-data/.update_state.json"
 if os.path.exists(statefile):
