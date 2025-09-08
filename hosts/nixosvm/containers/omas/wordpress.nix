@@ -8,17 +8,6 @@ let
   wp-cmd = pkgs.writeShellScriptBin "wp-${name}" ''
     exec sudo -u wordpress -- ${pkgs.wp-cli}/bin/wp --path=${wp-root} "$@"
   '';
-
-  fetchLanguage = { language, hash ? "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=" }:
-  pkgs.stdenv.mkDerivation {
-    name = "wordpress-language-${language}";
-    src = pkgs.fetchurl {
-      url = "https://de.wordpress.org/wordpress-${pkgs.wordpress.version}-${language}.tar.gz";
-      name = "wordpress-${pkgs.wordpress.version}-${language}.tar.gz";
-      inherit hash;
-    };
-    installPhase = "mkdir -p $out; cp -r ./wp-content/languages/* $out/";
-  };
 in
 {
   imports = [
@@ -102,13 +91,7 @@ in
       ;
     };
 
-    languages = [ (fetchLanguage {
-      language = "de_DE";
-      #hash = "sha256-21wyaomIfkhjbddIRhFofcfZn7FoitSTi1r1jx9ULXI=";
-      #hash = "sha256-IcYbNy2c/EyYfQKQmnYIcMHo6anV0ipj3bAZX0TSYkM=";
-      #hash = "sha256-qFkNGr4ShYrXRG+mwr9w/WPfOFSJCybb/rBnhZMQHVA=";  # 6.8.1
-      hash = "sha256-Vj6Ztn8dXvzSHiu9UBHhgV01v4RMF+FjUPf8hITQtJM=";  # 6.8.2
-    }) ];
+    languages = with pkgs.wordpressPackages.languages; [ de_DE ];
 
     # This would be put into `settings`, which is not what we want.
     #poolConfig.phpOptions = ''
