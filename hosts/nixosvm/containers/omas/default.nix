@@ -32,6 +32,7 @@ in {
         ./mediawiki.nix
         ./nginx-ldap.nix
         ./nextcloud.nix
+        ./password-generator.nix
         ./postgresql.nix
         ./send-mail.nix
         ./wordpress.nix
