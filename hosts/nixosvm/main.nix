@@ -95,6 +95,22 @@ in {
 
   services.tailscale.enable = true;
 
+  # workaround for kernel bug that breaks some tests
+  # https://github.com/tailscale/tailscale/issues/16966#issuecomment-3239543750
+  # -> Only required while a broken kernel is booted on the build machine.
+  nixpkgs.overlays = lib.mkIf true [ (_: prev: {
+    tailscale = prev.tailscale.overrideAttrs (old: {
+      checkFlags =
+        builtins.map (
+          flag:
+            if prev.lib.hasPrefix "-skip=" flag
+            then flag + "|^TestGetList$|^TestIgnoreLocallyBoundPorts$|^TestPoller$"
+            else flag
+        )
+        old.checkFlags;
+    });
+  }) ];
+
   # This value determines the NixOS release with which your system is to be
   # compatible, in order to avoid breaking some software such as database
   # servers. You should change this only after NixOS release notes say you
