@@ -111,6 +111,19 @@ in {
     });
   }) ];
 
+  # Postgres user in container must be able to connect to Nix daemon on host.
+  #nix.settings.allowed-users = lib.mkForce ["*"];
+  # -> creating a compatible user should be enough, thanks to config.ids.uids.
+  users.users.postgres = {
+    name = "postgres";
+    uid = config.ids.uids.postgres;
+    group = "postgres";
+    description = "PostgreSQL server user";
+    #home = "${cfg.dataDir}";
+    useDefaultShell = true;
+  };
+  users.groups.postgres.gid = config.ids.gids.postgres;
+
   # This value determines the NixOS release with which your system is to be
   # compatible, in order to avoid breaking some software such as database
   # servers. You should change this only after NixOS release notes say you
