@@ -1,0 +1,38 @@
+{
+  "ashe": {
+    "path": "ashe/2.260",
+    "rev": "283896",
+    "sha256": "0z00rncm40acjcs0xj56d3npxsqp2k5lhcx6vp2rn3pvmabq4wxd",
+    "version": "2.260"
+  },
+  "astra": {
+    "path": "astra/4.11.10",
+    "rev": "284770",
+    "sha256": "1q5hbdapa8n2dfka07d7pm12p6wbbpfcb7z6pc43yj9gj7gmdirc",
+    "version": "4.11.10"
+  },
+  "neve": {
+    "path": "neve/4.1.3",
+    "rev": "281134",
+    "sha256": "13jw9v5cp0wrblxc7i7zv5a2xfs0hka1q1da0zn0gpwb0x4axkfs",
+    "version": "4.1.3"
+  },
+  "oceanwp": {
+    "path": "oceanwp/4.1.2",
+    "rev": "283264",
+    "sha256": "0iacm2kmbv5gd30n1810hm3a5r1jwyhhc2xxwd417896a7skmc8y",
+    "version": "4.1.2"
+  },
+  "twentyseventeen": {
+    "path": "twentyseventeen/3.9",
+    "rev": "267654",
+    "sha256": "16lhx4flp6cadymwrdz96vq9dkg2s4k3xylrs92c5fk81v9wsb3l",
+    "version": "3.9"
+  },
+  "twentytwentyfive": {
+    "path": "twentytwentyfive/1.3",
+    "rev": "282423",
+    "sha256": "1hv9dzxdr5034qjfxrrm9k95x495bbfpx7k8w2vcpaa60pxf59aj",
+    "version": "1.3"
+  }
+}

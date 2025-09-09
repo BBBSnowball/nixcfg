@@ -11,15 +11,17 @@ let
     } // lib.removeAttrs args ["url" "hash"]);
     fetchTheme = fetchPart;
     fetchPlugin = fetchPart;
+    
+    generated = final.callPackage ../wordpress/wp.nix {};
   in {
-    myWordpressPlugins = {
+    myWordpressPlugins = generated.plugins // {
       # This could probably use fetchPlugin but we keep it as it was, for now.
       passwordProtectPlugin = fetchzip {
         url = "https://downloads.wordpress.org/plugin/password-protected.2.7.4.zip";
         sha256 = "sha256-6kU4duN3V/z0jIiShxzCHTG2GIZPKRook0MIQVXWLQg=";
       };
 
-      the-events-calendar = fetchPlugin { url = "https://downloads.wordpress.org/plugin/the-events-calendar.6.10.1.1.zip"; hash = "sha256-NQeMLiusbrJvHpM2PPPoGxQCzncUPWXd+bwfUbEMQ7Q="; };
+      # keep manual fetch because it doesn't seem to exist anymore
       caldavlist = fetchPlugin {
         url = "https://downloads.wordpress.org/plugin/caldavlist.1.1.4.zip";
         hash = "sha256-2pbcOixbU1Ume9iPIzIp7KfRJrMnWY8/57rzGRrTbEE=";
@@ -31,16 +33,7 @@ let
       };
     };
 
-    myWordpressThemes = {
-      oceanwp         = fetchTheme { url = "https://downloads.wordpress.org/theme/oceanwp.4.0.2.zip";       hash = "sha256-cNcdLYWcAz9/Wqr2dTa8m97VCq7i/IoX17Fu6ZTzmjs="; };
-      #neve            = fetchTheme { url = "https://downloads.wordpress.org/theme/neve.3.2.5.zip";          hash = "sha256-pMRwBN6B6eA3zmdhLnw2zSoGR6nKJikE+1axrzINQw8="; };
-      #neve            = fetchTheme { url = "https://downloads.wordpress.org/theme/neve.3.8.13.zip";         hash = "sha256-hJ0noKHIZ+SXSIy0z3ixCJNqcc/nFIXezqJ+sz7qzlc="; };
-      neve            = fetchTheme { url = "https://downloads.wordpress.org/theme/neve.4.0.1.zip";          hash = "sha256-+ec3NX6S7Oj47IUivp4KF2oXbVHfeTalBc3ARp6/5ys="; };
-      ashe            = fetchTheme { url = "https://downloads.wordpress.org/theme/ashe.2.246.zip";          hash = "sha256-87yWJhuXSfpp6L30/P9kN8jcqYVFLKlXU0NXCppUGrA="; };
-      #twentyseventeen = fetchTheme { url = "https://downloads.wordpress.org/theme/twentyseventeen.3.8.zip"; hash = "sha256-4GOzQtvre7ifYe7oQPFPcD+WRmZZ9G5OZcuRFZ92fw4="; };
-      twentyseventeen = fetchTheme { url = "https://downloads.wordpress.org/theme/twentyseventeen.3.9.zip"; hash = "sha256-dCzN0w5ousJE0pn6PibR4s2W8Dbpt8yrb4qZSx3pkJo="; };
-      twentytwentyfive = fetchTheme { url = "https://downloads.wordpress.org/theme/twentytwentyfive.1.2.zip"; hash = "sha256-NrjRzgj3VtIeUCQlUcqU1bGKLURpRjUvePV1+5qLpeo="; };
-    };
+    myWordpressThemes = generated.themes;
   };
 in
 {

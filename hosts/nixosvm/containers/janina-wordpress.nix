@@ -36,7 +36,7 @@ in {
         '';
         #themes = { inherit responsiveTheme; };
         plugins = {
-          inherit (pkgs.myWordpressPlugins) passwordProtectPlugin;
+          inherit (pkgs.myWordpressPlugins) password-protected;
         };
         virtualHost = {
           adminAddr = "postmaster@${mainUrl}";

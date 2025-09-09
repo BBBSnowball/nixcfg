@@ -17,5 +17,15 @@
     nixosModules = {
       container-common = self.lib.withFlakeInputs ./container-common.nix;
     };
+    apps.x86_64-linux.update-wordpress = let
+      lib = nixpkgs.lib;
+      pkgs = nixpkgs.legacyPackages.x86_64-linux;
+      program = (pkgs.writeShellScript "update-wordpress" ''
+        export PATH=${lib.makeBinPath (with pkgs; [coreutils jq wp4nix sudo bash which])}
+        export WP_VERSION='${pkgs.wordpress.version}'
+        # run with bash to skip nix-shell shebang
+        bash ${self}/containers/wordpress/generate-as-user.sh
+      '').outPath;
+    in { type = "app"; inherit program; };
   };
 }

@@ -80,7 +80,12 @@ in
     '';
 
     plugins = {
-      #inherit (pkgs.myWordpressPlugins);
+      inherit (pkgs.myWordpressPlugins)
+      ultimate-addons-for-gutenberg
+      elementor
+      real-cookie-banner
+      backwpup
+      ;
     };
 
     themes = {
@@ -88,6 +93,7 @@ in
       #neve
       #twentyseventeen
       twentytwentyfive
+      astra
       ;
     };
 

@@ -67,7 +67,7 @@ let
             };
 
             meta = {
-              license = lib.licenses.${license};
+              #license = lib.licenses.${license};
             }
             // (args.passthru or { });
           }

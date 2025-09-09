@@ -52,6 +52,8 @@ in {
     "${p}/ssh-dom0.pub"
     "${p}/ssh-routeromen.pub"
   ];
+  # for running wp4nix etc.
+  users.users.generate-files.isNormalUser = true;
 
   networking.interfaces."tinc.bbbsnowbal".ipv4.addresses = [ {
     address = "192.168.84.39";

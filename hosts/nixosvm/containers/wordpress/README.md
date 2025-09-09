@@ -1,6 +1,12 @@
 Most of this has been copied from nixpkgs:
 https://github.com/NixOS/nixpkgs/tree/master/pkgs/servers/web-apps/wordpress/packages
 
+Update: `nix run .#update-wordpress |& grep -v 'A worker just exited,\|buildPkgQueueWorker:'`
+Use: see `default.nix` and `../parts/wordpress.nix`
+
+
+
+
 The text below applies to the upstream version.
 
 
