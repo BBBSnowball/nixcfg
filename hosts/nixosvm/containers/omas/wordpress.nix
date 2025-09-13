@@ -86,6 +86,8 @@ in
     '';
 
     plugins = {
+      inherit (pkgs.wordpressPackages.plugins)
+      wp-statistics;
       inherit (pkgs.myWordpressPlugins)
       ultimate-addons-for-gutenberg
       elementor
