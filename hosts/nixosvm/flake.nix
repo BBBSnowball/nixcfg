@@ -24,7 +24,7 @@
         export PATH=${lib.makeBinPath (with pkgs; [coreutils jq wp4nix sudo bash which])}
         export WP_VERSION='${pkgs.wordpress.version}'
         # run with bash to skip nix-shell shebang
-        bash ${self}/containers/wordpress/generate-as-user.sh
+        bash ${self}/containers/wordpress/generate.sh
       '').outPath;
     in { type = "app"; inherit program; };
   };
