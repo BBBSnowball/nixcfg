@@ -6,10 +6,10 @@
     "version": "5.4.1"
   },
   "elementor": {
-    "path": "elementor/tags/3.31.4",
-    "rev": "3357976",
-    "sha256": "1rrz3v2jg902i6mvqn7arbj7cmh3nwy6lasmfcsy06jps59hcs1l",
-    "version": "3.31.4"
+    "path": "elementor/tags/3.31.5",
+    "rev": "3358654",
+    "sha256": "0xycfi9p4rld91vxc4hhiwi4zwfr253b85aw6x3561hah6x1phdi",
+    "version": "3.31.5"
   },
   "password-protected": {
     "path": "password-protected/tags/2.7.10",
@@ -19,15 +19,15 @@
   },
   "real-cookie-banner": {
     "path": "real-cookie-banner/tags/5.2.1",
-    "rev": "3356160",
-    "sha256": "16nbpv0n5dkh6jr4h1qhyqx4m0ajgsxlc9f4dkf1kb23kvpkhczw",
+    "rev": "3360530",
+    "sha256": "095d0kw8d0zxxyjjad99ibnvf7iv4wrlc0xwq68cn5ihllk0l3nk",
     "version": "5.2.1"
   },
   "the-events-calendar": {
-    "path": "the-events-calendar/tags/6.15.1.1",
-    "rev": "3355459",
-    "sha256": "0kvf51whnig50vmsrk1d82cfgm8956vm3i53yhpjli39hqpnl3c5",
-    "version": "6.15.1.1"
+    "path": "the-events-calendar/tags/6.15.3",
+    "rev": "3359403",
+    "sha256": "0pmfhgkkk3x1my5ylm68y1lgvccfx34k8a4pndzb1f860zxvm6cl",
+    "version": "6.15.3"
   },
   "ultimate-addons-for-gutenberg": {
     "path": "ultimate-addons-for-gutenberg/tags/2.19.12",
