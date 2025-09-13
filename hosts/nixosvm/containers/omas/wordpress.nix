@@ -77,6 +77,12 @@ in
           ?>
         '';
       }}');
+
+      # Astra theme tries to access filesystem "for managing local doc files" and this page will fail
+      # with an internal error when it tries to do so with FTP: /wp-admin/admin.php?page=astra
+      define('FS_METHOD', 'direct');
+      # Let's tell Wordpress that it cannot write to the filesystem because Nix store is readonly anyway.
+      define( 'DISALLOW_FILE_MODS', true );
     '';
 
     plugins = {
