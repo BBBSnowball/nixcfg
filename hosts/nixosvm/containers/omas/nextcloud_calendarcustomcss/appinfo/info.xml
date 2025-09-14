@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<info>
+    <id>calendarcustomcss</id>
+    <name>Custom CSS for embedded calendar</name>
+    <description>
+      Injects custom CSS for the embedded calendar. Idea and implementation is based on this app:
+      https://github.com/nextcloud/theming_customcss
+    </description>
+    <version>1.0.0</version>
+    <licence>AGPL</licence>
+    <namespace>CalendarCustomCSS</namespace>
+    <category>tools</category>
+</info>

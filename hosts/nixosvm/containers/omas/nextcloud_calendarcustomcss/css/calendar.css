@@ -1,0 +1,8 @@
+/* hide header, used to work out-of-the-box in NextCloud 27 */
+#body-public:has(input#initial-state-calendar-is_embed) {
+  #header {display: none}
+  #content-vue {
+    margin-top: var(--body-container-margin);
+    height: calc(100% - var(--body-container-margin) * 2);
+  }
+}
