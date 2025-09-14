@@ -38,7 +38,7 @@ in
        mail_from_address = "noreply";
        mail_domain = domain;
 
-       settings.enabledPreviewProviders = [
+       enabledPreviewProviders = [
          #"OC\\Preview\\BMP"
          #"OC\\Preview\\GIF"
          "OC\\Preview\\JPEG"
