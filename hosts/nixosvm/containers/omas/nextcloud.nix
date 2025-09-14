@@ -72,6 +72,13 @@ in
         #onlyoffice  # -> needs an additional server
         end_to_end_encryption
         ;
+
+      theming_customcss = pkgs.fetchNextcloudApp {
+        url = "https://github.com/nextcloud-releases/theming_customcss/releases/download/v1.18.0/theming_customcss.tar.gz";
+        #url = "https://github.com/nextcloud/theming_customcss/archive/refs/tags/v1.18.0.tar.gz";
+        hash = "sha256-MsF+im9yCt7bRNIE8ait0wxcVzMXsHMNbp+IIzY/zJI=";
+        license = "agpl3Plus";
+      };
     };
 
     # Admin interface was complaining about too small cache.
@@ -82,6 +89,23 @@ in
 
   systemd.services."nextcloud-setup" = {
     after = [ "postgresql.service" ];
+
+    script = let
+      css = pkgs.writeText "nextcloud_custom.css" ''
+        #body-public:has(input#initial-state-calendar-is_embed) {
+          #header {display: none}
+          #content-vue {
+            margin-top: var(--body-container-margin);
+            height: calc(100% - var(--body-container-margin) * 2);
+          }
+        }
+      '';
+      hash = builtins.substring 0 32 (builtins.replaceStrings ["/nix/store/"] [""] css.outPath);
+      occ = lib.getExe config.services.nextcloud.occ;
+    in ''
+      ${occ} config:app:set theming_customcss customcss --value "$(cat ${css})"
+      ${occ} config:app:set theming_customcss cachebuster --value "${hash}"
+    '';
   };
 
   systemd.services."phpfpm-nextcloud" = {
