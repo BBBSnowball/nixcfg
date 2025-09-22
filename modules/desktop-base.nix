@@ -12,6 +12,7 @@
       variant = "altgr-intl";
       options = "eurosign:e";
     };
+    #xkb.layout = "de";
   };
   services.libinput.enable = true;
 }
