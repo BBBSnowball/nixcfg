@@ -71,6 +71,7 @@
     nixosConfigurations.framework = self.nixosConfigurations.fw;
     nixosConfigurations.fw = mkHostInSubflake "fw";
     nixosConfigurations.fwa = mkHostInSubflake "fwa";
+    nixosConfigurations.fwd = mkHostInSubflake "fwd";
     nixosConfigurations.orangepi-remoteadmin = mkHostInSubflake "orangepi-remoteadmin";
     nixosConfigurations.gpd = mkHostInSubflake "gpd";
     nixosConfigurations.m1 = mkHostInSubflake "m1";
