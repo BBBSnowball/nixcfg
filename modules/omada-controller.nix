@@ -3,24 +3,17 @@ let
   nixpkgs-mongodb = routeromen.inputs.nixpkgs-mongodb;
 
   omadaControllerOverlay = self: super: rec {
-    # Hydra doesn't build new MongoDB because SSPL has more restrictions than AGPL and the build takes for ages.
-    # Also, it seems that Omada wants the old version anyway.
-    # -> It's not the best idea to pin this but we don't have any other good option, I think.
-    #mongodb-for-omada = nixpkgs-mongodb.legacyPackages.${pkgs.stdenv.hostPlatform.system}.mongodb;
-    # Omada needs the new version, now. D'oh!
-    # -> It seems that MongoDB is available on Hydra. Nice!
-    # -> Too new for old database (but MongoDB 3.4 cannot open it either).
-    # -> move data dir and setup anew from backup
-    mongodb-for-omada = pkgs.mongodb.overrideAttrs (old: { meta = old.meta // { license=[]; }; });
+    # When upgrading from an old version: move data dir and setup anew from backup
+    #mongodb-for-omada = pkgs.mongodb.overrideAttrs (old: { meta = old.meta // { license=[]; }; });
+    mongodb-for-omada = pkgs.mongodb;
 
     omada-controller = self.callPackage ../pkgs/omada-controller.nix {
-      mongodb = mongodb-for-omada;
+      #mongodb = mongodb-for-omada;
     };
   };
 
   conf = config.services.omada-controller;
   name = "omada-controller";
-  #chosen_jre = pkgs.jre8;
   chosen_jre = pkgs.openjdk;
 in {
   #imports = [ routeromen.nixosModules.allowUnfree ];  # -> infinite recursion
@@ -39,6 +32,9 @@ in {
   };
 
   config.nixpkgs.overlays = [ omadaControllerOverlay ];
+
+  # MongoDB uses SSPL which is similar to AGPL but with additional restrictions that make
+  # it non-free. Fortunately, Hydra builds it anyway.
   config.nixpkgs.allowUnfreeByName = [ "mongodb" ];
 
   config.systemd.services.omada-controller = {
