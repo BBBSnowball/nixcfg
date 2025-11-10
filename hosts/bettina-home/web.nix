@@ -123,6 +123,7 @@ in
   services.nginx = {
     enable = true;
 
+    #NOTE This will cause a local build of nginx.
     additionalModules = [
       pkgs.nginxModules.lua
     ];

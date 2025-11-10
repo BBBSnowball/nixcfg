@@ -7,6 +7,7 @@
       script = ''
         #!${pkgs.runtimeShell}
         PATH=${lib.makeBinPath (with pkgs; [ iproute2 jq util-linux systemd ])}:$PATH
+        # shellcheck disable=SC2154  # variables are passed in by networkd-dispatcher
         logger "print-ip: DEBUG: $IFACE, $AdministrativeState, $OperationalState, $STATE, $ADDR, $IP_ADDRS"
         if [[ $IFACE != "lo" && $AdministrativeState == "configured" ]]; then
         #if [[ $IFACE != "lo" ]]; then
@@ -29,7 +30,7 @@
           # use crlf line endings because terminal will be in raw mode if we successfully started an ncurses system monitor
           msg="''${msg//$'\n'/$'\r\n'}"
           for tty in /dev/tty{0,1,2,3} ; do
-            echo "$msg" >$tty
+            echo "$msg" >"$tty"
           done
         fi
         exit 0
