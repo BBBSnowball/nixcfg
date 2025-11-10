@@ -6,7 +6,12 @@ let
     # Hydra doesn't build new MongoDB because SSPL has more restrictions than AGPL and the build takes for ages.
     # Also, it seems that Omada wants the old version anyway.
     # -> It's not the best idea to pin this but we don't have any other good option, I think.
-    mongodb-for-omada = nixpkgs-mongodb.legacyPackages.${pkgs.stdenv.hostPlatform.system}.mongodb;
+    #mongodb-for-omada = nixpkgs-mongodb.legacyPackages.${pkgs.stdenv.hostPlatform.system}.mongodb;
+    # Omada needs the new version, now. D'oh!
+    # -> It seems that MongoDB is available on Hydra. Nice!
+    # -> Too new for old database (but MongoDB 3.4 cannot open it either).
+    # -> move data dir and setup anew from backup
+    mongodb-for-omada = pkgs.mongodb.overrideAttrs (old: { meta = old.meta // { license=[]; }; });
 
     omada-controller = self.callPackage ../pkgs/omada-controller.nix {
       mongodb = mongodb-for-omada;
@@ -137,7 +142,7 @@ in {
 
   # Ports:
   # 27217: mongodb. no ACL so never open this to the network.
-  # 29811-29814: ?
+  # 29811-29817: ?  ("To ensure new device features work properly, ensure that devices can connect to TCP port 29817 on the Controller.")
   # 8088: HTTP port for management
   # 8843: HTTPS for portal
   # 8043: HTTPS for management
@@ -145,6 +150,6 @@ in {
   # 29810: Controller Inform Port
   # 27001: ??
 
-  config.networking.firewall.allowedTCPPorts = [ 29811 29812 29813 29814 8088 8043 8843 ];
+  config.networking.firewall.allowedTCPPorts = [ 29811 29812 29813 29814 29815 29816 29817 8088 8043 8843 ];
   config.networking.firewall.allowedUDPPorts = [ 29810 27001 ];
 }

@@ -139,6 +139,9 @@
       omada-controller-unfree = pkgs.callPackage ./pkgs/omada-controller.nix {
         mongodb = nixpkgs-mongodb.legacyPackages.${system}.mongodb;
       };
+      mongodb-legacy = nixpkgs-mongodb.legacyPackages.${system}.mongodb;
+      mongodb-new-unfree-sspl = pkgs.mongodb.overrideAttrs (old: { meta = { license.free = true; }; });
+      mongodb-4_2-unfree-sspl = nixpkgs-mongodb.legacyPackages.${system}.mongodb-4_2.overrideAttrs (old: { meta = { license.free = true; }; });
     } else {})
     )
     // (forDarwinSystems (system: let pkgs = nixpkgs.legacyPackages.${system}; in {

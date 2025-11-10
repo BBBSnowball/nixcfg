@@ -5,12 +5,9 @@ stdenv.mkDerivation {
   version = "5.13.30.8";
 
   src = fetchzip {
-    # https://www.tp-link.com/de/support/download/omada-software-controller/
     # https://support.omadanetworks.com/en/product/omada-software-controller/?resourceType=download  (English download page, seems to be more up-to-date)
-    url = "https://static.tp-link.com/upload/software/2025/202504/20250425/Omada_SDN_Controller_v5.15.20.20_linux_x64_20250416110546.tar.gz";  # from the link above
-    # Not available on TP Link website, yet, it seems -> only available on the English page:
-    #url = "https://download.tplinkcloud.com/firmware/Omada_SDN_Controller_v5.15.20.20_linux_x64_20250416110546_1745551413090.tar.gz";  # from webinterface of controller
-    hash = "sha256-4iLoERHpTuUe6feHWp258KtOw2XPWUyWbaQFcpIRNYk=";
+    url = "https://static.tp-link.com/upload/software/2025/202510/20251031/Omada_SDN_Controller_v6.0.0.24_linux_x64_20251027202524.tar.gz";
+    hash = "sha256-tZL4qGF2NTcizsn0nteY1joUtTascjxPGxwFcFGhcfo=";
     stripRoot = false;
 
     #NOTE v5.15.20: I had to update permissions on both hosts: chmod u+w /var/lib/omada-controller/properties/omada.properties
