@@ -24,6 +24,7 @@ in
       #./secureBoot.nix
       #lanzaboote.nixosModules.lanzaboote
       ./amdgpu.nix
+      ./gos.nix
       ./hardware-configuration.nix
       ./llm.nix
       ./users.nix

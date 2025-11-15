@@ -2,8 +2,7 @@
 let
   mountsForUser = user: {
     "/home/${user}/.local/share/docker" = {
-      #device = "/home/${user}/data2/${user}-docker";
-      device = "/home/${user}/data2/gos-docker";
+      device = "/home/${user}/data2/${user}-docker";
       fsType = "none";
       options = [ "bind" "nofail" ];
     };
@@ -12,6 +11,25 @@ let
       device = "/nix/store";
       fsType = "none";
       options = [ "bind" "nofail" ];
+    };
+
+    # lvcreate --size 500G vg --name gos-docker
+    # lvcreate --size 100G vg --name user3-docker
+    # lvcreate --size 100G vg --name fxa-docker
+    # nix-shell -p btrfs-progs --run "mkfs.btrfs /dev/vg/gos-docker"
+    # nix-shell -p btrfs-progs --run "mkfs.btrfs /dev/vg/user3-docker"
+    # nix-shell -p btrfs-progs --run "mkfs.btrfs /dev/vg/fxa-docker"
+    # #later:
+    # #chown gos:users /home/gos/.local/share/docker
+    # chown gos:users /home/gos/data2/*
+    # chown user3:users /home/user3/data2/*
+    # chown fxa:users /home/fxa/data2/*
+    # chown gos:users /home/gos/.local/{,share}
+    # ...
+    "/home/${user}/data2" =
+    { device = "/dev/vg/${user}-docker";
+      fsType = "btrfs";
+      options = [ "ssd" "nofail" ];
     };
 
   };
@@ -30,15 +48,8 @@ in
 
   fileSystems = mountsForUser "gos"
     // mountsForUser "user3"
-    #// mountsForUser "fxa"
-    # -> not enough space for another volume, let's share them
-    // {
-      "/home/fxa/.local/share/docker" = {
-        device = "/home/user3/data2/fxa-docker";
-        fsType = "none";
-        options = [ "bind" "nofail" ];
-      };
-    };
+    // mountsForUser "fxa"
+    ;
 
   environment.systemPackages = with pkgs; [
     btrfs-progs

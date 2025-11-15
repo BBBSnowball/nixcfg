@@ -37,10 +37,37 @@ in
     extraGroups = [ "dialout" "plugdev" "wheel" "wireshark" ];
   };
 
-  users.users.user2 = lib.mkMerge [ guiUserUntrusted {
+  users.users.user2 = lib.mkMerge [
+    guiUserUntrusted
+    {
+      extraGroups = [ "dialout" ];
+      packages = with pkgs; [
+      ];
+    }
+  ];
+
+  users.users.user3 = lib.mkMerge [
+    guiUserUntrusted
+    {
+      extraGroups = [ "dialout" "dockerrootless" ];
+      packages = with pkgs; [
+        docker-compose
+      ];
+    }
+  ];
+
+  users.users.user4 = guiUserUntrusted // {
     extraGroups = [ "dialout" ];
-    packages = with pkgs; [
-    ];
-  } ];
+  };
+
+  users.users.gos = basicUser // {
+    isNormalUser = true;
+    extraGroups = [ "dockerrootless" ];
+  };
+
+  users.users.fxa = basicUser // {
+    isNormalUser = true;
+    extraGroups = [ "dockerrootless" ];
+  };
 }
 
