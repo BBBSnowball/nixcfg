@@ -367,7 +367,7 @@ fi
 
 if [ ! -e flake/.git ] ; then
   ( set -x; git submodule add https://github.com/BBBSnowball/nixcfg flake )
-  ( set -x; cd flake && git remote add stage sync:nixcfg )
+  ( set -x; cd flake && git remote rename origin github && git remote add origin sync:nixcfg )
 fi
 
 ### enable signed commits for our gits
