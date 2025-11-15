@@ -87,7 +87,8 @@ in
   services.fwupd.enable = true;
 
   fonts.packages = with pkgs; [
-    fira-code-nerdfont
+    #fira-code-nerdfont
+    nerd-fonts.fira-code
     #terminus-nerdfont
     #inconsolata-nerdfont
     #fira-code

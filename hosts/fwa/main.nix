@@ -138,7 +138,8 @@ in
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
   fonts.packages = with pkgs; [
-    fira-code-nerdfont
+    #fira-code-nerdfont
+    nerd-fonts.fira-code
     #terminus-nerdfont
     #inconsolata-nerdfont
     #fira-code
