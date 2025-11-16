@@ -69,5 +69,9 @@ in
     isNormalUser = true;
     extraGroups = [ "dockerrootless" ];
   };
+
+  users.users.ollama-tg = basicUser // {
+    isNormalUser = true;
+  };
 }
 
