@@ -71,11 +71,11 @@
     "flake-registry": {
       "flake": false,
       "locked": {
-        "lastModified": 1744623129,
-        "narHash": "sha256-nlQTQrHqM+ywXN0evDXnYEV6z6WWZB5BFQ2TkXsduKw=",
+        "lastModified": 1763556067,
+        "narHash": "sha256-q2jzJQdsJMpD3dbuNphQJgwx6XeGPonWOp43U0nY7o0=",
         "owner": "NixOS",
         "repo": "flake-registry",
-        "rev": "1322f33d5836ae757d2e6190239252cf8402acf6",
+        "rev": "cb70c9306b44501de412649c356dee503a25f119",
         "type": "github"
       },
       "original": {
@@ -174,11 +174,11 @@
     },
     "nixos-hardware": {
       "locked": {
-        "lastModified": 1762847253,
-        "narHash": "sha256-BWWnUUT01lPwCWUvS0p6Px5UOBFeXJ8jR+ZdLX8IbrU=",
+        "lastModified": 1764440730,
+        "narHash": "sha256-ZlJTNLUKQRANlLDomuRWLBCH5792x+6XUJ4YdFRjtO4=",
         "owner": "NixOS",
         "repo": "nixos-hardware",
-        "rev": "899dc449bc6428b9ee6b3b8f771ca2b0ef945ab9",
+        "rev": "9154f4569b6cdfd3c595851a6ba51bfaa472d9f3",
         "type": "github"
       },
       "original": {
@@ -203,21 +203,6 @@
         "type": "github"
       }
     },
-    "nixpkgs-ollama": {
-      "locked": {
-        "lastModified": 1763243005,
-        "narHash": "sha256-fedPoocBFT5jRxvf+3W2CRg2aBnr2JnnGsxJZTs9MSY=",
-        "owner": "NixOS",
-        "repo": "nixpkgs",
-        "rev": "9c6fce2be676d6ac14de9fba424eb7acb31a46e3",
-        "type": "github"
-      },
-      "original": {
-        "owner": "NixOS",
-        "repo": "nixpkgs",
-        "type": "github"
-      }
-    },
     "nixpkgs-stable": {
       "locked": {
         "lastModified": 1730741070,
@@ -236,11 +221,11 @@
     },
     "nixpkgs-unstable": {
       "locked": {
-        "lastModified": 1763243005,
-        "narHash": "sha256-fedPoocBFT5jRxvf+3W2CRg2aBnr2JnnGsxJZTs9MSY=",
+        "lastModified": 1764797289,
+        "narHash": "sha256-tZj+LN+B0/E+x0FD4ekq+dVp3KBOrInekT+cQfZHknE=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "9c6fce2be676d6ac14de9fba424eb7acb31a46e3",
+        "rev": "2a666656ca6c6f1432d8b31dc7cf95bd68f670a5",
         "type": "github"
       },
       "original": {
@@ -314,7 +299,6 @@
         "lanzaboote": "lanzaboote",
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs",
-        "nixpkgs-ollama": "nixpkgs-ollama",
         "nixpkgs-unstable": "nixpkgs-unstable",
         "routeromen": "routeromen"
       }
@@ -331,11 +315,11 @@
         "private": "private"
       },
       "locked": {
-        "lastModified": 1762809546,
-        "narHash": "sha256-hrII9owxAPaC6CjER3ExZdvv2/vc0FA5cYj0AyjtPXU=",
+        "lastModified": 1764201026,
+        "narHash": "sha256-AHJS30lDgo+5owiHwllPVrSQygY1km9umyBLZPhkB8E=",
         "owner": "BBBSnowball",
         "repo": "nixcfg",
-        "rev": "2503a4133615d3da08f2aec11682cc67d6ca6f08",
+        "rev": "16c808eb23a5f229334482cf050fc66ace477ed4",
         "type": "github"
       },
       "original": {
