@@ -154,7 +154,7 @@ in
     rustup gcc
     gqrx  # gnuradio
     graph-easy  # dot graph to ascii graphic, e.g.: graph-easy /etc/tinc/$name/status/graph.dot
-    rpi-imager
+    #rpi-imager  # broken
     bambu-studio
     sshfs
   ];
