@@ -21,6 +21,7 @@ let
       (import nixpkgs-unstable { system = pkgs.stdenv.hostPlatform.system; config = { allowUnfree = true; }; }).vscode
       python3 # for PlatformIO
       glasgow
+      openscad
     ];
   };
 in
@@ -70,5 +71,7 @@ in
     extraGroups = [ "dockerrootless" ];
     isNormalUser = true;
   };
+
+  users.users.omas = guiUser;
 }
 
