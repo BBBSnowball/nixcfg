@@ -17,7 +17,7 @@ in
     secretFile = "secret_nextcloud-config";
   
     # We have to manually specify the version, so we can ensure that migrations run between major upgrades.
-    package = pkgs.nextcloud31;
+    package = pkgs.nextcloud32;
 
     hostName = hostName;
 
