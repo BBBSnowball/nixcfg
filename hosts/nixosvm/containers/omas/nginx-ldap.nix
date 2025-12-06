@@ -53,6 +53,7 @@ let
       proxy_set_header X-Real-User $user_from_session;
     '';
     locations."/check-auth" = config.services.nginx.virtualHosts."intern.${domain}".locations."/check-auth";
+    locations."/favicon.ico".extraConfig = "allow all;";
   };
   protectLocation = ''
     auth_request /check-auth;
