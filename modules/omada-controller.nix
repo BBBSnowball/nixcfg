@@ -3,13 +3,7 @@ let
   nixpkgs-mongodb = routeromen.inputs.nixpkgs-mongodb;
 
   omadaControllerOverlay = self: super: rec {
-    # When upgrading from an old version: move data dir and setup anew from backup
-    #mongodb-for-omada = pkgs.mongodb.overrideAttrs (old: { meta = old.meta // { license=[]; }; });
-    #mongodb-for-omada = pkgs.mongodb;
-
-    omada-controller = self.callPackage ../pkgs/omada-controller.nix {
-      #mongodb = mongodb-for-omada;
-    };
+    omada-controller = self.callPackage ../pkgs/omada-controller.nix { };
   };
 
   conf = config.services.omada-controller;
@@ -20,13 +14,42 @@ in {
   imports = [ ./allowUnfree.nix ];
 
   options.services.omada-controller = with lib; {
-    enable = mkEnableOption "Whether to enable Omada Software Controller";
+    #enable = mkEnableOption "Whether to enable Omada Software Controller";
+
     package = mkOption {
       type = types.package;
-      default = pkgs.omada-controller;
-      defaultText = literalExpression "pkgs.omada-controller";
+      default = pkgs.omada-controller.override { mongodb = conf.mongodbPackage; };
+      defaultText = literalExpression "pkgs.omada-controller  # using services.omada-controller.mongodb";
       description = ''
         The package to use for the Omada Software Controller service.
+      '';
+    };
+
+    mongodbPackage = mkOption {
+      type = types.package;
+
+      default = if conf.mongodbNixpkgs == null
+      then pkgs.mongodb
+      # config.nixpkgs.allowUnfreeByName won't apply to this, so we have to allow unfree packages, again.
+      else (import conf.mongodbNixpkgs { inherit (pkgs.stdenv.hostPlatform) system; config.allowUnfree = true; }).mongodb;
+
+      defaultText = literalExpression "mongodb from mongodbNixpkgs; or pkgs.mongodb";
+      description = ''
+        The MongoDB package to use.
+
+        Use the prebuilt mongodb-ce (if that works on your CPU) or use mongodb from pinned nixpkgs.
+        The precompiled one seems to be a newer release. Be careful when switching back and forth.
+
+        The package mongodb isn't built by Hydra because its license is unfree. You probably want
+        to pin nixpkgs for this package to avoid rebuilding it on every update.
+      '';
+    };
+
+    mongodbNixpkgs = mkOption {
+      type = types.nullOr types.path;
+      default = null;
+      description = ''
+        Pinned nixpkgs for MongoDB
       '';
     };
   };

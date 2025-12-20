@@ -6,8 +6,8 @@
   inputs.flake-registry.url = "github:NixOS/flake-registry";
   inputs.flake-registry.flake = false;
   inputs.nixpkgs-unstable.follows = "routeromen/nixpkgs-unstable";
-
   #inputs.nixpkgs-unstable.url = "github:NixOS/nixpkgs";
+  inputs.nixpkgs-mongodb.url = "github:NixOS/nixpkgs/nixos-25.11";  # same as main nixpkgs but update triggers long rebuild
 
   outputs = { self, nixpkgs, routeromen, ... }@flakeInputs:
     routeromen.lib.mkFlakeForHostConfig "gk3v-pb" "x86_64-linux" ./main.nix flakeInputs;

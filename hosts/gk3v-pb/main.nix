@@ -1,4 +1,4 @@
-{ config, pkgs, lib, rockpro64Config, routeromen, withFlakeInputs, privateForHost, secretForHost, ... }@args:
+{ config, pkgs, lib, rockpro64Config, routeromen, withFlakeInputs, privateForHost, secretForHost, nixpkgs-mongodb, ... }@args:
 let                                                                                                 
   modules = args.modules or (import ./modules.nix {});
 in
@@ -134,6 +134,10 @@ in
   # avoid warnings: "portmapper: failed to get PCP mapping: PCP is implemented but not enabled in the router"
   # see https://github.com/tailscale/tailscale/issues/13145
   systemd.services.tailscaled.environment.TS_DISABLE_PORTMAPPER = "1";
+
+  #services.omada-controller.mongodbPackage = nixpkgs-mongodb.legacyPackages.x86_64-linux.mongodb;
+  #services.omada-controller.mongodbPackage = (import nixpkgs-mongodb { system = "x86_64-linux"; config.allowUnfree = true; }).mongodb;
+  services.omada-controller.mongodbNixpkgs = nixpkgs-mongodb;
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
