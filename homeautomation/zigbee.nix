@@ -54,7 +54,7 @@
         status_topic = "homeassistant/status";
       };
     };
-    systemd.services.zigbee2mqtt.path = with pkgs; [ utillinux ];
+    systemd.services.zigbee2mqtt.path = with pkgs; [ util-linux ];
     systemd.services.zigbee2mqtt.serviceConfig.SetCredential = [ "secret:none" ];  # provide default to make missing file for LoadCredential not fatal
     systemd.services.zigbee2mqtt.serviceConfig.LoadCredential = [ "secret:${secretForHost}/zigbee2mqtt.yaml" ];
     systemd.services.zigbee2mqtt.preStart = ''

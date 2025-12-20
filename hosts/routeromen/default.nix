@@ -123,7 +123,7 @@ in {
     multipath-tools  # kpartx
     hdparm
     iperf iperf3
-    utillinux parted
+    util-linux parted
     bmon
     progress
     nix-index

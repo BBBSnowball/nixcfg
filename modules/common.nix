@@ -1,4 +1,7 @@
 { config, pkgs, lib, modules, nixpkgs, ... }:
+let
+  inherit (pkgs.stdenv.hostPlatform) system;
+in
 {
   imports =
     [
@@ -22,7 +25,7 @@
     multipath-tools  # kpartx
     hdparm
     iperf iperf3
-    utillinux parted
+    util-linux parted
     lsof
     stress-ng
     inxi
