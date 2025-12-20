@@ -1,5 +1,10 @@
 # nix-build -E '(import <nixpkgs> {}).callPackage ./omada-controller.nix {}'
-{ stdenv, fetchzip, openjdk, mongodb }:
+{ stdenv, fetchzip, openjdk, mongodb, mongodb-ce }:
+let
+  # The precompiled one seems to be a newer release. Be careful when switching back and forth.
+  #chosenMongodb = mongodb;    # build from sources - takes ages, Hydra doesn't build it due to non-free license
+  chosenMongodb = mongodb-ce;  # precompiled build. That sucks but our Omada controller hardware is built for saving power, not running a compiler...
+in
 stdenv.mkDerivation {
   pname = "omada-controller";
   version = "5.13.30.8";
@@ -13,7 +18,10 @@ stdenv.mkDerivation {
     #NOTE v5.15.20: I had to update permissions on both hosts: chmod u+w /var/lib/omada-controller/properties/omada.properties
   };
 
-  buildInputs = [ openjdk mongodb ];
+  buildInputs = [
+    openjdk
+    chosenMongodb
+  ];
 
   patchPhase = ''
     rm -f readme.txt
@@ -27,7 +35,7 @@ stdenv.mkDerivation {
     cp -r data properties lib $out/
     mkdir $out/bin
     cp bin/control.sh $out/bin/tpeap
-    ln -s ${mongodb}/bin/mongod $out/bin/mongod
+    ln -s ${chosenMongodb}/bin/mongod $out/bin/mongod
   '';
 
   meta.platforms = [ "x86_64-linux" ];

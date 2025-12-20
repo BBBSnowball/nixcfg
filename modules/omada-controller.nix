@@ -5,7 +5,7 @@ let
   omadaControllerOverlay = self: super: rec {
     # When upgrading from an old version: move data dir and setup anew from backup
     #mongodb-for-omada = pkgs.mongodb.overrideAttrs (old: { meta = old.meta // { license=[]; }; });
-    mongodb-for-omada = pkgs.mongodb;
+    #mongodb-for-omada = pkgs.mongodb;
 
     omada-controller = self.callPackage ../pkgs/omada-controller.nix {
       #mongodb = mongodb-for-omada;
@@ -35,7 +35,7 @@ in {
 
   # MongoDB uses SSPL which is similar to AGPL but with additional restrictions that make
   # it non-free. Fortunately, Hydra builds it anyway.
-  config.nixpkgs.allowUnfreeByName = [ "mongodb" ];
+  config.nixpkgs.allowUnfreeByName = [ "mongodb" "mongodb-ce" ];
 
   config.systemd.services.omada-controller = {
     description = "Omada Software Controller that controls Omada WiFi access points and SDN switches";
