@@ -8,6 +8,9 @@ in rec {
       inherit pname version;
       sha256 = "sha256-vGs3C7NOBKyM+oNeBsBIQ4Cv/G1ZOtuACd1sD3v/8DQ=";
     };
+
+    pyproject = true;
+    build-system = [ p.setuptools ];
   };
   brother-ql = p: p.buildPythonPackage rec {
     pname = "brother_ql";
@@ -18,14 +21,20 @@ in rec {
     };
     propagatedBuildInputs = with p; [
       click
-      future
+      #future
       p.packbits
       pillow
       pyusb
       attrs
       matplotlib
     ];
-    patches = [ ./brother_ql.patch ];
+    patches = [
+      ./brother_ql.patch
+      ./brother_ql_no_future.patch
+    ];
+
+    pyproject = true;
+    build-system = [ p.setuptools ];
   };
   brother-ql-web = p: p.buildPythonPackage rec {
     pname = "brother_ql_web";
@@ -37,6 +46,9 @@ in rec {
       sha256 = "sha256-yQPbrIkAhz0jc/j9HJ7VCB8n4a5Gi6TUIPBr7DhW/14=";
     };
     propagatedBuildInputs = with p; [ p.brother-ql bottle jinja2 ];
+
+    pyproject = true;
+    build-system = [ p.setuptools ];
 
     setuppy = ''
       try:

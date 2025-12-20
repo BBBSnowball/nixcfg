@@ -1,6 +1,8 @@
 { pkgs, ... }:
 {
-  nixpkgs.overlays = [ (import ./brother_ql.nix { inherit pkgs; }).overlay ];
+  nixpkgs.overlays = [
+    (import ./brother_ql_pkg.nix { inherit pkgs; }).overlay
+  ];
 
   users.users.brother-ql = {
     isSystemUser = true;
@@ -17,4 +19,15 @@
   };
 
   networking.firewall.allowedTCPPorts = [ 8013 ];
+
+
+  # also make the brother-ql tool available for the user
+  # I couldn't get the Brother QL-500 to work through cups and the
+  # web interface can only do text so we have to access it directly.
+  users.users.user = {
+    extraGroups = [ "lp" ];
+    packages = (with pkgs; [
+      (python3Packages.brother-ql)
+    ]);
+  };
 }

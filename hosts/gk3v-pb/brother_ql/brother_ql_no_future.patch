@@ -1,0 +1,20 @@
+diff -Naur brother_ql-0.9.4.orig/brother_ql.egg-info/requires.txt brother_ql-0.9.4/brother_ql.egg-info/requires.txt
+--- brother_ql-0.9.4.orig/brother_ql.egg-info/requires.txt      2025-12-20 01:14:33.441224707 +0100
++++ brother_ql-0.9.4/brother_ql.egg-info/requires.txt   2025-12-20 01:14:47.877425863 +0100
+@@ -1,5 +1,4 @@
+ click
+-future
+ packbits
+ pillow>=3.3.0
+ pyusb
+diff -Naur brother_ql-0.9.4.orig/setup.py brother_ql-0.9.4/setup.py
+--- brother_ql-0.9.4.orig/setup.py      2025-12-20 01:14:33.441224707 +0100
++++ brother_ql-0.9.4/setup.py   2025-12-20 01:14:41.232333193 +0100
+@@ -39,7 +39,6 @@
+       platforms = 'any',
+       install_requires = [
+           "click",
+-          "future",
+           "packbits",
+           "pillow>=3.3.0",
+           "pyusb",

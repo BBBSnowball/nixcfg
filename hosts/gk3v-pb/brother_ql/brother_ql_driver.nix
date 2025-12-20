@@ -1,0 +1,148 @@
+{ pkgs, ... }:
+{
+  # Brother P-Touch QL-500
+  services.printing.drivers = let
+    #NOTE This doesn't work, yet. The print data is processed but the printer doesn't print it.
+    # must be 32-bit for patchelf of rastertobrpt1
+    ql500 = pkgs.callPackage_i686 ({ stdenv, autoPatchelfHook, fetchurl, makeWrapper }:
+    stdenv.mkDerivation {
+      pname = "ql500";
+      version = "13.08.2013";
+
+      src = fetchurl {
+        #NOTE unfree, requires EULA
+        url = "https://download.brother.com/welcome/dlfp002255/cupswrapper-ql550-src-1.1.1-1.tar.gz";
+        sha256 = "sha256-hDm12quydUhp8dTXpf7SVqUmbV9NDTmbrLa/Kh+/fK0=";
+      };
+      filterSrc = fetchurl {
+        #NOTE unfree, requires EULA
+        url = "https://download.brother.com/welcome/dlfp002168/ql550lpr-1.0.1-0.i386.deb";
+        sha256 = "sha256-dBlk+FIVodUr/6kEst9LW+UTKTOoJi+RnDVZ72QFh+w=";
+      };
+      templateSrc = fetchurl {
+        #NOTE unfree, requires EULA
+        url = "https://download.brother.com/welcome/dlfp100382/templateql500.tar.gz";
+        sha256 = "sha256-smsnNR+wJzXNTMWtnZnk808hoDqZder2WQFydbJFHJk=";
+      };
+
+      printer_model = "ql550";
+      device_model  = "PTouch";
+
+      nativeBuildInputs = [ makeWrapper autoPatchelfHook ];
+
+      postUnpack = ''
+        ar x $filterSrc
+        tar -xf data.tar.gz
+      '';
+      postPatch = ''
+        substituteInPlace cupswrapper/cupswrapperql550pt1 \
+          --replace /usr/lib/cups/ $out/lib/cups/ \
+          --replace /usr/lib64/cups/ $out/lib/cups/ \
+          --replace /usr/share/cups/model $out/share/cups/model \
+          --replace '/opt/brother/''${device_model}/''${printer_model}' $out/'lib/''${device_model}/''${printer_model}'
+        substituteInPlace ../opt/brother/$device_model/$printer_model/lpd/filter$printer_model \
+          --replace /opt/brother/$device_model/ $out/lib/$device_model/ \
+          --replace /usr/bin/pstops pstops
+        substituteInPlace ../opt/brother/$device_model/$printer_model/inf/setupPrintcappt1 \
+          --replace /opt/brother/$device_model/ $out/lib/$device_model/
+      '';
+      buildPhase = ''
+        ( cd brcupsconfig && make all )
+      '';
+      installPhase = ''
+        mkdir -p $out/lib/cups/filter $out/share/cups/model
+        cp ../opt/brother/$device_model -r $out/lib/$device_model
+        sh ./cupswrapper/cupswrapperql550pt1 -i
+
+        #lpdfile=$out/lib/$device_model/$printer_model/lpd/filter$printer_model
+        lpdfile=$out/lib/cups/filter/brother_lpdwrapper_$printer_model
+        substituteInPlace $lpdfile \
+          --replace /usr/bin/psnup psnup
+          #--replace /bin/sh "/bin/sh -x"
+          #--replace DEBUG=0 DEBUG=8
+        wrapProgram $lpdfile --prefix PATH : ${with pkgs; lib.makeBinPath [ which gnugrep gnused coreutils file a2ps psutils gawk ghostscript ]}
+
+        if egrep -r '/opt|/usr' $out ; then
+          echo "Error: Output directory contains reference to /opt or /usr!" >&2
+          exit 1
+        fi
+
+        mkdir $out/example
+        tar -C $out/example -xzf $templateSrc
+
+        mkdir $out/lib/$device_model/$printer_model/cupswrapper
+        #cp brcupsconfig/brcupsconfpt1 $out/lib/$device_model/$printer_model/cupswrapper/brcupsconfpt1
+      '';
+
+      #NOTE Manual step after creating the printer in Cups: lpadmin -p "Brother_QL-500" -o pdftops-renderer-default=gs
+
+      meta.homepage = "https://support.brother.com/g/b/downloadlist.aspx?c=de&lang=de&prod=lpql550euk_same&os=130&flang=English";
+    }) {};
+
+    foomatic-db-engine = with pkgs; stdenv.mkDerivation {
+      pname = "foomatic-db-engine";
+      version = "20200131-git";
+      src = fetchFromGitHub {
+        owner = "OpenPrinting";
+        repo = "foomatic-db-engine";
+        rev = "068c92311018a75c621c57328845b439d789bf50";
+        sha256 = "sha256-5xSpGOpcOWmKdCm3wNoLdL7cZWzi+hjOVYfhEYe5P7E=";
+      };
+      nativeBuildInputs = [ autoconf automake perl perlPackages.XMLLibXML perlPackages.DBI perlPackages.Clone file which ];
+      propagatedBuildInputs = [ perl perlPackages.XMLLibXML perlPackages.DBI perlPackages.Clone ];
+      
+      postPatch = ''
+        #ls -l
+        #patchShebangs --build makeDefaults.in
+        #patchShebangs --build .
+        substituteInPlace configure.ac \
+          --replace BINSEARCHPATH=/usr/bin:/bin:/usr/local/bin BINSEARCHPATH="$PATH"
+        ./make_configure
+      '';
+      preConfigure = ''
+        export FILEUTIL=$file/bin/file
+        #export PERLPREFIX=$out
+        export PERLPREFIX=/
+        #configureFlags=( "--sysconfdir=$out/etc" )
+      '';
+      makeFlags = [ "DESTDIR=$(out)" ];
+      postInstall = ''
+        mv $out/nix/store/*/* $out/
+        rm -rf $out/nix/store/
+      '';
+    };
+
+    ql500b = with pkgs; stdenv.mkDerivation {
+      pname = "printer-driver-ptouch";
+      version = "1.6";
+      src = fetchFromGitHub {
+        owner = "philpem";
+        repo = "printer-driver-ptouch";
+        rev = "v1.6";
+        sha256 = "sha256-s1l25PsnUwvZljLEZbuRpwC8n9Vzu1b+mhyTbJmdkLA=";
+      };
+      buildInputs = [ cups libpng ];
+      nativeBuildInputs = [ autoconf automake perl perlPackages.XMLLibXML foomatic-db-engine ];
+      postPatch = ''
+        ./autogen.sh
+        patchShebangs foomaticalize
+      '';
+      postInstall = ''
+        # Pre-build PPD files
+        # from https://salsa.debian.org/printing-team/ptouch-driver/-/blob/bc349600f9925cb87f478fa655153f85a72809f0/debian/rules#L28
+        # and https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=printer-driver-ptouch#n38
+        #mkdir foomatic-db
+	#cp -r $out/share/foomatic/* foomatic-db/
+	#echo '#' > foomatic-db/db/oldprinterids
+	mkdir -p $out/share/ppd
+        FOOMATICDB=$out/share/foomatic foomatic-compiledb -j $NIX_BUILD_CORES -t ppd -d $out/share/ppd/ptouch-driver
+        #`ls -1 ./foomatic-db/db/source/driver/*ptouch*.xml | perl -p -e 's:^.*db/source/driver/(\S*)\.xml\s*$$:\1\n:'`
+
+
+      '';
+    };
+  in [ ql500b ];
+
+  services.printing.extraConf = "LogLevel debug2";
+}
+
