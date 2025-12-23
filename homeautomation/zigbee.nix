@@ -33,6 +33,7 @@
     #services.zigbee2mqtt.package = nixpkgs-unstable.legacyPackages.x86_64-linux.zigbee2mqtt;
     services.zigbee2mqtt.enable = true;
     services.zigbee2mqtt.settings = {
+      serial.adapter = "zstack";
       serial.port = "/dev/ttyZigbee";
       mqtt.user = "!secret user";
       mqtt.password = "!secret password";
