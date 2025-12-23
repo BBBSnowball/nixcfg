@@ -118,15 +118,22 @@ let
   };
 
   mapListToAttrs = f: xs: lib.listToAttrs (map f xs);
+
+  useOpenResty = true;
+  luaPkgs = if useOpenResty
+  then pkgs.luajit_openresty.pkgs
+  else pkgs.luajitPackages;
 in
 {
   services.nginx = {
     enable = true;
 
     #NOTE This will cause a local build of nginx.
-    additionalModules = [
+    additionalModules = lib.mkIf (!useOpenResty) [
       pkgs.nginxModules.lua
     ];
+    package = lib.mkIf useOpenResty pkgs.openresty;
+
     # Lua module needs some additional libraries.
     # see https://github.com/NixOS/nixpkgs/issues/227759#issuecomment-1568677611
     # -> They are available in nixpkgs so no need to fetch them from Github.
@@ -134,7 +141,7 @@ in
     commonHttpConfig = let
       # Version of Lua in nginx matches luajit instead of luajit_openresty
       # so that's what we use.
-      inherit (pkgs.luajitPackages) lua lua-resty-core lua-resty-lrucache;
+      inherit (luaPkgs) lua lua-resty-core lua-resty-lrucache;
       inherit (lua) luaversion;
 
       luaPackagePath = [
