@@ -54,7 +54,7 @@
       #  { name = "vaultwarden"; path = "/var/lib/bitwarden_rs/db.sqlite3"; }
       #];
 
-      before_backup = let
+      commands = let
         backupSqlite = pkgs.writeShellScript "backup-sqlite" ''
           set -e
           umask 077
@@ -63,7 +63,7 @@
           cat <"$t/db.sqlite3" >&3
           rm -rf "$t"
         '';
-      in [ (pkgs.writeShellScript "before-backup" ''
+        beforeBackup = pkgs.writeShellScript "before-backup" ''
         set -eo pipefail
 
         # borgmatic_source_directory is ~/.borgmatic so we also store our files there.
@@ -112,10 +112,23 @@
         # The journal is rather large and it is a database (i.e. naive backup might be
         # inconsistent) so we rather save its last lines as a text file.
         ( set -x; journalctl --since -2d -n 20000 >$d/journal.txt )
-      '') ];
-      after_backup = [ (pkgs.writeShellScript "after-backup" ''
-        ( set -x; rm -rf /root/.borgmatic/additional_files )
-      '') ];
+        '';
+      in [
+        {
+          before = "action";
+          when = [ "create" ];
+          run = [ beforeBackup ];
+        }
+        {
+          after = "action";
+          when = [ "create" ];
+          #states: ["finish" "fail"];
+          run = [
+            # remove files that we have created in the before-backup script
+            ''set -x; rm -rf /root/.borgmatic/additional_files''
+          ];
+        }
+      ];
     };
   };
 
