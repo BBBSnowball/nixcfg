@@ -3,7 +3,7 @@
 , python3
 , runCommand
 , gtk3
-, wrapGAppsHook
+, wrapGAppsHook3
 , gobject-introspection
 }:
 stdenv.mkDerivation {
@@ -16,7 +16,7 @@ stdenv.mkDerivation {
     gtk3
   ];
 
-  nativeBuildInputs = [ wrapGAppsHook gobject-introspection ];
+  nativeBuildInputs = [ wrapGAppsHook3 gobject-introspection ];
 
   installPhase = ''
     mkdir -p $out/bin

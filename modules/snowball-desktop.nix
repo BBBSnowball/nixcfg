@@ -31,7 +31,8 @@
     (self.packages.${pkgs.stdenv.hostPlatform.system}.add_recently_used or self.inputs.routeromen.packages.${pkgs.stdenv.hostPlatform.system}.add_recently_used)
     clementine
     xorg.xev
-    glxinfo
+    #glxinfo
+    mesa-demos
   ] ++ (builtins.filter (p: p.meta.available) [
     # These are not available for aarch64-linux at the moment.
     mplayer
