@@ -89,9 +89,10 @@ in
   # be sent to the gateway but we can intercept it on the bridge and fixup
   # the target MAC address. The return packet will be fine because our host
   # does know about the route.
+  #NOTE We disable it, for now, because it doesn't seem to work anymore and it breaks communication between the host and the switch.
   networking.firewall.extraCommands = ''
     ebtables -t nat -D PREROUTING -p ipv4 --ip-destination 172.18.18.1 -j dnat --dnat-target ACCEPT --to-destination '${privateForHost.macAddress}' &>/dev/null || true
-    ebtables -t nat -I PREROUTING -p ipv4 --ip-destination 172.18.18.1 -j dnat --dnat-target ACCEPT --to-destination '${privateForHost.macAddress}'
+    #ebtables -t nat -I PREROUTING -p ipv4 --ip-destination 172.18.18.1 -j dnat --dnat-target ACCEPT --to-destination '${privateForHost.macAddress}'
   '';
 
   services.tailscale.enable = true;
