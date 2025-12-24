@@ -24,8 +24,16 @@ let
     };
     zigbee = {
       target = "http://localhost:8086/";
-      icon = "assets/favicon.a8299d0b.ico";
       title = "Zigbee2MQTT (Zigbee Geräte)";
+      # path to favicon contains a hash that is different for each release, so we copy the current one and add an alias
+      icon = "favicon.png";
+      extraNginxConfig.locations."= /favicon.png" = {
+        alias = pkgs.runCommand "z2m-favicon.png" {
+          inherit (pkgs) zigbee2mqtt;
+        } ''
+          cp $zigbee2mqtt/lib/node_modules/zigbee2mqtt/node_modules/.pnpm/zigbee2mqtt-windfront@*/node_modules/zigbee2mqtt-windfront/dist/assets/favicon-96x96-*.png $out
+        '';
+      };
     };
     ha = {
       target = "http://localhost:8123/";
@@ -34,8 +42,8 @@ let
     };
     munin = {
       target = "http://localhost:4949/";
-      icon = "/static/favicon.ico";
-      title = "Mumin (System Monitor)";
+      icon = "/munin/static/favicon.ico";
+      title = "Munin (System Monitor)";
       nginxConfig = {
         locations."/".extraConfig = ''
           rewrite ^/$ munin/ redirect; break;
@@ -69,7 +77,8 @@ let
     speedport = {
       target = "http://192.168.2.1:80/";
       defaultUri = "6.0/gui/";
-      icon = "6.0/gui/images/favicon.ico";
+      #icon = "6.0/gui/images/favicon.ico";
+      icon = "images/icons/favicon.ico";
       title = "Router (Speedport)";
     };
     switch = {
@@ -82,14 +91,17 @@ let
 
   webServicesAsLua = let
     x = lib.concatMapStringsSep "\n" ({ name, value}: ''
-      webServicesInfo["${name}"] = {}
-      webServicesInfo["${name}"].target = "${value.target}"
-      webServicesInfo["${name}"].icon = "${value.icon or ""}"
-      webServicesInfo["${name}"].title = "${value.title or name}"
-      webServicesInfo["${name}"].defaultUri = "${value.defaultUri or ""}"
-    '') (lib.attrsToList webServices);
+      info = {}
+      info.name = "${name}"
+      info.target = "${value.target}"
+      info.icon = "${value.icon or ""}"
+      info.title = "${value.title or name}"
+      info.defaultUri = "${value.defaultUri or ""}"
+      webServicesInfo[#webServicesInfo+1] = info
+    '') (builtins.sort (a: b: a.name < b.name) (lib.attrsToList webServices));
   in pkgs.writeTextDir "webServicesInfo.lua" ''
     local webServicesInfo = {}
+    local info
     ${x}
     return webServicesInfo
   '';
@@ -174,15 +186,20 @@ in
     // lib.flip mapListToAttrs
     (lib.cartesianProduct { baseDomain = baseDomains; service = lib.attrNames webServices; })
     ({ baseDomain, service }:
-    let target = webServices.${service}.target; in
+    let target = webServices.${service}.target; info = webServices.${service}; in
     {
       name = "${service}.${baseDomain}";
-      value = sslSettings // (webServices.${service}.nginxConfig or {
-        locations."/" = {
-          proxyPass = target;
-          proxyWebsockets = true;
-        } // (webServices.${service}.proxyConfig or {});
-      });
+      value = lib.mkMerge [
+        sslSettings
+        (info.nginxConfig or {
+          locations."/" = {
+            proxyPass = target;
+            proxyWebsockets = true;
+          };
+        })
+        (if info ? proxyConfig then { locations."/" = info.proxyConfig; } else {})
+        (info.extraNginxConfig or {})
+      ];
     });
   };
 

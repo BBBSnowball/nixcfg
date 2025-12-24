@@ -14,9 +14,9 @@ ngx.say([[
 
 <ul>]])
 
-for name,info in pairs(webServicesInfo) do
+for _,info in ipairs(webServicesInfo) do
   if host:find("bettina%-home%.") then
-    target = ngx.var.scheme .. "://" .. name .. "." .. host .. "/"
+    target = ngx.var.scheme .. "://" .. info.name .. "." .. host .. "/"
   else
     target = info.target:gsub("localhost", host)
   end
