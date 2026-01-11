@@ -51,6 +51,7 @@ in
     #   ( echo -n "LLDAP_KEY_SEED="; LC_ALL=C tr -dc 'A-Za-z0-9!#%&()*+,-./:;<=>?@[\]^_{|}~' </dev/urandom | head -c 32 ) >lldap-env
     environment = {
       LLDAP_JWT_SECRET_FILE = "%d/secret_lldap-jwt-secret";
+      #NOTE This will only be updated if force_ldap_user_pass_reset is set.
       LLDAP_LDAP_USER_PASS_FILE = lib.mkIf initial "%d/secret_lldap-admin-password";
     };
     environmentFile = lib.mkIf initial "/run/credstore/secret_lldap-env";
@@ -70,7 +71,10 @@ in
       ignored_group_attributes = [ "memberof" ];
 
       #verbose = true;
+
+      force_ldap_user_pass_reset = false;
     };
+    silenceForceUserPassResetWarning = true;
 
     # patch lldap to use index_local.html instead of lots of files from the cloud
     #NOTE We also use Nginx to serve the static frontend but lldap will serve its

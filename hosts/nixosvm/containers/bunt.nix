@@ -1,6 +1,6 @@
 { config, lib, modules, pkgs, secretForHost, ... }:
 let
-  inherit (pkgs) system;
+  inherit (pkgs.stdenv.hostPlatform) system;
   ports = config.networking.firewall.allowedPorts;
   name = "bunt";
   containerName = name;

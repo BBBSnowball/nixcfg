@@ -1,6 +1,6 @@
 { config, lib, modules, pkgs, privateForHost, secretForHost, nixpkgs-24-05, ... }:
 let
-  inherit (pkgs) system;
+  inherit (pkgs.stdenv.hostPlatform) system;
   ports = config.networking.firewall.allowedPorts;
   name = "c";
   containerName = name;

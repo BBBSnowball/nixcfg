@@ -1,6 +1,6 @@
 { config, lib, modules, pkgs, nixpkgs, nixpkgs-notes, ... }:
 let
-  inherit (pkgs) system;
+  inherit (pkgs.stdenv.hostPlatform) system;
   ports = config.networking.firewall.allowedPorts;
 in {
   containers.notes = {
