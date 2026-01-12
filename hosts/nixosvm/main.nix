@@ -37,6 +37,7 @@ in {
       ./containers/janina-wordpress.nix
       ./containers/janina-komm-wordpress.nix
       ./containers/janina-lead-wordpress.nix
+      ./containers/mastodon
       ./containers/mate.nix
       ./containers/notes.nix
       ./containers/omas

@@ -27,6 +27,11 @@
       fsType = "ext4";
     };
 
+  fileSystems."/var/lib/nixos-containers/mastodon/var/lib" =
+    { device = "/dev/disk/by-uuid/8cefd899-29a6-4488-9235-05a2e4905825";
+      fsType = "ext4";
+    };
+
   swapDevices =
     [ { device = "/dev/disk/by-uuid/b9319cb7-8297-43ef-845b-d3f04f6b0ed1"; }
     ];
