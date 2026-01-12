@@ -37,7 +37,7 @@
 
       webPort = ports.webPort.port;  # probably not used because we can use a Unix socket
       sidekiqPort = ports.sidekiqPort.port;
-      #elasticsearch.port = 9200;
+      elasticsearch.port = ports.elasticsearch.port;
 
       enableUnixSocket = true;
       redis.enableUnixSocket = true;
@@ -47,18 +47,19 @@
 
       extraEnvFiles = [];
 
-      #elasticsearch.prefix
-      #elasticsearch.user
-      #elasticsearch.preset
-      #elasticsearch.port
-      #elasticsearch.passwordFile
-      #elasticsearch.host
+      elasticsearch.prefix = domain;
+      elasticsearch.host = "localhost";  # must be set for ES_PORT to be set
+      elasticsearch.user = "mastodon";
+      elasticsearch.preset = "single_node_cluster";
+      elasticsearch.passwordFile = "/run/credentials/mastodon-init-dirs.service/es_pass";
 
       # see https://docs.joinmastodon.org/admin/troubleshooting/
       # and https://docs.joinmastodon.org/admin/config/#rails_log_level
       extraConfig.RAILS_LOG_LEVEL = "warn"; # or "info" or "debug"
       extraConfig.LOG_LEVEL = "info";  # or "silly"
     };
+
+    systemd.services.mastodon-init-dirs.serviceConfig.LoadCredential = "es_pass:secret_elasticsearch-pw-for-mastodon";
 
     services.nginx.virtualHosts."${domain}" = {
       forceSSL = false;

@@ -1,4 +1,4 @@
-{ config, lib, modules, pkgs, privateForHost, secretForHost, ... }:
+{ config, lib, modules, pkgs, privateForHost, secretForHost, routeromen, ... }:
 let
   name = "mastodon";
   inherit (privateForHost.${name}) domain;
@@ -9,6 +9,8 @@ let
     mastodon = x 8200;
     webPort = x 55001;
     sidekiqPort = x 55002;
+    elasticsearch = x 8201;
+    elasticsearch-internal = x 8202;
   };
   portsForFirewall = {
     inherit (ports) mastodon;
@@ -23,7 +25,9 @@ in {
     config = { config, pkgs, ... }: let
     in {
       imports = [
+        routeromen.nixosModules.allowUnfree
         modules.container-common
+        ./elasticsearch.nix
         ./mastodon.nix
         ./nginx-logging.nix
         ./postgresql.nix
@@ -48,6 +52,9 @@ in {
     #extraFlags = [ "--load-credential=secret:${secretForHost}/${name}/" ];
     # Bind-mount the credentials to one of the paths where systemd will look by default.
     bindMounts."/run/credstore".hostPath = "/run/credentials/container@${containerName}.service";
+
+    # Postgres migration and ElasticSearch setup can take a long time.
+    timeoutStartSec = "11min";
   };
 
   systemd.services."container@${containerName}".serviceConfig.LoadCredential = [ "secret:${secretForHost}/${name}/" ];
