@@ -78,6 +78,11 @@
       locations."/api/v1/streaming".extraConfig = ''
         proxy_set_header Host $host;
       '';
+
+      locations."~ /impressum" = {
+        alias = "/var/www/impressum.html";
+        extraConfig = ''default_type text/html;'';
+      };
     };
     #services.nginx.recommendedProxySettings = lib.mkForce false;
 
