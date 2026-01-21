@@ -4,7 +4,12 @@
     services.mastodon = {
       enable = true;
       localDomain = domain;  # domain for usernames
-      extraConfig.WEB_DOMAIN = "mastodon.${domain}";  # domain for web pages
+      # Let's use a subdomain for the web pages, so cookies are cleanly separated from other subdomains.
+      # Mastodon gGmbH's trademark policy reminds me of the Debian Iceweasel days, so let's stay away
+      # from anything related to them. Can they police our domain names? I don't think so, but let's not
+      # find out.
+      #extraConfig.WEB_DOMAIN = "mastodon.${domain}";
+      extraConfig.WEB_DOMAIN = "troet.${domain}";  # domain for web pages
       #extraConfig.SINGLE_USER_MODE = "true";  # redirect webinterface to profile of the first user
       #trustedProxy = reverse_proxy_ip;  # default is ok, Mastodon will only see the Unix socket peer anyway
 
