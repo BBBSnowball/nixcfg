@@ -36,7 +36,12 @@ in
     #locations."=/".alias = "${frontend}/index.html";  # -> broken...
     #locations."=/".alias = "${frontend}/";
     #locations."=/index.html".alias = "${frontend}/";
-    locations."/static/".alias = "${frontend}/static/";
+    locations."/static/" = {
+      alias = "${frontend}/static/";
+      extraConfig = ''
+        add_header Cache-Control "max-age=600, must-revalidate";
+      '';
+    };
     # Not served with the correct MIME type for gzipped WASM, by default. Thus, let the backend handle this.
     #locations."/pkg/".alias = "${frontend}/pkg/";
   };
