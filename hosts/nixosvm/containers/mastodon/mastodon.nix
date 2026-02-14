@@ -30,7 +30,7 @@
       };
       extraConfig.SMTP_DELIVERY_METHOD = "sendmail";
 
-      streamingProcesses = 3;
+      streamingProcesses = 5;
       webProcesses = 2;
       #sidekiqProcesses = {
       #  all = {
@@ -90,6 +90,11 @@
       };
     };
     #services.nginx.recommendedProxySettings = lib.mkForce false;
+
+    # default is 10M, Mastodon allows up to 99M for videos
+    # see https://github.com/mastodon/mastodon/blob/main/app/models/media_attachment.rb#L43
+    # mailinabox uses 128M for its own endpoints and this is probably a reasonable limit for us, as well
+    services.nginx.clientMaxBodySize = "128M";
 
     # ActionMailer is using /usr/sbin/sendmail by default and we don't have any easy way
     # to change this (because Mastodon doesn't let us set its location (in its config/email.yml).
