@@ -1,0 +1,3 @@
+{
+  firefoxProfileName = "abc.default";
+}
