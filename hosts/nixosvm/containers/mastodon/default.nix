@@ -1,4 +1,4 @@
-{ config, lib, modules, pkgs, privateForHost, secretForHost, routeromen, ... }:
+{ config, lib, modules, pkgs, privateForHost, secretForHost, mainFlake, ... }:
 let
   name = "mastodon";
   inherit (privateForHost.${name}) domain;
@@ -25,7 +25,8 @@ in {
     config = { config, pkgs, ... }: let
     in {
       imports = [
-        routeromen.nixosModules.allowUnfree
+        mainFlake.nixosModules.allowUnfree
+        mainFlake.nixosModules.sendmail
         modules.container-common
         ./elasticsearch.nix
         ./mastodon.nix

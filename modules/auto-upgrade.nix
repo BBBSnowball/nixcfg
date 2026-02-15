@@ -1,6 +1,9 @@
 { lib, pkgs, config, ... }:
 let
   hostName = config.networking.hostName;
+
+  notify = (config.programs.sendmail-to-smarthost.enable or false)
+    && (config.programs.sendmail-to-smarthost.enableNotifyService or false);
 in
 {
   system.autoUpgrade.enable = true;
@@ -22,4 +25,7 @@ in
   # https://github.com/NixOS/nixpkgs/issues/79109
   nix.gc.automatic = true;
   nix.gc.options = "--delete-older-than 60d";
+
+
+  systemd.services.nixos-upgrade.unitConfig.OnFailure = lib.mkIf notify "notify-by-mail@%n";
 }

@@ -1,4 +1,4 @@
-{ config, lib, pkgs, modules, privateForHost, secretForHost, ... }:
+{ config, lib, pkgs, modules, privateForHost, secretForHost, mainFlake, ... }:
 let
   ports = config.networking.firewall.allowedPorts;
   name = "janina";
@@ -15,9 +15,9 @@ in {
       '';
     in {
       imports = [
+        mainFlake.nixosModules.sendmail
         modules.container-common
         ./parts/wordpress-pkgs.nix
-        ./parts/sendmail-to-smarthost.nix
       ];
 
       environment.systemPackages = with pkgs; [

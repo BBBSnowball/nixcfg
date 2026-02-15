@@ -1,14 +1,16 @@
-{ domain, privateForHost, secretForHost, ... }:
+{ mainFlake, domain, privateForHost, secretForHost, ... }:
 let
   # use mail credentials of Mastodon container, for now
   # (This is mostly for munin to monitor disk space of Mastodon container.)
   name = "mastodon";
   inherit (privateForHost.${name}) domain;
   inherit (privateForHost.${name}) smtpHost;
+
+  modules = mainFlake.nixosModules;
 in
 {
   imports = [
-    ../containers/parts/sendmail-to-smarthost.nix
+    modules.sendmail
   ];
 
   programs.sendmail-to-smarthost = {

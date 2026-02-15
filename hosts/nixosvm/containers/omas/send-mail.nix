@@ -1,7 +1,7 @@
-{ domain, smtpHost, ... }:
+{ domain, mastodon, smtpHost, ... }:
 {
   imports = [
-    ../parts/sendmail-to-smarthost.nix
+    #modules.sendmail
   ];
 
   programs.sendmail-to-smarthost = {

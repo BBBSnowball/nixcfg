@@ -36,4 +36,5 @@
     restartIfChanged = false;
     unitConfig.OnFailure = "notify-by-mail@%n";
   };
+  programs.sendmail-to-smarthost.enableNotifyService = true;
 }

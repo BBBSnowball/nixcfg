@@ -1,4 +1,4 @@
-{ config, lib, modules, privateForHost, secretForHost, ... }:
+{ config, lib, modules, privateForHost, secretForHost, mainFlake, ... }:
 let
   ports = config.networking.firewall.allowedPorts;
   inherit (privateForHost.janina) url1 smtpHost;
@@ -11,8 +11,8 @@ in {
       phpfpmSocketName = config.services.phpfpm.pools.php.socket;
     in {
       imports = [
+        mainFlake.nixosModules.sendmail
         modules.container-common
-        ./parts/sendmail-to-smarthost.nix
       ];
 
       environment.systemPackages = with pkgs; [

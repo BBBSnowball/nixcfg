@@ -1,4 +1,4 @@
-{ config, lib, modules, pkgs, privateForHost, secretForHost, ... }:
+{ config, lib, modules, pkgs, privateForHost, secretForHost, mainFlake, ... }:
 let
   inherit (privateForHost.sonline0) trueDomain;
   inherit (privateForHost.omas) domain;
@@ -25,6 +25,7 @@ in {
     config = { config, pkgs, ... }: let
     in {
       imports = [
+        mainFlake.nixosModules.sendmail
         modules.container-common
         ./discourse.nix
         #./kanidm.nix

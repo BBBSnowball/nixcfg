@@ -26,7 +26,6 @@ in {
       ./services/headscale.nix
       ./services/munin
       ./services/openvpn.nix
-      ./services/send-mail.nix
       ./services/taskserver.nix
       ./services/tinc.nix
       (if useNftables then ./firewall-nftables.nix else ./firewall-iptables-restore.nix)
@@ -46,6 +45,7 @@ in {
       ./containers/rss.nix
       ./containers/php.nix
       ./containers/weechat.nix
+      ./services/send-mail.nix
     ]);
 
   users.users.root.openssh.authorizedKeys.keyFiles = let
