@@ -24,7 +24,9 @@ in {
       snowball-vm-sonline0
       nixcfg-sync
       ./services/headscale.nix
+      ./services/munin
       ./services/openvpn.nix
+      ./services/send-mail.nix
       ./services/taskserver.nix
       ./services/tinc.nix
       (if useNftables then ./firewall-nftables.nix else ./firewall-iptables-restore.nix)
