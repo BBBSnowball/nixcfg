@@ -1,7 +1,7 @@
 { pkgs, chatgpt-telegram-bot, secretForHost, ... }:
 let
   name = "chatgpt-telegram-bot";
-  pkg = chatgpt-telegram-bot.packages.${pkgs.system}.${name};
+  pkg = chatgpt-telegram-bot.packages.${pkgs.stdenv.hostPlatform.system}.${name};
 in
 {
   systemd.services.${name} = {

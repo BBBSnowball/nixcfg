@@ -6,7 +6,7 @@ let
       ${pkgs.coreutils}/bin/mkdir $out
       ${pkgs.gnutar}/bin/tar -C $out -xf $tarball
     '';
-    inherit (pkgs) system;
+    inherit (pkgs.stdenv.hostPlatform) system;
     inherit tarball;
   };
   webmumbleDist = extractTarball ./mumble-web-dist.tar;

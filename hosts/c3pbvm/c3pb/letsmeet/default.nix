@@ -12,7 +12,7 @@ let
   pkgs2 = if useOldNixpkgs
   then import nixpkgsLetsmeet {
     inherit overlays;
-    system = pkgs.system;
+    system = pkgs.stdenv.hostPlatform.system;
     config = nixconfig;
   }
   else pkgs;

@@ -7,7 +7,7 @@ let
     name = "radius-config";
     builder = ./mkconfig.sh;
     #system = builtins.currentSystem;
-    system = pkgs.system;
+    system = pkgs.stdenv.hostPlatform.system;
 
     inherit (pkgs) coreutils patch;
     inherit secretsDir;
