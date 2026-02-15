@@ -18,6 +18,7 @@ in {
       #./ipv6.nix
       ./ipv6-dhclient.nix
       ./backup.nix
+      ./cmds.nix
       ./coturn.nix
       ./headscale-derp-only.nix
     ];

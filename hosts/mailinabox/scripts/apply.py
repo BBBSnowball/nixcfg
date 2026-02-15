@@ -340,7 +340,12 @@ for domain in expected_state["ssl_domains"]:
     else:
         print(f"WARN: {domain} has an outdated cert ({available_certs[domain].strftime('%Y-%m-%d')})")
 
-if len(missing_certs) > 0:
+if len(missing_certs) > 0 and check_mode:
+    # Check for cert status takes a long time, so we skip it in check mode.
+    # The check might also yield the wrong result in check mode, namely if we are going to add the first
+    # mail address for a domain but haven't done so yet because of check mode.
+    print(f"INFO: We have {len(missing_certs)} missing certs. We would try and provision them.")
+elif len(missing_certs) > 0:
     print(f"We have {len(missing_certs)} missing certs. Let's see whether we can provision them.")
     certstate = mgmt("/ssl/status", is_json=True)
     cannot_be_provisioned = []
