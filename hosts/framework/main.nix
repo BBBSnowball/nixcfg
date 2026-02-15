@@ -52,6 +52,7 @@ in
     "memtest86-efi"
     "mfc9142cdnlpr"
     "helvetica-neue-lt-std"
+    "google-chrome"
   ];
 
   # Avoid seed being stored in word accessible location. These are the bootctl warnings for this:
@@ -157,6 +158,8 @@ in
     #rpi-imager  # broken
     bambu-studio
     sshfs
+    google-chrome
+    orca-slicer
   ];
 
   services.printing.drivers = [
