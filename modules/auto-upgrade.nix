@@ -1,4 +1,4 @@
-{ config, lib, ... }:
+{ lib, pkgs, config, ... }:
 let
   hostName = config.networking.hostName;
 in
@@ -9,14 +9,15 @@ in
   system.autoUpgrade.flake = "/etc/nixos/flake#${hostName}";
   #system.autoUpgrade.flake = "/etc/nixos/flake/hosts/${hostName}#${hostName}";  # doesn't have the `private` input
   system.autoUpgrade.flags = [
-    "--override-input" "private" "path:/etc/nixos/hosts/${hostName}/private/data/"
+    "--override-input" "private" "path:/etc/nixos/hosts/${hostName}/private/private/"
     # This would update the outer flake, which is not what we want:
     #"--update-input" "nixpkgs" "--commit-lock-file"
   ];
 
   systemd.services.nixos-upgrade.script = lib.mkBefore ''
-    nix flake lock /etc/nixos/flake/hosts/${hostName} --update-input nixpkgs --commit-lock-file
+    nix flake update nixpkgs --flake /etc/nixos/flake/hosts/${hostName} --commit-lock-file
   '';
+  systemd.services.nixos-upgrade.path = [ pkgs.gnupg ];  # might be needed for commit
 
   # https://github.com/NixOS/nixpkgs/issues/79109
   nix.gc.automatic = true;
