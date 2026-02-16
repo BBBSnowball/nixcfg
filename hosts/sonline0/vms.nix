@@ -9,7 +9,7 @@ let
     if [ -z "$m" ] ; then m=128 ; fi
     
     exec qemu-system-x86_64 \
-            -enable-kvm -nographic -runas nobody -name "$INST" \
+            -enable-kvm -nographic --run-with user=nobody -name "$INST" \
             -pidfile "/run/qemu/$INST.pid" \
             -monitor unix:/run/qemu/$INST.monitor,server,nowait \
             -serial unix:/run/qemu/$INST.serial,server,nowait \
