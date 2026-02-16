@@ -48,6 +48,7 @@ in
       ip_prefixes = [ "100.64.0.0/10" ];
 
       dns.magic_dns = false;
+      dns.override_local_dns = false;
     };
   };
 
