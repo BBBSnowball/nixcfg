@@ -11,6 +11,7 @@
       nixcfg-sync
       ssh-github
       #./chatgpt-telegram-bot.nix
+      (withFlakeInputs ./send-mail.nix)
     ];
 
   users.users.root.openssh.authorizedKeys.keyFiles = let
