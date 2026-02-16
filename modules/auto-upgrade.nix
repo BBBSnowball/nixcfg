@@ -11,7 +11,13 @@ in
 
   system.autoUpgrade.flake = "/etc/nixos/flake#${hostName}";
   #system.autoUpgrade.flake = "/etc/nixos/flake/hosts/${hostName}#${hostName}";  # doesn't have the `private` input
-  system.autoUpgrade.flags = [
+
+  # use exactly these flags, no `--refresh` or `--upgrade` because we do the update in a separate step (see below)
+  system.autoUpgrade.upgrade = false;
+  system.autoUpgrade.flags = lib.mkForce [
+    # add flake argument because mkForce drops default arguments
+    "--flake" config.system.autoUpgrade.flake
+
     "--override-input" "private" "path:/etc/nixos/hosts/${hostName}/private/private/"
     # This would update the outer flake, which is not what we want:
     #"--update-input" "nixpkgs" "--commit-lock-file"
