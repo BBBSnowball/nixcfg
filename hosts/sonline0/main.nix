@@ -21,6 +21,7 @@ in {
       ./cmds.nix
       ./coturn.nix
       ./headscale-derp-only.nix
+      ./send-mail.nix
     ];
 
   boot.loader.grub.devices = [
