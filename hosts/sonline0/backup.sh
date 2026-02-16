@@ -92,7 +92,7 @@ esac
 #  /root/.cache   # duplicity cache
 
 # don't do --exclude-other-filesystems anymore because of /var/vms
-FTP_PASSWORD="$FTP_PASSWORD" PASSPHRASE="$PASSPHRASE" \
+FTP_PASSWORD="$FTP_PASSWORD" BACKEND_PASSWORD="$FTP_PASSWORD" PASSPHRASE="$PASSPHRASE" \
 	duplicity \
 	--encrypt-key $encrypt_for \
 	--encrypt-sign-key $our_key \
