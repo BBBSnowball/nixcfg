@@ -18,5 +18,8 @@ in
     inherit smtpHost;
     sender = "noreply@${domain}";
     passwordFile = "${secretForHost}/${name}/noreply-smtp-password";
+
+    enableNotifyService = true;
+    inherit (privateForHost) adminEmail;
   };
 }
