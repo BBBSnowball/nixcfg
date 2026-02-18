@@ -6,6 +6,11 @@ LOCAL_DIR=/
 
 source /etc/nixos/secret/by-host/sonline0/backup_env
 
+#NOTE Things to exclude if we ever do a full backup of root:
+#  /var/cache     # package cache, etc.
+#  /root/.cache   # duplicity cache
+
+# don't do --exclude-other-filesystems anymore because of /var/vms
 backupArgs=(
 	--exclude /var/cache \
 	--exclude /root/.cache \
@@ -34,7 +39,9 @@ case "${target:-}" in
   hetzner)
     logfile=/var/log/duplicity-backup-to-hetzner.log
     target_url="$target_url2"
-    backupArgs+=(--concurrency 2)
+    # Use IPv4 because that turned out to still be more stable than IPv6. Oh, well.
+    # -> Actually, this won't affect the internal SSH backend, so we use LD_PRELOAD. See backup.nix.
+    backupArgs+=(--concurrency 2 --ssh-options=-4)
     ;;
   *)
     echo "Invalid \$target!" >&2
@@ -48,8 +55,8 @@ case "$1" in
     exit 1
     ;;
   backup)
-    # full or incremental
-    shift
+    # full or incremental, chosen by duplicity
+    #shift
     CMD=("$@" $LOCAL_DIR $target_url)
     ;;
   full|incr)
@@ -59,17 +66,26 @@ case "$1" in
     CMD=("$@" $target_url $LOCAL_DIR)
     ;;
   cron)
-    exec 1>>"$logfile" 2>&1
+    exec 3>&1 4>&2 1>>"$logfile" 2>&1
     date
     if pgrep duplicity >/dev/null ; then
+      #NOTE Duplicity also has its own check but that won't print any reason to syslog,
+      #     i.e. it would fail and send an email without any helpful context.
       echo "Duplicity is already/still running."
-      exit 0
+      echo "Duplicity is already/still running." >&4
+      exit 1
     fi
     echo "Starting backup..."
+    echo "Starting backup..." >&3
+    set -e
+    "$0" backup --backend-retry-delay 300 --full-if-older-than 2W
+    echo "Removing old backups..."
+    echo "Removing old backups..." >&3
     #NOTE "--force" is required for remove-all-but-n-full because default behavior is to list instead of remove.
-    "$0" backup --backend-retry-delay 300 --full-if-older-than 2W \
-      && "$0" remove-all-but-n-full 5 --force
-    exit $?
+    "$0" remove-all-but-n-full 5 --force
+    echo "done."
+    echo "Backup is finished." >&3
+    exit 0
     ;;
   *)
     CMD=("$@" $target_url)
@@ -87,13 +103,11 @@ esac
 #     So, a good volsize would be maxsize/(0.8*maxfiles) = 938 MB.
 #NOTE online.net requires passive FTP.
 
-#NOTE Things to exclude if we ever do a full backup of root:
-#  /var/cache     # package cache, etc.
-#  /root/.cache   # duplicity cache
+#export FTP_PASSWORD  # duplicity complains if we set this
+export BACKEND_PASSWORD="$FTP_PASSWORD"
+export PASSPHRASE
 
-# don't do --exclude-other-filesystems anymore because of /var/vms
-FTP_PASSWORD="$FTP_PASSWORD" BACKEND_PASSWORD="$FTP_PASSWORD" PASSPHRASE="$PASSPHRASE" \
-	duplicity \
+exec duplicity \
 	--encrypt-key $encrypt_for \
 	--encrypt-sign-key $our_key \
         "${backupArgs[@]}" \

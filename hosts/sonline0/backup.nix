@@ -1,4 +1,8 @@
-{ pkgs, ... }:
+{ pkgs, mainFlake, ... }:
+let
+  system = pkgs.stdenv.hostPlatform.system;
+  noipv6 = mainFlake.packages.${system}.noipv6;
+in
 {
   environment.systemPackages = with pkgs; [
     duplicity lftp
@@ -26,15 +30,20 @@
   #NOTE Log goes to /var/log/duplicity-backup-to-ftp.log
   systemd.services.backup = {
     description = "Backup whole system with duplicity";
+
     path = with pkgs; [ bash duplicity procps lftp ];
     serviceConfig.Type = "oneshot";
-    #serviceConfig.ExecStart = "${./backup.sh} cron";
-    script = ''
-      target=dedibackup ${./backup.sh} cron || true
-      target=hetzner    ${./backup.sh} cron
-    '';
+    serviceConfig.ExecStart = "${./backup.sh} cron";
+    environment.LD_PRELOAD = noipv6;  # only IPv4, more reliable
+    environment.target = "hetzner";
     restartIfChanged = false;
+
+    # send mail on failure
     unitConfig.OnFailure = "notify-by-mail@%n";
+
+    # don't wait a whole day before we try again
+    serviceConfig.Restart = "on-failure";
+    serviceConfig.RestartSec = "2h";
   };
   programs.sendmail-to-smarthost.enableNotifyService = true;
 }
