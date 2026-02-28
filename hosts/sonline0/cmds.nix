@@ -30,6 +30,8 @@ in
       substitute ${./iptables-apply.sh} $out/bin/iptables-apply \
         --subst-var runtimeShell \
         --subst-var dir
+      chmod +x $out/bin/iptables-apply
+      bash -n $out/bin/iptables-apply
     '')
   ];
 }
