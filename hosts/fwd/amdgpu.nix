@@ -12,7 +12,7 @@
   ];
 
   hardware.amdgpu.opencl.enable = true;
-  hardware.amdgpu.amdvlk.enable = true;
+  #hardware.amdgpu.amdvlk.enable = true;  # replaced by radv driver in mesa
 
   #services.lact.enable = true;
   environment.systemPackages = with pkgs; [ lact ];

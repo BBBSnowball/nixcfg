@@ -53,8 +53,8 @@ in
   networking.useDHCP = false;
 
   # Enable the GNOME Desktop Environment.
-  services.xserver.displayManager.gdm.enable = true;
-  services.xserver.desktopManager.gnome.enable = true;
+  services.displayManager.gdm.enable = true;
+  services.desktopManager.gnome.enable = true;
   
   # Enable sound.
   # services.pulseaudio.enable = true;
@@ -78,7 +78,8 @@ in
   programs.gnupg.agent = {
     enable = true;
     enableSSHSupport = true;
-    pinentryPackage = pkgs.pinentry.gtk2;
+    #pinentryPackage = pkgs.pinentry.gtk2;
+    pinentryPackage = pkgs.pinentry-gnome3;
   };
 
   services.tailscale.enable = true;

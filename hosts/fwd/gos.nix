@@ -59,7 +59,7 @@ in
   systemd.user.services.docker.unitConfig.ConditionGroup = lib.mkForce "dockerrootless";
   users.groups.dockerrootless = {};
 
-  services.udev.packages = [ pkgs.android-udev-rules ];
+  #services.udev.packages = [ pkgs.android-udev-rules ];  # replaced by builtin uaccess rules
   users.groups.adbusers = {};
   users.users.user.extraGroups = [ "adbusers" ];
   users.users.gos.extraGroups = [ "dockerrootless" ];
