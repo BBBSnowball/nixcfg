@@ -17,7 +17,7 @@ in
     secretFile = "secret_nextcloud-config";
   
     # We have to manually specify the version, so we can ensure that migrations run between major upgrades.
-    package = pkgs.nextcloud32;
+    package = pkgs.nextcloud33;
 
     hostName = hostName;
 
@@ -61,7 +61,8 @@ in
     extraAppsEnable = true;
     extraApps = {
       inherit (config.services.nextcloud.package.packages.apps)
-        news contacts calendar tasks
+        #news
+        contacts calendar tasks
         forms
         groupfolders
         #memories  # photos  -> too many errors in log
