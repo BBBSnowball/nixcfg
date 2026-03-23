@@ -48,7 +48,9 @@
       redis.enableUnixSocket = true;
       database.host = "/run/postgresql";
 
+      mediaAutoRemove.enable = true;
       mediaAutoRemove.startAt = "1:00";  # daily but with an offset
+      mediaAutoRemove.olderThanDays = 20;  # let's use a bit less than the default of 20 days
 
       extraEnvFiles = [];
 
