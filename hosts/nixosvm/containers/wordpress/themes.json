@@ -1,38 +1,38 @@
 {
   "ashe": {
-    "path": "ashe/2.260",
-    "rev": "283896",
-    "sha256": "0z00rncm40acjcs0xj56d3npxsqp2k5lhcx6vp2rn3pvmabq4wxd",
-    "version": "2.260"
+    "path": "ashe/2.266",
+    "rev": "317159",
+    "sha256": "02lsjds2kndhgvck7bkm0qb67jmnjf8dw642id0g0fdzqxlcc5z5",
+    "version": "2.266"
   },
   "astra": {
-    "path": "astra/4.11.11",
-    "rev": "287952",
-    "sha256": "1v0nxh2y182rg50df8sc2z3a2gp938rsb8f0m3kwh8ki1a5dq6ck",
-    "version": "4.11.11"
+    "path": "astra/4.12.6",
+    "rev": "319406",
+    "sha256": "0k4xn5a1bb8k85vab0gfw5jmlyhc97grp3hpdq9fm2qw02gm0hds",
+    "version": "4.12.6"
   },
   "neve": {
-    "path": "neve/4.1.4",
-    "rev": "288091",
-    "sha256": "1jnv5784jfppbz4ygglx29k20dpbrsvib4q2qa2k6ykd39d9sc9x",
-    "version": "4.1.4"
+    "path": "neve/4.2.3",
+    "rev": "316887",
+    "sha256": "1kvjbnh53jhhlvq730h36dlgg0qrnxn9mlwp005ppbzaqhs96p9y",
+    "version": "4.2.3"
   },
   "oceanwp": {
-    "path": "oceanwp/4.1.2",
-    "rev": "283264",
-    "sha256": "0iacm2kmbv5gd30n1810hm3a5r1jwyhhc2xxwd417896a7skmc8y",
-    "version": "4.1.2"
+    "path": "oceanwp/4.1.5",
+    "rev": "313588",
+    "sha256": "04hdkw51wl02wv9isaczfpwp8s6qpi4rgqfyvi0474h6irz23rkv",
+    "version": "4.1.5"
   },
   "twentyseventeen": {
-    "path": "twentyseventeen/3.9",
-    "rev": "267654",
-    "sha256": "16lhx4flp6cadymwrdz96vq9dkg2s4k3xylrs92c5fk81v9wsb3l",
-    "version": "3.9"
+    "path": "twentyseventeen/4.0",
+    "rev": "301644",
+    "sha256": "1ic1daiq506h2lv3z12v73a5pm5vygqiqfykggxcpkkanyi3y8jr",
+    "version": "4.0"
   },
   "twentytwentyfive": {
-    "path": "twentytwentyfive/1.3",
-    "rev": "282423",
-    "sha256": "1hv9dzxdr5034qjfxrrm9k95x495bbfpx7k8w2vcpaa60pxf59aj",
-    "version": "1.3"
+    "path": "twentytwentyfive/1.4",
+    "rev": "301650",
+    "sha256": "1knpjhql8ccczjclg2wcacjp5adhxafh4bnw5mrgf34wghna0j6w",
+    "version": "1.4"
   }
 }
