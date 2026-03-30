@@ -84,6 +84,13 @@ in
         iifname "vpn_*" oifname "ens3" ip daddr { 192.168.0.0/16, 127.0.0.0/8 } jump fw-reject
         iifname "vpn_*" oifname "ens3" accept
         oifname "vpn_*" iifname "ens3" accept
+
+        # for flohmarkt container
+        #FIXME don't hardcode the values!
+        iifname "ens3" oifname "ve-flohmarkt" ip daddr { 192.168.0.0/16 } accept
+        oifname "ens3" iifname "ve-flohmarkt" ip saddr { 192.168.0.0/16 } tcp sport 8204 ip daddr { 192.168.84.130 } accept
+        oifname "ens3" iifname "ve-flohmarkt" ip saddr { 192.168.0.0/16 } ip daddr != { 192.168.0.0/16, 100.64.0.0/16 } accept
+
         jump fw-reject
       }
 

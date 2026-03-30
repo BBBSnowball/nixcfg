@@ -6,6 +6,7 @@
   inputs.routeromen.url = "github:BBBSnowball/nixcfg";
   inputs.routeromen.inputs.nixpkgs.follows = "nixpkgs";
   inputs.nixpkgs-24-05.url = "github:NixOS/nixpkgs/nixos-24.05";
+  inputs.flohmarkt.url = "git+https://codeberg.org/snowball/flohmarkt?ref=refs/tags/0.16.1";
 
   # Magpie needs Python 2.7 and some packages for that are marked broken on newer nixpkgs.
   inputs.nixpkgs-notes.url = "github:NixOS/nixpkgs/da7f4c4842520167f65c20ad75ecdbd14e27ae91";

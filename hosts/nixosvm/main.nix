@@ -33,6 +33,7 @@ in {
       #./containers/bunt.nix
       #./containers/c.nix
       ./containers/feg.nix
+      ./containers/flohmarkt
       ./containers/git.nix
       ./containers/hedgedoc.nix
       ./containers/janina-wordpress.nix
