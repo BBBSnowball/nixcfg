@@ -18,8 +18,6 @@ in
     settings.general = {
       instanceName = "Pader Treibgut";
       externalUrl = "https://${domain}";
-      #FIXME make it secret!
-      jwtSecret = fixmeMakeThisSecret;
       #dataPath = "/var/lib/flohmarkt";
     };
 

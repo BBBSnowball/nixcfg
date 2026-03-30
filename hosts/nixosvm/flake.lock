@@ -22,13 +22,13 @@
         "systems": "systems"
       },
       "locked": {
-        "lastModified": 1772489795,
-        "narHash": "sha256-hHBRMHhHytXJAa9fPypCLWqRoSKvkq3n+NBGLDVNeTo=",
-        "ref": "refs/tags/0.16.1",
-        "rev": "f1feebaf1e95564d5d62eaa29023657463e0ba50",
-        "revCount": 2835,
+        "lastModified": 1774894953,
+        "narHash": "sha256-pqGzBcGDibB/h+lUuZwig84QXpxxUrapv7c6Bkrhbyo=",
+        "ref": "refs/heads/test",
+        "rev": "fe2d88c9c461938375a8d47744d590ca5f2c483a",
+        "revCount": 2840,
         "type": "git",
-        "url": "https://codeberg.org/snowball/flohmarkt"
+        "url": "file:///root/flohmarkt"
       },
       "original": {
         "ref": "refs/tags/0.16.1",
