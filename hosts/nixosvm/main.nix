@@ -58,6 +58,10 @@ in {
   ];
   # for running wp4nix etc.
   users.users.generate-files.isNormalUser = true;
+  users.users.user = {
+    isNormalUser = true;
+    extraGroups = [ "users" ];
+  };
 
   networking.interfaces."tinc.bbbsnowbal".ipv4.addresses = [ {
     address = "192.168.84.39";
