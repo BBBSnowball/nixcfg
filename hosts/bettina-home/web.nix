@@ -211,7 +211,11 @@ in
     dnsScript = pkgs.writeShellScript "acme-dns-mailinabox" ''
       # default shell is nologin, which will break ssh
       export SHELL=${pkgs.bash}/bin/bash
-      cd $CREDENTIALS_DIRECTORY
+      if [ -z "$CREDENTIALS_DIRECTORY" -o ! -e "$CREDENTIALS_DIRECTORY/ssh_config" ] ; then
+        echo "acme dns script: credentials are missing"
+        exit 1
+      fi
+      cd "$CREDENTIALS_DIRECTORY"
       exec ${pkgs.openssh}/bin/ssh -F $PWD/ssh_config -o BatchMode=yes target -- "$@"
       # &>/var/lib/acme/bettina-home.${domain}/debug.log
     '';
@@ -239,6 +243,9 @@ in
   };
 
   systemd.services."acme-${domain1}".serviceConfig.LoadCredential = [
+    "ssh:${secretForHost}/acme-dns-update-ssh"
+  ];
+  systemd.services."acme-order-renew-${domain1}".serviceConfig.LoadCredential = [
     "ssh:${secretForHost}/acme-dns-update-ssh"
   ];
 }
