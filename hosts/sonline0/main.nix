@@ -20,7 +20,8 @@ in {
       ./backup.nix
       ./cmds.nix
       ./coturn.nix
-      ./headscale-derp-only.nix
+      #./headscale-derp-only.nix  # replaced by derper
+      ./derper.nix
       ./send-mail.nix
     ];
 

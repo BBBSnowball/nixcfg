@@ -18,7 +18,8 @@ let
   #  helpful info.)
 in
 {
-  #NOTE This doesn't work, yet. The DERP server doesn't seem to be started.
+  #NOTE Replaced by derper (see derper.nix) because builtin DERP server
+  #     has no option for verifying clients with another headscale server.
   services.headscale = {
     enable = true;
     settings = {
@@ -72,6 +73,7 @@ in
     # Wait for file to exist (selfsigned) or acme to be done?
     # -> No reason to start before acme is done, I think.
     "acme-${domain}.service"
+    "acme-order-renew-${domain}.service"
   ];
 
   environment.etc."headscale/derp.yaml".text = ''
