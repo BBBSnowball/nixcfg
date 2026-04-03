@@ -10,6 +10,12 @@ let
   # (This will disable gRPC because we won't have any TLS for that
   #  but we don't need it anyway.)
   useTls = true;
+
+  # Test with: tailscale debug derp sonline0 && tailscale status
+  # see https://headscale.net/stable/ref/debug/
+  # (Some errors are not detected by `debug derp`, e.g. if derp refuses the
+  #  client key, only `tailscale status` will complain, albeit without any
+  #  helpful info.)
 in
 {
   #NOTE This doesn't work, yet. The DERP server doesn't seem to be started.
@@ -32,6 +38,11 @@ in
         #NOTE `enabled`, not `enable` !
         enabled = true;
         region_id = 900;
+
+        # This instance doesn't know about the real headscale server and there
+        # isn't any option to pass a different value to SetVerifyClientURL.
+        # Thus, we disable client verification, for now.
+        verify_clients = false;
         
         region_code = "sonline0";
         region_name = "sonline0";
@@ -49,6 +60,8 @@ in
 
       dns.magic_dns = false;
       dns.override_local_dns = false;
+
+      #log.level = "debug";
     };
   };
 
