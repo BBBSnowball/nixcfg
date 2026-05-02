@@ -50,7 +50,7 @@
 
       mediaAutoRemove.enable = true;
       mediaAutoRemove.startAt = "1:00";  # daily but with an offset
-      mediaAutoRemove.olderThanDays = 20;  # let's use a bit less than the default of 20 days
+      mediaAutoRemove.olderThanDays = 10;  # let's use a bit less than the default of 20 days
 
       extraEnvFiles = [];
 
