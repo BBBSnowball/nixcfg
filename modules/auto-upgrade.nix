@@ -1,9 +1,11 @@
-{ lib, pkgs, config, ... }:
+{ lib, pkgs, config, nixpkgs-small ? null, ... }:
 let
   hostName = config.networking.hostName;
 
   notify = (config.programs.sendmail-to-smarthost.enable or false)
     && (config.programs.sendmail-to-smarthost.enableNotifyService or false);
+
+  inputsToUpdate = "nixpkgs" + (if nixpkgs-small != null then " nixpkgs-small" else "");
 in
 {
   system.autoUpgrade.enable = true;
@@ -24,7 +26,7 @@ in
   ];
 
   systemd.services.nixos-upgrade.script = lib.mkBefore ''
-    nix flake update nixpkgs --flake /etc/nixos/flake/hosts/${hostName} --commit-lock-file
+    nix flake update ${inputsToUpdate} --flake /etc/nixos/flake/hosts/${hostName} --commit-lock-file
   '';
   systemd.services.nixos-upgrade.path = [ pkgs.gnupg ];  # might be needed for commit
 
