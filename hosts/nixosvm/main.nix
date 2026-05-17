@@ -21,6 +21,7 @@ in {
       ./hardware-configuration.nix
       namedFirewallPorts
       auto-upgrade
+      hardened
       snowball-vm-sonline0
       nixcfg-sync
       ./services/headscale.nix

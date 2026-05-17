@@ -5,6 +5,9 @@
 # stability. If you experience any stability issues when using the
 # profile, try disabling it. If you report an issue and use this
 # profile, always mention that you do.
+#
+# This is based on NixOS' module:
+# https://github.com/NixOS/nixpkgs/raw/refs/heads/nixos-25.11/nixos/modules/profiles/hardened.nix
 
 {
   config,
@@ -22,40 +25,37 @@ let
     ;
 in
 {
-  options.profiles.hardened = mkEnableOption "hardened" // {
-    default = true;
-    example = false;
-  };
-  config = mkIf config.profiles.hardened {
-    meta = {
-      maintainers = [
-        maintainers.joachifm
-        maintainers.emily
-      ];
-    };
-
+  config = {
     boot.kernelPackages = mkDefault pkgs.linuxKernel.packages.linux_hardened;
 
-    nix.settings.allowed-users = mkDefault [ "@users" ];
+    #nix.settings.allowed-users = mkDefault [ "@users" ];  # -> already defined in common.nix
 
+    # https://source.android.com/docs/security/test/scudo
+    # https://llvm.org/docs/ScudoHardenedAllocator.html
     environment.memoryAllocator.provider = mkDefault "scudo";
     environment.variables.SCUDO_OPTIONS = mkDefault "zero_contents=true";
 
-    security.lockKernelModules = mkDefault true;
+    #security.lockKernelModules = mkDefault true;
 
-    security.protectKernelImage = mkDefault true;
+    #security.protectKernelImage = mkDefault true;
 
-    security.allowSimultaneousMultithreading = mkDefault false;
+    #security.allowSimultaneousMultithreading = mkDefault false;
 
-    security.forcePageTableIsolation = mkDefault true;
+    #security.forcePageTableIsolation = mkDefault true;
 
     # This is required by podman to run containers in rootless mode.
-    security.unprivilegedUsernsClone = mkDefault config.virtualisation.containers.enable;
+    #security.unprivilegedUsernsClone = mkDefault config.virtualisation.containers.enable;
 
-    security.virtualisation.flushL1DataCache = mkDefault "always";
+    # Let's keep user namespaces enabled, for now.
+    # see https://discourse.nixos.org/t/proposal-to-deprecate-the-hardened-profile/63081/5
+    # (We are not a desktop system but there are other good uses, e.g. containers and systemd services might use it.)
+    security.allowUserNamespaces = true;
+    security.unprivilegedUsernsClone = true;
 
-    security.apparmor.enable = mkDefault true;
-    security.apparmor.killUnconfinedConfinables = mkDefault true;
+    #security.virtualisation.flushL1DataCache = mkDefault "always";
+
+    #security.apparmor.enable = mkDefault true;
+    #security.apparmor.killUnconfinedConfinables = mkDefault true;
 
     boot.kernelParams = [
       # Don't merge slabs
@@ -99,13 +99,24 @@ in
       "qnx6"
       "sysv"
       "ufs"
+
+      # https://copy.fail / CVE-2026-31431
+      # (some crypto operations in userspace might be a bit slower)
+      "algif_aead"
+
+      # dirty frag, CVE-2026-43284, https://github.com/V4bel/dirtyfrag
+      # ESP: https://www.ietf.org/rfc/rfc2406.txt
+      # RXRPC: https://docs.kernel.org/networking/rxrpc.html
+      "esp4"
+      "esp6"
+      "rxrpc"
     ];
 
     # Hide kptrs even for processes with CAP_SYSLOG
     boot.kernel.sysctl."kernel.kptr_restrict" = mkOverride 500 2;
 
     # Disable bpf() JIT (to eliminate spray attacks)
-    boot.kernel.sysctl."net.core.bpf_jit_enable" = mkDefault false;
+    #boot.kernel.sysctl."net.core.bpf_jit_enable" = mkDefault false;
 
     # Disable ftrace debugging
     boot.kernel.sysctl."kernel.ftrace_enabled" = mkDefault false;
@@ -113,10 +124,10 @@ in
     # Enable strict reverse path filtering (that is, do not attempt to route
     # packets that "obviously" do not belong to the iface's network; dropped
     # packets are logged as martians).
-    boot.kernel.sysctl."net.ipv4.conf.all.log_martians" = mkDefault true;
-    boot.kernel.sysctl."net.ipv4.conf.all.rp_filter" = mkDefault "1";
-    boot.kernel.sysctl."net.ipv4.conf.default.log_martians" = mkDefault true;
-    boot.kernel.sysctl."net.ipv4.conf.default.rp_filter" = mkDefault "1";
+    #boot.kernel.sysctl."net.ipv4.conf.all.log_martians" = mkDefault true;
+    #boot.kernel.sysctl."net.ipv4.conf.all.rp_filter" = mkDefault "1";
+    #boot.kernel.sysctl."net.ipv4.conf.default.log_martians" = mkDefault true;
+    #boot.kernel.sysctl."net.ipv4.conf.default.rp_filter" = mkDefault "1";
 
     # Ignore broadcast ICMP (mitigate SMURF)
     boot.kernel.sysctl."net.ipv4.icmp_echo_ignore_broadcasts" = mkDefault true;
