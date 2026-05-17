@@ -8,6 +8,7 @@ in
 {
   environment.systemPackages = with pkgs; [
     gnupg git-crypt
+    git-revise
   ];
 
   #NOTE This will use gitFull by default but can be changed with programs.git.package.
