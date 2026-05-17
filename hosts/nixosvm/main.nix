@@ -47,6 +47,7 @@ in {
       ./containers/php.nix
       ./containers/weechat.nix
       ./services/send-mail.nix
+      ../../hotfix-modules/nginx-1.28.3.nix
     ]);
 
   users.users.root.openssh.authorizedKeys.keyFiles = let

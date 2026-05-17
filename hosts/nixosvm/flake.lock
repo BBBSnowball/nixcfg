@@ -156,6 +156,22 @@
         "type": "github"
       }
     },
+    "nixpkgs-small": {
+      "locked": {
+        "lastModified": 1778977639,
+        "narHash": "sha256-bME6zzixM9IO1QbB6da0rSRXI8/mlhp87RmD1IstXMc=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "bb7f1f470ee929b87856f4640712e2eb5cddb405",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixos-25.11-small",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
     "nixpkgs-unstable": {
       "locked": {
         "lastModified": 1734739002,
@@ -215,6 +231,7 @@
         "nixpkgs-24-05": "nixpkgs-24-05",
         "nixpkgs-notes": "nixpkgs-notes",
         "nixpkgs-rss": "nixpkgs-rss",
+        "nixpkgs-small": "nixpkgs-small",
         "routeromen": "routeromen"
       }
     },

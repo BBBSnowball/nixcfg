@@ -1,5 +1,6 @@
 {
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
+  inputs.nixpkgs-small.url = "github:NixOS/nixpkgs/nixos-25.11-small";
   #inputs.flake-compat.url = "github:edolstra/flake-compat";
   #inputs.flake-compat.flake = false;
   inputs.flake-compat.follows = "routeromen/flake-compat";

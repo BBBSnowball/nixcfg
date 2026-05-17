@@ -1,4 +1,4 @@
-{ config, lib, routeromen, private, ... }:
+{ config, lib, routeromen, private, withFlakeInputs, ... }:
 let
   #NOTE We are hardcoding the hostname here because we need the outer host and this is evaluated for the container.
   privateForHost = "${private}/by-host/nixosvm";
@@ -7,6 +7,7 @@ in
   imports = [
     routeromen.nixosModules.snowball-vm
     ./openssh-with-unix-socket.nix
+    (withFlakeInputs ../../hotfix-modules/nginx-1.28.3.nix)
   ];
 
   users.users.root.openssh.authorizedKeys.keyFiles = let
