@@ -1,38 +1,38 @@
 {
   "backwpup": {
-    "path": "backwpup/tags/5.6.7",
-    "rev": "3490642",
-    "sha256": "1mdx36ckqyj5ysk5s7s1q5yjn8rnn0shrvqm9a1a8mnaxk386agj",
-    "version": "5.6.7"
+    "path": "backwpup/tags/5.6.9",
+    "rev": "3516229",
+    "sha256": "1q5n16hgdj9q5h3yljimygj9vc5lhr3pzc1w5ca8zai0s9a52m47",
+    "version": "5.6.9"
   },
   "elementor": {
-    "path": "elementor/tags/3.35.9",
-    "rev": "3491162",
-    "sha256": "0mnn4wq8b3flck73in9lzzn2ky2c8cfjfjqmrlm90waqjz3cansh",
-    "version": "3.35.9"
+    "path": "elementor/tags/4.0.8",
+    "rev": "3530026",
+    "sha256": "0g30kk9z1743swwsfx5892wgfcrml14w91i21hjlzkmnykhnsswv",
+    "version": "4.0.8"
   },
   "password-protected": {
-    "path": "password-protected/tags/2.7.12",
-    "rev": "3422527",
-    "sha256": "1dxjjpj6rgxgpwasqycy5fig9wgag3d139ldj01kkbgmfk21q2iv",
-    "version": "2.7.12"
+    "path": "password-protected/tags/2.8.0",
+    "rev": "3511377",
+    "sha256": "1cssjzah3ryhfj668jrg06v1hwrgwy1pswy4vrvcfxl3bk7xplxn",
+    "version": "2.8.0"
   },
   "real-cookie-banner": {
-    "path": "real-cookie-banner/tags/5.2.19",
-    "rev": "3491849",
-    "sha256": "0a1gavsimym3wv1a4mjz9z6npfxrfv83yk8vz36r77hb57fy7180",
-    "version": "5.2.19"
+    "path": "real-cookie-banner/tags/5.2.23",
+    "rev": "3530612",
+    "sha256": "0mh0dipfy6c8rk5p93fmclyam1smbldj07pj5pvm8g8k7dzd8548",
+    "version": "5.2.23"
   },
   "the-events-calendar": {
-    "path": "the-events-calendar/tags/6.15.18",
-    "rev": "3491133",
-    "sha256": "074y07fir27q9ssi2bikhg6nvrwly6fgg5c6x969jxvpq1fwwn4r",
-    "version": "6.15.18"
+    "path": "the-events-calendar/tags/6.16.2",
+    "rev": "3531511",
+    "sha256": "0yg6r3i1lacxn893d9qzylcjwcy82yrvbqv54qv05z7bpgaiw0sv",
+    "version": "6.16.2"
   },
   "ultimate-addons-for-gutenberg": {
-    "path": "ultimate-addons-for-gutenberg/tags/2.19.21",
-    "rev": "3481118",
-    "sha256": "0i8c27w9kxw2l1k0x9jslzhrswrszb6235zi1iyh51zfbyi7k03c",
-    "version": "2.19.21"
+    "path": "ultimate-addons-for-gutenberg/tags/2.19.26",
+    "rev": "3522208",
+    "sha256": "19syy3vzvh1l3czcsdyqpmvh4cmjqxqj53014wvpbdfhx8bkd5is",
+    "version": "2.19.26"
   }
 }

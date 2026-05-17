@@ -1,15 +1,15 @@
 {
   "ashe": {
-    "path": "ashe/2.266",
-    "rev": "317159",
-    "sha256": "02lsjds2kndhgvck7bkm0qb67jmnjf8dw642id0g0fdzqxlcc5z5",
-    "version": "2.266"
+    "path": "ashe/2.269",
+    "rev": "327994",
+    "sha256": "15nsqg0269qfwwdj2wiivb7b3smi3h9xq4cw6rsknrsyazzgn08q",
+    "version": "2.269"
   },
   "astra": {
-    "path": "astra/4.12.6",
-    "rev": "319406",
-    "sha256": "0k4xn5a1bb8k85vab0gfw5jmlyhc97grp3hpdq9fm2qw02gm0hds",
-    "version": "4.12.6"
+    "path": "astra/4.13.2",
+    "rev": "328065",
+    "sha256": "1bvxhxs4qxiz6kcax9ffdm6zrd7kggd959ah2fp3rkf40mzr3gpm",
+    "version": "4.13.2"
   },
   "neve": {
     "path": "neve/4.2.3",
