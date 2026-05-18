@@ -11,6 +11,7 @@ let
     sidekiqPort = x 55002;
     elasticsearch = x 8201;
     elasticsearch-internal = x 8202;
+    libretranslate = x 8206;
   };
   portsForFirewall = {
     inherit (ports) mastodon;
@@ -29,6 +30,7 @@ in {
         mainFlake.nixosModules.sendmail
         modules.container-common
         ./elasticsearch.nix
+        ./libretranslate.nix
         ./mastodon.nix
         ./nginx-logging.nix
         ./postgresql.nix

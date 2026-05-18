@@ -64,6 +64,8 @@
       # and https://docs.joinmastodon.org/admin/config/#rails_log_level
       extraConfig.RAILS_LOG_LEVEL = "warn"; # or "info" or "debug"
       extraConfig.LOG_LEVEL = "info";  # or "silly"
+
+      extraConfig.LIBRE_TRANSLATE_ENDPOINT = "http://127.0.0.1:${toString ports.libretranslate.port}";
     };
 
     systemd.services.mastodon-init-dirs.serviceConfig.LoadCredential = "es_pass:secret_elasticsearch-pw-for-mastodon";
