@@ -62,7 +62,7 @@ in {
 
   config.systemd.services.omada-controller = {
     description = "Omada Software Controller that controls Omada WiFi access points and SDN switches";
-    path = with pkgs; [ omada-controller curl jsvc chosen_jre bash procps ];
+    path = with pkgs; [ config.services.omada-controller.package curl jsvc chosen_jre bash procps ];
 
     serviceConfig.StateDirectory = name;
     serviceConfig.LogsDirectory = name;
