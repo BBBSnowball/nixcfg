@@ -7,11 +7,13 @@
       (withFlakeInputs ./c3pb)
       extra-container
       auto-upgrade
+      hardened
       snowball-vm-sonline0
       nixcfg-sync
       ssh-github
       #./chatgpt-telegram-bot.nix
       (withFlakeInputs ./send-mail.nix)
+      (withFlakeInputs ../../hotfix-modules/nginx-1.28.3.nix)
     ];
 
   users.users.root.openssh.authorizedKeys.keyFiles = let
