@@ -106,10 +106,10 @@ in
     inherit environmentFile;
     dnsResolver = "1.1.1.1:53";
     dnsPropagationCheck = false;  # disable check of all primary servers
-    group = "headscale";
+    #group = "headscale";
     # README says that a restart is required and I don't see any code for reloading files on a signal.
     # It will use `try-reload-or-restart`, so that should be fine.
-    reloadServices = [ "derper.service" ];
+    reloadServices = [ "tailscale-derper.service" ];
 
     # create symlinks with names that derper will use
     #postRun = ''
