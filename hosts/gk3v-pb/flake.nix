@@ -10,5 +10,8 @@
   inputs.nixpkgs-mongodb.url = "github:NixOS/nixpkgs/nixos-25.11";  # same as main nixpkgs but update triggers long rebuild
 
   outputs = { self, nixpkgs, routeromen, ... }@flakeInputs:
-    routeromen.lib.mkFlakeForHostConfig "gk3v-pb" "x86_64-linux" ./main.nix flakeInputs;
+  routeromen.lib.mkFlakeForHostConfig "gk3v-pb" "x86_64-linux" ./main.nix flakeInputs // {
+    packages.x86_64-linux.mongodb =
+      (import flakeInputs.nixpkgs-mongodb { system = "x86_64-linux"; config.allowUnfree = true; }).mongodb;
+  };
 }
