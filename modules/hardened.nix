@@ -32,8 +32,9 @@ in
 
     # https://source.android.com/docs/security/test/scudo
     # https://llvm.org/docs/ScudoHardenedAllocator.html
-    environment.memoryAllocator.provider = mkDefault "scudo";
-    environment.variables.SCUDO_OPTIONS = mkDefault "zero_contents=true";
+    # -> crashes redis (segfault) and edumeet (mismatch in library versions)
+    #environment.memoryAllocator.provider = mkDefault "scudo";
+    #environment.variables.SCUDO_OPTIONS = mkDefault "zero_contents=true";
 
     #security.lockKernelModules = mkDefault true;
 
