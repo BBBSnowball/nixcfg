@@ -30,7 +30,7 @@ in {
         mainFlake.nixosModules.sendmail
         modules.container-common
         ./elasticsearch.nix
-        ./libretranslate.nix
+        #./libretranslate.nix  # local one isn't fast enough and Mastodon has a fixed timeout
         ./mastodon.nix
         ./nginx-logging.nix
         ./postgresql.nix
@@ -39,7 +39,7 @@ in {
       
       _module.args = {
         inherit ports domain createDatabase;
-        inherit (privateForHost.${name}) smtpHost reverse_proxy_ip;
+        inherit (privateForHost.${name}) smtpHost reverse_proxy_ip libreTranslateUrl;
       };
 
       systemd.services.nginx.serviceConfig.LogsDirectoryMode = lib.mkForce "0700";

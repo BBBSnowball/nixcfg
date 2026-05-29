@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ports, domain, reverse_proxy_ip, createDatabase, ... }:
+{ config, lib, pkgs, ports, domain, reverse_proxy_ip, createDatabase, libreTranslateUrl, ... }:
 {
   config = {
     services.mastodon = {
@@ -65,7 +65,8 @@
       extraConfig.RAILS_LOG_LEVEL = "warn"; # or "info" or "debug"
       extraConfig.LOG_LEVEL = "info";  # or "silly"
 
-      extraConfig.LIBRE_TRANSLATE_ENDPOINT = "http://127.0.0.1:${toString ports.libretranslate.port}";
+      #extraConfig.LIBRE_TRANSLATE_ENDPOINT = "http://127.0.0.1:${toString ports.libretranslate.port}";
+      extraConfig.LIBRE_TRANSLATE_ENDPOINT = libreTranslateUrl;
     };
 
     systemd.services.mastodon-init-dirs.serviceConfig.LoadCredential = "es_pass:secret_elasticsearch-pw-for-mastodon";
