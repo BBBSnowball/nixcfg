@@ -22,7 +22,7 @@ in {
       ./syslog-udp.nix
       ./rabbitmq.nix
       ./fhem.nix
-      ./bambu.nix
+      #./bambu.nix  # yarn2nix has been removed
       ./ddclient.nix
       ../../homeautomation
       snowball-headless-big
@@ -235,7 +235,7 @@ in {
       #androidenv.androidPkgs_9_0.platform-tools  # contains adb
       #androidenv.androidPkgs_9_0.androidsdk
       #adoptopenjdk-bin  # contains keytool and jarsigner
-      nodePackages.node2nix
+      #nodePackages.node2nix
     ];
     extraGroups = [
       "audio"

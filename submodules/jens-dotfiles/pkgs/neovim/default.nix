@@ -96,7 +96,7 @@ pkgs.neovim.override {
       " Airline
       let g:airline#extensions#tabline#enabled = 1
 
-      let g:highlightedyank_highlight_duration = 200
+      #let g:highlightedyank_highlight_duration = 200
 
       filetype on
 
@@ -209,7 +209,7 @@ pkgs.neovim.override {
         # Multi-cursor. <C-n> to start/add cursor on next match, <C-x> to skip match, <C-p> to undo cursor, <A-n> to select all matches.
         vim-multiple-cursors
 
-        fzfWrapper
+        fzf-wrapper
         fzf-vim
 
         # neovim native language server support
@@ -218,7 +218,7 @@ pkgs.neovim.override {
 
         nvim-gdb
 
-        vim-highlightedyank
+        #vim-highlightedyank
         #vim-numbertoggle
 
         # A Vim plugin which shows a git diff in the 'gutter' (sign column).

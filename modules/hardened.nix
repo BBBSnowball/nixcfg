@@ -26,7 +26,8 @@ let
 in
 {
   config = {
-    boot.kernelPackages = mkDefault pkgs.linuxKernel.packages.linux_hardened;
+    #FIXME
+    #boot.kernelPackages = mkDefault pkgs.linuxKernel.packages.linux_hardened;
 
     #nix.settings.allowed-users = mkDefault [ "@users" ];  # -> already defined in common.nix
 
