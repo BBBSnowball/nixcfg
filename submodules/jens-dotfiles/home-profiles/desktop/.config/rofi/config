@@ -1,0 +1,21 @@
+rofi.modi:		drun,ssh,window,run
+#rofi.theme:		~/.local/share/rofi/themes/gruvbox-dark.rasi
+rofi.theme:		~/.local/share/rofi/themes/android_notification.rasi
+rofi.font:		Fira Code retina 11
+rofi.terminal:		kitty
+rofi.ssh-command:	{terminal} {ssh-client} {host}
+rofi.run-shell-command:	{terminal} {cmd}
+rofi.kb-select-1:	F1
+rofi.kb-select-2:	F2
+rofi.kb-select-3:	F3
+rofi.kb-select-4:	F4
+rofi.kb-select-5:	F5
+rofi.kb-select-6:	F6
+rofi.kb-select-7:	F7
+rofi.kb-select-8:	F8
+rofi.kb-select-9:	F9
+rofi.kb-select-10:	F10
+rofi.kb-mode-next:	Shift+Right,Control+Tab,Super+Tab
+rofi.kb-mode-previous:	Shift+Left,Control+ISO_Left_Tab,Super+ISO_Left_Tab
+
+# vim: syntax=xdefaults

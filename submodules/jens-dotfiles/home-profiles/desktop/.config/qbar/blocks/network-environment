@@ -1,0 +1,75 @@
+#!/usr/bin/env bash
+
+if [[ -z $UID || ! -d "/run/user/$UID" ]]
+then
+  echo "error"
+  exit 2
+fi
+
+ENVIRONMENT_FILE="/run/user/$UID/network-environment"
+
+SSID=$(iwgetid -r)
+
+if [[ "$SSID" == "011010010011" ]]
+then
+  ENVIRONMENT="home"
+  SYMBOL=$'🏠\uFE0E'
+  COLOR="#88bbff"
+elif [[ "$SSID" == "the-phone" ]]
+then
+  ENVIRONMENT="mobile"
+  SYMBOL=$'🌍\uFE0E'
+elif [[ "$SSID" == "subraum" ]]
+then
+  ENVIRONMENT="subraum"
+  SYMBOL=$'🚀\uFE0E'
+  COLOR="#ff7020"
+elif [[ "$SSID" == "eduroam" ]]
+then
+  ENVIRONMENT="uni"
+  SYMBOL=$'🎓\uFE0E'
+elif [[ "$SSID" == "Robs_IPhone" ]]
+then
+  ENVIRONMENT="work"
+  SYMBOL=$'🏢\uFE0E'
+elif [[ "$SSID" == "congress" ]]
+then
+  ENVIRONMENT="congress"
+  SYMBOL=$'🚀\uFE0E'
+  COLOR="#ff00aa"
+else
+  ENVIRONMENT="unknown"
+  SYMBOL=$'🌍\uFE0E'
+fi
+
+LAST_ENVIRONMENT=`cat $ENVIRONMENT_FILE`
+echo "$ENVIRONMENT" > $ENVIRONMENT_FILE
+
+output_block() {
+  echo "$1"
+}
+
+
+if [[ "$ENVIRONMENT" != "$LAST_ENVIRONMENT" ]]; then
+  # new environment
+  if [[ -z ENVIRONMENT_EFFECT ]]; then
+    output_block "$SYMBOL $ENVIRONMENT_EFFECT"
+  else
+    output_block "<span color='${COLOR:-#ffb840}'>$SYMBOL $ENVIRONMENT</span>"
+  fi
+  # run environment handler
+  ACTIVATION_HANDLER=$HOME/run/network-environment/activation_handler
+  if [[ -x $ACTIVATION_HANDLER ]]
+  then
+    $ACTIVATION_HANDLER "$ENVIRONMENT" "$SYMBOL" >/dev/null
+  fi
+else
+  output_block "$SYMBOL $ENVIRONMENT"
+
+  # only invoke click handlers if the network has not changed
+  if [[ $BLOCK_BUTTON == "1" ]]; then
+    notify-send "$ENVIRONMENT primary";
+  elif [[ $BLOCK_BUTTON == "3" ]]; then
+    notify-send "$ENVIRONMENT secondary";
+  fi
+fi

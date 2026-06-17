@@ -1,0 +1,10 @@
+#!/bin/sh
+
+# Run this script on a booted NixOS installation medium to allow connections from the installer
+
+mkdir -p /root/.ssh
+>> /root/.ssh/authorized_keys <EOF
+ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOgQ0W/0pH5A0G8eyx2CQCQshsUb/23f2/mWyPWIvEXT jens@serenity
+EOF
+
+systemctl start sshd.service

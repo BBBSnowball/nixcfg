@@ -1,0 +1,94 @@
+{
+  "window.zoomLevel": 0,
+  "explorer.openEditors.visible": 0,
+
+  "workbench.startupEditor": "none",
+  "workbench.settings.editor": "json",
+  "workbench.settings.useSplitJSON": true,
+  "workbench.settings.enableNaturalLanguageSearch": false,
+  "workbench.colorTheme": "Monokai Dimmed",
+  "workbench.iconTheme": "vscode-icons",
+  "workbench.tree.renderIndentGuides": "always",
+  "update.mode": "none",
+  "window.menuBarVisibility": "toggle",
+  "explorer.confirmDelete": false,
+  "files.enableTrash": false,
+
+  "breadcrumbs.enabled": true,
+  "zenMode.centerLayout": false,
+  "zenMode.hideLineNumbers": false,
+
+  "files.trimTrailingWhitespace": true,
+  "files.trimFinalNewlines": true,
+  "files.insertFinalNewline": true,
+
+  // colors
+  "editor.tokenColorCustomizations": {
+    "[Monokai Dimmed]": {
+      "textMateRules": [
+        {
+          "scope": "keyword.operator",
+          "settings": {
+            "foreground": "#F92672"
+          }
+        },
+        {
+          "scope": "entity.name.class, entity.name.type, entity.name.namespace, entity.name.scope-resolution",
+          "settings": {
+            "foreground": "#b6a08c"
+          }
+        }
+      ]
+    }
+  },
+  "workbench.colorCustomizations": {
+    "editorError.foreground": "#fc2457",
+  },
+
+  "editor.acceptSuggestionOnEnter": "off",
+
+  "editor.smoothScrolling": true,
+  "editor.cursorSmoothCaretAnimation": true,
+  "editor.cursorSurroundingLines": 2,
+  "editor.fontSize": 12,
+  "editor.fontFamily": "Fira Code Light",
+  "editor.fontLigatures": true,
+  "editor.tabSize": 2,
+
+  "search.smartCase": true,
+
+  "languageServerHaskell.formattingProvider": "ormolu",
+
+  "latex-workshop.latex.autoBuild.run": "never",
+  "latex-workshop.view.pdf.viewer": "browser",
+  "latex-workshop.chktex.enabled": true,
+
+  "vim.disableExtension": false,
+  "vim.leader": "-",
+  "vim.sneak": true,
+  "vim.surround": true,
+  "vim.easymotion": true,
+  //"vim.useSystemClipboard": true,
+  "vim.smartcase": true,
+  "vim.handleKeys": {
+    "<C-d>": false,
+    "<C-u>": false
+  },
+  "vim.insertModeKeyBindingsNonRecursive": [
+    {
+      "before": ["f", "d"],
+      "after": ["<Esc>"]
+    }
+  ],
+  "vim.visualModeKeyBindingsNonRecursive": [
+    {
+        "before": ["f", "d"],
+        "after": ["<Esc>"]
+    }
+  ],
+  "vim.highlightedyank.enable": true,
+  "vim.enableNeovim": false,
+  "editor.formatOnType": false,
+  "editor.formatOnPaste": false,
+  "editor.formatOnSave": false,
+}

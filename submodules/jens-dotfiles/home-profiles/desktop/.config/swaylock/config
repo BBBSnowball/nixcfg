@@ -1,0 +1,18 @@
+# swaylock config
+
+scaling=fill
+
+indicator-caps-lock
+disable-caps-lock-text
+
+show-failed-attempts
+ignore-empty-password
+
+indicator-radius=20
+
+ring-caps-lock-color=992222
+
+key-hl-color=00ff0044
+text-clear-color=00000000
+text-ver-color=00000000
+text-wrong-color=00000000

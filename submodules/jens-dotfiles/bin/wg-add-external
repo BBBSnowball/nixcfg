@@ -1,0 +1,65 @@
+#!/usr/bin/env nix-shell
+#!nix-shell -p wireguard-tools zsh -i zsh
+
+set -e
+# fail on undeclared variable
+set -u
+set -o pipefail
+
+readonly cmdname=$(basename $0)
+
+readonly machines_repo_entry_point=$MACHINES_PATH/flake.nix
+
+# This script cannot run without the nixos configuration entry point
+if [[ ! -f "$machines_repo_entry_point" ]]
+then
+  print -P "%B%F{red}Error: Machines repo %F{orange}default.nix%F{red} not found%b%f" >&2
+  exit 2
+fi
+
+source $DOTFILES_PATH/bin/lib/util.zsh
+
+usage() {
+  print "Usage: $cmdname <machine>" >&2
+}
+
+if [[ $# != 1 ]]
+then
+  print "Invalid number of arguments." >&2
+  usage
+  exit 2
+fi
+
+hostname=$1
+
+readonly config_file_path="$MACHINES_PATH/external/$hostname/wg_gateway.json"
+
+if [[ ! -f $config_file_path ]]
+then
+  print_error "Missing configuration for external machine '$hostname'" >&2
+  exit 3
+fi
+
+config=$(<$config_file_path)
+
+address=$(jq --raw-output .address <<<$config)
+
+key=$(wg genkey)
+pubkey=$(wg pubkey <<<$key)
+
+config=$(jq ".publicKey = \"$pubkey\"" <<<$config)
+>$config_file_path <<<$config
+
+
+print "[Interface]
+Address=$address
+PrivateKey=$key
+ListenPort=55542
+
+[Peer]
+PublicKey=lzKM49e5AqKLd232wLtVSrnKLvb/qV6LKZ3rrpLB+AQ=
+Endpoint=gateway.queezle.net:55542
+AllowedIPs=10.0.0.0/16
+
+PersistentKeepalive=25
+"

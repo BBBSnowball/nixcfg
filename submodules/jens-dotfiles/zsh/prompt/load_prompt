@@ -1,0 +1,17 @@
+if [ -z "$DISPLAY" ] && [ -n "$XDG_VTNR" ] || [[ "$TERM" = cygwin ]]; then
+  PURE_PROMPT_SYMBOL=">"
+  PURE_PROMPT_VICMD_SYMBOL="<"
+  PURE_GIT_DOWN_ARROW=v
+  PURE_GIT_UP_ARROW=^
+else
+  PURE_PROMPT_SYMBOL="❯"
+  PURE_PROMPT_VICMD_SYMBOL="❮"
+fi
+
+if [[ `whoami` = root ]]; then
+  PURE_PROMPT_SYMBOL="#"
+  PURE_PROMPT_VICMD_SYMBOL="!"
+fi
+
+# setup theme
+autoload -U promptinit && promptinit && prompt pure

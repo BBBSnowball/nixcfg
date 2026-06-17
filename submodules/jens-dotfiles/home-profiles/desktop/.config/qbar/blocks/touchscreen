@@ -1,0 +1,39 @@
+#!/usr/bin/env zsh
+
+if [[ -z $UID || ! -d "/run/user/$UID" ]]; then
+  echo "error"
+  exit 2
+fi
+
+touchscreen_disabled_file="/tmp/touchscreen_disabled"
+
+if [[ $BLOCK_BUTTON == "1" ]]
+then
+  if [[ -f $touchscreen_disabled_file ]]
+  then
+    # touchscreen is disabled
+    sudo modprobe i2c_hid
+    sleep 0.1
+    xinput --map-to-output $(xinput list --id-only "SYNA7501:00 06CB:16D1") eDP-1
+    rm $touchscreen_disabled_file
+    notify-send --urgency=low "Touchscreen enabled";
+  else
+    # touchscreen is enabled
+    sudo modprobe -r i2c_hid
+    touch $touchscreen_disabled_file
+    notify-send --urgency=low "Touchscreen disabled";
+  fi
+elif [[ $BLOCK_BUTTON == "3" ]]
+then
+  xinput --map-to-output $(xinput list --id-only "SYNA7501:00 06CB:16D1") eDP-1
+  notify-send --urgency=low "Updated touchscreen mapping";
+fi
+
+if [[ -f $touchscreen_disabled_file ]]
+then
+  # touchscreen is disabled
+  echo "✊"
+else
+  # touchscreen is enabled
+  echo "<span color='#ffffff'>👆</span>"
+fi

@@ -1,0 +1,8 @@
+#!/usr/bin/env zsh
+
+if timeout 3s ssh jens-vps weechat-get-notify
+then
+	echo "💬"
+else
+	echo ""
+fi

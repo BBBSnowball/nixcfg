@@ -1,0 +1,56 @@
+#!/usr/bin/env nix-shell
+#!nix-shell -i zsh -p zsh -p nix
+
+set -e
+set -u
+set -o pipefail
+
+source $DOTFILES_PATH/bin/lib/util.zsh
+
+cmdname=$(basename $0)
+usage() {
+  print "Usage: $cmdname <via_host> <hostname>" >&2
+}
+
+if [[ $# -ge 1 ]]
+then
+  if [ "$1" = "--help" -o "$1" = "-h" ]
+  then
+      usage
+      exit 0
+  fi
+fi
+
+if [ $# -ne 2 ]
+then
+  print "Invalid number of arguments." >&2
+  usage
+  exit 2
+fi
+
+via_host="$1"
+hostname="$2"
+
+
+nixos_system_file=$MACHINES_PATH/nixos.nix
+
+local_temp_dir=$(mktemp --tmpdir --directory install-via.XXXXXXXXXX)
+trap "rm -rf $local_temp_dir" EXIT INT HUP TERM
+
+print_info "Building target system configuration..."
+nix build --file "$nixos_system_file" --argstr hostname "$hostname" --out-link "$local_temp_dir/nixos-config-$hostname"
+
+print_info "Deploying target system configuration..."
+nix copy --file "$nixos_system_file" --argstr hostname "$hostname" --to ssh://root@$via_host
+nixos_config_path=$(realpath "$local_temp_dir/nixos-config-$hostname")
+
+ssh root@$via_host "nixos-install --system $nixos_config_path && sync"
+ssh root@$via_host mkdir --mode u=rwx,g=,o= --parents /mnt/etc/secrets/passwords
+
+# TODO: get host-specific password
+#scp -r notThePassword root@$via_host:/mnt/etc/secrets/passwords/root
+#scp -r notThePassword root@$via_host:/mnt/etc/secrets/passwords/jens
+
+ssh root@$via_host sync
+
+print_info "Installation completed"
