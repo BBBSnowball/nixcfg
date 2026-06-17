@@ -1,16 +1,16 @@
 { pkgs, config, ... }:
 
 let
-  promptPath = ../zsh/prompt;
+  #promptPath = ../zsh/prompt;
 
 in
 {
   environment.systemPackages = with pkgs; [
-    neovim-queezle
+    neovim
     w3m
     less
     # required for neovim spellcheck
-    aspell
+    #aspell
     # used for icat
     notcurses
   ];
@@ -21,17 +21,17 @@ in
     clock24 = true;
   };
 
-  programs.zsh.enable = true;
-  programs.zsh.enableGlobalCompInit = false;
+  #programs.zsh.enable = true;
+  #programs.zsh.enableGlobalCompInit = false;
 
-  programs.zsh.promptInit = ''
-    if [ "$TERM" != dumb ]
-    then
-      fpath+=${promptPath}
+  #programs.zsh.promptInit = ''
+  #  if [ "$TERM" != dumb ]
+  #  then
+  #    fpath+=${promptPath}
 
-      source ${promptPath}/load_prompt
-    fi
-  '';
+  #    source ${promptPath}/load_prompt
+  #  fi
+  #'';
 
   environment.shellAliases = {
     ".." = "cd ..";

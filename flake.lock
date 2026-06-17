@@ -16,25 +16,6 @@
         "type": "github"
       }
     },
-    "jens-dotfiles": {
-      "flake": false,
-      "locked": {
-        "host": "git.c3pb.de",
-        "lastModified": 1587168120,
-        "narHash": "sha256-LBwPcCv7t4F2yQpwXP5o0pXv5a8LOKb6OLQKTg8eNl4=",
-        "owner": "jens",
-        "repo": "dotfiles",
-        "rev": "cbded47f57fa7c5819709f2a2e97ea29af9b321a",
-        "type": "gitlab"
-      },
-      "original": {
-        "host": "git.c3pb.de",
-        "owner": "jens",
-        "repo": "dotfiles",
-        "rev": "cbded47f57fa7c5819709f2a2e97ea29af9b321a",
-        "type": "gitlab"
-      }
-    },
     "nix-bundle": {
       "inputs": {
         "nixpkgs": [
@@ -106,7 +87,6 @@
     "root": {
       "inputs": {
         "flake-compat": "flake-compat",
-        "jens-dotfiles": "jens-dotfiles",
         "nix-bundle": "nix-bundle",
         "nixpkgs": "nixpkgs",
         "nixpkgs-unstable": "nixpkgs-unstable",

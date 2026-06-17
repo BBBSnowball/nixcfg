@@ -1,6 +1,6 @@
 { config, pkgs, lib, ... }@args:
 let
-  jens-dotfiles = args.jens-dotfiles or ./submodules/jens-dotfiles;
+  jens-dotfiles = ../submodules/jens-dotfiles;
 in {
   options.programs.nvim.defaultEditor = lib.mkOption {
     type = lib.types.bool;
