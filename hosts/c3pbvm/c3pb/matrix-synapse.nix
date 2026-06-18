@@ -143,6 +143,7 @@ in {
     fileSystems."/var/lib/postgresql" = {
       device = "/var/data/postgresql";
       options = [ "bind" ];
+      fsType = "ext4";
     };
 
     # auto-upgrade database
