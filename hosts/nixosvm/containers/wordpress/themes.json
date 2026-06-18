@@ -1,38 +1,38 @@
 {
   "ashe": {
-    "path": "ashe/2.269",
-    "rev": "327994",
-    "sha256": "15nsqg0269qfwwdj2wiivb7b3smi3h9xq4cw6rsknrsyazzgn08q",
-    "version": "2.269"
+    "path": "ashe/2.271",
+    "rev": "333558",
+    "sha256": "07sdbs1659yi77i7zfriq9dac9hzahpnsscygkky5adq14xmfxsp",
+    "version": "2.271"
   },
   "astra": {
-    "path": "astra/4.13.2",
-    "rev": "328065",
-    "sha256": "1bvxhxs4qxiz6kcax9ffdm6zrd7kggd959ah2fp3rkf40mzr3gpm",
-    "version": "4.13.2"
+    "path": "astra/4.13.4",
+    "rev": "331631",
+    "sha256": "0nm9aarxq0b5csyb9fr5jwwzcg13s4jsnkdc6s3z3qs6aqdvfzh4",
+    "version": "4.13.4"
   },
   "neve": {
-    "path": "neve/4.2.3",
-    "rev": "316887",
-    "sha256": "1kvjbnh53jhhlvq730h36dlgg0qrnxn9mlwp005ppbzaqhs96p9y",
-    "version": "4.2.3"
+    "path": "neve/4.2.5",
+    "rev": "333920",
+    "sha256": "0g4xyf2fn19c9zff5drhcmcgpl79jibypihmdnmr68vy8xddmisn",
+    "version": "4.2.5"
   },
   "oceanwp": {
-    "path": "oceanwp/4.1.5",
-    "rev": "313588",
-    "sha256": "04hdkw51wl02wv9isaczfpwp8s6qpi4rgqfyvi0474h6irz23rkv",
-    "version": "4.1.5"
+    "path": "oceanwp/4.1.6",
+    "rev": "329356",
+    "sha256": "1nr6fsp95s1sax6lfl2cj4n8mpcc5cz5mmza30qi6rrhqh7vf6sc",
+    "version": "4.1.6"
   },
   "twentyseventeen": {
-    "path": "twentyseventeen/4.0",
-    "rev": "301644",
-    "sha256": "1ic1daiq506h2lv3z12v73a5pm5vygqiqfykggxcpkkanyi3y8jr",
-    "version": "4.0"
+    "path": "twentyseventeen/4.1",
+    "rev": "329584",
+    "sha256": "1br9dzvzq9a2i63bnjv1ny13i6d3hiy1qg6xcl4aq1y7kbvd5kjj",
+    "version": "4.1"
   },
   "twentytwentyfive": {
-    "path": "twentytwentyfive/1.4",
-    "rev": "301650",
-    "sha256": "1knpjhql8ccczjclg2wcacjp5adhxafh4bnw5mrgf34wghna0j6w",
-    "version": "1.4"
+    "path": "twentytwentyfive/1.5",
+    "rev": "329589",
+    "sha256": "0vi6ing7d47qsdxgxvynwvq38dn8c7p0i8gd85hcik7bq82gjdzx",
+    "version": "1.5"
   }
 }

@@ -1,38 +1,38 @@
 {
   "backwpup": {
-    "path": "backwpup/tags/5.6.9",
-    "rev": "3516229",
-    "sha256": "1q5n16hgdj9q5h3yljimygj9vc5lhr3pzc1w5ca8zai0s9a52m47",
-    "version": "5.6.9"
+    "path": "backwpup/tags/5.7.2",
+    "rev": "3564460",
+    "sha256": "0z82szi7yknx5w67xpxk97p2in5xdhbdfab4wl9d4wnq5g2zamd6",
+    "version": "5.7.2"
   },
   "elementor": {
-    "path": "elementor/tags/4.0.8",
-    "rev": "3530026",
-    "sha256": "0g30kk9z1743swwsfx5892wgfcrml14w91i21hjlzkmnykhnsswv",
-    "version": "4.0.8"
+    "path": "elementor/tags/4.1.3",
+    "rev": "3567471",
+    "sha256": "1v2rs3j2c2hvlbjfrn7xnhaknk0z5plvl4w7ychqr78ja1wlyqal",
+    "version": "4.1.3"
   },
   "password-protected": {
-    "path": "password-protected/tags/2.8.0",
-    "rev": "3511377",
-    "sha256": "1cssjzah3ryhfj668jrg06v1hwrgwy1pswy4vrvcfxl3bk7xplxn",
-    "version": "2.8.0"
+    "path": "password-protected/tags/2.8.1",
+    "rev": "3560222",
+    "sha256": "0ypm1sx2sacicp7yrz927nkcl4645vj4d2fjzas74yapfsfh9a6n",
+    "version": "2.8.1"
   },
   "real-cookie-banner": {
-    "path": "real-cookie-banner/tags/5.2.23",
-    "rev": "3530612",
-    "sha256": "0mh0dipfy6c8rk5p93fmclyam1smbldj07pj5pvm8g8k7dzd8548",
-    "version": "5.2.23"
+    "path": "real-cookie-banner/tags/5.2.25",
+    "rev": "3550559",
+    "sha256": "0wf06a8236c8f59gkf42c2dw710w43jsw1k5ii276vmla18znb40",
+    "version": "5.2.25"
   },
   "the-events-calendar": {
-    "path": "the-events-calendar/tags/6.16.2",
-    "rev": "3531511",
-    "sha256": "0yg6r3i1lacxn893d9qzylcjwcy82yrvbqv54qv05z7bpgaiw0sv",
-    "version": "6.16.2"
+    "path": "the-events-calendar/tags/6.16.4",
+    "rev": "3573570",
+    "sha256": "1vsiq8ij39qpyxwvcigq0i21cnq0i8rml6jhda3lh6715vr9h0qd",
+    "version": "6.16.4"
   },
   "ultimate-addons-for-gutenberg": {
-    "path": "ultimate-addons-for-gutenberg/tags/2.19.26",
-    "rev": "3522208",
-    "sha256": "19syy3vzvh1l3czcsdyqpmvh4cmjqxqj53014wvpbdfhx8bkd5is",
-    "version": "2.19.26"
+    "path": "ultimate-addons-for-gutenberg/tags/2.19.28",
+    "rev": "3550256",
+    "sha256": "17ss3csybs4js1pz7wvhy6xdvmv9z478g7n2406hh5h7zm1w492l",
+    "version": "2.19.28"
   }
 }
