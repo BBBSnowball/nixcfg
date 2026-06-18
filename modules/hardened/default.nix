@@ -23,11 +23,25 @@ let
     mkIf
     maintainers
     ;
+
+  # NixOS had the kernel with these patches, which we omit here:
+  # https://github.com/anthraxx/linux-hardened
+  linux_hardened = pkgs.linuxPackagesFor (pkgs.linuxPackages.kernel.override {
+    structuredExtraConfig = import ./kernel-config.nix {
+      inherit lib;
+      inherit (pkgs) stdenv;
+      inherit (pkgs.linuxPackages.kernel) version;
+    };
+    argsOverride = {
+      pname = "linux-hardened";
+    };
+    isHardened = true;
+  });
 in
 {
   config = {
-    #FIXME
     #boot.kernelPackages = mkDefault pkgs.linuxKernel.packages.linux_hardened;
+    #boot.kernelPackages = mkDefault linux_hardened;
 
     #nix.settings.allowed-users = mkDefault [ "@users" ];  # -> already defined in common.nix
 

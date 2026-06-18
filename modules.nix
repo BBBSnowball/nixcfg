@@ -8,6 +8,8 @@ let
     lib = pkgs.lib;
     f = name: type: if (type == "regular" || type == "symlink") && !isNull (match "([^.].*)[.]nix" name)
     then { name = head (match "([^.].*)[.]nix" name); value = withInputs (dir + "/${name}"); }
+    else if type == "directory" && ! isNull (match "[^.].*" name) && builtins.pathExists (dir + "/${name}/default.nix")
+    then { inherit name; value = withInputs (dir + "/${name}/default.nix"); }
     else if type == "directory" && ! isNull (match "[^.].*" name)
     then { inherit name; value = modulesFromDir (dir + "/${name}"); }
     else { inherit name; value = null; };
