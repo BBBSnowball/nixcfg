@@ -1,5 +1,7 @@
 { pkgs, extraRC ? "", extraStartPlugins ? [], extraOptPlugins ? [] }:
-
+let
+  python = pkgs.python3.withPackages (p: [ p.pynvim ]);
+in
 pkgs.neovim.override {
   configure = {
     customRC = ''
@@ -96,7 +98,7 @@ pkgs.neovim.override {
       " Airline
       let g:airline#extensions#tabline#enabled = 1
 
-      #let g:highlightedyank_highlight_duration = 200
+      "let g:highlightedyank_highlight_duration = 200
 
       filetype on
 
@@ -124,7 +126,9 @@ pkgs.neovim.override {
 
 
       " Use deoplete for autocompletion.
-      let g:deoplete#enable_at_startup = 1
+      "let g:deoplete#enable_at_startup = 1
+      "let g:python3_host_prog = '${python}/bin/python'
+      "let g:loaded_python3_provider = 0
 
       nnoremap <Leader>go <Cmd>Goyo<CR>
 
@@ -137,8 +141,6 @@ pkgs.neovim.override {
       nnoremap <Leader>S <Cmd>setlocal spell spelllang=de_de<CR>
 
       lua << EOF
-        local nvim_lsp = require('lspconfig')
-
         local on_attach = function(client, bufnr)
           local function buf_set_keymap(...) vim.api.nvim_buf_set_keymap(bufnr, ...) end
           local function buf_set_option(...) vim.api.nvim_buf_set_option(bufnr, ...) end
@@ -169,15 +171,15 @@ pkgs.neovim.override {
           buf_set_keymap('n', '<space>f', '<cmd>lua vim.lsp.buf.formatting()<CR>', opts)
         end
 
-        nvim_lsp.clangd.setup {
+        vim.lsp.config('clangd', {
+          filetypes = { 'c' },
           on_attach = on_attach
-        }
-        nvim_lsp.hls.setup  {
+        })
+        vim.lsp.enable('clangd')
+        vim.lsp.config('hls', {
           on_attach = on_attach
-        }
-        nvim_lsp.gdscript.setup {
-          on_attach = on_attach
-        }
+        })
+        vim.lsp.enable('hls')
       EOF
 
       ${extraRC}
@@ -214,7 +216,7 @@ pkgs.neovim.override {
 
         # neovim native language server support
         nvim-lspconfig
-        deoplete-nvim
+        #deoplete-nvim
 
         nvim-gdb
 
