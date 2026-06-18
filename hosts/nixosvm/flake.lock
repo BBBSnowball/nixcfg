@@ -212,7 +212,7 @@
       },
       "locked": {
         "lastModified": 1781740022,
-        "narHash": "sha256-Tl0T1JAF8lZAK4XkZKsw/mZS+HC+LR9SDmfzPUusVn8=",
+        "narHash": "sha256-VPtLGk6DikX+0mtdLmhq19Gup0ZnkQQvVRVikl5BXKI=",
         "owner": "BBBSnowball",
         "repo": "nixcfg",
         "rev": "73d50851a765eb4f0f252824f6e5e824046e8d3e",
