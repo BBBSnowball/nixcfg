@@ -78,7 +78,7 @@ in {
             Header set Cache-Control "max-age=600, must-revalidate"
           </FilesMatch>
         '';
-      };
+      } // import ../../../modules/nginx-hardened-vhost.nix;
     };
   };
 
