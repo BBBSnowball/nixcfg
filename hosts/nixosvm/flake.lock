@@ -36,25 +36,6 @@
         "url": "https://codeberg.org/snowball/flohmarkt"
       }
     },
-    "jens-dotfiles": {
-      "flake": false,
-      "locked": {
-        "host": "git.c3pb.de",
-        "lastModified": 1587168120,
-        "narHash": "sha256-LBwPcCv7t4F2yQpwXP5o0pXv5a8LOKb6OLQKTg8eNl4=",
-        "owner": "jens",
-        "repo": "dotfiles",
-        "rev": "cbded47f57fa7c5819709f2a2e97ea29af9b321a",
-        "type": "gitlab"
-      },
-      "original": {
-        "host": "git.c3pb.de",
-        "owner": "jens",
-        "repo": "dotfiles",
-        "rev": "cbded47f57fa7c5819709f2a2e97ea29af9b321a",
-        "type": "gitlab"
-      }
-    },
     "nix-bundle": {
       "inputs": {
         "nixpkgs": [
@@ -108,22 +89,6 @@
         "type": "github"
       }
     },
-    "nixpkgs-mongodb": {
-      "locked": {
-        "lastModified": 1688392541,
-        "narHash": "sha256-lHrKvEkCPTUO+7tPfjIcb7Trk6k31rz18vkyqmkeJfY=",
-        "owner": "NixOS",
-        "repo": "nixpkgs",
-        "rev": "ea4c80b39be4c09702b0cb3b42eab59e2ba4f24b",
-        "type": "github"
-      },
-      "original": {
-        "owner": "NixOS",
-        "ref": "nixos-22.11",
-        "repo": "nixpkgs",
-        "type": "github"
-      }
-    },
     "nixpkgs-notes": {
       "locked": {
         "lastModified": 1617271991,
@@ -158,16 +123,16 @@
     },
     "nixpkgs-small": {
       "locked": {
-        "lastModified": 1779930049,
-        "narHash": "sha256-6mqKLf7ukajFOrVjO7EH1i37CQOVG22AnuU3wR84xK0=",
+        "lastModified": 1781582435,
+        "narHash": "sha256-gSxE0/TlYwqk7h1MAPog4LSE4vFjt6zeyjoaudUGCLI=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "f5190b692864072e79a2fb7c52d72d1d57fcb269",
+        "rev": "dbfc12cd8ced4e8ebe9c1faa9dd93bd1d1377799",
         "type": "github"
       },
       "original": {
         "owner": "NixOS",
-        "ref": "nixos-25.11-small",
+        "ref": "nixos-26.05-small",
         "repo": "nixpkgs",
         "type": "github"
       }
@@ -189,16 +154,16 @@
     },
     "nixpkgs_2": {
       "locked": {
-        "lastModified": 1779796641,
-        "narHash": "sha256-ZsIrKmhp4vbBXoXXmR/tBXA/UCsAQiJL9vsgZEduhVY=",
+        "lastModified": 1781216227,
+        "narHash": "sha256-9mUW6gNwoN2SWc/l0fW4svPNOulXLl8ijqKyeSOGgJE=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "25f538306313eae3927264466c70d7001dcea1df",
+        "rev": "a0374025a863d007d98e3297f6aa46cc3141c2f0",
         "type": "github"
       },
       "original": {
         "owner": "NixOS",
-        "ref": "nixos-25.11",
+        "ref": "nixos-26.05",
         "repo": "nixpkgs",
         "type": "github"
       }
@@ -238,21 +203,19 @@
     "routeromen": {
       "inputs": {
         "flake-compat": "flake-compat",
-        "jens-dotfiles": "jens-dotfiles",
         "nix-bundle": "nix-bundle",
         "nixpkgs": [
           "nixpkgs"
         ],
-        "nixpkgs-mongodb": "nixpkgs-mongodb",
         "nixpkgs-unstable": "nixpkgs-unstable",
         "private": "private"
       },
       "locked": {
-        "lastModified": 1755553011,
-        "narHash": "sha256-GvItTBd7npg1oZncXywo9I6kGLPg8QigTJ+88UopeHg=",
+        "lastModified": 1781740022,
+        "narHash": "sha256-Tl0T1JAF8lZAK4XkZKsw/mZS+HC+LR9SDmfzPUusVn8=",
         "owner": "BBBSnowball",
         "repo": "nixcfg",
-        "rev": "ccdf675bc4e51ea0fad329f240f80feda692ce8c",
+        "rev": "73d50851a765eb4f0f252824f6e5e824046e8d3e",
         "type": "github"
       },
       "original": {
