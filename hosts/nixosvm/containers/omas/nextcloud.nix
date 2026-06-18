@@ -15,7 +15,7 @@ in
     autoUpdateApps.enable = true;
     config.adminpassFile = "secret_nextcloud-admin-password";
     secretFile = "secret_nextcloud-config";
-  
+
     # We have to manually specify the version, so we can ensure that migrations run between major upgrades.
     package = pkgs.nextcloud33;
 
@@ -25,8 +25,11 @@ in
     # -> Well, could be useful here.
     #enableImagemagick = false;
 
+    #NOTE We also need this on mailinabox:
+    #  # cat /etc/nginx/site-${hostName}-https.conf.d/large-body.conf
+    #  client_max_body_size 100M;
     maxUploadSize = "100M";
-  
+
     config = {
       dbhost = "/run/postgresql";
       dbtype = "pgsql";
